@@ -20,6 +20,7 @@ export function SplitReveal({ as = 'h2', text, className, id, play, delay = 0 }:
     const el = ref.current
     if (!el || matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const words = el.querySelectorAll('.wi')
+    const quick = matchMedia('(pointer: coarse)').matches
     if (play === false) {
       gsap.set(words, { yPercent: 110 })
       return
@@ -29,11 +30,11 @@ export function SplitReveal({ as = 'h2', text, className, id, play, delay = 0 }:
       { yPercent: 110 },
       {
         yPercent: 0,
-        duration: 1.25,
+        duration: quick ? 0.9 : 1.25,
         ease: 'expo.out',
-        stagger: 0.06,
+        stagger: quick ? 0.04 : 0.06,
         delay,
-        scrollTrigger: play ? undefined : { trigger: el, start: 'top 88%', once: true },
+        scrollTrigger: play ? undefined : { trigger: el, start: quick ? 'top 98%' : 'top 88%', once: true },
       },
     )
     return () => {

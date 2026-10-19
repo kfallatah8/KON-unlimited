@@ -383,10 +383,12 @@ export default function App() {
     document.documentElement.dataset.tier = caps.tier
     if (caps.reducedMotion) return
     const ctx = gsap.context(() => {
+      // On touch screens a flick covers a lot of page, so reveals start earlier and finish sooner.
+      const quick = caps.touch
       gsap.utils.toArray<HTMLElement>('.reveal').forEach((el) => {
         gsap.from(el, {
-          y: 28, opacity: 0, duration: 1.1, ease: 'power3.out',
-          scrollTrigger: { trigger: el, start: 'top 90%', once: true },
+          y: quick ? 16 : 28, opacity: 0, duration: quick ? 0.7 : 1.1, ease: 'power3.out',
+          scrollTrigger: { trigger: el, start: quick ? 'top 98%' : 'top 90%', once: true },
         })
       })
       // case visuals open like a curtain as they arrive
