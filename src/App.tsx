@@ -362,7 +362,6 @@ function Footer() {
       <p className="wordmark" dir="ltr" aria-hidden="true"><b>KON</b> Unlimited</p>
       <div className="footer-bottom">
         <span dir="ltr">© {new Date().getFullYear()} KON Unlimited</span>
-        <span>{c.footer.note}</span>
       </div>
     </footer>
   )

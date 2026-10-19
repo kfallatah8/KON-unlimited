@@ -375,7 +375,7 @@ const ar = {
     choose: 'اختر بُعدًا', unsure: 'لست متأكدًا بعد', cta: 'احجز جلسة التشخيص',
     done: 'شكرًا لك. هذه نسخة معاينة، لذلك لم يُرسل الطلب. سيُربط النموذج بنظام الحجز عند الإطلاق.',
   },
-  footer: { tagline: 'عملك قادر على أكثر.', note: 'نسخة معاينة · العناصر المعلَّمة بانتظار المواد الفعلية', top: 'العودة للأعلى' },
+  footer: { tagline: 'عملك قادر على أكثر.', top: 'العودة للأعلى' },
   dimensions: buildDims(dimAr),
 }
 
@@ -564,7 +564,7 @@ const en: typeof ar = {
     choose: 'Choose a dimension', unsure: 'Not sure yet', cta: 'Book the diagnostic session',
     done: 'Thank you. This is a preview, so nothing was sent. The form will connect to the booking system at launch.',
   },
-  footer: { tagline: 'Your business is capable of more.', note: 'Preview edition · marked items await final assets', top: 'Back to top' },
+  footer: { tagline: 'Your business is capable of more.', top: 'Back to top' },
   dimensions: buildDims(dimEn),
 }
 
