@@ -1,26 +1,44 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useContent } from './content/useContent'
+import type { CaseItem } from './content/site'
+import { tourUrl } from './content/site'
 import { detectCapabilities } from './lib/capabilities'
-import { setLang, useStore } from './state/store'
-import { CaseStudies } from './components/CaseStudies'
+import { motion, setLang, startOnboarding, useStore } from './state/store'
 import { Cursor } from './components/Cursor'
-import { DiagnosticVisualization } from './components/DiagnosticVisualization'
-import { Intro } from './components/Intro'
+import { Icon, GemMark } from './components/Icons'
 import { MagneticButton } from './components/MagneticButton'
-import { SceneFallback } from './components/SceneFallback'
-import { lenis, SmoothScroll } from './components/SmoothScroll'
+import { chipPain, Onboarding } from './components/Onboarding'
+import { SmoothScroll } from './components/SmoothScroll'
 import { SplitReveal } from './components/SplitReveal'
-import { SCENE } from './three/formations'
-import { TransformationSequence } from './three/TransformationSequence'
+import { Rich } from './components/Rich'
+import { KonMark } from './components/KonMark'
 
-// The WebGL stage is a separate chunk: copy and layout never wait for it.
-const Hero3DScene = lazy(() => import('./three/Hero3DScene'))
+// The WebGL stage is its own chunk: copy and layout never wait for it.
+const GemField = lazy(() => import('./three/GemField'))
 
 gsap.registerPlugin(ScrollTrigger)
 
 const pad = (n: number) => String(n).padStart(2, '0')
+
+/** Adds .is-in to [data-reveal] elements once they enter the viewport (CSS does the motion). */
+function useReveal(lang: string) {
+  useEffect(() => {
+    const els = document.querySelectorAll('[data-reveal]:not(.is-in)')
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add('is-in')
+          io.unobserve(e.target)
+        }
+      }),
+      { rootMargin: '0px 0px -8% 0px' },
+    )
+    els.forEach((el) => io.observe(el))
+    return () => io.disconnect()
+  }, [lang])
+}
 
 function LangSwitch() {
   const c = useContent()
@@ -76,7 +94,7 @@ function Header() {
     <header className={`site-header${scrolled ? ' is-scrolled' : ''}${open ? ' is-open' : ''}`}>
       <span className="page-progress" ref={bar} aria-hidden="true" />
       <a href="#top" className="logo" aria-label="KON Unlimited">
-        <span className="logo-mark" aria-hidden="true"><i /><i /><i /></span>
+        <GemMark className="logo-gem" />
         <span dir="ltr"><b>KON</b> Unlimited</span>
       </a>
       <nav aria-label="Primary" className="nav-desktop">
@@ -84,7 +102,7 @@ function Header() {
       </nav>
       <div className="header-actions">
         <LangSwitch />
-        <a href="#contact" className="header-cta">{c.headerCta}</a>
+        <a href="#start" className="header-cta">{c.headerCta}</a>
         <button type="button" className="menu-btn" aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpen(!open)}>
           <span className="sr-only">{open ? c.meta.close : c.meta.menu}</span>
           <i /><i />
@@ -97,255 +115,372 @@ function Header() {
               <span dir="ltr">{pad(i + 1)}</span>{n.label}
             </a>
           ))}
-          <a href="#contact" onClick={() => setOpen(false)}><span dir="ltr">{pad(c.nav.length + 1)}</span>{c.headerCta}</a>
+          <a href="#start" onClick={() => setOpen(false)}><span dir="ltr">{pad(c.nav.length + 1)}</span>{c.headerCta}</a>
         </nav>
       </div>
     </header>
   )
 }
 
-function Hero({ play }: { play: boolean }) {
+/** Hero headline that cycles through the taglines with a masked rise. */
+function Rotator({ lines }: { lines: string[] }) {
+  const [i, setI] = useState(0)
+  useEffect(() => {
+    setI(0)
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const id = setInterval(() => setI((x) => (x + 1) % lines.length), 3400)
+    return () => clearInterval(id)
+  }, [lines])
+  return (
+    <span className="rotator" aria-hidden="true">
+      {lines.map((l, k) => (
+        <span key={l} className={`rot-line${k === i ? ' is-on' : ''}${k === (i - 1 + lines.length) % lines.length ? ' is-out' : ''}`}>{l}</span>
+      ))}
+    </span>
+  )
+}
+
+function Hero() {
   const c = useContent()
   const h = c.hero
   return (
-    <section id="top" className="hero" data-scene={SCENE.hero} aria-labelledby="hero-title">
-      <div className="hero-frame" aria-hidden="true"><i /><i /><i /><i /></div>
+    <section id="top" className="hero" aria-labelledby="hero-title">
       <div className="hero-copy">
         <p className="eyebrow hero-fade">{h.eyebrow}</p>
-        <SplitReveal as="h1" id="hero-title" className="hero-title" text={h.title} play={play} delay={0.1} />
-        <p className="hero-lede hero-fade">{h.lede}</p>
+        <h1 id="hero-title" className="hero-title">
+          <span className="sr-only">{h.rotating.join(' ')}</span>
+          <Rotator lines={h.rotating} />
+        </h1>
+        <p className="hero-promise hero-fade"><Rich text={h.promise} /></p>
+        <p className="hero-lede hero-fade"><Rich text={h.lede} /></p>
         <div className="hero-ctas hero-fade">
-          <MagneticButton href="#contact">{h.primary}</MagneticButton>
-          <MagneticButton href="#story" variant="ghost">{h.secondary}</MagneticButton>
+          <MagneticButton href="#start">{h.primary}</MagneticButton>
+          <MagneticButton href="#work" variant="ghost">{h.secondary}</MagneticButton>
         </div>
       </div>
-      <div className="hero-foot hero-fade">
-        <ol className="stages" aria-label={c.stagesLabel}>
-          {c.stages.map((s, i) => (
-            <li key={s}><span dir="ltr">{pad(i + 1)}</span>{s}</li>
-          ))}
-        </ol>
-        <div className="hero-meta">
-          {h.meta.map((m) => <span key={m}>{m}</span>)}
-        </div>
-        <a href="#story" className="scroll-cue"><span>{h.scroll}</span><i aria-hidden="true" /></a>
-      </div>
+      <ul className="proof hero-fade" aria-label="KON">
+        {h.proof.map((p) => (
+          <li key={p.l}><b dir="ltr">{p.n}</b><span>{p.l}</span></li>
+        ))}
+      </ul>
+      <p className="hero-slogan hero-fade">{h.slogan}</p>
+      <a href="#problem" className="scroll-cue"><span>{h.scroll}</span><i aria-hidden="true" /></a>
     </section>
   )
 }
 
-function Story() {
-  const c = useContent()
-  const [active, setActive] = useState(0)
-  useEffect(() => {
-    const els = Array.from(document.querySelectorAll<HTMLElement>('.chapter'))
-    const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => e.isIntersecting && setActive(Number((e.target as HTMLElement).dataset.index))),
-      { rootMargin: '-45% 0px -45% 0px' },
-    )
-    els.forEach((el) => io.observe(el))
-    return () => io.disconnect()
-  }, [])
-
+function Problem() {
+  const p = useContent().problem
   return (
-    <section id="story" className="story" aria-label={c.stagesLabel}>
-      <nav className="rail" aria-label={c.chaptersLabel}>
-        <span className="rail-progress" style={{ ['--p' as string]: (active + 1) / c.chapters.length }} aria-hidden="true" />
-        {c.chapters.map((ch, i) => (
-          <a key={ch.id} href={`#ch-${ch.id}`} aria-current={active === i ? 'step' : undefined}>
-            <span dir="ltr">{pad(i + 1)}</span>
-            <em>{ch.step}</em>
-          </a>
-        ))}
-      </nav>
-      <div className="chapters">
-        {c.chapters.map((ch, i) => (
-          <article key={ch.id} id={`ch-${ch.id}`} className={`chapter chapter-${ch.id}`} data-index={i} data-scene={i + 1}>
-            <div className="panel">
-              <p className="chapter-num" aria-hidden="true">{pad(i + 1)}</p>
-              <p className="eyebrow reveal">{ch.step}</p>
-              <SplitReveal text={ch.title} />
-              <p className="reveal">{ch.body}</p>
-              {'note' in ch && ch.note && <p className="note reveal">{ch.note}</p>}
-              {'list' in ch && ch.list && (
-                <ul className="pill-list reveal">{ch.list.map((l) => <li key={l}>{l}</li>)}</ul>
-              )}
-              {'findings' in ch && ch.findings && (
-                <dl className="findings reveal">
-                  {ch.findings.map((f, j) => (
-                    <div key={f.k} className={j < 2 ? 'is-warn' : ''}>
-                      <dt>{f.k}</dt>
-                      <dd>{f.v}</dd>
-                    </div>
-                  ))}
-                </dl>
-              )}
-              {'cta' in ch && ch.cta && (
-                <div className="hero-ctas reveal">
-                  <MagneticButton href="#framework">{ch.cta}</MagneticButton>
-                </div>
-              )}
+    <section id="problem" className="band problem" aria-labelledby="problem-title">
+      <div className="wrap narrow center">
+        <SplitReveal as="h2" id="problem-title" className="display" text={p.title} />
+        {p.lines.map((l) => <p key={l} className="problem-line" data-reveal>{l}</p>)}
+        <p className="problem-close" data-reveal>{p.closing}</p>
+      </div>
+      <div className="wrap paths">
+        {p.paths.map((path) => (
+          <div key={path.persona} className="path glass" data-reveal>
+            <button type="button" className="path-head" onClick={() => startOnboarding({ persona: path.persona })}>
+              <GemMark className="path-gem" /><span>[ {path.label} ]</span><i aria-hidden="true">↵</i>
+            </button>
+            <div className="path-chips">
+              {path.q.map((q) => (
+                <button key={q} type="button" className="chip" onClick={() => startOnboarding({ persona: path.persona, pains: [chipPain(q)].filter(Boolean) })}>{q}</button>
+              ))}
             </div>
-          </article>
-        ))}
-      </div>
-    </section>
-  )
-}
-
-/** Drifts on its own and speeds up with the visitor's scroll, then eases back. */
-function Marquee() {
-  const items = useContent().marquee
-  const row = [...items, ...items]
-  const track = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    if (!track.current || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const tw = gsap.to(track.current, { xPercent: -50, duration: 60, ease: 'none', repeat: -1 })
-    // Read Lenis velocity every tick (Lenis may mount after this effect), easing the
-    // drift speed toward it so the strip never jerks.
-    let ts = 1
-    const tick = () => {
-      const target = 1 + Math.min(Math.abs(lenis?.velocity ?? 0) * 0.35, 6)
-      ts += (target - ts) * (target > ts ? 0.2 : 0.04)
-      tw.timeScale(ts)
-    }
-    gsap.ticker.add(tick)
-    return () => {
-      gsap.ticker.remove(tick)
-      tw.kill()
-    }
-  }, [])
-  return (
-    <div className="marquee" aria-hidden="true">
-      <div className="marquee-track" ref={track}>
-        {[0, 1].map((k) => (
-          <div key={k} className="marquee-row">
-            {row.map((m, i) => <span key={i}>{m}<i /></span>)}
           </div>
         ))}
+      </div>
+      <div className="wrap center investor-line" data-reveal>
+        <span>{p.investor}</span>
+        <button type="button" className="link-btn" onClick={() => startOnboarding({ persona: 'investor' })}>{p.investorCta} <span className="arr" aria-hidden="true">←</span></button>
+        <p className="hint">{p.hint}</p>
+      </div>
+    </section>
+  )
+}
+
+function Loops() {
+  const l = useContent().loops
+  const [tab, setTab] = useState(0)
+  const g = l.groups[tab]
+  return (
+    <section id="loops" className="band loops" aria-labelledby="loops-title">
+      <div className="wrap narrow center">
+        <p className="eyebrow" data-reveal>{l.eyebrow}</p>
+        <SplitReveal as="h2" id="loops-title" className="display" text={l.title} />
+        <p className="loops-pick" data-reveal>{l.pick}</p>
+        <div className="seg-tabs" role="tablist" aria-label={l.pick} data-reveal>
+          {l.groups.map((x, i) => (
+            <button key={x.persona} type="button" role="tab" id={`lt-${x.persona}`} aria-selected={i === tab} aria-controls="loops-panel" className={i === tab ? 'is-on' : ''} onClick={() => setTab(i)}>
+              {x.label}
+            </button>
+          ))}
+        </div>
+        <div id="loops-panel" role="tabpanel" aria-labelledby={`lt-${g.persona}`} className="loops-panel" key={g.persona}>
+          {g.qs.map((q) => <p key={q} className="loop-q">{q}</p>)}
+        </div>
+        <p className="loop-tail" data-reveal><Rich text={l.tail} /></p>
+        <button type="button" className="btn btn-ghost" data-reveal onClick={() => startOnboarding({ persona: g.persona })}><span>{l.cta}</span></button>
+      </div>
+    </section>
+  )
+}
+
+function Who() {
+  const w = useContent().who
+  return (
+    <section id="who" className="band who" aria-labelledby="who-title">
+      <div className="wrap">
+        <p className="eyebrow" data-reveal>{w.eyebrow}</p>
+        <SplitReveal as="h2" id="who-title" className="display" text={w.title} />
+        <div className="who-grid">
+          {w.groups.map((g, i) => (
+            <article key={g.title} className="who-card glass" data-reveal style={{ transitionDelay: `${i * 70}ms` }}>
+              <Icon id={g.icon} className="icon icon-lg" />
+              <h3>{g.title}</h3>
+              <p className="who-line">{g.line}</p>
+              <p><Rich text={g.body} /></p>
+              <button type="button" className="link-btn" onClick={() => startOnboarding({ persona: g.persona })}>{w.cta} <span className="arr" aria-hidden="true">←</span></button>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function Commit() {
+  const c = useContent().commit
+  return (
+    <section className="band commit" aria-labelledby="commit-title">
+      <div className="wrap narrow center">
+        <p className="eyebrow" data-reveal>{c.eyebrow}</p>
+        <SplitReveal as="h2" id="commit-title" className="display" text={c.title} />
+        <div className="split-bar" data-reveal aria-hidden="true">
+          <span className="seg seg-80"><b dir="ltr">{c.work.n}</b><em>{c.work.label}</em></span>
+          <span className="seg seg-20"><b dir="ltr">{c.you.n}</b><em>{c.you.label}</em></span>
+        </div>
+        <p className="body-lg" data-reveal><Rich text={c.body} /></p>
+        <p className="fine" data-reveal>{c.fine}</p>
+      </div>
+    </section>
+  )
+}
+
+function Why() {
+  const w = useContent().why
+  return (
+    <section id="why" className="band why" aria-labelledby="why-title">
+      <div className="wrap">
+        <p className="eyebrow" data-reveal>{w.eyebrow}</p>
+        <SplitReveal as="h2" id="why-title" className="display" text={w.title} />
+        <ul className="why-grid">
+          {w.items.map((it, i) => (
+            <li key={it.title} className="why-item" data-reveal style={{ transitionDelay: `${(i % 2) * 80}ms` }}>
+              <span className="why-icon"><Icon id={it.icon} /></span>
+              <div>
+                <h3>{it.title}</h3>
+                <p><Rich text={it.body} /></p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+function Human() {
+  const h = useContent().human
+  const s = useContent().services
+  return (
+    <section className="band human" aria-labelledby="human-title">
+      <div className="wrap">
+        <div className="narrow center sec-head">
+          <p className="eyebrow" data-reveal>{h.eyebrow}</p>
+          <SplitReveal as="h2" id="human-title" className="display" text={h.title} />
+          <p className="body-lg" data-reveal><Rich text={h.lede} /></p>
+        </div>
+        <div className="pillars">
+          {h.pillars.map((p, i) => (
+            <article key={p.title} className="pillar glass" data-reveal style={{ transitionDelay: `${i * 70}ms` }}>
+              <Icon id={p.icon} className="icon icon-lg" />
+              <div>
+                <h3>{p.title}</h3>
+                <p><Rich text={p.body} /></p>
+              </div>
+            </article>
+          ))}
+        </div>
+        <div className="services" aria-labelledby="services-title">
+          <p className="eyebrow" data-reveal>{s.eyebrow}</p>
+          <h3 id="services-title" className="services-title" data-reveal>{s.title}</h3>
+          <ul className="service-list">
+            {s.items.map((it, i) => (
+              <li key={it.title} data-reveal style={{ transitionDelay: `${(i % 3) * 70}ms` }}>
+                <GemMark className="svc-gem" />
+                <b>{it.title}</b>
+                <span>{it.body}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function Offer() {
+  const o = useContent().offer
+  return (
+    <section id="offer" className="band offer" aria-labelledby="offer-title">
+      <div className="wrap">
+        <div className="offer-card" data-reveal>
+          <div className="offer-shine" aria-hidden="true" />
+          <p className="eyebrow">{o.eyebrow}</p>
+          <SplitReveal as="h2" id="offer-title" className="display" text={o.title} />
+          <p className="body-lg"><Rich text={o.lede} /></p>
+          <ul className="offer-list">
+            {o.includes.map((x) => <li key={x}><GemMark className="li-gem" />{x}</li>)}
+          </ul>
+          <p className="offer-value">{o.value}</p>
+          <p className="offer-guarantee"><Rich text={o.guarantee} /></p>
+          <div className="offer-cta">
+            <MagneticButton href="#start">{o.cta}</MagneticButton>
+            <span className="fine">{o.note}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function CaseCard({ it, mark, big }: { it: CaseItem; mark: string; big?: boolean }) {
+  return (
+    <article className={`case glass${big ? ' case-big' : ''}`} data-reveal>
+      <p className="case-meta"><span>{it.sector}</span><span>{it.tag}</span></p>
+      {it.metric && (
+        <p className="case-metric"><b dir="ltr">{it.metric}</b><span>{it.metricLabel}</span></p>
+      )}
+      <h3>{it.title}</h3>
+      <p>{it.body}</p>
+      {it.extra && <p className="case-extra" dir="auto">{it.extra}</p>}
+      {it.confirm && <p className="case-confirm" title={mark}>{mark}</p>}
+    </article>
+  )
+}
+
+function Work() {
+  const w = useContent().work
+  return (
+    <section id="work" className="band work" aria-labelledby="work-title">
+      <div className="wrap">
+        <p className="eyebrow" data-reveal>{w.eyebrow}</p>
+        <SplitReveal as="h2" id="work-title" className="display" text={w.title} />
+        <p className="body-lg" data-reveal>{w.lede}</p>
+        <div className="case-grid">
+          {w.featured.map((it) => <CaseCard key={it.title} it={it} mark={w.confirmMark} big />)}
+        </div>
+        <div className="case-grid small">
+          {w.more.map((it) => <CaseCard key={it.title} it={it} mark={w.confirmMark} />)}
+        </div>
+        <p className="work-tail" data-reveal>{w.tail}</p>
+        <Tour />
+      </div>
+    </section>
+  )
+}
+
+// The single-file preview runs in a sandbox that blocks third-party frames, so there it links out.
+const EMBED_TOUR = import.meta.env.MODE !== 'single'
+
+function Tour() {
+  const t = useContent().work.tour
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="tour-card glass" data-reveal>
+      <p className="eyebrow centered">{t.eyebrow}</p>
+      <h3>{t.title}</h3>
+      <p className="tour-body">{t.body}</p>
+      {open ? (
+        <div className="tour-frame">
+          <iframe src={tourUrl} title={t.eyebrow} allow="fullscreen; xr-spatial-tracking; gyroscope; accelerometer" allowFullScreen loading="lazy" />
+        </div>
+      ) : null}
+      <div className="tour-actions">
+        {EMBED_TOUR ? (
+          <button type="button" className={open ? 'btn btn-ghost' : 'btn btn-primary'} onClick={() => setOpen((v) => !v)}><span>{open ? t.close : t.cta}</span></button>
+        ) : null}
+        <a className={EMBED_TOUR ? 'link-btn' : 'btn btn-primary'} href={tourUrl} target="_blank" rel="noopener noreferrer"><span>{EMBED_TOUR ? t.open : t.cta}</span></a>
       </div>
     </div>
   )
 }
 
-function Services() {
-  const c = useContent()
+function Support() {
+  const s = useContent().support
   return (
-    <section id="services" className="solid services" aria-labelledby="services-title">
-      <Marquee />
-      <div className="solid-inner">
-        <div className="section-head">
-          <p className="eyebrow">{c.services.eyebrow}</p>
-          <SplitReveal id="services-title" text={c.services.title} />
-        </div>
-        <ol className="service-list">
-          {c.services.items.map((s, i) => (
-            <li key={s.k} className="reveal">
-              <span className="svc-num" dir="ltr">{pad(i + 1)}</span>
-              <h3>{s.k}</h3>
-              <p>{s.v}</p>
-              <span className="svc-arrow" aria-hidden="true" />
-            </li>
-          ))}
-        </ol>
-
-        <div className="section-head process-head">
-          <p className="eyebrow">{c.process.eyebrow}</p>
-          <SplitReveal text={c.process.title} />
-        </div>
-        <ol className="process">
-          {c.process.steps.map((s, i) => (
-            <li key={s.k} className="reveal">
-              <span className="proc-num" dir="ltr">{pad(i + 1)}</span>
-              <h3>{s.k}</h3>
-              <p>{s.v}</p>
-            </li>
-          ))}
-        </ol>
+    <section id="support" className="band support" aria-labelledby="support-title">
+      <div className="wrap narrow center">
+        <p className="eyebrow centered" data-reveal>{s.eyebrow}</p>
+        <SplitReveal as="h2" id="support-title" className="display" text={s.title} />
+        <p className="body-lg" data-reveal><Rich text={s.body} /></p>
+        <p className="dedication" data-reveal>{s.dedication}</p>
+        <button type="button" className="btn btn-ghost" data-reveal onClick={() => startOnboarding({ persona: 'business', support: true })}><span>{s.cta}</span></button>
+        <p className="fine" data-reveal>{s.note}</p>
       </div>
     </section>
   )
 }
 
-function HumanAI() {
-  const h = useContent().humanAI
+function Founder() {
+  const f = useContent().founder
   return (
-    <section id="human-ai" className="human-ai" aria-labelledby="hai-title">
-      <div className="hai-block" data-scene={SCENE.humanApart}>
-        <div className="panel">
-          <p className="eyebrow reveal">{h.eyebrow}</p>
-          <SplitReveal id="hai-title" text={h.title} />
-          <p className="reveal">{h.body}</p>
-          <div className="hai-legend reveal" aria-hidden="true">
-            <span className="lg-human">{h.legend[0]}</span>
-            <span className="lg-ai">{h.legend[1]}</span>
-          </div>
+    <section id="founder" className="band founder" aria-labelledby="founder-title">
+      <div className="wrap narrow">
+        <p className="eyebrow" id="founder-title" data-reveal>{f.eyebrow}</p>
+        <div className="founder-text">
+          {f.paragraphs.map((p) => <p key={p} data-reveal><Rich text={p} /></p>)}
         </div>
-      </div>
-      <div className="hai-block" data-scene={SCENE.humanJoined}>
-        <div className="panel">
-          <p className="eyebrow reveal">{h.joinedEyebrow}</p>
-          <dl className="hai-parts">
-            {h.parts.map((p, i) => (
-              <div key={p.k} className="reveal">
-                <dt>{i > 0 && <span aria-hidden="true">+ </span>}{p.k}</dt>
-                <dd>{p.v}</dd>
-              </div>
-            ))}
-          </dl>
-        </div>
+        <p className="founder-punch" data-reveal>{f.punch}</p>
+        <div data-reveal><MagneticButton href="#start">{f.cta}</MagneticButton></div>
       </div>
     </section>
   )
 }
 
-function Contact() {
-  const c = useContent()
-  const f = c.contact
-  const [sent, setSent] = useState(false)
+function Start() {
+  const o = useContent().onboarding
   return (
-    <section id="contact" className="solid contact" data-scene={SCENE.rest} aria-labelledby="contact-title">
-      <div className="solid-inner contact-grid">
-        <div className="contact-copy">
-          <p className="eyebrow">{f.eyebrow}</p>
-          <SplitReveal id="contact-title" text={f.title} />
-          <p className="reveal">{f.body}</p>
+    <section id="start" className="band start" aria-labelledby="start-title">
+      <div className="wrap start-stack">
+        <div className="start-intro center">
+          <p className="eyebrow" data-reveal>{o.eyebrow}</p>
+          <SplitReveal as="h2" id="start-title" className="display" text={o.title} />
+          <p className="body-lg" data-reveal><Rich text={o.lede} /></p>
         </div>
-        <form
-          className="contact-form reveal"
-          onSubmit={(e) => {
-            e.preventDefault()
-            setSent(true)
-          }}
-        >
-          {sent ? (
-            <p className="form-done" role="status">{f.done}</p>
-          ) : (
-            <>
-              <div className="field">
-                <input id="f-name" name="name" autoComplete="name" required placeholder=" " />
-                <label htmlFor="f-name">{f.name}</label>
-              </div>
-              <div className="field">
-                <input id="f-company" name="company" autoComplete="organization" placeholder=" " />
-                <label htmlFor="f-company">{f.company}</label>
-              </div>
-              <div className="field">
-                <input id="f-email" name="email" type="email" dir="ltr" autoComplete="email" required placeholder=" " />
-                <label htmlFor="f-email">{f.email}</label>
-              </div>
-              <div className="field field-select">
-                <label htmlFor="f-dim" className="static">{f.challenge}</label>
-                <select id="f-dim" name="dimension" defaultValue="">
-                  <option value="" disabled>{f.choose}</option>
-                  {c.dimensions.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
-                  <option value="unsure">{f.unsure}</option>
-                </select>
-              </div>
-              <button type="submit" className="btn btn-primary"><span>{f.cta}</span></button>
-            </>
-          )}
-        </form>
+        <Onboarding />
+      </div>
+    </section>
+  )
+}
+
+function Finale({ fallback }: { fallback: boolean }) {
+  const f = useContent().finale
+  return (
+    <section id="finale" className="finale" aria-label="KON">
+      <div className="finale-sticky">
+        <div className="kon-stage">
+          <div className="kon-halo" aria-hidden="true" />
+          <KonMark solid={fallback} />
+        </div>
+        <div className="finale-copy">
+          <p className="finale-line">{f.line}</p>
+          <p className="finale-line2">{f.line2}</p>
+          <MagneticButton href="#start">{f.cta}</MagneticButton>
+        </div>
       </div>
     </section>
   )
@@ -353,95 +488,159 @@ function Contact() {
 
 function Footer() {
   const c = useContent()
+  const f = c.footer
   return (
     <footer className="site-footer">
-      <div className="footer-top">
-        <p className="footer-tagline">{c.footer.tagline}</p>
-        <a href="#top" className="footer-top-link">{c.footer.top}</a>
+      <div className="wrap footer-grid">
+        <div className="footer-brand">
+          <p className="footer-word" dir="ltr">KON<span>Unlimited</span></p>
+          <p className="footer-slogan">{f.slogan}</p>
+        </div>
+        <nav aria-label="Footer" className="footer-nav">
+          {c.nav.map((n) => <a key={n.href} href={n.href}>{n.label}</a>)}
+          <a href="#start">{c.headerCta}</a>
+        </nav>
       </div>
-      <p className="wordmark" dir="ltr" aria-hidden="true"><b>KON</b> Unlimited</p>
-      <div className="footer-bottom">
-        <span dir="ltr">© {new Date().getFullYear()} KON Unlimited</span>
+      <div className="wrap footer-base">
+        <span>{f.rights}</span>
+        <a href="#top">{f.top} ↑</a>
       </div>
     </footer>
   )
+}
+
+/** Phone-only call to action that rides along after the hero and steps aside at the form. */
+function DockCta() {
+  const c = useContent()
+  const [show, setShow] = useState(false)
+  useEffect(() => {
+    let frame = 0
+    const check = () => {
+      frame = 0
+      const start = document.getElementById('start')
+      const atForm = start ? start.getBoundingClientRect().top < window.innerHeight * 0.9 : false
+      const fin = document.getElementById('finale')?.getBoundingClientRect()
+      const atFinale = fin ? fin.top < window.innerHeight * 0.5 : false
+      setShow(window.scrollY > window.innerHeight * 0.9 && !atForm && !atFinale)
+    }
+    const on = () => { if (!frame) frame = requestAnimationFrame(check) }
+    window.addEventListener('scroll', on, { passive: true })
+    return () => window.removeEventListener('scroll', on)
+  }, [])
+  return (
+    <a href="#start" className={`dock-cta${show ? ' is-on' : ''}`} tabIndex={show ? 0 : -1} aria-hidden={!show}>
+      <GemMark className="dock-gem" />{c.headerCta}
+    </a>
+  )
+}
+
+/** Feeds scroll and pointer into the shared motion object read by the 3D layer.
+ *  Writes only to the few elements that react, and only when a value changes, so scrolling
+ *  never forces the whole page to restyle. */
+function useMotionInputs() {
+  useEffect(() => {
+    let finTop = 0, finH = 1, last = window.scrollY, raf = 0, lastFin = -1, lastVeil = -1
+    let finEl: HTMLElement | null = null, veilEl: HTMLElement | null = null
+    const narrow = () => window.innerWidth < 700
+    const measure = () => {
+      finEl = document.getElementById('finale')
+      veilEl = document.querySelector('.stage-veil')
+      if (finEl) {
+        finTop = finEl.getBoundingClientRect().top + window.scrollY
+        finH = finEl.offsetHeight
+      }
+    }
+    const tick = () => {
+      const y = window.scrollY
+      const vh = window.innerHeight
+      motion.heroOut = Math.min(1, Math.max(0, y / (vh * 0.85)))
+      // Gather begins as the finale enters and completes ~65% through its sticky run.
+      const p = (y + vh * 0.55 - finTop) / Math.max(1, (finH - vh) * 0.65 + vh * 0.55)
+      motion.finale = Math.min(1, Math.max(0, p))
+      motion.post = Math.min(1, Math.max(0, (y - (finTop + finH - vh)) / vh))
+      motion.vel += (y - last - motion.vel) * 0.2
+      last = y
+      const fin = Math.round(motion.finale * 200) / 200
+      if (fin !== lastFin && finEl) {
+        finEl.style.setProperty('--fin', String(fin))
+        lastFin = fin
+      }
+      const mid = motion.heroOut * (1 - motion.finale)
+      const veil = Math.round(Math.max(narrow() ? Math.max(mid, 0.62 * (1 - motion.finale)) : mid, motion.post * 0.8) * 100) / 100
+      if (veil !== lastVeil && veilEl) {
+        veilEl.style.opacity = String(veil)
+        lastVeil = veil
+      }
+      raf = requestAnimationFrame(tick)
+    }
+    const move = (e: PointerEvent) => {
+      motion.px = (e.clientX / window.innerWidth) * 2 - 1
+      motion.py = -((e.clientY / window.innerHeight) * 2 - 1)
+    }
+    const ro = new ResizeObserver(measure)
+    ro.observe(document.body)
+    measure()
+    raf = requestAnimationFrame(tick)
+    window.addEventListener('pointermove', move, { passive: true })
+    return () => {
+      ro.disconnect()
+      cancelAnimationFrame(raf)
+      window.removeEventListener('pointermove', move)
+    }
+  }, [])
 }
 
 export default function App() {
   const caps = useMemo(detectCapabilities, [])
   const c = useContent()
   const lang = useStore((s) => s.lang)
-  const ready = useStore((s) => s.ready)
-  const root = useRef<HTMLDivElement>(null)
-  const useIntro = !caps.reducedMotion
-  const [introDone, setIntroDone] = useState(!useIntro)
-  const onIntroDone = useCallback(() => setIntroDone(true), [])
-  const introDims = useMemo(() => c.dimensions.map((d) => d.name), [c])
-
-  // Secondary reveals: short, quiet fades. The 3D transformations carry the strongest motion.
-  useEffect(() => {
-    document.documentElement.dataset.tier = caps.tier
-    if (caps.reducedMotion) return
-    const ctx = gsap.context(() => {
-      // On touch screens a flick covers a lot of page, so reveals start earlier and finish sooner.
-      const quick = caps.touch
-      gsap.utils.toArray<HTMLElement>('.reveal').forEach((el) => {
-        gsap.from(el, {
-          y: quick ? 16 : 28, opacity: 0, duration: quick ? 0.7 : 1.1, ease: 'power3.out',
-          scrollTrigger: { trigger: el, start: quick ? 'top 98%' : 'top 90%', once: true },
-        })
-      })
-      // case visuals open like a curtain as they arrive
-      gsap.utils.toArray<HTMLElement>('.case-stage, .devices-wrap, .opsmap').forEach((el) => {
-        gsap.fromTo(el, { clipPath: 'inset(14% 10% 14% 10% round 2px)' }, {
-          clipPath: 'inset(0% 0% 0% 0% round 2px)', ease: 'none',
-          scrollTrigger: { trigger: el, start: 'top 95%', end: 'top 45%', scrub: 0.8 },
-        })
-      })
-      // chapter numerals drift slower than the copy: quiet depth
-      gsap.utils.toArray<HTMLElement>('.chapter-num').forEach((el) => {
-        gsap.fromTo(el, { yPercent: 40 }, {
-          yPercent: -40, ease: 'none',
-          scrollTrigger: { trigger: el.closest('.chapter'), start: 'top bottom', end: 'bottom top', scrub: true },
-        })
-      })
-    }, root)
-    return () => ctx.revert()
-  }, [caps, lang])
+  const [ready, setReady] = useState(false)
+  useMotionInputs()
+  useReveal(lang)
 
   useEffect(() => {
-    if (!introDone || caps.reducedMotion) return
-    const tw = gsap.fromTo('.hero-fade', { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 1.2, ease: 'power3.out', stagger: 0.12, delay: 0.45 })
-    return () => { tw.kill() }
-  }, [introDone, caps])
+    document.title = c.meta.title
+  }, [c])
+  useEffect(() => {
+    document.documentElement.classList.add(`tier-${caps.tier}`)
+    const id = requestAnimationFrame(() => setReady(true))
+    return () => cancelAnimationFrame(id)
+  }, [caps.tier])
 
+  const webgl = caps.tier !== 'none'
   return (
-    <div ref={root} className={`app${introDone ? ' is-in' : ''}`}>
+    <div className={`app${ready ? ' is-ready' : ''}`}>
       <a href="#main" className="skip">{c.meta.skip}</a>
-      {caps.tier === 'none' ? (
-        <SceneFallback />
-      ) : (
-        <Suspense fallback={null}>
-          <Hero3DScene caps={caps} />
-        </Suspense>
-      )}
-      {useIntro && <Intro ready={ready || caps.tier === 'none'} label={c.intro} tagline={c.footer.tagline} dims={introDims} onDone={onIntroDone} />}
-      <div className="scrim" aria-hidden="true" />
-      <div className="grain" aria-hidden="true" />
       <SmoothScroll enabled={!caps.reducedMotion && !caps.touch} />
       <Cursor />
-      <TransformationSequence />
+      <div className="stage" aria-hidden="true">
+        <div className="stage-glow" />
+        {webgl && (
+          <Suspense fallback={null}>
+            <GemField tier={caps.tier} reduced={caps.reducedMotion} />
+          </Suspense>
+        )}
+        <div className="stage-veil" />
+        <div className="stage-vignette" />
+      </div>
       <Header />
-      <main id="main" key={lang}>
-        <Hero play={introDone} />
-        <Story />
-        <Services />
-        <DiagnosticVisualization />
-        <HumanAI />
-        <CaseStudies caps={caps} />
-        <Contact />
+      <main id="main">
+        <Hero />
+        <Problem />
+        <Loops />
+        <Who />
+        <Commit />
+        <Why />
+        <Human />
+        <Offer />
+        <Work />
+        <Support />
+        <Founder />
+        <Finale fallback={!webgl} />
+        <Start />
       </main>
       <Footer />
+      <DockCta />
     </div>
   )
 }

@@ -1,17 +1,18 @@
 // Tiny external store shared by the DOM layer and the 3D layer.
-// Keeps interaction state decoupled from rendering (no React re-render per frame).
 import { useSyncExternalStore } from 'react'
-import type { DimensionId, Lang } from '../content/site'
+import type { Lang, Persona } from '../content/site'
+
+export interface Preset {
+  persona: Persona
+  pains?: string[]
+  support?: boolean
+  /** Bumped on every request so the same preset can be applied twice. */
+  n: number
+}
 
 export interface ExperienceState {
-  /** Continuous formation index driven by scroll (see formations.ts). */
-  scene: number
-  hovered: DimensionId | null
-  selected: DimensionId | null
-  ready: boolean
   lang: Lang
-  /** True while an opaque section covers the whole viewport: the 3D stage can stop rendering. */
-  covered: boolean
+  preset: Preset | null
 }
 
 type Listener = () => void
@@ -25,29 +26,17 @@ function initialLang(): Lang {
   } catch {
     /* storage unavailable */
   }
-  return 'ar' // Arabic-first
+  return 'ar'
 }
 
-const state: ExperienceState = { scene: 0, hovered: null, selected: null, ready: false, lang: initialLang(), covered: false }
+const state: ExperienceState = { lang: initialLang(), preset: null }
 const listeners = new Set<Listener>()
 
 export const store = {
   get: () => state,
-  /** Per-frame values read by the render loop only: updated without notifying React. */
-  setSilent(patch: Pick<Partial<ExperienceState>, 'scene' | 'covered'>) {
-    Object.assign(state, patch)
-  },
   set(patch: Partial<ExperienceState>) {
-    let changed = false
-    for (const k in patch) {
-      const key = k as keyof ExperienceState
-      if (state[key] !== patch[key]) {
-        ;(state as unknown as Record<string, unknown>)[key] = patch[key]
-        changed = true
-      }
-    }
-    // `scene` changes every scroll frame; 3D reads it imperatively, so don't notify React for it.
-    if (changed && !(Object.keys(patch).length === 1 && 'scene' in patch)) listeners.forEach((l) => l())
+    Object.assign(state, patch)
+    listeners.forEach((l) => l())
   },
   subscribe(l: Listener) {
     listeners.add(l)
@@ -66,6 +55,29 @@ export function setLang(lang: Lang) {
   }
 }
 
+let presetN = 0
+/** Opens the onboarding with a persona (and optional pains) already chosen, then scrolls to it. */
+export function startOnboarding(p: Omit<Preset, 'n'>) {
+  store.set({ preset: { ...p, n: ++presetN } })
+}
+
 export function useStore<T>(select: (s: ExperienceState) => T): T {
   return useSyncExternalStore(store.subscribe, () => select(store.get()))
+}
+
+/** Per-frame values shared with the 3D layer without React. */
+export const motion = {
+  /** Pointer in normalised device coords (-1..1). */
+  px: 0,
+  py: 0,
+  /** 0..1 progress of the closing "KON" formation. */
+  finale: 0,
+  /** 0..1, how far past the finale we've scrolled (into the onboarding). */
+  post: 0,
+  /** 0..1, how far we've left the hero. */
+  heroOut: 0,
+  /** Signed scroll velocity, px per frame, smoothed. */
+  vel: 0,
+  /** Element under the pointer wants extra glow (CTA hover). */
+  glow: 0,
 }

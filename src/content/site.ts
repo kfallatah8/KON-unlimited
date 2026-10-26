@@ -1,582 +1,552 @@
-import type { IconName } from '../components/CaseVisuals'
-// All copy lives here, outside the 3D layer. Nothing essential is rendered in WebGL.
-// Arabic is the primary voice; English is a full parallel edition for international visitors.
+// All site copy, Arabic first. Sections marked LOCKED use khalid's approved wording verbatim.
+// Anything marked CONFIRM is an assumption waiting for khalid's sign-off.
 
 export type Lang = 'ar' | 'en'
+export type Persona = 'founder' | 'business' | 'investor'
+export type IconId =
+  | 'flex' | 'aligned' | 'spark' | 'layers' | 'ai' | 'cycle' | 'mind' | 'field'
+  | 'storm' | 'anchor' | 'rise' | 'seed' | 'compass'
+  | 'eye' | 'people' | 'train' | 'bulb'
 
-export type DimensionId =
-  | 'strategy'
-  | 'revenue'
-  | 'marketing'
-  | 'operations'
-  | 'people'
-  | 'finance'
-  | 'cx'
-  | 'technology'
-
-export interface Dimension {
-  id: DimensionId
-  name: string
-  latin: string
-  question: string
-  summary: string
-  challenges: string[]
-  kpis: string[]
-  opportunities: string[]
+export interface Option { id: string; label: string }
+export interface Question {
+  id: string
+  label: string
+  hint?: string
+  kind: 'single' | 'multi' | 'text' | 'scale'
+  options?: Option[]
+  optional?: boolean
+  placeholder?: string
 }
+export interface Step { title: string; lede?: string; questions: Question[] }
 
-const kpis: Record<DimensionId, string[]> = {
-  strategy: ['Strategic Initiative Completion', 'Goal Alignment Score', 'Time to Decision', 'Portfolio ROI'],
-  revenue: ['Win Rate', 'Sales Cycle Length', 'Average Deal Size', 'Revenue Concentration'],
-  marketing: ['Customer Acquisition Cost', 'Marketing Qualified Leads', 'Channel ROI', 'Lead-to-Customer Rate'],
-  operations: ['Cycle Time', 'Error Rate', 'Cost Per Operation', 'Resource Utilization', 'Automation Potential'],
-  people: ['Employee Turnover', 'Revenue per Employee', 'Time to Productivity', 'Engagement Score'],
-  finance: ['Gross Margin', 'Cash Conversion Cycle', 'Operating Expense Ratio', 'Forecast Accuracy'],
-  cx: ['Net Promoter Score', 'Customer Retention Rate', 'First Response Time', 'Customer Lifetime Value'],
-  technology: ['System Adoption Rate', 'Data Accuracy', 'Integration Coverage', 'Manual Data Entry Hours'],
-}
-
-const latin: Record<DimensionId, string> = {
-  strategy: 'Strategy', revenue: 'Revenue', marketing: 'Marketing', operations: 'Operations',
-  people: 'People', finance: 'Finance', cx: 'Customer Experience', technology: 'Technology',
-}
-
-type DimCopy = Omit<Dimension, 'id' | 'latin' | 'kpis'>
-
-const dimAr: Record<DimensionId, DimCopy> = {
-  strategy: {
-    name: 'الاستراتيجية',
-    question: 'هل يعرف كل فريق في شركتك إلى أين تتجهون، ولماذا؟',
-    summary: 'وضوح الاتجاه، وحسم الأولويات، واتساق القرارات اليومية مع الأهداف الكبرى.',
-    challenges: ['أولويات متزاحمة بلا معيار واضح للاختيار', 'أهداف طموحة لا تتحول إلى خطط تشغيلية', 'قرارات مصيرية تُتخذ دون بيانات كافية'],
-    opportunities: ['إطار موحّد لترتيب الأولويات', 'ربط كل هدف بمؤشر قابل للقياس', 'مراجعات أداء دورية مبنية على البيانات'],
-  },
-  revenue: {
-    name: 'الإيرادات والمبيعات',
-    question: 'هل تعرف بدقة من أين تأتي إيراداتك، وأين تتسرّب؟',
-    summary: 'مسار المبيعات، وسياسة التسعير، ومصادر النمو المتكرر.',
-    challenges: ['مسار مبيعات يعتمد على الأفراد لا على النظام', 'تركّز الإيرادات في عدد محدود من العملاء', 'تسعير لا يعكس القيمة الحقيقية'],
-    opportunities: ['توحيد مراحل مسار المبيعات وقياسها', 'تحليل الربحية حسب العميل والمنتج', 'إعادة بناء نموذج التسعير على أساس القيمة'],
-  },
-  marketing: {
-    name: 'التسويق',
-    question: 'هل تعرف أي قناة تصنع عملاءك فعلًا؟',
-    summary: 'وضوح الرسالة، وكفاءة القنوات، وجودة الفرص التي تصل إلى المبيعات.',
-    challenges: ['إنفاق موزّع دون قياس واضح للعائد', 'رسالة تختلف من قناة إلى أخرى', 'فجوة قائمة بين التسويق والمبيعات'],
-    opportunities: ['نموذج إسناد يربط الإنفاق بالنتائج', 'هوية ورسالة موحّدتان في كل نقطة تواصل', 'تعريف مشترك للعميل المؤهل'],
-  },
-  operations: {
-    name: 'العمليات',
-    question: 'هل عملياتك تعمل بأفضل كفاءة ممكنة؟',
-    summary: 'تدفق العمل، ونقاط الاختناق، والهدر الخفي، وفرص الأتمتة.',
-    challenges: ['خطوات يدوية تتكرر كل يوم', 'اختناقات عند انتقال العمل بين الأقسام', 'غياب إجراءات موحّدة وموثّقة'],
-    opportunities: ['رسم العمليات وحذف الخطوات غير الضرورية', 'أتمتة المهام المتكررة', 'مؤشرات تشغيلية يومية واضحة للجميع'],
-  },
-  people: {
-    name: 'الفريق',
-    question: 'هل يعمل كل فرد في فريقك حيث يُحدث الأثر الأكبر؟',
-    summary: 'الهيكل التنظيمي، ووضوح الأدوار، والقدرات، وثقافة العمل.',
-    challenges: ['أدوار متداخلة ومسؤوليات غير محددة', 'معرفة حرجة محصورة في أشخاص بعينهم', 'فجوات مهارية غير مرصودة'],
-    opportunities: ['إعادة تصميم الهيكل والصلاحيات', 'مصفوفة مهارات وخطط تطوير', 'توثيق المعرفة الحرجة ونقلها'],
-  },
-  finance: {
-    name: 'المالية',
-    question: 'هل تصلك أرقامك في الوقت الذي تحتاجها فيه لاتخاذ القرار؟',
-    summary: 'الربحية، والتدفق النقدي، وهيكل التكاليف، وجودة التقارير.',
-    challenges: ['تقارير متأخرة أو موزعة على أكثر من مصدر', 'تكاليف غير مصنّفة بدقة', 'ضغط مستمر على التدفق النقدي'],
-    opportunities: ['لوحة مالية موحّدة وفورية', 'تحليل التكاليف حسب النشاط', 'تخطيط نقدي استباقي'],
-  },
-  cx: {
-    name: 'تجربة العملاء',
-    question: 'هل تعرف لماذا يعود عملاؤك، ولماذا يغادرون؟',
-    summary: 'رحلة العميل، ونقاط التواصل، والرضا، والولاء.',
-    challenges: ['رحلة عميل غير مرسومة من البداية للنهاية', 'ملاحظات العملاء لا تصل إلى صنّاع القرار', 'تجربة متفاوتة بين القنوات'],
-    opportunities: ['رسم رحلة العميل الكاملة', 'نظام لجمع الملاحظات والعمل بها', 'معايير خدمة موحّدة في كل قناة'],
-  },
-  technology: {
-    name: 'التقنية',
-    question: 'هل تخدم أنظمتك أعمالك، أم تتكيّف أعمالك مع أنظمتك؟',
-    summary: 'الأنظمة، والتكامل بينها، وجودة البيانات، والأدوات الرقمية.',
-    challenges: ['أنظمة منفصلة لا تتبادل البيانات', 'جداول يدوية في قلب العمليات', 'أدوات مدفوعة لا تُستخدم كما يجب'],
-    opportunities: ['خريطة شاملة للأنظمة والتكاملات', 'مصدر واحد موثوق للبيانات', 'حلول رقمية مصممة حول العملية'],
-  },
-}
-
-const dimEn: Record<DimensionId, DimCopy> = {
-  strategy: {
-    name: 'Strategy',
-    question: 'Does every team know where the company is heading, and why?',
-    summary: 'Clear direction, decisive priorities, and daily decisions that serve the bigger goals.',
-    challenges: ['Competing priorities with no rule for choosing', 'Ambitious goals that never become operating plans', 'Critical decisions made without enough data'],
-    opportunities: ['One framework for setting priorities', 'Every goal tied to a measurable indicator', 'Regular, data-led performance reviews'],
-  },
-  revenue: {
-    name: 'Revenue',
-    question: 'Do you know exactly where your revenue comes from, and where it leaks?',
-    summary: 'Sales pipeline, pricing policy, and sources of recurring growth.',
-    challenges: ['A pipeline that depends on individuals, not a system', 'Revenue concentrated in a few clients', 'Pricing that undersells the value delivered'],
-    opportunities: ['A standardised, measurable pipeline', 'Profitability by client and by product', 'Value-based pricing'],
-  },
-  marketing: {
-    name: 'Marketing',
-    question: 'Do you know which channel actually creates your customers?',
-    summary: 'Message clarity, channel efficiency, and the quality of leads handed to sales.',
-    challenges: ['Spend spread thin with no clear return', 'A message that changes from channel to channel', 'A persistent gap between marketing and sales'],
-    opportunities: ['Attribution that links spend to results', 'One identity and message at every touchpoint', 'A shared definition of a qualified lead'],
-  },
-  operations: {
-    name: 'Operations',
-    question: 'Are your operations running at their best possible efficiency?',
-    summary: 'Workflow, bottlenecks, hidden waste, and automation potential.',
-    challenges: ['Manual steps repeated every day', 'Bottlenecks wherever work changes hands', 'No standard, documented procedures'],
-    opportunities: ['Map processes and remove unnecessary steps', 'Automate repetitive work', 'Clear daily operating indicators for everyone'],
-  },
-  people: {
-    name: 'People',
-    question: 'Is every person on your team working where they make the greatest impact?',
-    summary: 'Structure, role clarity, capabilities, and culture.',
-    challenges: ['Overlapping roles and unclear accountability', 'Critical knowledge held by a few people', 'Skill gaps no one has measured'],
-    opportunities: ['Redesigned structure and authority', 'A skills matrix with development plans', 'Critical knowledge documented and shared'],
-  },
-  finance: {
-    name: 'Finance',
-    question: 'Do your numbers reach you when you need them to decide?',
-    summary: 'Profitability, cash flow, cost structure, and reporting quality.',
-    challenges: ['Late reports scattered across sources', 'Costs that are not classified precisely', 'Constant pressure on cash flow'],
-    opportunities: ['One real-time financial dashboard', 'Activity-based cost analysis', 'Proactive cash planning'],
-  },
-  cx: {
-    name: 'Customer Experience',
-    question: 'Do you know why customers return, and why they leave?',
-    summary: 'The customer journey, touchpoints, satisfaction, and loyalty.',
-    challenges: ['A journey no one has mapped end to end', 'Feedback that never reaches decision makers', 'An experience that varies by channel'],
-    opportunities: ['A complete customer journey map', 'A system to capture and act on feedback', 'One service standard across channels'],
-  },
-  technology: {
-    name: 'Technology',
-    question: 'Do your systems serve the business, or does the business work around them?',
-    summary: 'Systems, integration, data quality, and digital tools.',
-    challenges: ['Disconnected systems that do not share data', 'Spreadsheets at the heart of operations', 'Paid tools that are barely used'],
-    opportunities: ['A full map of systems and integrations', 'One trusted source of data', 'Digital solutions designed around the process'],
-  },
-}
-
-const ORDER: DimensionId[] = ['strategy', 'revenue', 'marketing', 'operations', 'people', 'finance', 'cx', 'technology']
-export const DIMENSION_IDS = ORDER
-
-const buildDims = (src: Record<DimensionId, DimCopy>): Dimension[] =>
-  ORDER.map((id) => ({ id, latin: latin[id], kpis: kpis[id], ...src[id] }))
-
-export type CaseStatus = 'delivered' | 'experience' | 'progress' | 'mvp' | 'concept'
-
-export interface CaseStudy {
-  id: 'estate' | 'transport' | 'fieldops' | 'webar'
-  index: string
+export interface CaseItem {
   sector: string
-  status: CaseStatus
-  founder?: boolean
   title: string
   body: string
-  deliverables: string[]
-  screens?: string[]
+  metric?: string
+  metricLabel?: string
+  extra?: string
+  tag: string
+  /** Shown as a small "to confirm" mark until khalid confirms the detail. */
+  confirm?: boolean
 }
 
-export interface MiniCase {
-  icon: IconName
-  sector: string
-  status: CaseStatus
-  founder?: boolean
-  title: string
-  body: string
+/** Where onboarding briefs go. Empty = not connected yet (the form says so plainly). */
+/** Embeddable 360° tour (Kuula). The page loads it only when a visitor asks for it. */
+export const tourUrl = 'https://kuula.co/share/collection/7MZVN?logo=1&info=1&fs=1&vr=0&sd=1&thumbs=1'
+
+export const contact = {
+  email: '',
+  whatsapp: '', // international format without +, e.g. 9665XXXXXXXX
 }
 
 const ar = {
-  dir: 'rtl' as 'rtl' | 'ltr',
-  meta: { switchTo: 'English', switchLabel: 'Switch to English', skip: 'تخطَّ إلى المحتوى', menu: 'القائمة', close: 'إغلاق' },
-  nav: [
-    { href: '#story', label: 'المنهجية' },
-    { href: '#services', label: 'خدماتنا' },
-    { href: '#framework', label: 'إطار التشخيص' },
-    { href: '#work', label: 'أعمالنا' },
-  ],
-  headerCta: 'احجز جلسة',
-  intro: 'نُهيّئ النظام',
-  hero: {
-    eyebrow: 'استشارات الأعمال · التحول التشغيلي · الحلول الرقمية',
-    title: ['عملك', 'قادر على أكثر.'],
-    lede: 'نكتشف الفرص الكامنة، ونعالج التحديات من جذورها، ونصمم الحلول التي تدفع أعمالك نحو كامل إمكاناتها.',
-    primary: 'احجز جلسة تشخيص',
-    secondary: 'اكتشف منهجيتنا',
-    meta: ['الخليج العربي · العالم', 'من التعقيد إلى الوضوح'],
-    scroll: 'مرّر للاكتشاف',
+  meta: {
+    switchTo: 'EN', switchLabel: 'Switch to English', menu: 'القائمة', close: 'إغلاق', skip: 'تخطَّ إلى المحتوى',
+    title: 'KON Unlimited · نرفع كفاءة مشروعك',
   },
-  stages: ['التعقيد', 'الاكتشاف', 'التشخيص', 'الفهم', 'التحسين', 'التحوّل', 'النمو'],
-  stagesLabel: 'من التعقيد إلى الوضوح',
-  chaptersLabel: 'فصول القصة',
-  chapters: [
-    {
-      id: 'system', step: 'النظام',
-      title: 'كل شركة نظامٌ حيّ.',
-      body: 'الاستراتيجية، والتسويق، والمبيعات، والعمليات، والفريق، والمالية، والتقنية، وتجربة العملاء. أداء شركتك لا يتحدد بقوة كل جزء وحده، بل بجودة العلاقات بين هذه الأجزاء.',
-      note: 'ومع النمو، تبدأ بعض الأجزاء بالعمل بمعزل عن غيرها. هذه نتيجة طبيعية لأي شركة تتوسع.',
-    },
-    {
-      id: 'diagnosis', step: 'التشخيص',
-      title: 'الوضوح يبدأ من النظرة الأقرب.',
-      body: 'نفكك النظام إلى مكوناته، ونفهم دور كل جزء، ونتتبع أثره في بقية الأجزاء.',
-      list: ['العمليات', 'التسويق', 'المالية', 'الفريق', 'تجربة العملاء', 'التقنية'],
-    },
-    {
-      id: 'discovery', step: 'الاكتشاف',
-      title: 'ما لا تكشفه الأرقام وحدها.',
-      body: 'حين نرى النظام كاملًا، تظهر الحقائق التي تختبئ بين الأقسام.',
-      findings: [
-        { k: 'اختناقات', v: 'نقاط يتباطأ عندها تدفق العمل والقرار.' },
-        { k: 'عمليات منفصلة', v: 'أقسام تؤدي عملها جيدًا، لكن دون تنسيق كافٍ.' },
-        { k: 'موارد غير مستغلة', v: 'أدوات وقدرات تملكها الشركة ولا تستثمرها بالكامل.' },
-        { k: 'فرص لم تُستكشف', v: 'مساحات نمو قريبة لم يلتفت إليها أحد بعد.' },
-      ],
-    },
-    {
-      id: 'transformation', step: 'التحوّل',
-      title: 'نعيد الترتيب، لا البناء من الصفر.',
-      body: 'نعيد تصميم العلاقات بين الأجزاء. تتضح المسارات، وتتوافق العمليات، ويبدأ النظام بالعمل كوحدة واحدة.',
-    },
-    {
-      id: 'potential', step: 'الإمكانات',
-      title: 'نساعد أعمالك على الوصول إلى كامل إمكاناتها.',
-      body: 'نظام واضح ينمو بثقة، ويتخذ قراراته على أساس متين.',
-      cta: 'استكشف إطار التشخيص',
-    },
+  nav: [
+    { href: '#who', label: 'من نساعد' },
+    { href: '#why', label: 'لماذا KON' },
+    { href: '#offer', label: 'العرض' },
+    { href: '#work', label: 'أعمالنا' },
+    { href: '#founder', label: 'المؤسس' },
   ],
+  headerCta: 'ابدأ التشخيص',
+
+  hero: {
+    eyebrow: 'استشارات · تطوير أعمال · تشغيل',
+    rotating: ['نرفع كفاءة مشروعك.', 'نحسّن كفاءة التشغيل.', 'نحوّل فكرتك إلى مشروع يعمل.', 'نجعل استثمارك يعمل بذكاء.'],
+    promise: 'وعدنا بسيط: **نطوّر أي عملية تشغيلية، ونحسّنها.**',
+    lede: 'من **الفكرة الأولى** إلى **شركة تعمل بانتظام**، دون أن تحمل كل شيء وحدك.',
+    primary: 'ابدأ تشخيصك المجاني',
+    secondary: 'شاهد النتائج',
+    slogan: 'أينما كان التحدي، وكيفما كان، سنكون هناك.',
+    scroll: 'مرّر',
+    proof: [
+      { n: '+4,200', l: 'ساعة استشارية' },
+      { n: '11', l: 'قطاعًا' },
+      { n: '14M', l: 'إيرادات في دخول سوق واحد' },
+      { n: '+511%', l: 'متوسط نمو شهري للإيرادات' },
+    ],
+  },
+
+  // LOCKED (khalid, 2026-10-21)
+  problem: {
+    title: 'ما تعرف المشكلة فين بالضبط؟',
+    lines: ['الموظفين؟ الخطة التشغيلية؟ التوسّع؟'],
+    closing: 'بإذن الله، سنجد الحل.',
+    paths: [
+      { persona: 'founder' as Persona, label: 'أنا رائد أعمال', q: ['الفكرة؟', 'نموذج العمل؟', 'أول العملاء؟', 'أول موظف؟'] },
+      { persona: 'business' as Persona, label: 'أنا كيان تجاري', q: ['الموظفين؟', 'الخطة التشغيلية؟', 'التوسّع؟', 'المبيعات؟', 'التكاليف؟'] },
+    ],
+    investor: 'مستثمر؟ لك مسار خاص.',
+    investorCta: 'ابدأ من هنا',
+    hint: 'اختر ما يشبهك، ونكمل من عندك.',
+  },
+
+  loops: {
+    eyebrow: 'أسئلة لا تقولها بصوت عالٍ',
+    title: 'هل سألت نفسك يومًا…',
+    pick: 'اختر ما يشبهك:',
+    groups: [
+      { persona: 'business' as Persona, label: 'كيان تجاري', qs: ['مبيعاتك تزيد. فلماذا لا يزيد ربحك؟', 'لماذا يتوقف كل شيء حين تأخذ يوم إجازة؟'] },
+      { persona: 'founder' as Persona, label: 'رائد أعمال', qs: ['مقتنع بفكرتك تمامًا. فلماذا لم تبدأ حتى الآن؟', 'ماذا لو كان أول عميل لك أقرب مما تظن؟'] },
+      { persona: 'investor' as Persona, label: 'مستثمر', qs: ['استثماراتك: هل تعمل لك، أم تعمل أنت لها؟', 'كم فرصة تركتها لأن أحدًا لم يقرأ أرقامها بصدق؟'] },
+    ],
+    tail: 'الإجابة نادرًا ما تكون حيث تبحث. **ونحن نعرف أين نبحث.**',
+    cta: 'اكتشف إجابتك',
+  },
+
+  who: {
+    eyebrow: 'من نساعد',
+    title: 'أينما كنت اليوم، نعرف الخطوة التالية.',
+    groups: [
+      { icon: 'storm' as IconId, persona: 'business' as Persona, title: 'شركات تتعثّر', line: 'نوقف النزيف أولًا.', body: 'حين تضغط التكاليف والسيولة والفريق في وقت واحد، **نثبّت الوضع**، ثم نعيد البناء على أساس صحيح.' },
+      { icon: 'anchor' as IconId, persona: 'business' as Persona, title: 'شركات مستقرة', line: 'الاستقرار الطويل يخفي فرصًا ضائعة.', body: 'تعمل جيدًا، وتشعر أنها قادرة على أكثر. نجد **الهدر الصامت**، ونحوّله إلى **هامش ربح**.' },
+      { icon: 'rise' as IconId, persona: 'business' as Persona, title: 'شركات تنمو', line: 'النمو يكسر ما كان يعمل.', body: 'فروع جديدة، وفريق أكبر، وأنظمة لم تُصمَّم لهذا الحجم. نبني **تشغيلًا يتحمّل التوسّع**.' },
+      { icon: 'seed' as IconId, persona: 'founder' as Persona, title: 'روّاد أعمال', line: 'من الفكرة إلى أول ريال.', body: 'عندك فكرة أو شركة ناشئة ولا تعرف من أين تبدأ؟ **نموذج العمل، ودخول السوق، وأول العملاء**، وأول موظف. خطوة بخطوة، معك.' },
+      { icon: 'compass' as IconId, persona: 'investor' as Persona, title: 'مستثمرون', line: 'فرص أوضح، واستثمارات تُدار بعقل.', body: 'نبحث معك عن **فرص جديدة** ونقرؤها بصدق، وندير استثماراتك القائمة **بنظام يحميها وينمّيها**.' },
+    ],
+    cta: 'هذا أنا',
+  },
+
+  // CONFIRM: written as a commitment of effort, not as a fee term. See the note to khalid.
+  commit: {
+    eyebrow: 'التزامنا',
+    work: { n: '80%', label: 'من العمل علينا' },
+    you: { n: '20%', label: 'عليك: القرار والرؤية' },
+    title: 'نحمل 80% من العمل. وأتعابنا تتبع نتائجك.',
+    body: 'لا نسلّمك تقريرًا ونختفي. **ننزل إلى الميدان، ونبني، وندرّب، ونتابع حتى يعمل.** نصمّم كل اتفاق بحيث يرتبط نجاحنا بنجاحك، لأن النتيجة هي الشيء الوحيد الذي نريد أن نُعرف به.',
+    fine: 'طريقة ربط الأتعاب بالنتائج نتفق عليها معك بوضوح، ومكتوبة، قبل أن نبدأ.',
+  },
+
+  why: {
+    eyebrow: 'لماذا KON',
+    title: 'لأنك لا تحتاج مستشارًا آخر. تحتاج من يُكمل معك الطريق.',
+    items: [
+      { icon: 'flex' as IconId, title: 'مرنون مع أي وضع', body: 'ميزانية محدودة؟ وقت ضيّق؟ وضع معقّد؟ نصمّم طريقة العمل **حول واقعك**، لا العكس.' },
+      { icon: 'aligned' as IconId, title: 'نربح حين تربح', body: '**مصلحتنا مربوطة بنتيجتك.** إن لم تتحرك أرقامك، فلم ننجز عملنا بعد.' },
+      { icon: 'spark' as IconId, title: 'مبتكرون', body: 'حين لا يكفي الموجود، نبني **ما لم يكن موجودًا**: أنظمة، وأدوات، وتجارب.' },
+      { icon: 'layers' as IconId, title: 'خبرة في 11 قطاعًا', body: 'اتصالات، وعقار، وضيافة، وترفيه، وأغذية، وفعاليات، وسلاسل إمداد. **ننقل ما نجح هناك إلى عندك.**' },
+      { icon: 'ai' as IconId, title: 'آلاف الموظفين، بجزء من التكلفة', body: 'نوظّف **الذكاء الاصطناعي** ليقوم **بعمل فرق كاملة**: تحليل، ومتابعة، وتقارير، وخدمة عملاء. والقرار يبقى بشريًا.' },
+      { icon: 'cycle' as IconId, title: 'استدامة، لا مسكّنات', body: 'أنظمة، وإجراءات تشغيل (SOPs)، وفريق يعرف ماذا يفعل. فتبقى **النتيجة بعد أن ننتهي**.' },
+      { icon: 'mind' as IconId, title: 'نفهم الإنسان قبل الرقم', body: 'خلفيتنا في علم النفس تجعلنا نقرأ **سلوك العميل وعقلية الموظف**. وهما خلف كل رقم.' },
+      { icon: 'field' as IconId, title: 'ننفّذ، لا ننصح فقط', body: 'نقف مع فريقك في الميدان حتى يصبح الجديد **عادة يومية**.' },
+    ],
+  },
+
+  human: {
+    eyebrow: 'ما يميّزنا',
+    title: 'خلف كل رقم إنسان. ونحن نبدأ منه.',
+    lede: 'الشركات لا تتعثّر بسبب الجداول. تتعثّر حين **لا يُفهم العميل، ولا يُفهم الموظف**. هنا تبدأ ميزتنا.',
+    pillars: [
+      { icon: 'eye' as IconId, title: 'سلوك المستهلك', body: 'لماذا يشتري عميلك؟ ولماذا يتردد؟ ولماذا لا يعود؟ نقرأ القرار من داخله، و**نعيد تصميم التجربة** حوله.' },
+      { icon: 'people' as IconId, title: 'عقلية الموظف', body: 'الموظف لا يقاوم التغيير. **يقاوم الغموض.** نجعل التغيير واضحًا، فيصبح الفريق جزءًا منه.' },
+      { icon: 'train' as IconId, title: 'تدريب يغيّر السلوك', body: 'تدريب **يظهر أثره في الميدان** من الأسبوع الأول، لا شهادة تُعلَّق على الجدار.' },
+      { icon: 'bulb' as IconId, title: 'ابتكار عملي', body: 'أنظمة تشغيل داخلية، وأدوات ميدانية، وتجارب رقمية. نبتكر **ما يُستخدم كل يوم**، لا ما يُعرض مرة.' },
+    ],
+  },
+
+  // From the locked v3 services list, with Mystery Shopper.
   services: {
     eyebrow: 'خدماتنا',
-    title: 'خمس قدرات، تعمل كمنظومة واحدة.',
+    title: 'ست أدوات. هدف واحد: تشغيل أفضل.',
     items: [
-      { k: 'تشخيص الأعمال', v: 'قراءة شاملة لأداء شركتك عبر ثمانية أبعاد مترابطة.' },
-      { k: 'الاستراتيجية والنمو', v: 'أولويات واضحة، ومسارات نمو قابلة للقياس.' },
-      { k: 'التميّز التشغيلي', v: 'عمليات أبسط وأسرع وأقل تكلفة.' },
-      { k: 'الحلول الرقمية', v: 'مواقع ومنصات ولوحات تحكم مصممة حول طريقة عملك.' },
-      { k: 'التحليلات المعززة بالذكاء الاصطناعي', v: 'تحليل أعمق لبياناتك، بإشراف خبراء يفهمون السياق.' },
+      { title: 'التشخيص', body: 'نرى شركتك من ثمانية أبعاد.' },
+      { title: 'الاستراتيجية', body: 'نحدد وجهتك، وما يجب أن تتركه خلفك.' },
+      { title: 'العمليات', body: 'نزيل ما يُبطئك.' },
+      { title: 'المتسوق الخفي', body: 'نزورك كعميل عادي، ونرى ما يراه عملاؤك فعلًا.' },
+      { title: 'الحلول الرقمية', body: 'نبني الأداة التي تحتاجها، لا التي تُباع لك.' },
+      { title: 'الذكاء الاصطناعي', body: 'يُسرّع التحليل، ويبقى القرار بشريًا.' },
     ],
   },
-  process: {
-    eyebrow: 'كيف نعمل',
-    title: 'منهجية واضحة، من أول جلسة إلى أثر ملموس.',
-    steps: [
-      { k: 'نشخّص', v: 'نفهم النظام كما هو، عبر البيانات والمقابلات والملاحظة الميدانية.' },
-      { k: 'نصمّم', v: 'نحدد الأولويات، ونصمم الحلول الأعلى أثرًا.' },
-      { k: 'ننفّذ', v: 'نعمل جنبًا إلى جنب مع فريقك على التطبيق، خطوة بخطوة.' },
-      { k: 'نقيس', v: 'نتابع المؤشرات التي تهم، ونحسّن باستمرار.' },
-    ],
-  },
-  framework: {
-    eyebrow: 'إطار KON للتشخيص',
-    title: 'ثمانية أبعاد. نظام واحد.',
-    lede: 'نقرأ شركتك من ثمانية أبعاد مترابطة. اختر بعدًا لترى الأسئلة التي نطرحها، والمؤشرات التي نقيسها، والفرص التي نبحث عنها.',
-    groupLabel: 'أبعاد التشخيص',
-    challenges: 'تحديات شائعة',
-    kpis: 'مؤشرات نقيسها',
-    opportunities: 'فرص التحسين',
-    back: 'عرض كل الأبعاد',
-    hint: 'اختر بعدًا من القائمة، أو من النموذج مباشرة.',
-  },
-  humanAI: {
-    eyebrow: 'الخبرة البشرية × الذكاء الاصطناعي',
-    title: 'الذكاء الاصطناعي يعزّز حكم الخبير، ولا يحلّ محله.',
-    body: 'نجمع خبرة استشارية تفهم سياق عملك وثقافته، مع مسارات تحليل متخصصة مدعومة بالذكاء الاصطناعي تعالج البيانات بسرعة ودقة. ويبقى القرار دائمًا قائمًا على فهم عميق للأعمال.',
-    legend: ['الخبرة البشرية', 'مسارات التحليل بالذكاء الاصطناعي'],
-    joinedEyebrow: 'بنية دعم القرار',
-    parts: [
-      { k: 'الخبرة البشرية', v: 'فهم السياق، والأولويات، والأشخاص.' },
-      { k: 'الذكاء الاصطناعي', v: 'تحليل متخصص لأنماط البيانات على نطاق واسع.' },
-      { k: 'بيانات الأعمال', v: 'أرقامك الفعلية، لا افتراضات عامة.' },
-      { k: 'التنفيذ الاستراتيجي', v: 'نتائج تتحول إلى خطوات حاسمة.' },
-    ],
-  },
-  work: {
-    eyebrow: 'أعمال مختارة',
-    title: 'قطاعات مختلفة. منهج واحد.',
-    intro: 'لكل عمل مشكلة مختلفة، لذلك يبدأ عملنا من المشكلة لا من قائمة خدمات جاهزة. هذه مجموعة من الأعمال المنجزة والمشاريع الجارية والمفاهيم التي نطوّرها.',
-    sectorsLabel: 'القطاعات',
-    sectors: ['العقار', 'الضيافة', 'المطاعم', 'الخدمات البلدية', 'الفعاليات الكبرى', 'SaaS', 'الواقع المعزز', 'الذكاء الاصطناعي', 'السيارات', 'التنقل', 'الموارد البشرية'],
-    status: { delivered: 'عمل منجز', experience: 'خبرة مهنية', progress: 'قيد التنفيذ', mvp: 'نموذج أولي عامل', concept: 'مفهوم مشروع' },
-    founder: 'بقيادة المؤسس',
-    delivers: 'ما قُدِّم',
-    screens: 'شاشات النظام',
-    schematic: 'مخططات توضيحية لنطاق النظام، وليست لقطات من التطبيق',
-    tourCta: 'ادخل الجولة الافتراضية 360°',
-    tourBody: 'هنا تُعرض الجولة الافتراضية الحقيقية، وتبقى هي التجربة التفاعلية الأساسية.',
-    tourMissing: 'بانتظار رابط تضمين الجولة (مثل Matterport أو Kuula)',
-    tourBack: 'العودة إلى النموذج',
-    tourOpen: 'افتح الجولة في نافذة جديدة',
-    tourOutBody: 'جولة افتراضية حقيقية بزاوية 360 درجة داخل إحدى الفلل. تجوّل في المساحات وانتقل بين الغرف كما لو كنت هناك.',
-    tourOutCta: 'ابدأ الجولة',
-    tourRegion: 'الجولة الافتراضية',
-    before: 'قبل: حجوزات منفصلة',
-    after: 'بعد: تشغيل واحد تحت السيطرة',
-    flowNodes: ['المطار', 'الفندق', 'الملعب', 'الإرسال', 'التقارير'],
-    ops: {
-      nodes: ['المطار', 'الفندق', 'الملعب', 'غرفة الإرسال', 'التقارير'],
-      before: 'قبل: حجوزات منفصلة',
-      after: 'بعد: تشغيل واحد',
-      legendRoute: 'مسار رحلة الضيف',
-      legendVehicle: 'مركبة في الطريق',
-      legendControl: 'ارتباط بغرفة الإرسال',
-      board: 'لوحة التحكم',
-      boardRows: ['وصول عبر المطار', 'التجهيز في الفندق', 'الوصول إلى الملعب', 'تغيير طارئ'],
-      statuses: ['جاهز', 'في الطريق', 'مؤكَّد', 'غير متابَع'],
-    },
-    arSteps: { editor: 'تُبنى التجربة في المحرر', scan: 'تُشارك عبر رمز QR', live: 'تظهر على متصفح الجوال' },
-    phasesLabel: 'مراحل الإجراءات التشغيلية',
-    phases: ['الجاهزية', 'رحلة الضيف', 'الإرسال والتحكم', 'الحوادث والطوارئ', 'المراجعة بعد التشغيل'],
-    cases: [
-      { id: 'estate', index: '01', sector: 'العقار والتقنية العقارية', status: 'delivered', founder: true,
-        title: 'جولات افتراضية للفلل، وفرق مبيعات أكثر جاهزية',
-        body: 'لشركات عقارية سعودية، اجتمع تدريب فرق المبيعات وتوصيات تطوير الموقع الإلكتروني مع جولات افتراضية تفاعلية للفلل، ليصل المشتري إلى المعاينة وهو يفهم المساحة وتوزيعها مسبقًا.',
-        deliverables: ['تدريب فريق المبيعات وتمكينه', 'توصيات لتطوير الموقع ورحلة الشراء الرقمية', 'جولات افتراضية تفاعلية للفلل'] },
-      { id: 'transport', index: '02', sector: 'الفعاليات الكبرى والتنقل', status: 'progress',
-        title: 'نظام تشغيل لنقل كبار الشخصيات',
-        body: 'لفعالية رياضية دولية كبرى في جدة، نصمم إطارًا تشغيليًا واحدًا يربط رحلة الضيف بين المطار والفندق والملعب، مع الأسطول والإرسال والبروتوكول والاتصالات وخطط الطوارئ. العمل في مرحلة التخطيط، ولا نقدّمه كنتيجة تشغيل فعلية.',
-        deliverables: ['نموذج تشغيلي وهيكل أدوار واضح', 'مكتبة إجراءات تشغيل من الجاهزية حتى المراجعة', 'بنية لوحات المتابعة وسجل المخاطر'] },
-      { id: 'fieldops', index: '03', sector: 'الخدمات البلدية والعمليات الميدانية', status: 'progress',
-        title: 'نظام جوال للعمليات الميدانية البلدية',
-        body: 'لجهة خدمات ميدانية بلدية، نبني نظامًا يربط البلاغات المصوّرة بالموظفين والمركبات والورديات، مع معالجة للصور بمساعدة الذكاء الاصطناعي، وتنبيهات للصيانة والتراخيص، وواجهات للمشرفين والمختصين. المشروع متعاقد عليه وقيد التنفيذ.',
-        deliverables: ['نطاق المنتج ومتطلباته', 'إسناد السائقين والمركبات والورديات', 'تنبيهات الصيانة والتراخيص وتقارير الإدارة'],
-        screens: ['البلاغ', 'الإسناد', 'المشرف'] },
-      { id: 'webar', index: '04', sector: 'SaaS والواقع المعزز', status: 'mvp',
-        title: 'استوديو حملات الواقع المعزز عبر المتصفح',
-        body: 'منصة SaaS بلا برمجة تتيح للشركات بناء تجارب واقع معزز قائمة على الصور، بالفيديو والمجسمات ثلاثية الأبعاد والنصوص والأزرار، ثم مشاركتها عبر رمز QR على متصفح الجوال. اجتازت النسخة الأولية فحوصات الجودة والبناء المسجّلة، ولم تُطلق تجاريًا بعد.',
-        deliverables: ['محرر مشاهد للصور والفيديو والمجسمات', 'مساحات عمل ومشاريع وإدارة أصول', '19 اختبارًا آليًا ناجحًا وبناء إنتاجي سليم'] },
-    ] as CaseStudy[],
-    moreTitle: 'خبرة عبر القطاعات',
-    more: [
-      { icon: 'chart', sector: 'الضيافة والاستثمار', status: 'delivered', founder: true, title: 'دعم قرار الاستثمار الفندقي', body: 'منهج منظم يرتّب المدخلات التجارية خلف قرار استثمار فندقي، لتسهل المقارنة والنقاش قبل الالتزام برأس المال.' },
-      { icon: 'food', sector: 'المطاعم والتسويق', status: 'delivered', founder: true, title: 'الحضور الرقمي للمطاعم', body: 'تصوير فوتوغرافي وفيديو، وإدارة لوسائل التواصل، وحملات، وظهور على خرائط Google، في خدمة واحدة مبنية على الطريقة التي يكتشف بها الزبون المطعم ويختاره.' },
-      { icon: 'megaphone', sector: 'التسويق العقاري', status: 'experience', founder: true, title: 'قيادة المبيعات والتسويق من الداخل', body: 'خبرة عملية داخل منظمة تسويق عقاري: مبيعات مباشرة، وإشراف على فريق التسويق، وتنفيذ حملات، تربط الاستراتيجية بواقع العمل اليومي.' },
-      { icon: 'bell', sector: 'تشغيل الفنادق', status: 'experience', founder: true, title: 'الاستقبال وتجربة النزلاء', body: 'خبرة مباشرة في مكتب الاستقبال بفندق في السعودية، تمنح توصياتنا في الضيافة فهمًا عمليًا للتواصل مع النزلاء وتسليم المهام ومعالجة المشكلات.' },
-    ] as MiniCase[],
-    labTitle: 'مختبر المشاريع',
-    labIntro: 'منتجات ومشاريع نطوّرها داخليًا. نعرضها بوصفها مفاهيم، لا منتجات مُطلقة.',
-    lab: [
-      { icon: 'voice', sector: 'الذكاء الاصطناعي والسيارات', status: 'concept', title: 'موظف استقبال صوتي عربي', body: 'بنية متعددة المستأجرين تربط المكالمات العربية بمخزون قطع الغيار والأسعار والتوافق والحجوزات الفعلية لمحلات السيارات. الخطوة التالية: إثبات مفهوم بمكالمات سعودية حقيقية.' },
-      { icon: 'building', sector: 'التطوير العقاري', status: 'concept', title: 'وحدات استثمارية بخدمات ضيافة', body: 'نموذج تطوير يقدّم الوحدات الصغيرة كمنتج تشغيلي للمستثمرين، مع خدمات مشتركة اختيارية للتنظيف والصيانة وإدارة الإيرادات. إطار جدوى أولي، وليس مشروعًا منجزًا.' },
-      { icon: 'bike', sector: 'التنقل والأسواق الرقمية', status: 'concept', title: 'Safe Bike', body: 'تطبيق سعودي لراكبي الدراجات النارية يجمع عروض الشركاء، والحجز مع التحقق عبر QR، وسوقًا متخصصًا للدراجات والمعدات. مخطط منتج للمرحلة الأولى.' },
-      { icon: 'people', sector: 'الموارد البشرية والتوظيف', status: 'concept', title: 'تجربة', body: 'منصة سعودية تحوّل التدريب القصير والمشاريع المصغّرة إلى ملفات أعمال موثّقة، بتقييم من الشركات وتحقق من المهارات بمساعدة الذكاء الاصطناعي.' },
-    ] as MiniCase[],
-    note: 'نفصل بوضوح بين العمل المنجز والنماذج الأولية والمفاهيم. أسماء العملاء محجوبة إلى حين موافقتهم، ولا ننشر نتائج إلا بعد التحقق منها.',
-  },
-  marquee: ['تشخيص الأعمال', 'الاستراتيجية والنمو', 'التميّز التشغيلي', 'الحلول الرقمية', 'التحليلات بالذكاء الاصطناعي', 'تجربة العملاء'],
-  contact: {
-    eyebrow: 'الخطوة الأولى',
-    title: 'لنبدأ بفهم أعمالك.',
-    body: 'جلسة تشخيص أولى نتعرّف فيها على نظام أعمالك، ونحدد معًا أين تكمن أكبر الفرص.',
-    name: 'الاسم الكامل', company: 'الشركة', email: 'البريد الإلكتروني', challenge: 'أين ترى التحدي الأكبر اليوم؟',
-    choose: 'اختر بُعدًا', unsure: 'لست متأكدًا بعد', cta: 'احجز جلسة التشخيص',
-    done: 'شكرًا لك. هذه نسخة معاينة، لذلك لم يُرسل الطلب. سيُربط النموذج بنظام الحجز عند الإطلاق.',
-  },
-  footer: { tagline: 'عملك قادر على أكثر.', top: 'العودة للأعلى' },
-  dimensions: buildDims(dimAr),
-}
 
-const en: typeof ar = {
-  dir: 'ltr',
-  meta: { switchTo: 'العربية', switchLabel: 'التبديل إلى العربية', skip: 'Skip to content', menu: 'Menu', close: 'Close' },
-  nav: [
-    { href: '#story', label: 'Approach' },
-    { href: '#services', label: 'Services' },
-    { href: '#framework', label: 'Framework' },
-    { href: '#work', label: 'Work' },
-  ],
-  headerCta: 'Book a session',
-  intro: 'Assembling the system',
-  hero: {
-    eyebrow: 'Business Advisory · Operational Transformation · Digital Solutions',
-    title: ['Your business', 'is capable of more.'],
-    lede: 'We uncover hidden opportunities, resolve challenges at their root, and design the solutions that move your business toward its full potential.',
-    primary: 'Book a diagnostic session',
-    secondary: 'Explore our approach',
-    meta: ['GCC · Worldwide', 'From complexity to clarity'],
-    scroll: 'Scroll to explore',
-  },
-  stages: ['Complexity', 'Discovery', 'Diagnosis', 'Understanding', 'Optimization', 'Transformation', 'Growth'],
-  stagesLabel: 'From complexity to clarity',
-  chaptersLabel: 'Story chapters',
-  chapters: [
-    {
-      id: 'system', step: 'The system',
-      title: 'Every company is a living system.',
-      body: 'Strategy, marketing, sales, operations, people, finance, technology and customer experience. Performance is defined less by the strength of each part than by the quality of the connections between them.',
-      note: 'As companies grow, some parts begin to work in isolation. It is a natural consequence of growth.',
-    },
-    {
-      id: 'diagnosis', step: 'Diagnosis',
-      title: 'Clarity begins up close.',
-      body: 'We take the system apart, understand the role of each component, and trace how it affects the rest.',
-      list: ['Operations', 'Marketing', 'Finance', 'People', 'Customer Experience', 'Technology'],
-    },
-    {
-      id: 'discovery', step: 'Discovery',
-      title: 'What numbers alone won’t reveal.',
-      body: 'Seen as a whole, the system exposes what hides between departments.',
-      findings: [
-        { k: 'Bottlenecks', v: 'Points where work and decisions slow down.' },
-        { k: 'Disconnected processes', v: 'Teams that perform well, but not in concert.' },
-        { k: 'Underused resources', v: 'Tools and capabilities you own but don’t fully use.' },
-        { k: 'Unexplored opportunities', v: 'Growth that sits close by, still unnoticed.' },
-      ],
-    },
-    {
-      id: 'transformation', step: 'Transformation',
-      title: 'Realign. Don’t rebuild.',
-      body: 'We redesign how the parts connect. Pathways become clear, processes align, and the system starts working as one.',
-    },
-    {
-      id: 'potential', step: 'Potential',
-      title: 'We help your business reach its full potential.',
-      body: 'A clear system grows with confidence and decides on solid ground.',
-      cta: 'Explore the framework',
-    },
-  ],
-  services: {
-    eyebrow: 'Services',
-    title: 'Five capabilities, working as one system.',
-    items: [
-      { k: 'Business Diagnosis', v: 'A complete reading of your company across eight connected dimensions.' },
-      { k: 'Strategy & Growth', v: 'Clear priorities and measurable paths to growth.' },
-      { k: 'Operational Excellence', v: 'Simpler, faster, leaner operations.' },
-      { k: 'Digital Solutions', v: 'Websites, platforms and dashboards designed around how you work.' },
-      { k: 'AI-Assisted Analytics', v: 'Deeper analysis of your data, guided by experts who understand context.' },
+  // CONFIRM: session length, delivery time and monthly limit.
+  offer: {
+    eyebrow: 'العرض',
+    title: 'التشخيص الأول علينا.',
+    lede: 'جلسة تشخيص مع **خبير أول** من فريقنا. تخرج منها **بصورة أوضح لوضعك**، حتى لو لم نعمل معًا بعدها.',
+    includes: [
+      'جلسة تشخيص مركّزة، 60 دقيقة',
+      'قراءة لوضعك من ثمانية أبعاد',
+      'أهم 3 فرص يمكنك البدء بها فورًا',
+      'خريطة طريق مبدئية مكتوبة',
     ],
+    value: 'بلا تكلفة. بلا التزام.',
+    guarantee: 'إن لم تخرج **بفكرة واحدة على الأقل تستحق وقتك**، فنحن من خسر الوقت، لا أنت.',
+    cta: 'احجز تشخيصك المجاني',
+    note: 'عدد الجلسات محدود كل شهر، لأننا نحضّر لكل جلسة بعناية.',
   },
-  process: {
-    eyebrow: 'How we work',
-    title: 'A clear method, from the first session to measurable impact.',
-    steps: [
-      { k: 'Diagnose', v: 'We map the system as it is, through data, interviews and observation.' },
-      { k: 'Design', v: 'We set priorities and design the highest-impact solutions.' },
-      { k: 'Deliver', v: 'We implement alongside your team, step by step.' },
-      { k: 'Measure', v: 'We track the indicators that matter and keep improving.' },
-    ],
-  },
-  framework: {
-    eyebrow: 'The KON Diagnostic Framework',
-    title: 'Eight dimensions. One system.',
-    lede: 'We read your company through eight connected dimensions. Select one to see the questions we ask, the indicators we measure and the opportunities we look for.',
-    groupLabel: 'Diagnostic dimensions',
-    challenges: 'Common challenges',
-    kpis: 'Indicators we measure',
-    opportunities: 'Opportunities',
-    back: 'Show all dimensions',
-    hint: 'Select a dimension from the list, or directly in the model.',
-  },
-  humanAI: {
-    eyebrow: 'Human expertise × Artificial intelligence',
-    title: 'AI sharpens expert judgment. It never replaces it.',
-    body: 'We pair advisors who understand your context and culture with specialized AI-assisted analysis that processes data quickly and precisely. Every decision stays grounded in a deep understanding of the business.',
-    legend: ['Human expertise', 'AI-assisted analysis'],
-    joinedEyebrow: 'Decision-support structure',
-    parts: [
-      { k: 'Human expertise', v: 'Context, priorities and people.' },
-      { k: 'Artificial intelligence', v: 'Specialized analysis of patterns at scale.' },
-      { k: 'Business data', v: 'Your actual numbers, not generic assumptions.' },
-      { k: 'Strategic execution', v: 'Findings turned into decisive action.' },
-    ],
-  },
+
   work: {
-    eyebrow: 'Selected work',
-    title: 'Different sectors. One discipline.',
-    intro: 'Different businesses need different solutions, so our work begins with the problem, not a predefined service. Here is a cross-section of delivered work, active builds and the ventures we develop.',
-    sectorsLabel: 'Sectors',
-    sectors: ['Real estate', 'Hospitality', 'Restaurants', 'Public services', 'Major events', 'SaaS', 'Augmented reality', 'AI', 'Automotive', 'Mobility', 'HR tech'],
-    status: { delivered: 'Delivered', experience: 'Professional experience', progress: 'In progress', mvp: 'Working MVP', concept: 'Venture concept' },
-    founder: 'Founder-led',
-    delivers: 'What was delivered',
-    screens: 'System views',
-    schematic: 'Schematic views of the scope, not app screenshots',
-    tourCta: 'Enter the 360° virtual tour',
-    tourBody: 'The real 360° virtual tour appears here, and remains the primary interactive experience.',
-    tourMissing: 'Awaiting the tour embed link (e.g. Matterport or Kuula)',
-    tourBack: 'Back to the model',
-    tourOpen: 'Open the tour in a new tab',
-    tourOutBody: 'A real 360° walkthrough of one of the villas. Move through the spaces and between rooms as if you were there.',
-    tourOutCta: 'Start the tour',
-    tourRegion: 'Virtual tour',
-    before: 'Before: separate bookings',
-    after: 'After: one controlled operation',
-    flowNodes: ['Airport', 'Hotel', 'Venue', 'Dispatch', 'Reporting'],
-    ops: {
-      nodes: ['Airport', 'Hotel', 'Venue', 'Dispatch', 'Reporting'],
-      before: 'Before: separate bookings',
-      after: 'After: one operation',
-      legendRoute: 'Guest journey',
-      legendVehicle: 'Vehicle en route',
-      legendControl: 'Linked to dispatch',
-      board: 'Control board',
-      boardRows: ['Airport arrival', 'Hotel staging', 'Venue arrival', 'Live change'],
-      statuses: ['Ready', 'En route', 'Confirmed', 'Untracked'],
-    },
-    arSteps: { editor: 'Built in the editor', scan: 'Shared with a QR code', live: 'Live in the mobile browser' },
-    phasesLabel: 'SOP phases',
-    phases: ['Readiness', 'Guest journeys', 'Dispatch & control', 'Incidents & contingencies', 'Post-operation review'],
-    cases: [
-      { id: 'estate', index: '01', sector: 'Real estate & PropTech', status: 'delivered', founder: true,
-        title: 'Villa virtual tours and sharper sales teams',
-        body: 'For Saudi real estate businesses, sales training and website recommendations were brought together with interactive villa tours, so buyers arrive at a viewing already understanding the space and its layout.',
-        deliverables: ['Sales training and enablement', 'Website and digital buying-journey recommendations', 'Interactive villa virtual tours'] },
-      { id: 'transport', index: '02', sector: 'Major events & mobility', status: 'progress',
-        title: 'An operating system for VVIP and VIP transport',
-        body: 'For a major international sporting event in Jeddah, we are designing one operating framework that connects the guest journey across airport, hotel and venue with fleet, dispatch, protocol, communications and contingencies. It is planning-stage work, not a live-event result.',
-        deliverables: ['Operating model and role structure', 'SOP library from readiness to post-operation review', 'Dashboard architecture and risk register'] },
-      { id: 'fieldops', index: '03', sector: 'Public services & field operations', status: 'progress',
-        title: 'A mobile system for municipal field operations',
-        body: 'For a municipal field-services client, we are building a system that connects photo-based requests to staff, vehicles and shifts, with AI-assisted image handling, maintenance and licence alerts, and views for supervisors and specialists. The build is contracted and in progress.',
-        deliverables: ['Product scope and requirements', 'Driver, vehicle and shift assignment', 'Maintenance and licence alerts, management reporting'],
-        screens: ['Request', 'Assign', 'Supervisor'] },
-      { id: 'webar', index: '04', sector: 'SaaS & augmented reality', status: 'mvp',
-        title: 'A browser-based AR campaign studio',
-        body: 'A no-code SaaS platform that lets businesses compose image-target AR experiences with video, 3D objects, text and buttons, then share them through a QR code in the mobile browser. The MVP passed its recorded quality and build checks; it has not launched commercially.',
-        deliverables: ['Scene editor for images, video and 3D', 'Workspaces, projects and asset management', '19 automated tests passing, clean production build'] },
-    ] as CaseStudy[],
-    moreTitle: 'Experience across sectors',
+    eyebrow: 'أعمالنا',
+    title: 'أرقام حقيقية، من مشاريع حقيقية.',
+    lede: 'ما أنجزناه نقول إنه أُنجز. وما زلنا نبنيه نقول إننا نبنيه.',
+    confirmMark: 'بانتظار التأكيد',
+    featured: [
+      { sector: 'الاتصالات', tag: 'تطوير أعمال · GTM', title: 'دخول Telkomsel إلى السوق السعودي', body: 'تطوير الأعمال، وبناء استراتيجية دخول السوق وتنفيذها لشركة الاتصالات الإندونيسية Telkomsel في السعودية.', metric: '14M', metricLabel: 'إيرادات تحققت', confirm: true },
+      { sector: 'الترفيه والضيافة', tag: 'تطوير أعمال · تشغيل', title: 'Games Club (GC)', body: 'إعادة بناء التشغيل كاملًا: هندسة القائمة، وتدريب الفريق، وتجربة الضيف، وإجراءات تشغيل قياسية (SOPs)، وشراكات جديدة.', metric: '+161.11%', metricLabel: 'نمو الإيرادات خلال 30 يومًا', extra: '+511.11% متوسط الإيرادات الشهرية' },
+      { sector: 'الأغذية والمشروبات', tag: 'من الفكرة إلى السوق', title: 'علامة عصائر من الصفر', body: 'بناء العلامة وتشغيلها من مجرد فكرة: المنتج، والتشغيل، والبيع.', metric: '4K', metricLabel: 'ريال إيراد يومي', confirm: true },
+      { sector: 'العقار والاستثمار', tag: 'استراتيجية · تنفيذ', title: 'صفقة عقارية مع مستثمر خاص', body: 'بناء الاستراتيجية الكاملة وتنفيذ الصفقة مع مستثمر من القطاع الخاص.', metric: '1.4M', metricLabel: 'ريال قيمة الصفقة', confirm: true },
+    ] as CaseItem[],
     more: [
-      { icon: 'chart', sector: 'Hospitality investment', status: 'delivered', founder: true, title: 'Hotel investment decision support', body: 'A structured approach that organises the commercial inputs behind a hotel investment, making options easier to compare before capital is committed.' },
-      { icon: 'food', sector: 'Restaurants & marketing', status: 'delivered', founder: true, title: 'Restaurant digital presence', body: 'Photography, video, social media, campaigns and Google Maps presence combined into one offer, built around how diners discover and choose a venue.' },
-      { icon: 'megaphone', sector: 'Real estate marketing', status: 'experience', founder: true, title: 'Embedded sales and marketing leadership', body: 'Hands-on experience inside a real estate marketing organisation: frontline sales, marketing-team supervision and campaign execution, connecting strategy to daily delivery.' },
-      { icon: 'bell', sector: 'Hotel operations', status: 'experience', founder: true, title: 'Front desk and guest operations', body: 'Direct front-desk experience in a Saudi hotel gives our hospitality advice a practical grasp of guest communication, handoffs and issue resolution.' },
-    ] as MiniCase[],
-    labTitle: 'Venture lab',
-    labIntro: 'Products and ventures we develop in-house. They are shown as concepts, not launched products.',
-    lab: [
-      { icon: 'voice', sector: 'AI voice & automotive', status: 'concept', title: 'Arabic AI receptionist', body: 'A multi-tenant architecture that connects Arabic phone calls to a shop’s real parts inventory, pricing, compatibility and reservations. Next gate: a measured proof of concept on real Saudi calls.' },
-      { icon: 'building', sector: 'Real estate development', status: 'concept', title: 'Hospitality-enabled investor residences', body: 'A development model that treats compact units as an operating product for investors, with optional shared cleaning, maintenance and revenue management. A feasibility concept, not a completed project.' },
-      { icon: 'bike', sector: 'Mobility & marketplaces', status: 'concept', title: 'Safe Bike', body: 'A Saudi app concept for motorcycle riders: partner offers, bookings with QR validation, and a specialist marketplace for bikes and gear. A Phase 1 product blueprint.' },
-      { icon: 'people', sector: 'HR tech & workforce', status: 'concept', title: 'Tajriba', body: 'A Saudi platform concept that turns micro-internships and short projects into verified portfolios, with company feedback and AI-assisted skill validation.' },
-    ] as MiniCase[],
-    note: 'We separate delivered work from prototypes and concepts. Client names are withheld until approved, and results are published only once verified.',
+      { sector: 'التسويق العقاري', tag: 'شراكة', title: 'وثاق للتسويق العقاري', body: 'تطوير الأعمال والتسويق مع شركة وثاق للتسويق العقاري.', confirm: true },
+      { sector: 'التسويق العقاري', tag: 'أدوات تشغيل', title: 'روافد للتسويق العقاري', body: 'بناء أدوات تشغيل داخلية تختصر وقت الفريق وتنظّم عمله.' },
+      { sector: 'الفعاليات', tag: 'أنظمة من ابتكارنا', title: 'اللجنة المنظمة المحلية (LOC)', body: 'ابتكار أنظمة تشغيل داخلية وبناؤها للجنة المنظمة المحلية.', confirm: true },
+      { sector: 'سلاسل الإمداد', tag: 'الولايات المتحدة', title: 'شركة أمريكية في أبيلين، تكساس', body: 'تحسين عمليات سلسلة الإمداد من الطلب إلى التسليم.' },
+      { sector: 'الاستثمار', tag: 'إدارة فرص', title: 'مستثمرون من القطاع الخاص', body: 'إنشاء فرص استثمارية جديدة، وإدارة الفرص القائمة.' },
+      { sector: 'ريادة الأعمال', tag: 'مجتمع · ورش عمل', title: 'مجتمع KON لروّاد الأعمال', body: 'تأسيس المجتمع في المدينة المنورة، وتشغيله، وتقديم ورش العمل فيه.', metric: '+3,000', metricLabel: 'ساعة مع روّاد الأعمال' },
+    ] as CaseItem[],
+    tail: 'وأكثر من 12 مشروعًا آخر في 11 قطاعًا، من الضيافة إلى الواقع المعزّز.',
+    tour: { eyebrow: 'جولة افتراضية 360°', title: 'ادخل أحد مشاريعنا', body: 'تجوّل داخل إحدى الفلل، وانتقل بين الغرف كما لو كنت هناك.', cta: 'ابدأ الجولة', open: 'افتح في نافذة جديدة', close: 'إغلاق الجولة' },
   },
-  marquee: ['Business Diagnosis', 'Strategy & Growth', 'Operational Excellence', 'Digital Solutions', 'AI-Assisted Analytics', 'Customer Experience'],
-  contact: {
-    eyebrow: 'The first step',
-    title: 'Let’s start by understanding your business.',
-    body: 'A first diagnostic session to understand your business system and identify, together, where the greatest opportunities lie.',
-    name: 'Full name', company: 'Company', email: 'Email', challenge: 'Where do you see the biggest challenge today?',
-    choose: 'Choose a dimension', unsure: 'Not sure yet', cta: 'Book the diagnostic session',
-    done: 'Thank you. This is a preview, so nothing was sent. The form will connect to the booking system at launch.',
+
+  // CONFIRM: how requests are selected.
+  support: {
+    eyebrow: 'مبادرة KON',
+    title: 'مشروعك يتعثّر، ولا تملك الميزانية؟ هذا لك.',
+    body: 'نقدّم الاستشارة المتقدّمة والدعم التشغيلي الكامل **مجانًا** للمشاريع المتعثّرة التي لا تستطيع تحمّل تكلفته. بلا مقابل، وبلا شروط خفية.',
+    dedication: 'صدقةً عن والدي رحمه الله، وعن جميع المسلمين.',
+    note: 'نستقبل الطلبات بحسب طاقتنا، ونردّ على كل طلب.',
+    cta: 'قدّم طلب الدعم',
   },
-  footer: { tagline: 'Your business is capable of more.', top: 'Back to top' },
-  dimensions: buildDims(dimEn),
+
+  // LOCKED (khalid, 2026-10-25)
+  founder: {
+    eyebrow: 'كلمة المؤسس',
+    paragraphs: [
+      'أنا خالد. منذ عام 2007 وأنا تحت إشراف الإدارة العامة لتربية الموهوبين بالمدينة المنورة.',
+      'أخصائي نفسي، ورائد أعمال، ومطوّر أعمال.',
+      'عملت في مناصب مختلفة وقطاعات مختلفة، وقدّمت أكثر من **4,200 ساعة استشارية** لروّاد أعمال ومشاريع متنوعة. وخضت مشاريع لم تنجح، فكانت أصدق مدرسة مررت بها.',
+      'شغفي **الابتكار**، وأؤمن بقدرتي على إضافة قيمة حقيقية لأي كيان تجاري ولأي رائد أعمال.',
+    ],
+    punch: 'كلّنا لدينا مشكلات. لكن المشكلة بداية الحل.',
+    cta: 'ابدأ تشخيصك',
+  },
+
+  onboarding: {
+    eyebrow: 'ابدأ هنا',
+    title: 'دقيقتان. وتحصل على صورة أوضح لوضعك.',
+    lede: 'أسئلة قليلة، **مصمّمة لتفهمك أنت**. كلما كانت إجاباتك أصدق، كانت جلستك أنفع.',
+    start: 'لنبدأ',
+    next: 'التالي',
+    back: 'رجوع',
+    finish: 'اعرض صورتي',
+    skip: 'تخطَّ',
+    stepOf: (a: number, b: number) => `الخطوة ${a} من ${b}`,
+    otherPlaceholder: 'أخرى؟ اكتبها هنا',
+    required: 'اختر إجابة واحدة على الأقل للمتابعة.',
+    personaQ: 'من أنت؟',
+    personas: {
+      founder: { label: 'رائد أعمال', sub: 'عندي فكرة أو شركة ناشئة' },
+      business: { label: 'كيان تجاري', sub: 'أملك شركة أو أديرها' },
+      investor: { label: 'مستثمر', sub: 'أبحث عن فرص أو أدير استثمارات' },
+    } as Record<Persona, { label: string; sub: string }>,
+    supportToggle: 'أتقدّم لمبادرة الدعم المجاني (لا أملك ميزانية الآن)',
+    scaleLow: 'يمكن أن ينتظر',
+    scaleHigh: 'عاجل جدًا',
+    contact: {
+      title: 'أين نجدك؟',
+      lede: 'لن نشارك بياناتك مع أحد. نستخدمها فقط للتواصل معك بخصوص طلبك.',
+      name: 'الاسم',
+      company: 'اسم المشروع أو الشركة',
+      phone: 'رقم الجوال (واتساب)',
+      email: 'البريد الإلكتروني',
+      city: 'المدينة والدولة',
+      prefer: 'كيف تفضّل أن نتواصل؟',
+      preferOpts: [{ id: 'whatsapp', label: 'واتساب' }, { id: 'call', label: 'اتصال' }, { id: 'email', label: 'بريد' }],
+      needOne: 'أضف اسمك ووسيلة تواصل واحدة على الأقل.',
+    },
+    summary: {
+      title: 'هذه صورتك الآن.',
+      lede: 'قرأنا إجاباتك. هذا ما نراه، وهذه أول خطوة نقترحها.',
+      persona: 'المسار',
+      stage: 'الوضع الحالي',
+      pains: 'ما يثقلك',
+      goals: 'ما تريده',
+      urgency: 'درجة الإلحاح',
+      urgencyLevels: ['يمكن التخطيط له بهدوء', 'مهم، ويستحق البدء قريبًا', 'عاجل، كل أسبوع له ثمن'],
+      primary: 'نقترح أن نبدأ بـ',
+      also: 'وقد يفيدك أيضًا',
+      next: 'الخطوة التالية',
+      nextBody: 'جلسة التشخيص المجانية. نأتيك وقد قرأنا كل هذا، فلا نبدأ من الصفر.',
+      sendWhatsapp: 'أرسل عبر واتساب',
+      sendEmail: 'أرسل بالبريد',
+      copy: 'انسخ الملخص',
+      copied: 'نُسخ',
+      download: 'نزّل الملخص',
+      edit: 'عدّل إجاباتي',
+      raw: 'اعرض نص الملخص',
+      notConnected: 'نسخة تجريبية: النموذج غير مربوط بعد بأي جهة استقبال، ولا يُرسل شيء تلقائيًا. انسخ ملخصك وأرسله لنا بنفسك.',
+      supportBadge: 'طلب ضمن مبادرة الدعم المجاني',
+    },
+  },
+
+  finale: {
+    line: 'كل القطع كانت هنا من البداية.',
+    line2: 'كانت تحتاج فقط من يرتّبها.',
+    cta: 'ابدأ الآن',
+  },
+
+  footer: {
+    rights: '© 2026 KON Unlimited. جميع الحقوق محفوظة.',
+    slogan: 'أينما كان التحدي، وكيفما كان، سنكون هناك.',
+    top: 'إلى الأعلى',
+  },
 }
 
 export type Content = typeof ar
-export const content: Record<Lang, Content> = { ar, en }
 
-// Real assets go here. Empty values render clearly marked placeholders.
-export const media = {
-  /** Field-operations app screenshots (portrait, ~1170×2532), once approved for public use. */
-  fieldScreens: [] as string[],
-  /** Embeddable 360° virtual tour URL (e.g. Matterport / Kuula share link). */
-  /** Villa 360° photos (equirectangular 2:1 JPG), shown in the built-in viewer; takes priority over tourUrl. */
-  tourScenes: [] as { src: string; label: string }[],
-  tourUrl: 'https://kuula.co/share/collection/7MZVN?logo=1&info=1&fs=1&vr=0&sd=1&thumbs=1',
+const en: Content = {
+  meta: {
+    switchTo: 'ع', switchLabel: 'التبديل إلى العربية', menu: 'Menu', close: 'Close', skip: 'Skip to content',
+    title: 'KON Unlimited · We make your business run better',
+  },
+  nav: [
+    { href: '#who', label: 'Who we help' },
+    { href: '#why', label: 'Why KON' },
+    { href: '#offer', label: 'The offer' },
+    { href: '#work', label: 'Work' },
+    { href: '#founder', label: 'Founder' },
+  ],
+  headerCta: 'Start diagnosis',
+
+  hero: {
+    eyebrow: 'Advisory · Business development · Operations',
+    rotating: ['We make your business run better.', 'We sharpen how you operate.', 'We turn ideas into working businesses.', 'We make your capital work smarter.'],
+    promise: 'Our promise is simple: **we optimise and develop any operation.**',
+    lede: 'From **the first idea** to **a company that runs steadily**, without you carrying all of it alone.',
+    primary: 'Start your free diagnosis',
+    secondary: 'See the results',
+    slogan: 'Anywhere. Any challenge. Any way. We’ll be there.',
+    scroll: 'Scroll',
+    proof: [
+      { n: '4,200+', l: 'advisory hours' },
+      { n: '11', l: 'sectors' },
+      { n: '14M', l: 'revenue from one market entry' },
+      { n: '+511%', l: 'average monthly revenue growth' },
+    ],
+  },
+
+  problem: {
+    title: 'Not sure exactly where the problem is?',
+    lines: ['Your team? Your operating plan? Expansion?'],
+    closing: 'Insha’Allah, we’ll find the answer.',
+    paths: [
+      { persona: 'founder', label: 'I’m an entrepreneur', q: ['The idea?', 'The business model?', 'First customers?', 'First hire?'] },
+      { persona: 'business', label: 'I run a business', q: ['The team?', 'The operating plan?', 'Expansion?', 'Sales?', 'Costs?'] },
+    ],
+    investor: 'An investor? There’s a path for you too.',
+    investorCta: 'Start here',
+    hint: 'Pick what sounds like you. We’ll take it from there.',
+  },
+
+  loops: {
+    eyebrow: 'Questions you don’t say out loud',
+    title: 'Have you ever asked yourself…',
+    pick: 'Pick what sounds like you:',
+    groups: [
+      { persona: 'business', label: 'Business', qs: ['Sales keep rising. So why doesn’t profit?', 'Why does everything stop the day you take off?'] },
+      { persona: 'founder', label: 'Entrepreneur', qs: ['You believe in your idea. So why haven’t you started?', 'What if your first customer is closer than you think?'] },
+      { persona: 'investor', label: 'Investor', qs: ['Are your investments working for you, or are you working for them?', 'How many deals did you pass on because no one read the numbers honestly?'] },
+    ],
+    tail: 'The answer is rarely where you’re looking. **We know where to look.**',
+    cta: 'Find your answer',
+  },
+
+  who: {
+    eyebrow: 'Who we help',
+    title: 'Wherever you are today, we know the next move.',
+    groups: [
+      { icon: 'storm', persona: 'business', title: 'Companies under pressure', line: 'First, we stop the bleeding.', body: 'When costs, cash and people squeeze you at once, **we stabilise things**, then rebuild on solid ground.' },
+      { icon: 'anchor', persona: 'business', title: 'Stable companies', line: 'Long stability hides missed upside.', body: 'It works, and you sense it could do more. We find **the silent waste** and turn it into **margin**.' },
+      { icon: 'rise', persona: 'business', title: 'Growing companies', line: 'Growth breaks what used to work.', body: 'New branches, a bigger team, systems never built for this size. We build **operations that can carry the scale**.' },
+      { icon: 'seed', persona: 'founder', title: 'Entrepreneurs', line: 'From idea to first riyal.', body: 'An idea or an early startup, and no clear place to begin? **Business model, go-to-market, first customers**, first hire. Step by step, with you.' },
+      { icon: 'compass', persona: 'investor', title: 'Investors', line: 'Clearer deals. Smarter portfolios.', body: 'We source **new opportunities** with you, read them honestly, and run your existing investments with **a system that protects and grows them**.' },
+    ],
+    cta: 'That’s me',
+  },
+
+  commit: {
+    eyebrow: 'Our commitment',
+    work: { n: '80%', label: 'of the work is ours' },
+    you: { n: '20%', label: 'is yours: the vision and the call' },
+    title: 'We carry 80% of the work. Our fees follow your results.',
+    body: 'We don’t hand you a report and disappear. **We go into the field, build, train and follow through until it works.** Every engagement is designed so our success is tied to yours, because results are the only thing we want to be known for.',
+    fine: 'How fees link to results is agreed with you clearly, in writing, before we start.',
+  },
+
+  why: {
+    eyebrow: 'Why KON',
+    title: 'You don’t need another consultant. You need someone who stays for the whole road.',
+    items: [
+      { icon: 'flex', title: 'Flexible with any situation', body: 'Tight budget? Short timeline? Messy situation? We shape the way we work **around your reality**, not the other way round.' },
+      { icon: 'aligned', title: 'We win when you win', body: '**Our interest is tied to your outcome.** If your numbers haven’t moved, our work isn’t done.' },
+      { icon: 'spark', title: 'Genuinely innovative', body: 'When what exists isn’t enough, we build **what doesn’t exist yet**: systems, tools, experiences.' },
+      { icon: 'layers', title: 'Experience across 11 sectors', body: 'Telecoms, real estate, hospitality, entertainment, food, events, supply chain. **What worked there, we bring to you.**' },
+      { icon: 'ai', title: 'Thousands of staff, at a fraction of the cost', body: 'We put **AI** to work doing **what whole teams do**: analysis, follow-up, reporting, customer service. People still make the decisions.' },
+      { icon: 'cycle', title: 'Sustainability, not painkillers', body: 'Systems, SOPs and a team that knows what to do. So **results last long after we leave**.' },
+      { icon: 'mind', title: 'People before numbers', body: 'Our background in psychology lets us read **customer behaviour and employee mindset**, the two things behind every figure.' },
+      { icon: 'field', title: 'We execute, not just advise', body: 'We stand in the field with your team until the new way becomes **the daily habit**.' },
+    ],
+  },
+
+  human: {
+    eyebrow: 'What sets us apart',
+    title: 'Behind every number is a person. That’s where we start.',
+    lede: 'Companies don’t stall because of spreadsheets. They stall when **customers aren’t understood, and staff aren’t either**. That’s our edge.',
+    pillars: [
+      { icon: 'eye', title: 'Consumer behaviour', body: 'Why does your customer buy? Why do they hesitate? Why don’t they come back? We read the decision from the inside and **redesign the experience** around it.' },
+      { icon: 'people', title: 'Employee mindset', body: 'People don’t resist change. **They resist uncertainty.** We make change clear, so your team becomes part of it.' },
+      { icon: 'train', title: 'Training that changes behaviour', body: 'Training **you can see on the floor** in week one, not a certificate on the wall.' },
+      { icon: 'bulb', title: 'Practical innovation', body: 'Internal operating systems, field tools, digital experiences. We invent **what gets used every day**, not what gets demoed once.' },
+    ],
+  },
+
+  services: {
+    eyebrow: 'Services',
+    title: 'Six tools. One goal: a better-run business.',
+    items: [
+      { title: 'Diagnosis', body: 'We see your company from eight angles.' },
+      { title: 'Strategy', body: 'Where you’re going, and what to leave behind.' },
+      { title: 'Operations', body: 'We remove what slows you down.' },
+      { title: 'Mystery Shopper', body: 'We visit as an ordinary customer and see what your customers really see.' },
+      { title: 'Digital', body: 'The tool you need, not the one you’re sold.' },
+      { title: 'AI', body: 'Faster analysis, human decisions.' },
+    ],
+  },
+
+  offer: {
+    eyebrow: 'The offer',
+    title: 'Your first diagnosis is on us.',
+    lede: 'A diagnosis session with a **senior advisor**. You leave with **a clearer picture of where you stand**, even if we never work together after.',
+    includes: [
+      'A focused 60-minute diagnosis session',
+      'A read of your situation across eight dimensions',
+      'Your top 3 quick wins, ready to start on',
+      'A written first-draft roadmap',
+    ],
+    value: 'No cost. No commitment.',
+    guarantee: 'If you don’t leave with **at least one idea worth your time**, we’re the ones who lost the hour, not you.',
+    cta: 'Book your free diagnosis',
+    note: 'Sessions are limited each month, because each one is prepared with care.',
+  },
+
+  work: {
+    eyebrow: 'Work',
+    title: 'Real numbers, from real projects.',
+    lede: 'If it’s delivered, we say delivered. If we’re still building it, we say so.',
+    confirmMark: 'Pending confirmation',
+    featured: [
+      { sector: 'Telecoms', tag: 'Business development · GTM', title: 'Telkomsel’s entry into Saudi Arabia', body: 'Business development, plus building and executing the go-to-market strategy that brought Indonesian telecom operator Telkomsel into the Saudi market.', metric: '14M', metricLabel: 'revenue generated', confirm: true },
+      { sector: 'Entertainment & hospitality', tag: 'Business development · Operations', title: 'Games Club (GC)', body: 'A full operational rebuild: menu engineering, staff training, guest experience, standard operating procedures and new partnerships.', metric: '+161.11%', metricLabel: 'revenue growth in 30 days', extra: '+511.11% average monthly revenue' },
+      { sector: 'Food & beverage', tag: 'Idea to market', title: 'A juice brand, from zero', body: 'Building and running the brand from a bare idea: product, operations and sales.', metric: '4K', metricLabel: 'SAR revenue per day', confirm: true },
+      { sector: 'Real estate & investment', tag: 'Strategy · Execution', title: 'A private-investor property deal', body: 'Building the full strategy and executing a real estate deal with a private investor.', metric: '1.4M', metricLabel: 'SAR deal value', confirm: true },
+    ],
+    more: [
+      { sector: 'Real estate marketing', tag: 'Partnership', title: 'Wethaq Real Estate Marketing', body: 'Business development and marketing with Wethaq Real Estate Marketing.', confirm: true },
+      { sector: 'Real estate marketing', tag: 'Operating tools', title: 'Rwafed Real Estate Marketing', body: 'Internal operating tools that save the team time and organise its work.' },
+      { sector: 'Events', tag: 'Systems we invented', title: 'Local Organising Committee (LOC)', body: 'Inventing and building internal operating systems for the Local Organising Committee.', confirm: true },
+      { sector: 'Supply chain', tag: 'United States', title: 'A U.S. company in Abilene, Texas', body: 'Optimising the supply chain process from order to delivery.' },
+      { sector: 'Investment', tag: 'Opportunity management', title: 'Private investors', body: 'Creating new investment opportunities and managing existing ones.' },
+      { sector: 'Entrepreneurship', tag: 'Community · Workshops', title: 'KON Entrepreneurs Community', body: 'Founding and running the community in Madinah, and leading its workshops.', metric: '3,000+', metricLabel: 'hours with entrepreneurs' },
+    ],
+    tail: 'Plus 12 more projects across 11 sectors, from hospitality to augmented reality.',
+    tour: { eyebrow: '360° virtual tour', title: 'Step inside one of our projects', body: 'Walk through one of the villas and move between rooms as if you were there.', cta: 'Start the tour', open: 'Open in a new tab', close: 'Close the tour' },
+  },
+
+  support: {
+    eyebrow: 'The KON initiative',
+    title: 'Your business is struggling and there’s no budget? This is for you.',
+    body: 'We offer advanced advisory and full operational support **free of charge** to struggling businesses that can’t afford it. No fee, no hidden conditions.',
+    dedication: 'Given as sadaqah for my late father, may God have mercy on him, and for all Muslims.',
+    note: 'We take requests as our capacity allows, and we reply to every one.',
+    cta: 'Apply for support',
+  },
+
+  founder: {
+    eyebrow: 'A note from the founder',
+    paragraphs: [
+      'I’m Khalid. Since 2007, I’ve been under the supervision of the General Directorate for Gifted Education in Madinah.',
+      'Psychologist, entrepreneur and business developer.',
+      'I’ve held different roles across different sectors and given more than **4,200 hours of advisory work** to entrepreneurs and businesses. Some of my own ventures failed, and they were the most honest teachers I’ve had.',
+      '**Innovation** drives me, and I believe I can add real value to any business and any founder.',
+    ],
+    punch: 'We all have problems. But a problem is where the solution begins.',
+    cta: 'Start your diagnosis',
+  },
+
+  onboarding: {
+    eyebrow: 'Start here',
+    title: 'Two minutes. A clearer picture of where you stand.',
+    lede: 'A few questions, **built to understand you**. The more honest the answers, the more useful your session.',
+    start: 'Let’s begin',
+    next: 'Next',
+    back: 'Back',
+    finish: 'Show my picture',
+    skip: 'Skip',
+    stepOf: (a: number, b: number) => `Step ${a} of ${b}`,
+    otherPlaceholder: 'Something else? Type it here',
+    required: 'Choose at least one answer to continue.',
+    personaQ: 'Who are you?',
+    personas: {
+      founder: { label: 'Entrepreneur', sub: 'I have an idea or a startup' },
+      business: { label: 'Business', sub: 'I own or run a company' },
+      investor: { label: 'Investor', sub: 'I’m looking for deals or managing investments' },
+    },
+    supportToggle: 'I’m applying for the free support initiative (no budget right now)',
+    scaleLow: 'It can wait',
+    scaleHigh: 'Very urgent',
+    contact: {
+      title: 'Where can we reach you?',
+      lede: 'We never share your details. We use them only to get back to you about this request.',
+      name: 'Name',
+      company: 'Project or company name',
+      phone: 'Mobile (WhatsApp)',
+      email: 'Email',
+      city: 'City and country',
+      prefer: 'How would you like us to reach you?',
+      preferOpts: [{ id: 'whatsapp', label: 'WhatsApp' }, { id: 'call', label: 'Call' }, { id: 'email', label: 'Email' }],
+      needOne: 'Add your name and at least one way to reach you.',
+    },
+    summary: {
+      title: 'Here’s your picture right now.',
+      lede: 'We read your answers. Here’s what we see, and the first step we’d suggest.',
+      persona: 'Path',
+      stage: 'Where you are',
+      pains: 'What’s weighing on you',
+      goals: 'What you want',
+      urgency: 'Urgency',
+      urgencyLevels: ['Can be planned calmly', 'Important, worth starting soon', 'Urgent: every week has a cost'],
+      primary: 'We’d start with',
+      also: 'You may also benefit from',
+      next: 'Next step',
+      nextBody: 'Your free diagnosis session. We arrive having read all of this, so we don’t start from zero.',
+      sendWhatsapp: 'Send on WhatsApp',
+      sendEmail: 'Send by email',
+      copy: 'Copy summary',
+      copied: 'Copied',
+      download: 'Download summary',
+      edit: 'Edit my answers',
+      raw: 'Show the summary text',
+      notConnected: 'Preview version: this form isn’t connected to an inbox yet, and nothing is sent automatically. Copy your summary and send it to us yourself.',
+      supportBadge: 'Request under the free support initiative',
+    },
+  },
+
+  finale: {
+    line: 'Every piece was here from the start.',
+    line2: 'It just needed someone to put it in order.',
+    cta: 'Start now',
+  },
+
+  footer: {
+    rights: '© 2026 KON Unlimited. All rights reserved.',
+    slogan: 'Anywhere. Any challenge. Any way. We’ll be there.',
+    top: 'Back to top',
+  },
 }
+
+export const content: Record<Lang, Content> = { ar, en }
