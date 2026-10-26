@@ -94,7 +94,6 @@ function Header() {
     <header className={`site-header${scrolled ? ' is-scrolled' : ''}${open ? ' is-open' : ''}`}>
       <span className="page-progress" ref={bar} aria-hidden="true" />
       <a href="#top" className="logo" aria-label="KON Unlimited">
-        <GemMark className="logo-gem" />
         <span dir="ltr"><b>KON</b> Unlimited</span>
       </a>
       <nav aria-label="Primary" className="nav-desktop">
