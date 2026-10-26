@@ -11,11 +11,18 @@ export function KonMark({ solid }: { solid?: boolean }) {
   useEffect(() => {
     const cv = ref.current!
     const paint = () => {
-      const w = window.innerWidth
-      const h = window.innerHeight
+      // Measure the real WebGL canvas, not the window: on phones the browser bar changes the
+      // viewport height, and desktop scrollbars change its width. Both would shift the outline.
+      const gl = document.querySelector<HTMLElement>('.gem-canvas')
+      const r = gl?.getBoundingClientRect()
+      const w = r && r.width > 0 ? r.width : document.documentElement.clientWidth
+      const h = r && r.height > 0 ? r.height : window.innerHeight
+      const glMid = r && r.height > 0 ? r.top + h / 2 : h / 2
+      const stage = cv.parentElement?.parentElement
+      const stageH = stage?.getBoundingClientRect().height || h
       const vhW = 2 * Math.tan((FOV / 2) * (Math.PI / 180)) * CAM_Z
       const pxPerUnit = h / vhW
-      const { width, centerY } = konLayout(vhW * (w / h), vhW, w < 700)
+      const { width, centerY } = konLayout(vhW * (w / h), vhW, w < 700, h < 520)
       const ctx0 = cv.getContext('2d')!
       const { total } = measureKon(ctx0)
       const scale = (width * pxPerUnit) / total
@@ -26,7 +33,7 @@ export function KonMark({ solid }: { solid?: boolean }) {
       const cssH = (KON.H + P * 2) * scale
       cv.style.width = `${cssW}px`
       cv.style.height = `${cssH}px`
-      cv.parentElement?.style.setProperty('--kon-y', `${-centerY * pxPerUnit}px`)
+      cv.parentElement?.style.setProperty('--kon-y', `${glMid - stageH / 2 - centerY * pxPerUnit}px`)
       cv.width = Math.round(cssW * dpr)
       cv.height = Math.round(cssH * dpr)
       const ctx = cv.getContext('2d')!
@@ -70,7 +77,17 @@ export function KonMark({ solid }: { solid?: boolean }) {
       id = requestAnimationFrame(paint)
     }
     window.addEventListener('resize', on)
+    // The canvas mounts lazily and can resize without a window resize (phone browser bars).
+    const ro = new ResizeObserver(on)
+    const watch = () => {
+      const gl = document.querySelector('.gem-canvas')
+      if (gl) ro.observe(gl)
+      return !!gl
+    }
+    const poll = watch() ? 0 : window.setInterval(() => watch() && window.clearInterval(poll), 500)
     return () => {
+      ro.disconnect()
+      window.clearInterval(poll)
       window.removeEventListener('resize', on)
       cancelAnimationFrame(id)
     }

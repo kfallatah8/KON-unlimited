@@ -35,6 +35,8 @@ const CHIP_TO_PAIN: Record<string, string> = {
   'أول العملاء؟': 'customers', 'First customers?': 'customers', 'أول موظف؟': 'team', 'First hire?': 'team',
   'الموظفين؟': 'team', 'The team?': 'team', 'الخطة التشغيلية؟': 'ops', 'The operating plan?': 'ops',
   'التوسّع؟': 'expand', 'Expansion?': 'expand', 'المبيعات؟': 'sales', 'Sales?': 'sales', 'التكاليف؟': 'costs', 'Costs?': 'costs',
+  'فرص جديدة؟': 'sourcing', 'New deals?': 'sourcing', 'قراءة الفرصة؟': 'read', 'Reading a deal?': 'read',
+  'أداء الاستثمار؟': 'under', 'Underperformance?': 'under', 'التقارير؟': 'report', 'Reporting?': 'report',
 }
 export const chipPain = (chip: string) => CHIP_TO_PAIN[chip]
 

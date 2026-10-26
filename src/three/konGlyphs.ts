@@ -26,7 +26,9 @@ export function drawKon(ctx: CanvasRenderingContext2D, x0: number, draw: (l: str
 }
 
 /** World-space layout of the word, shared by the 3D layer and the DOM overlay. */
-export function konLayout(vw: number, vh: number, narrow: boolean) {
+export function konLayout(vw: number, vh: number, narrow: boolean, short = false) {
+  // Short screens (phones held sideways) need a smaller word sitting higher, clear of the copy.
+  if (short) return { width: Math.min(vw * 0.42, vh * 0.95), centerY: vh * 0.12 }
   const width = Math.min(vw * (narrow ? 0.86 : 0.66), vh * 1.7)
   const centerY = vh * (narrow ? 0.09 : 0.075)
   return { width, centerY }

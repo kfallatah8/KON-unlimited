@@ -63,8 +63,8 @@ function konPoints(n: number): [number, number][] {
   const cand: [number, number][] = []
   // Inset from the glyph edge a little, so gems sit inside the drawn outline.
   const inside = (x: number, y: number) => data[(y * W + x) * 4 + 3] > 140
-  for (let y = 6; y < H - 6; y += 4) for (let x = 6; x < W - 6; x += 4)
-    if (inside(x, y) && inside(x - 6, y) && inside(x + 6, y) && inside(x, y - 6) && inside(x, y + 6)) cand.push([x, y])
+  for (let y = 12; y < H - 12; y += 4) for (let x = 12; x < W - 12; x += 4)
+    if (inside(x, y) && inside(x - 12, y) && inside(x + 12, y) && inside(x, y - 12) && inside(x, y + 12) && inside(x - 9, y - 9) && inside(x + 9, y + 9) && inside(x - 9, y + 9) && inside(x + 9, y - 9)) cand.push([x, y])
   if (!cand.length) return Array.from({ length: n }, () => [0, 0])
   // Farthest-point sampling: even coverage with few points.
   const picked: [number, number][] = [cand[0]]
@@ -257,7 +257,7 @@ function Gems({ count, reduced }: { count: number; reduced: boolean }) {
       light.current.position.set(px, py, 3.2)
       light.current.intensity = 60 + fin * 40
     }
-    const { width: konW, centerY } = konLayout(vw, vh, narrow)
+    const { width: konW, centerY } = konLayout(vw, vh, narrow, size.height < 520)
     const konScale = konW * 0.02 * Math.sqrt(210 / gems.length)
     // A light sweep that travels across the finished word.
     const sweepX = ((t * 0.22) % 1.7) - 0.85
@@ -292,7 +292,8 @@ function Gems({ count, reduced }: { count: number; reduced: boolean }) {
         z += (hz - z) * hero
       }
       // 3 · finale: each gem leaves on its own beat and settles into a letter.
-      const f = easeInOut(fin * 1.45 - g.seed * 0.45)
+      // Every gem has landed by ~85% of the finale, so the resting word is always complete.
+      const f = easeInOut(fin * 1.9 - g.seed * 0.6)
       if (f > 0) {
         x += (g.target[0] * konW - x) * f
         y += (g.target[1] * konW + centerY + post * vh * 0.32 - y) * f
@@ -303,7 +304,7 @@ function Gems({ count, reduced }: { count: number; reduced: boolean }) {
       const dx = x * persp - px
       const dy = y * persp - py
       const d = Math.hypot(dx, dy) + 1e-4
-      const push = d < R ? Math.pow(1 - d / R, 2) * (1.5 - f * 1.15) : 0
+      const push = d < R ? Math.pow(1 - d / R, 2) * (1.5 - f * 1.4) : 0
       const kk = 1 - Math.exp(-dt * 5)
       g.ox += ((dx / d) * push - g.ox) * kk
       g.oy += ((dy / d) * push - g.oy) * kk
@@ -316,7 +317,7 @@ function Gems({ count, reduced }: { count: number; reduced: boolean }) {
         tmp.q.copy(tmp.face).multiply(g.tilt).multiply(tmp.q2.setFromAxisAngle(THREE.Object3D.DEFAULT_UP, t * 0.22 + g.seed * 6))
         tmp.qa.slerp(tmp.q, f)
       }
-      const sz = THREE.MathUtils.lerp(g.size * (narrow ? 0.8 : 1), konScale, f) * (1 - hero * 0.1) * (1 - post * 0.85)
+      const sz = THREE.MathUtils.lerp(g.size * (narrow ? 0.8 : 1), konScale, f) * (1 - hero * 0.1) * (1 - post * 0.97)
       tmp.s.set(sz, sz * g.stretch, sz)
       tmp.m.compose(tmp.p, tmp.qa, tmp.s)
       const mesh = meshes.current[g.cut]
@@ -335,7 +336,7 @@ function Gems({ count, reduced }: { count: number; reduced: boolean }) {
       const h = halo.current
       if (h) {
         const sweepH = shimmer ? Math.exp(-((g.target[0] - sweepX) ** 2) * 40) : 0
-        const glow = (0.05 + mid * 0.02 + f * (0.22 + sweepH * 0.35) + motion.glow * 0.08) * (1 - post * 0.9) * hGain
+        const glow = (0.05 + mid * 0.02 + f * (0.16 + sweepH * 0.3) + motion.glow * 0.08) * (1 - post * 0.9) * hGain
         tmp.p.z -= 0.05
         tmp.s.setScalar(sz * (4.2 + f * 1.4))
         tmp.m.compose(tmp.p, camera.quaternion, tmp.s)

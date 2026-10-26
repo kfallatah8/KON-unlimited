@@ -193,8 +193,6 @@ function Problem() {
         ))}
       </div>
       <div className="wrap center investor-line" data-reveal>
-        <span>{p.investor}</span>
-        <button type="button" className="link-btn" onClick={() => startOnboarding({ persona: 'investor' })}>{p.investorCta} <span className="arr" aria-hidden="true">←</span></button>
         <p className="hint">{p.hint}</p>
       </div>
     </section>
@@ -254,9 +252,10 @@ function Who() {
 function Commit() {
   const c = useContent().commit
   return (
-    <section className="band commit" aria-labelledby="commit-title">
+    <section id="commit" className="band commit" aria-labelledby="commit-title">
       <div className="wrap narrow center">
         <p className="eyebrow" data-reveal>{c.eyebrow}</p>
+        <p className="paid-badge" data-reveal><GemMark className="paid-gem" /><span>{c.badge}</span></p>
         <SplitReveal as="h2" id="commit-title" className="display" text={c.title} />
         <div className="split-bar" data-reveal aria-hidden="true">
           <span className="seg seg-80"><b dir="ltr">{c.work.n}</b><em>{c.work.label}</em></span>
@@ -366,7 +365,10 @@ function CaseCard({ it, mark, big }: { it: CaseItem; mark: string; big?: boolean
       )}
       <h3>{it.title}</h3>
       <p>{it.body}</p>
-      {it.extra && <p className="case-extra" dir="auto">{it.extra}</p>}
+      {it.extra && (
+        // Keep the signed figure in one LTR run so "+511.11%" never flips its sign in Arabic.
+        <p className="case-extra"><bdi dir="ltr">{it.extra.split(' ')[0]}</bdi> {it.extra.split(' ').slice(1).join(' ')}</p>
+      )}
       {it.confirm && <p className="case-confirm" title={mark}>{mark}</p>}
     </article>
   )
