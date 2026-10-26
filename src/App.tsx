@@ -10,7 +10,7 @@ import { Cursor } from './components/Cursor'
 import { Icon, GemMark } from './components/Icons'
 import { MagneticButton } from './components/MagneticButton'
 import { chipPain, Onboarding } from './components/Onboarding'
-import { SmoothScroll } from './components/SmoothScroll'
+import { lenis, SmoothScroll } from './components/SmoothScroll'
 import { SplitReveal } from './components/SplitReveal'
 import { Rich } from './components/Rich'
 import { KonMark } from './components/KonMark'
@@ -64,6 +64,7 @@ function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
   const bar = useRef<HTMLSpanElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     let frame = 0
     const paint = () => {
@@ -82,12 +83,32 @@ function Header() {
       cancelAnimationFrame(frame)
     }
   }, [])
+  // Lock the page behind the open menu (Lenis too), and unlock synchronously on close so
+  // the link's smooth scroll starts from an unlocked page.
+  const lock = (on: boolean) => {
+    document.documentElement.classList.toggle('menu-open', on)
+    if (on) lenis?.stop()
+    else lenis?.start()
+  }
+  const close = () => {
+    lock(false)
+    setOpen(false)
+  }
   useEffect(() => {
-    document.documentElement.classList.toggle('menu-open', open)
     if (!open) return
-    const esc = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
+    lock(true)
+    menuRef.current?.querySelector('a')?.focus({ preventScroll: true })
+    const esc = (e: KeyboardEvent) => e.key === 'Escape' && close()
+    // Rotating a tablet past the breakpoint shows the desktop nav; don't leave the page locked.
+    const wide = window.matchMedia('(min-width: 901px)')
+    const onWide = () => wide.matches && close()
     window.addEventListener('keydown', esc)
-    return () => window.removeEventListener('keydown', esc)
+    wide.addEventListener('change', onWide)
+    return () => {
+      window.removeEventListener('keydown', esc)
+      wide.removeEventListener('change', onWide)
+      lock(false)
+    }
   }, [open])
 
   return (
@@ -102,19 +123,19 @@ function Header() {
       <div className="header-actions">
         <LangSwitch />
         <a href="#start" className="header-cta">{c.headerCta}</a>
-        <button type="button" className="menu-btn" aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpen(!open)}>
+        <button type="button" className="menu-btn" aria-expanded={open} aria-controls="mobile-menu" onClick={() => (open ? close() : setOpen(true))}>
           <span className="sr-only">{open ? c.meta.close : c.meta.menu}</span>
           <i /><i />
         </button>
       </div>
-      <div id="mobile-menu" className="mobile-menu" hidden={!open}>
+      <div id="mobile-menu" ref={menuRef} className="mobile-menu" hidden={!open}>
         <nav aria-label="Mobile">
           {c.nav.map((n, i) => (
-            <a key={n.href} href={n.href} onClick={() => setOpen(false)}>
+            <a key={n.href} href={n.href} onClick={close}>
               <span dir="ltr">{pad(i + 1)}</span>{n.label}
             </a>
           ))}
-          <a href="#start" onClick={() => setOpen(false)}><span dir="ltr">{pad(c.nav.length + 1)}</span>{c.headerCta}</a>
+          <a href="#start" onClick={close}><span dir="ltr">{pad(c.nav.length + 1)}</span>{c.headerCta}</a>
         </nav>
       </div>
     </header>

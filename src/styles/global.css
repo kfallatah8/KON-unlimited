@@ -763,3 +763,13 @@ main, .site-footer { position: relative; z-index: 1; }
   .finale-line2 { margin-bottom: 0.7rem; }
   .finale-copy .btn { width: auto; min-height: 44px; padding-block: 0.6rem; }
 }
+
+/* Mobile menu: a blurred header would become the containing block of the fixed menu and clip it
+   to the header bar, so the header drops its blur while the menu is open. */
+.site-header.is-open { backdrop-filter: none; -webkit-backdrop-filter: none; background: transparent; border-color: transparent; }
+.site-header.is-open .page-progress { opacity: 0; }
+html.menu-open, html.menu-open body { overflow: hidden; overscroll-behavior: none; }
+.mobile-menu { overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+.mobile-menu a { color: var(--text); min-height: 48px; }
+.mobile-menu a:focus-visible { outline: 1px solid var(--teal-hi); outline-offset: 4px; }
+@media (max-height: 520px) { .mobile-menu { align-items: flex-start; padding-top: 5rem; } .mobile-menu a { font-size: 1.4rem; } }
