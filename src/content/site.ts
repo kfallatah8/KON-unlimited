@@ -194,7 +194,7 @@ const ar = {
     more: [
       { sector: 'التسويق العقاري', tag: 'تطوير أعمال', title: 'وثاق للتسويق العقاري', body: 'تطوير الأعمال لشركة وثاق للتسويق العقاري، بدور مطوّر أعمال.' },
       { sector: 'التسويق العقاري', tag: 'أدوات تشغيل', title: 'روافد للتسويق العقاري', body: 'بناء أدوات تشغيل داخلية تختصر وقت الفريق وتنظّم عمله.' },
-      { sector: 'الفعاليات', tag: 'أنظمة من ابتكارنا', title: 'اللجنة المنظمة المحلية (LOC)', body: 'ابتكار أنظمة تشغيل داخلية وبناؤها للجنة المنظمة المحلية.', confirm: true },
+      { sector: 'الفعاليات', tag: 'أنظمة من ابتكارنا', title: 'اللجنة المنظمة المحلية (LOC)', body: 'ابتكار أنظمة تشغيل داخلية وبناؤها للجنة المنظمة المحلية.' },
       { sector: 'سلاسل الإمداد', tag: 'الولايات المتحدة', title: 'شركة أمريكية في أبيلين، تكساس', body: 'تحسين عمليات سلسلة الإمداد من الطلب إلى التسليم.' },
       { sector: 'الاستثمار', tag: 'إدارة فرص', title: 'مستثمرون من القطاع الخاص', body: 'إنشاء فرص استثمارية جديدة، وإدارة الفرص القائمة.' },
       { sector: 'ريادة الأعمال', tag: 'مجتمع · ورش عمل', title: 'مجتمع KON لروّاد الأعمال', body: 'تأسيس المجتمع في المدينة المنورة، وتشغيله، وتقديم ورش العمل فيه.', metric: '+3,000', metricLabel: 'ساعة مع روّاد الأعمال' },
@@ -448,7 +448,7 @@ const en: Content = {
     more: [
       { sector: 'Real estate marketing', tag: 'Business development', title: 'Wethaq Real Estate Marketing', body: 'Business development for Wethaq Real Estate Marketing, in the role of Business Developer.' },
       { sector: 'Real estate marketing', tag: 'Operating tools', title: 'Rwafed Real Estate Marketing', body: 'Internal operating tools that save the team time and organise its work.' },
-      { sector: 'Events', tag: 'Systems we invented', title: 'Local Organising Committee (LOC)', body: 'Inventing and building internal operating systems for the Local Organising Committee.', confirm: true },
+      { sector: 'Events', tag: 'Systems we invented', title: 'Local Organising Committee (LOC)', body: 'Inventing and building internal operating systems for the Local Organising Committee.' },
       { sector: 'Supply chain', tag: 'United States', title: 'A U.S. company in Abilene, Texas', body: 'Optimising the supply chain process from order to delivery.' },
       { sector: 'Investment', tag: 'Opportunity management', title: 'Private investors', body: 'Creating new investment opportunities and managing existing ones.' },
       { sector: 'Entrepreneurship', tag: 'Community · Workshops', title: 'KON Entrepreneurs Community', body: 'Founding and running the community in Madinah, and leading its workshops.', metric: '3,000+', metricLabel: 'hours with entrepreneurs' },

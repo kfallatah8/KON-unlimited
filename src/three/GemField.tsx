@@ -371,7 +371,8 @@ function Gems({ count, reduced }: { count: number; reduced: boolean }) {
         <instancedMesh key={i} ref={(m) => paint(m, i)} args={[geos[i], mats[i], c]} frustumCulled={false} />
       ))}
       <instancedMesh ref={halo} args={[haloGeo, haloMat, gems.length]} frustumCulled={false} renderOrder={2} />
-      <pointLight ref={light} color="#7ff3e6" distance={9} decay={2} />
+      {/* Reaches the nearer cloud banks too, so they glow softly where the pointer passes. */}
+      <pointLight ref={light} color="#7ff3e6" distance={13} decay={2} />
     </>
   )
 }

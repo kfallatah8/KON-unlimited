@@ -3,7 +3,7 @@
 // front of some banks and behind others. They part and dim for the closing "KON".
 import { useMemo, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
-import { Cloud, Clouds } from '@react-three/drei'
+import { Cloud, Clouds, Sparkles } from '@react-three/drei'
 import * as THREE from 'three'
 import type { Tier } from '../lib/capabilities'
 import { motion } from '../state/store'
@@ -28,20 +28,28 @@ function puffTexture() {
     const a = at(xi, yi), b = at(xi + 1, yi), cc = at(xi, yi + 1), d = at(xi + 1, yi + 1)
     return a + (b - a) * u + (cc - a) * v + (a - b - cc + d) * u * v
   }
+  const fbm = (x: number, y: number, oct: number) => {
+    let f = 0, amp = 0.5, fr = 1
+    for (let o = 0; o < oct; o++) {
+      f += amp * noise(x * fr, y * fr)
+      amp *= 0.5
+      fr *= 2
+    }
+    return f
+  }
   const img = ctx.createImageData(n, n)
   for (let y = 0; y < n; y++) {
     for (let x = 0; x < n; x++) {
-      let f = 0, amp = 0.5, fr = 4 / n
-      for (let o = 0; o < 5; o++) {
-        f += amp * noise(x * fr, y * fr)
-        amp *= 0.5
-        fr *= 2
-      }
+      // Domain warp: the lookup is pushed around by a second noise field, which turns blobs
+      // into the curls and billows of real cumulus.
+      const u = (x / n) * 4, v = (y / n) * 4
+      const wx = fbm(u + 3.1, v + 1.7, 3), wy = fbm(u + 8.3, v + 2.8, 3)
+      const f = fbm(u + wx * 1.6, v + wy * 1.6, 5)
       const dx = (x - n / 2) / (n / 2), dy = (y - n / 2) / (n / 2)
       const r = Math.sqrt(dx * dx + dy * dy * 1.15)
       const mask = Math.max(0, 1 - r)
       // Dense where noise and mask agree; wispy toward the rim.
-      const a = Math.max(0, Math.min(1, (f * 1.35 - 0.38) * 1.6)) * Math.pow(mask, 1.3)
+      const a = Math.max(0, Math.min(1, (f * 1.5 - 0.35) * 1.8)) * Math.pow(mask, 1.15)
       const i = (y * n + x) * 4
       img.data[i] = img.data[i + 1] = img.data[i + 2] = 255
       img.data[i + 3] = Math.round(a * 235)
@@ -49,6 +57,24 @@ function puffTexture() {
   }
   ctx.putImageData(img, 0, 0)
   return c.toDataURL('image/png')
+}
+
+/** A soft radial glow: the moonlit sky behind the far banks, so the clouds silhouette against light. */
+function glowTexture() {
+  const n = 256
+  const c = document.createElement('canvas')
+  c.width = c.height = n
+  const ctx = c.getContext('2d')!
+  const g = ctx.createRadialGradient(n / 2, n / 2, 0, n / 2, n / 2, n / 2)
+  g.addColorStop(0, 'rgba(255,255,255,1)')
+  g.addColorStop(0.25, 'rgba(255,255,255,0.45)')
+  g.addColorStop(0.6, 'rgba(255,255,255,0.1)')
+  g.addColorStop(1, 'rgba(255,255,255,0)')
+  ctx.fillStyle = g
+  ctx.fillRect(0, 0, n, n)
+  const t = new THREE.CanvasTexture(c)
+  t.colorSpace = THREE.SRGBColorSpace
+  return t
 }
 
 interface Bank {
@@ -68,14 +94,14 @@ interface Bank {
 
 function banks(tier: Tier): Bank[] {
   const far: Bank[] = [
-    { fx: -0.42, fy: 0.3, z: -24, seed: 1, segments: 26, bounds: [12, 3, 3], volume: 9, color: '#1d6b66', opacity: 0.75, speed: 0.08, drift: 0.5 },
-    { fx: 0.45, fy: -0.15, z: -26, seed: 2, segments: 26, bounds: [13, 3, 3], volume: 10, color: '#17605b', opacity: 0.7, speed: 0.07, drift: 0.4 },
-    { fx: 0.05, fy: -0.48, z: -22, seed: 3, segments: 22, bounds: [16, 2, 3], volume: 8, color: '#145551', opacity: 0.7, speed: 0.06, drift: 0.35 },
+    { fx: -0.42, fy: 0.3, z: -24, seed: 1, segments: 26, bounds: [12, 3, 3], volume: 9, color: '#2a7f78', opacity: 0.72, speed: 0.08, drift: 0.5 },
+    { fx: 0.45, fy: -0.15, z: -26, seed: 2, segments: 26, bounds: [13, 3, 3], volume: 10, color: '#26766f', opacity: 0.68, speed: 0.07, drift: 0.4 },
+    { fx: 0.05, fy: -0.48, z: -22, seed: 3, segments: 22, bounds: [16, 2, 3], volume: 8, color: '#226c66', opacity: 0.66, speed: 0.06, drift: 0.35 },
   ]
   const mid: Bank[] = [
-    { fx: -0.5, fy: -0.2, z: -6, seed: 4, segments: 18, bounds: [3.5, 2, 2], volume: 3.6, color: '#4fb3a8', opacity: 0.7, speed: 0.12, drift: 0.7 },
-    { fx: 0.52, fy: 0.25, z: -4.5, seed: 5, segments: 18, bounds: [3.5, 2, 2], volume: 3.4, color: '#57bbb0', opacity: 0.65, speed: 0.1, drift: 0.6 },
-    { fx: 0.48, fy: -0.42, z: -8, seed: 6, segments: 16, bounds: [4, 1.6, 2], volume: 3.6, color: '#3f9f96', opacity: 0.62, speed: 0.1, drift: 0.5 },
+    { fx: -0.5, fy: -0.2, z: -6, seed: 4, segments: 18, bounds: [3.5, 2, 2], volume: 3.6, color: '#5cc4b8', opacity: 0.7, speed: 0.12, drift: 0.7 },
+    { fx: 0.52, fy: 0.25, z: -4.5, seed: 5, segments: 18, bounds: [3.5, 2, 2], volume: 3.4, color: '#66cbbf', opacity: 0.65, speed: 0.1, drift: 0.6 },
+    { fx: 0.48, fy: -0.42, z: -8, seed: 6, segments: 16, bounds: [4, 1.6, 2], volume: 3.6, color: '#4fb2a7', opacity: 0.62, speed: 0.1, drift: 0.5 },
   ]
   const near: Bank[] = [
     { fx: -0.55, fy: -0.5, z: 2.5, seed: 7, segments: 10, bounds: [2.4, 1, 1], volume: 2.2, color: '#5bbcb1', opacity: 0.22, speed: 0.15, drift: 0.9 },
@@ -90,8 +116,16 @@ function banks(tier: Tier): Bank[] {
 }
 
 /** The sunlit tone of a bank: lifted toward a pale aqua. */
-function lighten(hex: string) {
-  return '#' + new THREE.Color(hex).lerp(new THREE.Color('#bff3ea'), 0.38).getHexString()
+function lighten(hex: string, k = 0.45) {
+  return '#' + new THREE.Color(hex).lerp(new THREE.Color('#c8f6ee'), k).getHexString()
+}
+/** The shadowed underside: deeper and a little bluer. */
+function deepen(hex: string) {
+  return '#' + new THREE.Color(hex).lerp(new THREE.Color('#0a3b39'), 0.15).getHexString()
+}
+/** A faint champagne edge where the light catches the top, echoing the brand's gold. */
+function rim(hex: string) {
+  return '#' + new THREE.Color(hex).lerp(new THREE.Color('#f1e3bf'), 0.6).getHexString()
 }
 
 function easeOut(x: number) {
@@ -105,7 +139,11 @@ export default function CloudLayer({ tier, reduced, camZ, fov }: { tier: Tier; r
   const refs = useRef<(THREE.Group | null)[]>([])
   const { size } = useThree()
   const st = useRef({ t: 0, sy: 0, fin: 0, post: 0, intro: 0 })
-  const limit = list.reduce((a, b) => a + Math.ceil(b.segments * 0.6) + Math.ceil(b.segments * 0.4), 0)
+  const glow = useMemo(glowTexture, [])
+  const moon = useRef<THREE.Mesh>(null)
+  const dust = useRef<THREE.Group>(null)
+  const dustCount = tier === 'high' ? 380 : tier === 'mid' ? 240 : 140
+  const limit = list.reduce((a, b) => a + Math.ceil(b.segments * 0.6) + Math.ceil(b.segments * 0.4) + (b.z > -12 ? Math.max(3, Math.ceil(b.segments * 0.15)) : 0), 0)
 
   useFrame((state, dtRaw) => {
     const dt = Math.min(dtRaw, 0.05)
@@ -133,14 +171,40 @@ export default function CloudLayer({ tier, reduced, camZ, fov }: { tier: Tier; r
       // Slow wind across the sky, and the banks part to the sides for the closing word.
       const wind = Math.sin(s.t * 0.05 * b.drift + b.seed * 2) * vw * 0.06
       const part = Math.sign(b.fx || 1) * vw * 0.35 * easeOut(s.fin * 1.4)
-      g.position.set(b.fx * vw * (narrow ? 0.85 : 1) + wind + part, y, b.z - (1 - intro) * 6)
+      const bob = Math.sin(s.t * 0.11 * b.drift + b.seed * 5) * vh * 0.012
+      g.position.set(b.fx * vw * (narrow ? 0.85 : 1) + wind + part, y + bob, b.z - (1 - intro) * 6)
       const sc = (narrow ? 0.95 : 1) * (1 - s.post * 0.4)
       g.scale.setScalar(sc)
       g.visible = s.post < 0.98
     })
+    const fade = (1 - s.post) * intro
+    const mz = -34
+    const mvh = 2 * Math.tan(THREE.MathUtils.degToRad(fov / 2)) * (camZ - mz)
+    if (moon.current) {
+      // Slow scroll drift and a faint breath, so the light feels alive behind the banks.
+      moon.current.position.set(mvh * aspect * (narrow ? 0.05 : -0.12), mvh * (0.22 - s.sy * 0.03), mz)
+      const br = 1 + Math.sin(s.t * 0.2) * 0.03
+      moon.current.scale.set(mvh * aspect * (narrow ? 1.2 : 0.95) * br, mvh * (narrow ? 0.55 : 0.6) * br, 1)
+      ;(moon.current.material as THREE.MeshBasicMaterial).opacity = 0.2 * fade * (1 - s.fin * 0.6)
+    }
+    if (dust.current) {
+      dust.current.position.y = -s.sy * 1.2
+      dust.current.rotation.z = s.t * 0.004
+      dust.current.visible = s.post < 0.98
+    }
   })
 
   return (
+    <>
+    <mesh ref={moon} renderOrder={-1}>
+      <planeGeometry />
+      <meshBasicMaterial map={glow} color="#bfeee4" transparent opacity={0} depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} />
+    </mesh>
+    {/* Fine champagne and aqua dust drifting through the sky: the "magic" between the banks. */}
+    <group ref={dust}>
+      <Sparkles count={Math.round(dustCount * 0.6)} scale={[34, 30, 14]} position={[0, 0, -6]} size={4.5} speed={reduced ? 0 : 0.18} opacity={0.55} noise={1.2} color="#f1e3bf" />
+      <Sparkles count={Math.round(dustCount * 0.4)} scale={[30, 26, 10]} position={[0, 0, -3]} size={3.2} speed={reduced ? 0 : 0.24} opacity={0.45} noise={1.5} color="#a8f5ea" />
+    </group>
     <Clouds material={THREE.MeshLambertMaterial} texture={texture} limit={limit} frustumCulled={false}>
       {list.map((b, i) => (
         <group key={b.seed} ref={(g) => { refs.current[i] = g }}>
@@ -151,7 +215,7 @@ export default function CloudLayer({ tier, reduced, camZ, fov }: { tier: Tier; r
             bounds={b.bounds}
             position={[0, -b.bounds[1] * 0.3, 0]}
             volume={b.volume}
-            color={b.color}
+            color={deepen(b.color)}
             opacity={b.opacity}
             speed={reduced ? 0 : b.speed}
             growth={3}
@@ -165,14 +229,30 @@ export default function CloudLayer({ tier, reduced, camZ, fov }: { tier: Tier; r
             position={[0, b.bounds[1] * 0.35, 0.4]}
             volume={b.volume * 0.75}
             color={lighten(b.color)}
-            opacity={b.opacity * 0.7}
+            opacity={Math.min(0.92, b.opacity * 0.95)}
             speed={reduced ? 0 : b.speed * 1.3}
             growth={2.5}
             fade={12}
             concentrate="inside"
           />
+          {b.z > -12 && (
+            <Cloud
+              seed={b.seed + 90}
+              segments={Math.max(3, Math.ceil(b.segments * 0.15))}
+              bounds={[b.bounds[0] * 0.6, b.bounds[1] * 0.3, b.bounds[2] * 0.5]}
+              position={[0, b.bounds[1] * 0.6, 0.7]}
+              volume={b.volume * 0.5}
+              color={rim(b.color)}
+              opacity={b.opacity * 0.35}
+              speed={reduced ? 0 : b.speed * 1.6}
+              growth={1.5}
+              fade={12}
+              concentrate="inside"
+            />
+          )}
         </group>
       ))}
     </Clouds>
+    </>
   )
 }
