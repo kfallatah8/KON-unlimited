@@ -143,24 +143,29 @@ function Header() {
 }
 
 /** Hero headline that cycles through the taglines with a masked rise. */
-function Rotator({ lines }: { lines: string[] }) {
-  const [i, setI] = useState(0)
+function Rotator({ lines, ready }: { lines: string[]; ready: boolean }) {
+  const [i, setI] = useState(-1)
   useEffect(() => {
-    setI(0)
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (!ready) return
+    // The first line rises in with the rest of the opening, then the lines take turns.
+    const first = window.setTimeout(() => setI(0), 250)
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return () => window.clearTimeout(first)
     const id = setInterval(() => setI((x) => (x + 1) % lines.length), 3400)
-    return () => clearInterval(id)
-  }, [lines])
+    return () => {
+      window.clearTimeout(first)
+      clearInterval(id)
+    }
+  }, [lines, ready])
   return (
     <span className="rotator" aria-hidden="true">
       {lines.map((l, k) => (
-        <span key={l} className={`rot-line${k === i ? ' is-on' : ''}${k === (i - 1 + lines.length) % lines.length ? ' is-out' : ''}`}>{l}</span>
+        <span key={l} className={`rot-line${k === i ? ' is-on' : ''}${i >= 0 && k === (i - 1 + lines.length) % lines.length ? ' is-out' : ''}`}>{l}</span>
       ))}
     </span>
   )
 }
 
-function Hero() {
+function Hero({ ready }: { ready: boolean }) {
   const c = useContent()
   const h = c.hero
   return (
@@ -169,7 +174,7 @@ function Hero() {
         <p className="eyebrow hero-fade">{h.eyebrow}</p>
         <h1 id="hero-title" className="hero-title">
           <span className="sr-only">{h.rotating.join(' ')}</span>
-          <Rotator lines={h.rotating} />
+          <Rotator lines={h.rotating} ready={ready} />
         </h1>
         <p className="hero-promise hero-fade"><Rich text={h.promise} /></p>
         <p className="hero-lede hero-fade"><Rich text={h.lede} /></p>
@@ -625,8 +630,27 @@ export default function App() {
   }, [c])
   useEffect(() => {
     document.documentElement.classList.add(`tier-${caps.tier}`)
-    const id = requestAnimationFrame(() => setReady(true))
-    return () => cancelAnimationFrame(id)
+    // Start the opening only once the web fonts are in, so no line re-wraps or swaps typeface
+    // mid-animation. Never wait longer than 1.2s on a slow connection.
+    let done = false
+    let id = 0
+    const go = () => {
+      if (done) return
+      done = true
+      id = requestAnimationFrame(() => requestAnimationFrame(() => {
+        setReady(true)
+        document.documentElement.classList.add('is-ready')
+      }))
+    }
+    const fonts = (document as Document & { fonts?: FontFaceSet }).fonts
+    fonts?.ready.then(go, go)
+    const timer = window.setTimeout(go, 1200)
+    if (!fonts) go()
+    return () => {
+      done = true
+      cancelAnimationFrame(id)
+      window.clearTimeout(timer)
+    }
   }, [caps.tier])
 
   const webgl = caps.tier !== 'none'
@@ -647,7 +671,7 @@ export default function App() {
       </div>
       <Header />
       <main id="main">
-        <Hero />
+        <Hero ready={ready} />
         <Problem />
         <Loops />
         <Who />

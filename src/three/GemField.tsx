@@ -1,7 +1,7 @@
 // The gem stream: faceted teal gemstones that orbit the hero, drift with the scroll, part around
 // the pointer, and gather into the word "KON" at the end of the page.
 // One InstancedMesh per cut; all motion is computed per frame from scroll + time (no React state).
-import { useMemo, useRef, useState } from 'react'
+import { Suspense, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Environment, Lightformer, PerformanceMonitor } from '@react-three/drei'
 import { Bloom, EffectComposer } from '@react-three/postprocessing'
@@ -9,6 +9,7 @@ import * as THREE from 'three'
 import type { Tier } from '../lib/capabilities'
 import { motion } from '../state/store'
 import { drawKon, konLayout, KON, measureKon } from './konGlyphs'
+import CloudLayer from './CloudLayer'
 
 const CAM_Z = 14
 const FOV = 34
@@ -228,13 +229,16 @@ function Gems({ count, reduced }: { count: number; reduced: boolean }) {
 
   const tmp = useMemo(() => ({
     m: new THREE.Matrix4(), p: new THREE.Vector3(), q: new THREE.Quaternion(), q2: new THREE.Quaternion(), qa: new THREE.Quaternion(),
-    face: new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.PI / 2 - 0.42, 0, 0)), s: new THREE.Vector3(), t: 0, sy: 0, fin: 0, hero: 0, post: 0,
+    face: new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.PI / 2 - 0.42, 0, 0)), s: new THREE.Vector3(), t: 0, sy: 0, fin: 0, hero: 0, post: 0, intro: 0,
   }), [])
 
-  useFrame((_, dtRaw) => {
+  useFrame((state, dtRaw) => {
     const dt = Math.min(dtRaw, 0.05)
     if (!reduced) tmp.t += dt
     const t = tmp.t
+    // Opening: gems bloom in one by one over ~2.5s instead of popping into place.
+    // Wall-clock based, so a slow first few frames can't stretch the opening out.
+    tmp.intro = reduced ? 1.6 : Math.min(1.6, state.clock.elapsedTime / 2.4)
     const vh = 2 * Math.tan(THREE.MathUtils.degToRad(FOV / 2)) * CAM_Z
     const vw = vh * (size.width / size.height)
     const narrow = size.width < 700
@@ -270,7 +274,7 @@ function Gems({ count, reduced }: { count: number; reduced: boolean }) {
     for (const g of gems) {
       // 1 · stream: lanes either side of the reading column, wrapping vertically.
       const span = vh * 1.5
-      let y = ((g.baseY * span + tmp.sy * vh * 0.32 * g.speed + t * 0.08 * g.speed) % span) - span / 2
+      let y = ((g.baseY * span + tmp.sy * vh * 0.32 * g.speed + t * 0.055 * g.speed) % span) - span / 2
       if (y < -span / 2) y += span
       // Mid-page the stream hugs the edges and sinks back so the copy has a calm centre.
       const laneW = (narrow ? vw * 0.6 : vw * 0.5) * (1 + mid * 0.18)
@@ -279,7 +283,7 @@ function Gems({ count, reduced }: { count: number; reduced: boolean }) {
       let z = g.depth - mid * 2.2 + Math.sin(t * 0.3 + g.seed * 5) * 0.4
       // 2 · hero: a slow elliptical orbit framing the headline.
       if (hero > 0.001) {
-        const a = g.ringA + t * 0.06 * (g.seed < 0.5 ? 1 : -0.7)
+        const a = g.ringA + t * 0.045 * (g.seed < 0.5 ? 1 : -0.7)
         // Phones: the text fills the middle, so the orbit runs along the screen edges instead.
         // Portrait tablets too: their headline is as wide as the screen.
         const edge = narrow || size.width / size.height < 0.9
@@ -317,7 +321,8 @@ function Gems({ count, reduced }: { count: number; reduced: boolean }) {
         tmp.q.copy(tmp.face).multiply(g.tilt).multiply(tmp.q2.setFromAxisAngle(THREE.Object3D.DEFAULT_UP, t * 0.22 + g.seed * 6))
         tmp.qa.slerp(tmp.q, f)
       }
-      const sz = THREE.MathUtils.lerp(g.size * (narrow ? 0.8 : 1), konScale, f) * (1 - hero * 0.1) * (1 - post * 0.97)
+      const grow = smooth((tmp.intro - g.seed * 0.6) / 0.7)
+      const sz = grow * THREE.MathUtils.lerp(g.size * (narrow ? 0.8 : 1), konScale, f) * (1 - hero * 0.1) * (1 - post * 0.97)
       tmp.s.set(sz, sz * g.stretch, sz)
       tmp.m.compose(tmp.p, tmp.qa, tmp.s)
       const mesh = meshes.current[g.cut]
@@ -383,6 +388,7 @@ export default function GemField({ tier, reduced }: { tier: Tier; reduced: boole
       camera={{ position: [0, 0, CAM_Z], fov: FOV, near: 0.1, far: 60 }}
       gl={{ antialias: !rich, alpha: true, powerPreference: 'high-performance', stencil: false }}
       style={{ pointerEvents: 'none' }}
+      onCreated={({ gl }) => requestAnimationFrame(() => gl.domElement.closest('.gem-canvas')?.classList.add('is-live'))}
     >
       {/* Drop resolution, then bloom, if frames start to slip: smoothness beats sparkle. */}
       <PerformanceMonitor
@@ -400,6 +406,9 @@ export default function GemField({ tier, reduced }: { tier: Tier; reduced: boole
         <Lightformer form="rect" intensity={2.5} color="#e9d9b0" position={[6, -1, 2]} rotation-y={-Math.PI / 2} scale={[8, 2, 1]} />
         <Lightformer form="ring" intensity={3} color="#3fe0cf" position={[0, -4, 4]} scale={4} />
       </Environment>
+      <Suspense fallback={null}>
+        <CloudLayer tier={tier} reduced={reduced} camZ={CAM_Z} fov={FOV} />
+      </Suspense>
       <Gems count={count} reduced={reduced} />
       {rich && (
         <EffectComposer multisampling={0} enableNormalPass={false}>

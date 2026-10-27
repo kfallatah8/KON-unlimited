@@ -243,9 +243,6 @@ main, .site-footer { position: relative; z-index: 1; }
 @keyframes cue { from { transform: translateY(-100%); } to { transform: translateY(100%); } }
 .hero-fade { opacity: 0; transform: translateY(18px); transition: opacity 1.4s var(--ease), transform 1.4s var(--ease); }
 .is-ready .hero-fade { opacity: 1; transform: none; }
-.is-ready .hero-fade:nth-of-type(2) { transition-delay: 0.15s; }
-.is-ready .hero-ctas, .is-ready .proof { transition-delay: 0.35s; }
-.is-ready .hero-slogan { transition-delay: 0.55s; }
 
 /* ---------- bands ---------- */
 .band { position: relative; padding-block: clamp(5.5rem, 13vw, 11rem); }
@@ -773,3 +770,29 @@ html.menu-open, html.menu-open body { overflow: hidden; overscroll-behavior: non
 .mobile-menu a { color: var(--text); min-height: 48px; }
 .mobile-menu a:focus-visible { outline: 1px solid var(--teal-hi); outline-offset: 4px; }
 @media (max-height: 520px) { .mobile-menu { align-items: flex-start; padding-top: 5rem; } .mobile-menu a { font-size: 1.4rem; } }
+
+/* ---------- Opening sequence (v5) ----------
+   Fonts in → header slides down → eyebrow, headline, promise, lede, buttons, numbers rise in a
+   staggered cascade → gems bloom in and clouds drift forward behind them. */
+.gem-canvas { opacity: 0; transition: opacity 2.2s var(--ease); }
+.gem-canvas.is-live { opacity: 1; }
+.site-header { opacity: 0; transform: translateY(-14px); transition: opacity 1.1s var(--ease), transform 1.2s var(--ease), background 0.5s, border-color 0.5s, padding 0.5s var(--ease); }
+html.is-ready .site-header { opacity: 1; transform: none; }
+.hero-fade { transition: opacity 1.3s var(--ease), transform 1.5s var(--ease); will-change: opacity, transform; }
+.is-ready .hero-copy .eyebrow { transition-delay: 0.1s; }
+.is-ready .hero-promise { transition-delay: 0.65s; }
+.is-ready .hero-lede { transition-delay: 0.8s; }
+.is-ready .hero-ctas { transition-delay: 0.95s; }
+.is-ready .proof { transition-delay: 1.1s; }
+.is-ready .hero-slogan { transition-delay: 1.3s; }
+.scroll-cue { opacity: 0; transition: opacity 1.2s var(--ease) 1.6s; }
+.is-ready .scroll-cue { opacity: 1; }
+.stage-glow { opacity: 0; transition: opacity 1.6s var(--ease); }
+html.is-ready .stage-glow { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .site-header, .hero-fade, .gem-canvas, .stage-glow, .scroll-cue { transition: none !important; transform: none !important; }
+}
+
+/* Headline swap: the outgoing line clears before the next one rises, so they never overlap. */
+.rot-line { transition: opacity 0.5s var(--ease), transform 0.7s var(--ease); }
+.rot-line.is-on { transition: opacity 0.9s var(--ease) 0.18s, transform 1.1s var(--ease) 0.18s; }
