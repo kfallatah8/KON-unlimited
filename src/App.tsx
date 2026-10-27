@@ -524,7 +524,6 @@ function Footer() {
           <p className="footer-slogan">{f.slogan}</p>
           <p className="footer-contact" dir="ltr">
             <a href={`mailto:${contact.email}`}>{contact.email}</a>
-            <a href={`https://wa.me/${contact.whatsapp}`} target="_blank" rel="noreferrer">+{contact.whatsapp.replace(/^966(\d{2})(\d{3})(\d{4})$/, '966 $1 $2 $3')}</a>
           </p>
         </div>
         <nav aria-label="Footer" className="footer-nav">

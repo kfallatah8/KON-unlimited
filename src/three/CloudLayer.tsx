@@ -37,22 +37,30 @@ function puffTexture() {
     }
     return f
   }
+  // Fluffy cumulus: a cluster of soft round billows (bigger in the middle, bumps on top),
+  // lightly broken up by noise so the edges stay soft without turning into wisps.
+  const blobs: [number, number, number][] = [[0.5, 0.56, 0.3]]
+  for (let k = 0; k < 13; k++) {
+    const a = Math.PI * (1.05 + rnd() * 0.9) // mostly the upper half
+    const d = 0.12 + rnd() * 0.16
+    blobs.push([0.5 + Math.cos(a) * d * 1.25, 0.56 + Math.sin(a) * d * 0.9, 0.12 + rnd() * 0.12])
+  }
   const img = ctx.createImageData(n, n)
   for (let y = 0; y < n; y++) {
     for (let x = 0; x < n; x++) {
-      // Domain warp: the lookup is pushed around by a second noise field, which turns blobs
-      // into the curls and billows of real cumulus.
-      const u = (x / n) * 4, v = (y / n) * 4
-      const wx = fbm(u + 3.1, v + 1.7, 3), wy = fbm(u + 8.3, v + 2.8, 3)
-      const f = fbm(u + wx * 1.6, v + wy * 1.6, 5)
-      const dx = (x - n / 2) / (n / 2), dy = (y - n / 2) / (n / 2)
-      const r = Math.sqrt(dx * dx + dy * dy * 1.15)
-      const mask = Math.max(0, 1 - r)
-      // Dense where noise and mask agree; wispy toward the rim.
-      const a = Math.max(0, Math.min(1, (f * 1.5 - 0.35) * 1.8)) * Math.pow(mask, 1.15)
+      const px = x / n, py = y / n
+      let d = 0
+      for (const [bx, by, br] of blobs) {
+        const r = Math.hypot(px - bx, py - by) / br
+        if (r < 1) d = Math.max(d, 1 - r * r)
+      }
+      const f = fbm(px * 6, py * 6, 4)
+      // Flat-ish base, soft rounded rim, gentle internal texture.
+      const base = Math.min(1, Math.max(0, (0.78 - py) * 6 + 0.6))
+      const a = Math.pow(d, 1.25) * (0.7 + 0.3 * f) * base
       const i = (y * n + x) * 4
       img.data[i] = img.data[i + 1] = img.data[i + 2] = 255
-      img.data[i + 3] = Math.round(a * 235)
+      img.data[i + 3] = Math.round(Math.min(1, a * 1.3) * 240)
     }
   }
   ctx.putImageData(img, 0, 0)
@@ -108,7 +116,7 @@ function banks(tier: Tier): Bank[] {
     { fx: 0.56, fy: 0.48, z: 2, seed: 8, segments: 10, bounds: [2.4, 1, 1], volume: 2.2, color: '#5bbcb1', opacity: 0.2, speed: 0.15, drift: 0.8 },
   ]
   // More, smaller puffs in wide, flat banks read as cloud; few big ones read as bokeh.
-  const shape = (b: Bank): Bank => ({ ...b, segments: Math.round(b.segments * 1.5), volume: b.volume * 0.62, bounds: [b.bounds[0] * 1.25, b.bounds[1] * 0.75, b.bounds[2]] })
+  const shape = (b: Bank): Bank => ({ ...b, segments: Math.round(b.segments * 1.2), volume: b.volume * 0.85, bounds: [b.bounds[0] * 1.25, b.bounds[1] * 0.75, b.bounds[2]] })
   // Phones: fewer puffs, but brighter and fuller, since the reading veil darkens the middle.
   if (tier === 'low') return [far[0], far[2], mid[0], mid[1]].map(shape).map((b) => ({ ...b, segments: Math.round(b.segments * 0.7), opacity: Math.min(0.9, b.opacity * 1.25), color: lighten(b.color) }))
   if (tier === 'mid') return [...far, ...mid].map(shape)
