@@ -38,7 +38,7 @@ export const tourUrl = 'https://kuula.co/share/collection/7MZVN?logo=1&info=1&fs
 
 export const contact = {
   email: '',
-  whatsapp: '', // international format without +, e.g. 9665XXXXXXXX
+  whatsapp: '966562399592', // international format without +, e.g. 9665XXXXXXXX
 }
 
 const ar = {
@@ -163,7 +163,7 @@ const ar = {
     ],
   },
 
-  // CONFIRM: session length, delivery time and monthly limit.
+  // Confirmed by khalid 2026-10-27: 60 minutes, limited number each month.
   offer: {
     eyebrow: 'العرض',
     title: 'التشخيص الأول علينا',
@@ -186,13 +186,13 @@ const ar = {
     lede: 'ما أنجزناه نقول إنه أُنجز. وما زلنا نبنيه نقول إننا نبنيه.',
     confirmMark: 'بانتظار التأكيد',
     featured: [
-      { sector: 'الاتصالات', tag: 'تطوير أعمال · GTM', title: 'دخول Telkomsel إلى السوق السعودي', body: 'تطوير الأعمال، وبناء استراتيجية دخول السوق وتنفيذها لشركة الاتصالات الإندونيسية Telkomsel في السعودية.', metric: '14M', metricLabel: 'إيرادات تحققت', confirm: true },
+      { sector: 'الاتصالات', tag: 'تطوير أعمال · GTM', title: 'دخول Telkomsel إلى السوق السعودي', body: 'تطوير الأعمال، وبناء استراتيجية دخول السوق وتنفيذها لشركة الاتصالات الإندونيسية Telkomsel في السعودية.', metric: '14M', metricLabel: 'ريال إيرادات تحققت' },
       { sector: 'الترفيه والضيافة', tag: 'تطوير أعمال · تشغيل', title: 'Games Club (GC)', body: 'إعادة بناء التشغيل كاملًا: هندسة القائمة، وتدريب الفريق، وتجربة الضيف، وإجراءات تشغيل قياسية (SOPs)، وشراكات جديدة.', metric: '+161.11%', metricLabel: 'نمو الإيرادات خلال 30 يومًا', extra: '+511.11% متوسط الإيرادات الشهرية' },
-      { sector: 'الأغذية والمشروبات', tag: 'من الفكرة إلى السوق', title: 'علامة عصائر من الصفر', body: 'بناء العلامة وتشغيلها من مجرد فكرة: المنتج، والتشغيل، والبيع.', metric: '4K', metricLabel: 'ريال إيراد يومي', confirm: true },
-      { sector: 'العقار والاستثمار', tag: 'استراتيجية · تنفيذ', title: 'صفقة عقارية مع مستثمر خاص', body: 'بناء الاستراتيجية الكاملة وتنفيذ الصفقة مع مستثمر من القطاع الخاص.', metric: '1.4M', metricLabel: 'ريال قيمة الصفقة', confirm: true },
+      { sector: 'الأغذية والمشروبات', tag: 'من الفكرة إلى السوق', title: 'علامة عصائر من الصفر', body: 'بناء العلامة وتشغيلها من مجرد فكرة: المنتج، والتشغيل، والبيع.', metric: '4K', metricLabel: 'ريال إيراد يومي' },
+      { sector: 'العقار والاستثمار', tag: 'استراتيجية · تنفيذ', title: 'صفقة عقارية مع مستثمر خاص', body: 'بناء الاستراتيجية الكاملة وتنفيذ الصفقة مع مستثمر من القطاع الخاص.', metric: '1.4M', metricLabel: 'ريال قيمة الصفقة' },
     ] as CaseItem[],
     more: [
-      { sector: 'التسويق العقاري', tag: 'شراكة', title: 'وثاق للتسويق العقاري', body: 'تطوير الأعمال والتسويق مع شركة وثاق للتسويق العقاري.', confirm: true },
+      { sector: 'التسويق العقاري', tag: 'تطوير أعمال', title: 'وثاق للتسويق العقاري', body: 'تطوير الأعمال لشركة وثاق للتسويق العقاري، بدور مطوّر أعمال.' },
       { sector: 'التسويق العقاري', tag: 'أدوات تشغيل', title: 'روافد للتسويق العقاري', body: 'بناء أدوات تشغيل داخلية تختصر وقت الفريق وتنظّم عمله.' },
       { sector: 'الفعاليات', tag: 'أنظمة من ابتكارنا', title: 'اللجنة المنظمة المحلية (LOC)', body: 'ابتكار أنظمة تشغيل داخلية وبناؤها للجنة المنظمة المحلية.', confirm: true },
       { sector: 'سلاسل الإمداد', tag: 'الولايات المتحدة', title: 'شركة أمريكية في أبيلين، تكساس', body: 'تحسين عمليات سلسلة الإمداد من الطلب إلى التسليم.' },
@@ -272,7 +272,7 @@ const ar = {
       also: 'وقد يفيدك أيضًا',
       next: 'الخطوة التالية',
       nextBody: 'جلسة التشخيص المجانية. نأتيك وقد قرأنا كل هذا، فلا نبدأ من الصفر.',
-      sendWhatsapp: 'أرسل عبر واتساب',
+      sendWhatsapp: 'أرسلها لنا عبر واتساب',
       sendEmail: 'أرسل بالبريد',
       copy: 'انسخ الملخص',
       copied: 'نُسخ',
@@ -440,13 +440,13 @@ const en: Content = {
     lede: 'If it’s delivered, we say delivered. If we’re still building it, we say so.',
     confirmMark: 'Pending confirmation',
     featured: [
-      { sector: 'Telecoms', tag: 'Business development · GTM', title: 'Telkomsel’s entry into Saudi Arabia', body: 'Business development, plus building and executing the go-to-market strategy that brought Indonesian telecom operator Telkomsel into the Saudi market.', metric: '14M', metricLabel: 'revenue generated', confirm: true },
+      { sector: 'Telecoms', tag: 'Business development · GTM', title: 'Telkomsel’s entry into Saudi Arabia', body: 'Business development, plus building and executing the go-to-market strategy that brought Indonesian telecom operator Telkomsel into the Saudi market.', metric: '14M', metricLabel: 'SAR revenue generated' },
       { sector: 'Entertainment & hospitality', tag: 'Business development · Operations', title: 'Games Club (GC)', body: 'A full operational rebuild: menu engineering, staff training, guest experience, standard operating procedures and new partnerships.', metric: '+161.11%', metricLabel: 'revenue growth in 30 days', extra: '+511.11% average monthly revenue' },
-      { sector: 'Food & beverage', tag: 'Idea to market', title: 'A juice brand, from zero', body: 'Building and running the brand from a bare idea: product, operations and sales.', metric: '4K', metricLabel: 'SAR revenue per day', confirm: true },
-      { sector: 'Real estate & investment', tag: 'Strategy · Execution', title: 'A private-investor property deal', body: 'Building the full strategy and executing a real estate deal with a private investor.', metric: '1.4M', metricLabel: 'SAR deal value', confirm: true },
+      { sector: 'Food & beverage', tag: 'Idea to market', title: 'A juice brand, from zero', body: 'Building and running the brand from a bare idea: product, operations and sales.', metric: '4K', metricLabel: 'SAR revenue per day' },
+      { sector: 'Real estate & investment', tag: 'Strategy · Execution', title: 'A private-investor property deal', body: 'Building the full strategy and executing a real estate deal with a private investor.', metric: '1.4M', metricLabel: 'SAR deal value' },
     ],
     more: [
-      { sector: 'Real estate marketing', tag: 'Partnership', title: 'Wethaq Real Estate Marketing', body: 'Business development and marketing with Wethaq Real Estate Marketing.', confirm: true },
+      { sector: 'Real estate marketing', tag: 'Business development', title: 'Wethaq Real Estate Marketing', body: 'Business development for Wethaq Real Estate Marketing, in the role of Business Developer.' },
       { sector: 'Real estate marketing', tag: 'Operating tools', title: 'Rwafed Real Estate Marketing', body: 'Internal operating tools that save the team time and organise its work.' },
       { sector: 'Events', tag: 'Systems we invented', title: 'Local Organising Committee (LOC)', body: 'Inventing and building internal operating systems for the Local Organising Committee.', confirm: true },
       { sector: 'Supply chain', tag: 'United States', title: 'A U.S. company in Abilene, Texas', body: 'Optimising the supply chain process from order to delivery.' },
@@ -524,7 +524,7 @@ const en: Content = {
       also: 'You may also benefit from',
       next: 'Next step',
       nextBody: 'Your free diagnosis session. We arrive having read all of this, so we don’t start from zero.',
-      sendWhatsapp: 'Send on WhatsApp',
+      sendWhatsapp: 'Send it to us on WhatsApp',
       sendEmail: 'Send by email',
       copy: 'Copy summary',
       copied: 'Copied',
