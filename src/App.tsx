@@ -3,7 +3,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useContent } from './content/useContent'
 import type { CaseItem } from './content/site'
-import { tourUrl } from './content/site'
+import { contact, tourUrl } from './content/site'
 import { detectCapabilities } from './lib/capabilities'
 import { motion, setLang, startOnboarding, useStore } from './state/store'
 import { Cursor } from './components/Cursor'
@@ -522,6 +522,10 @@ function Footer() {
         <div className="footer-brand">
           <p className="footer-word" dir="ltr">KON<span>Unlimited</span></p>
           <p className="footer-slogan">{f.slogan}</p>
+          <p className="footer-contact" dir="ltr">
+            <a href={`mailto:${contact.email}`}>{contact.email}</a>
+            <a href={`https://wa.me/${contact.whatsapp}`} target="_blank" rel="noreferrer">+{contact.whatsapp.replace(/^966(\d{2})(\d{3})(\d{4})$/, '966 $1 $2 $3')}</a>
+          </p>
         </div>
         <nav aria-label="Footer" className="footer-nav">
           {c.nav.map((n) => <a key={n.href} href={n.href}>{n.label}</a>)}

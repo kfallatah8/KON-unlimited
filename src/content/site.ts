@@ -37,7 +37,7 @@ export interface CaseItem {
 export const tourUrl = 'https://kuula.co/share/collection/7MZVN?logo=1&info=1&fs=1&vr=0&sd=1&thumbs=1'
 
 export const contact = {
-  email: '',
+  email: 'info@kon-unlimited.com',
   whatsapp: '966562399592', // international format without +, e.g. 9665XXXXXXXX
 }
 
