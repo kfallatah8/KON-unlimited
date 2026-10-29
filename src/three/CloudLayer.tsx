@@ -5,16 +5,18 @@ import { useMemo, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { Cloud, Clouds } from '@react-three/drei'
 import * as THREE from 'three'
+import { alphaPngUrl, blur, glowDataTexture } from './texUtil'
 import type { Tier } from '../lib/capabilities'
 import { motion } from '../state/store'
 
 /** A cloud sprite: fractal noise (fbm) inside a soft round mask, so every puff has wisps and
  *  dense lumps like a real cumulus instead of reading as a flat disc. */
+// Built once per page: the URL must stay the same across renders, or the loader (which suspends
+// on first mount and discards the render) would see a new blob URL every time and never settle.
+let puffUrl: string | undefined
+
 function puffTexture() {
   const n = 384
-  const c = document.createElement('canvas')
-  c.width = c.height = n
-  const ctx = c.getContext('2d')!
   // Value noise on a small lattice, smoothly interpolated, summed over five octaves.
   const G = 64
   let seed = 7
@@ -37,7 +39,7 @@ function puffTexture() {
     }
     return f
   }
-  const img = ctx.createImageData(n, n)
+  const alpha = new Float32Array(n * n)
   for (let y = 0; y < n; y++) {
     for (let x = 0; x < n; x++) {
       // Domain warp: the lookup is pushed around by a second noise field, which turns blobs
@@ -53,38 +55,16 @@ function puffTexture() {
       // Dense where noise and mask agree; a soft ramp (no hard threshold) keeps wisps feathered.
       const k = Math.max(0, Math.min(1, (f - 0.22) / 0.5))
       const a = k * k * (3 - 2 * k) * mask
-      const i = (y * n + x) * 4
-      img.data[i] = img.data[i + 1] = img.data[i + 2] = 255
-      img.data[i + 3] = Math.round(a * 235)
+      alpha[y * n + x] = a * 0.92
     }
   }
-  ctx.putImageData(img, 0, 0)
-  // A light blur pass irons out pixel speckle, so the puffs read as smooth vapour, never dots.
-  const out = document.createElement('canvas')
-  out.width = out.height = n
-  const o = out.getContext('2d')!
-  o.filter = 'blur(2.5px)'
-  o.drawImage(c, 0, 0)
-  return out.toDataURL('image/png')
+  // A soft blur irons out pixel grain, so the puffs read as smooth vapour, never dots.
+  return alphaPngUrl(blur(alpha, n, 2), n)
 }
 
 /** A soft radial glow: the moonlit sky behind the far banks, so the clouds silhouette against light. */
 function glowTexture() {
-  const n = 256
-  const c = document.createElement('canvas')
-  c.width = c.height = n
-  const ctx = c.getContext('2d')!
-  const g = ctx.createRadialGradient(n / 2, n / 2, 0, n / 2, n / 2, n / 2)
-  // Gaussian-like falloff in many stops, so the glow fades out with no ring or edge.
-  for (let i = 0; i <= 24; i++) {
-    const t = i / 24
-    g.addColorStop(t, `rgba(255,255,255,${(Math.exp(-t * t * 5) * (1 - t * t)).toFixed(4)})`)
-  }
-  ctx.fillStyle = g
-  ctx.fillRect(0, 0, n, n)
-  const t = new THREE.CanvasTexture(c)
-  t.colorSpace = THREE.SRGBColorSpace
-  return t
+  return glowDataTexture(256, 5)
 }
 
 interface Bank {
@@ -144,7 +124,7 @@ function easeOut(x: number) {
 }
 
 export default function CloudLayer({ tier, reduced, camZ, fov }: { tier: Tier; reduced: boolean; camZ: number; fov: number }) {
-  const texture = useMemo(puffTexture, [])
+  const texture = puffUrl ??= puffTexture()
   const list = useMemo(() => banks(tier), [tier])
   const refs = useRef<(THREE.Group | null)[]>([])
   const { size } = useThree()

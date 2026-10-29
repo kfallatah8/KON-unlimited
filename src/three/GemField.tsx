@@ -6,10 +6,12 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Environment, Lightformer, PerformanceMonitor } from '@react-three/drei'
 import { Bloom, EffectComposer } from '@react-three/postprocessing'
 import * as THREE from 'three'
+import { glowDataTexture } from './texUtil'
 import type { Tier } from '../lib/capabilities'
 import { motion } from '../state/store'
 import { drawKon, konLayout, KON, measureKon } from './konGlyphs'
 import CloudLayer from './CloudLayer'
+import { SafeBoundary } from '../components/SafeBoundary'
 
 const CAM_Z = 14
 const FOV = 34
@@ -110,21 +112,7 @@ const rimUniform = { value: 0.9 }
 
 /** Soft radial falloff used for each gem's halo: a real glow without a post-processing pass. */
 function glowTexture() {
-  const n = 256
-  const c = document.createElement('canvas')
-  c.width = c.height = n
-  const ctx = c.getContext('2d')!
-  const g = ctx.createRadialGradient(n / 2, n / 2, 0, n / 2, n / 2, n / 2)
-  // Gaussian-like falloff in many stops: the halo melts away with no visible rim.
-  for (let i = 0; i <= 24; i++) {
-    const t = i / 24
-    g.addColorStop(t, `rgba(255,255,255,${(Math.exp(-t * t * 7) * (1 - t * t)).toFixed(4)})`)
-  }
-  ctx.fillStyle = g
-  ctx.fillRect(0, 0, n, n)
-  const t = new THREE.CanvasTexture(c)
-  t.colorSpace = THREE.SRGBColorSpace
-  return t
+  return glowDataTexture(256, 7)
 }
 const HALO = new THREE.Color('#2fe0cb')
 
@@ -408,9 +396,11 @@ export default function GemField({ tier, reduced }: { tier: Tier; reduced: boole
         <Lightformer form="rect" intensity={2.5} color="#e9d9b0" position={[6, -1, 2]} rotation-y={-Math.PI / 2} scale={[8, 2, 1]} />
         <Lightformer form="ring" intensity={3} color="#3fe0cf" position={[0, -4, 4]} scale={4} />
       </Environment>
-      <Suspense fallback={null}>
-        <CloudLayer tier={tier} reduced={reduced} camZ={CAM_Z} fov={FOV} />
-      </Suspense>
+      <SafeBoundary>
+        <Suspense fallback={null}>
+          <CloudLayer tier={tier} reduced={reduced} camZ={CAM_Z} fov={FOV} />
+        </Suspense>
+      </SafeBoundary>
       <Gems count={count} reduced={reduced} />
       {rich && (
         <EffectComposer multisampling={0} enableNormalPass={false}>

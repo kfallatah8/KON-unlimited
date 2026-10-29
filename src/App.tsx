@@ -16,6 +16,7 @@ import { Rich } from './components/Rich'
 import { KonMark } from './components/KonMark'
 
 // The WebGL stage is its own chunk: copy and layout never wait for it.
+import { SafeBoundary } from './components/SafeBoundary'
 const GemField = lazy(() => import('./three/GemField'))
 
 gsap.registerPlugin(ScrollTrigger)
@@ -665,9 +666,11 @@ export default function App() {
       <div className="stage" aria-hidden="true">
         <div className="stage-glow" />
         {webgl && (
-          <Suspense fallback={null}>
-            <GemField tier={caps.tier} reduced={caps.reducedMotion} />
-          </Suspense>
+          <SafeBoundary>
+            <Suspense fallback={null}>
+              <GemField tier={caps.tier} reduced={caps.reducedMotion} />
+            </Suspense>
+          </SafeBoundary>
         )}
         <div className="stage-veil" />
         <div className="stage-vignette" />
