@@ -822,3 +822,9 @@ html.is-ready .stage-glow { opacity: 1; }
 .kon-halo::before { background: radial-gradient(closest-side, rgba(168, 245, 234, 0.200) 0%, rgba(168, 245, 234, 0.168) 14%, rgba(168, 245, 234, 0.120) 28%, rgba(168, 245, 234, 0.076) 42%, rgba(168, 245, 234, 0.040) 56%, rgba(168, 245, 234, 0.018) 70%, rgba(168, 245, 234, 0.006) 84%, rgba(168, 245, 234, 0.000) 100%); }
 .kon-halo::after { background: radial-gradient(closest-side, rgba(168, 245, 234, 0.240) 0%, rgba(168, 245, 234, 0.202) 14%, rgba(168, 245, 234, 0.144) 28%, rgba(168, 245, 234, 0.091) 42%, rgba(168, 245, 234, 0.048) 56%, rgba(168, 245, 234, 0.022) 70%, rgba(168, 245, 234, 0.007) 84%, rgba(168, 245, 234, 0.000) 100%); filter: blur(24px); }
 .stage-veil { background: radial-gradient(62% 70% at 50% 50%, rgba(1, 12, 14, 0.86), rgba(1, 12, 14, 0.74) 30%, rgba(1, 12, 14, 0.5) 55%, rgba(1, 12, 14, 0.26) 78%, rgba(1, 12, 14, 0.1)); }
+
+/* Gradient text only paints inside its box, so deep Arabic tails (ع ي ج) and high marks were clipped.
+   Extra padding gives the glyphs room; the negative margin keeps the layout where it was. */
+.rot-line { padding-block: 0.14em 0.32em; margin-block: -0.14em -0.32em; }
+.founder-punch { padding-block: 0.1em 0.25em; margin-block: 2.1rem 1.75rem; }
+.case-metric b { padding-block: 0.1em 0.25em; margin-block: -0.1em -0.25em; display: inline-block; }
