@@ -5,62 +5,14 @@ import { useMemo, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { Cloud, Clouds } from '@react-three/drei'
 import * as THREE from 'three'
-import { alphaPngUrl, blur, glowDataTexture } from './texUtil'
+import { glowDataTexture } from './texUtil'
 import type { Tier } from '../lib/capabilities'
 import { motion } from '../state/store'
+// The cloud sprite is baked ahead of time (scripts/bake-cloud.mjs → src/assets/cloud.png):
+// no work on the main thread at load, and no canvas readback for Safari to add noise to.
+import cloudUrl from '../assets/cloud.png'
 
-/** A cloud sprite: fractal noise (fbm) inside a soft round mask, so every puff has wisps and
- *  dense lumps like a real cumulus instead of reading as a flat disc. */
-// Built once per page: the URL must stay the same across renders, or the loader (which suspends
-// on first mount and discards the render) would see a new blob URL every time and never settle.
-let puffUrl: string | undefined
 
-function puffTexture() {
-  const n = 384
-  // Value noise on a small lattice, smoothly interpolated, summed over five octaves.
-  const G = 64
-  let seed = 7
-  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647)
-  const lat = Float32Array.from({ length: G * G }, rnd)
-  const at = (x: number, y: number) => lat[((y % G) + G) % G * G + (((x % G) + G) % G)]
-  const noise = (x: number, y: number) => {
-    const xi = Math.floor(x), yi = Math.floor(y)
-    const xf = x - xi, yf = y - yi
-    const u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf)
-    const a = at(xi, yi), b = at(xi + 1, yi), cc = at(xi, yi + 1), d = at(xi + 1, yi + 1)
-    return a + (b - a) * u + (cc - a) * v + (a - b - cc + d) * u * v
-  }
-  const fbm = (x: number, y: number, oct: number) => {
-    let f = 0, amp = 0.5, fr = 1
-    for (let o = 0; o < oct; o++) {
-      f += amp * noise(x * fr, y * fr)
-      amp *= 0.5
-      fr *= 2
-    }
-    return f
-  }
-  const alpha = new Float32Array(n * n)
-  for (let y = 0; y < n; y++) {
-    for (let x = 0; x < n; x++) {
-      // Domain warp: the lookup is pushed around by a second noise field, which turns blobs
-      // into the curls and billows of real cumulus.
-      const u = (x / n) * 4, v = (y / n) * 4
-      const wx = fbm(u + 3.1, v + 1.7, 3), wy = fbm(u + 8.3, v + 2.8, 3)
-      const f = fbm(u + wx * 1.6, v + wy * 1.6, 4)
-      const dx = (x - n / 2) / (n / 2), dy = (y - n / 2) / (n / 2)
-      const r = Math.sqrt(dx * dx + dy * dy * 1.15)
-      // Smoothstep falloff to the rim: no visible sprite edge, the puff just dissolves.
-      const m = Math.max(0, Math.min(1, 1 - r))
-      const mask = Math.pow(m * m * (3 - 2 * m), 1.6)
-      // Dense where noise and mask agree; a soft ramp (no hard threshold) keeps wisps feathered.
-      const k = Math.max(0, Math.min(1, (f - 0.22) / 0.5))
-      const a = k * k * (3 - 2 * k) * mask
-      alpha[y * n + x] = a * 0.92
-    }
-  }
-  // A soft blur irons out pixel grain, so the puffs read as smooth vapour, never dots.
-  return alphaPngUrl(blur(alpha, n, 2), n)
-}
 
 /** A soft radial glow: the moonlit sky behind the far banks, so the clouds silhouette against light. */
 function glowTexture() {
@@ -98,7 +50,7 @@ function banks(tier: Tier): Bank[] {
     { fx: 0.56, fy: 0.48, z: 2, seed: 8, segments: 10, bounds: [2.4, 1, 1], volume: 2.2, color: '#5bbcb1', opacity: 0.2, speed: 0.15, drift: 0.8 },
   ]
   // More, smaller puffs in wide, flat banks read as cloud; few big ones read as bokeh.
-  const shape = (b: Bank): Bank => ({ ...b, segments: Math.round(b.segments * 1.5), volume: b.volume * 0.62, bounds: [b.bounds[0] * 1.25, b.bounds[1] * 0.75, b.bounds[2]] })
+  const shape = (b: Bank): Bank => ({ ...b, segments: Math.round(b.segments * 1.25), volume: b.volume * 0.68, bounds: [b.bounds[0] * 1.25, b.bounds[1] * 0.75, b.bounds[2]] })
   // Phones: fewer puffs, but brighter and fuller, since the reading veil darkens the middle.
   if (tier === 'low') return [far[0], far[2], mid[0], mid[1]].map(shape).map((b) => ({ ...b, segments: Math.round(b.segments * 0.7), opacity: Math.min(0.9, b.opacity * 1.25), color: lighten(b.color) }))
   if (tier === 'mid') return [...far, ...mid].map(shape)
@@ -124,14 +76,16 @@ function easeOut(x: number) {
 }
 
 export default function CloudLayer({ tier, reduced, camZ, fov }: { tier: Tier; reduced: boolean; camZ: number; fov: number }) {
-  const texture = puffUrl ??= puffTexture()
+  const texture = cloudUrl
   const list = useMemo(() => banks(tier), [tier])
   const refs = useRef<(THREE.Group | null)[]>([])
   const { size } = useThree()
   const st = useRef({ t: 0, sy: 0, fin: 0, post: 0, intro: 0 })
   const glow = useMemo(glowTexture, [])
   const moon = useRef<THREE.Mesh>(null)
-  const limit = list.reduce((a, b) => a + Math.ceil(b.segments * 0.6) + Math.ceil(b.segments * 0.4) + (b.z > -12 ? Math.max(3, Math.ceil(b.segments * 0.15)) : 0), 0)
+  // The champagne rim is a detail layer: only where the GPU has headroom.
+  const rimmed = (b: Bank) => b.z > -12 && tier === 'high'
+  const limit = list.reduce((a, b) => a + Math.ceil(b.segments * 0.6) + Math.ceil(b.segments * 0.4) + (rimmed(b) ? Math.max(3, Math.ceil(b.segments * 0.15)) : 0), 0)
 
   useFrame((state, dtRaw) => {
     const dt = Math.min(dtRaw, 0.05)
@@ -213,7 +167,7 @@ export default function CloudLayer({ tier, reduced, camZ, fov }: { tier: Tier; r
             fade={18}
             concentrate="inside"
           />
-          {b.z > -12 && (
+          {rimmed(b) && (
             <Cloud
               seed={b.seed + 90}
               segments={Math.max(3, Math.ceil(b.segments * 0.15))}
