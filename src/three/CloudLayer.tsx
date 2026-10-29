@@ -3,7 +3,7 @@
 // front of some banks and behind others. They part and dim for the closing "KON".
 import { useMemo, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
-import { Cloud, Clouds, Sparkles } from '@react-three/drei'
+import { Cloud, Clouds } from '@react-three/drei'
 import * as THREE from 'three'
 import type { Tier } from '../lib/capabilities'
 import { motion } from '../state/store'
@@ -11,7 +11,7 @@ import { motion } from '../state/store'
 /** A cloud sprite: fractal noise (fbm) inside a soft round mask, so every puff has wisps and
  *  dense lumps like a real cumulus instead of reading as a flat disc. */
 function puffTexture() {
-  const n = 256
+  const n = 384
   const c = document.createElement('canvas')
   c.width = c.height = n
   const ctx = c.getContext('2d')!
@@ -44,7 +44,7 @@ function puffTexture() {
       // into the curls and billows of real cumulus.
       const u = (x / n) * 4, v = (y / n) * 4
       const wx = fbm(u + 3.1, v + 1.7, 3), wy = fbm(u + 8.3, v + 2.8, 3)
-      const f = fbm(u + wx * 1.6, v + wy * 1.6, 5)
+      const f = fbm(u + wx * 1.6, v + wy * 1.6, 4)
       const dx = (x - n / 2) / (n / 2), dy = (y - n / 2) / (n / 2)
       const r = Math.sqrt(dx * dx + dy * dy * 1.15)
       // Smoothstep falloff to the rim: no visible sprite edge, the puff just dissolves.
@@ -59,7 +59,13 @@ function puffTexture() {
     }
   }
   ctx.putImageData(img, 0, 0)
-  return c.toDataURL('image/png')
+  // A light blur pass irons out pixel speckle, so the puffs read as smooth vapour, never dots.
+  const out = document.createElement('canvas')
+  out.width = out.height = n
+  const o = out.getContext('2d')!
+  o.filter = 'blur(2.5px)'
+  o.drawImage(c, 0, 0)
+  return out.toDataURL('image/png')
 }
 
 /** A soft radial glow: the moonlit sky behind the far banks, so the clouds silhouette against light. */
@@ -145,8 +151,6 @@ export default function CloudLayer({ tier, reduced, camZ, fov }: { tier: Tier; r
   const st = useRef({ t: 0, sy: 0, fin: 0, post: 0, intro: 0 })
   const glow = useMemo(glowTexture, [])
   const moon = useRef<THREE.Mesh>(null)
-  const dust = useRef<THREE.Group>(null)
-  const dustCount = tier === 'high' ? 380 : tier === 'mid' ? 240 : 140
   const limit = list.reduce((a, b) => a + Math.ceil(b.segments * 0.6) + Math.ceil(b.segments * 0.4) + (b.z > -12 ? Math.max(3, Math.ceil(b.segments * 0.15)) : 0), 0)
 
   useFrame((state, dtRaw) => {
@@ -191,11 +195,6 @@ export default function CloudLayer({ tier, reduced, camZ, fov }: { tier: Tier; r
       moon.current.scale.set(mvh * aspect * (narrow ? 1.2 : 0.95) * br, mvh * (narrow ? 0.55 : 0.6) * br, 1)
       ;(moon.current.material as THREE.MeshBasicMaterial).opacity = 0.2 * fade * (1 - s.fin * 0.6)
     }
-    if (dust.current) {
-      dust.current.position.y = -s.sy * 1.2
-      dust.current.rotation.z = s.t * 0.004
-      dust.current.visible = s.post < 0.98
-    }
   })
 
   return (
@@ -204,11 +203,6 @@ export default function CloudLayer({ tier, reduced, camZ, fov }: { tier: Tier; r
       <planeGeometry />
       <meshBasicMaterial map={glow} color="#bfeee4" transparent opacity={0} depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} />
     </mesh>
-    {/* Fine champagne and aqua dust drifting through the sky: the "magic" between the banks. */}
-    <group ref={dust}>
-      <Sparkles count={Math.round(dustCount * 0.6)} scale={[34, 30, 14]} position={[0, 0, -6]} size={4.5} speed={reduced ? 0 : 0.18} opacity={0.55} noise={1.2} color="#f1e3bf" />
-      <Sparkles count={Math.round(dustCount * 0.4)} scale={[30, 26, 10]} position={[0, 0, -3]} size={3.2} speed={reduced ? 0 : 0.24} opacity={0.45} noise={1.5} color="#a8f5ea" />
-    </group>
     <Clouds material={THREE.MeshLambertMaterial} texture={texture} limit={limit} frustumCulled={false}>
       {list.map((b, i) => (
         <group key={b.seed} ref={(g) => { refs.current[i] = g }}>
