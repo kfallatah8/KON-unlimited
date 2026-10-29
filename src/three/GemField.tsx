@@ -110,15 +110,16 @@ const rimUniform = { value: 0.9 }
 
 /** Soft radial falloff used for each gem's halo: a real glow without a post-processing pass. */
 function glowTexture() {
-  const n = 128
+  const n = 256
   const c = document.createElement('canvas')
   c.width = c.height = n
   const ctx = c.getContext('2d')!
   const g = ctx.createRadialGradient(n / 2, n / 2, 0, n / 2, n / 2, n / 2)
-  g.addColorStop(0, 'rgba(255,255,255,1)')
-  g.addColorStop(0.18, 'rgba(255,255,255,0.55)')
-  g.addColorStop(0.45, 'rgba(255,255,255,0.14)')
-  g.addColorStop(1, 'rgba(255,255,255,0)')
+  // Gaussian-like falloff in many stops: the halo melts away with no visible rim.
+  for (let i = 0; i <= 24; i++) {
+    const t = i / 24
+    g.addColorStop(t, `rgba(255,255,255,${(Math.exp(-t * t * 7) * (1 - t * t)).toFixed(4)})`)
+  }
   ctx.fillStyle = g
   ctx.fillRect(0, 0, n, n)
   const t = new THREE.CanvasTexture(c)

@@ -47,9 +47,12 @@ function puffTexture() {
       const f = fbm(u + wx * 1.6, v + wy * 1.6, 5)
       const dx = (x - n / 2) / (n / 2), dy = (y - n / 2) / (n / 2)
       const r = Math.sqrt(dx * dx + dy * dy * 1.15)
-      const mask = Math.max(0, 1 - r)
-      // Dense where noise and mask agree; wispy toward the rim.
-      const a = Math.max(0, Math.min(1, (f * 1.5 - 0.35) * 1.8)) * Math.pow(mask, 1.15)
+      // Smoothstep falloff to the rim: no visible sprite edge, the puff just dissolves.
+      const m = Math.max(0, Math.min(1, 1 - r))
+      const mask = Math.pow(m * m * (3 - 2 * m), 1.6)
+      // Dense where noise and mask agree; a soft ramp (no hard threshold) keeps wisps feathered.
+      const k = Math.max(0, Math.min(1, (f - 0.22) / 0.5))
+      const a = k * k * (3 - 2 * k) * mask
       const i = (y * n + x) * 4
       img.data[i] = img.data[i + 1] = img.data[i + 2] = 255
       img.data[i + 3] = Math.round(a * 235)
@@ -66,10 +69,11 @@ function glowTexture() {
   c.width = c.height = n
   const ctx = c.getContext('2d')!
   const g = ctx.createRadialGradient(n / 2, n / 2, 0, n / 2, n / 2, n / 2)
-  g.addColorStop(0, 'rgba(255,255,255,1)')
-  g.addColorStop(0.25, 'rgba(255,255,255,0.45)')
-  g.addColorStop(0.6, 'rgba(255,255,255,0.1)')
-  g.addColorStop(1, 'rgba(255,255,255,0)')
+  // Gaussian-like falloff in many stops, so the glow fades out with no ring or edge.
+  for (let i = 0; i <= 24; i++) {
+    const t = i / 24
+    g.addColorStop(t, `rgba(255,255,255,${(Math.exp(-t * t * 5) * (1 - t * t)).toFixed(4)})`)
+  }
   ctx.fillStyle = g
   ctx.fillRect(0, 0, n, n)
   const t = new THREE.CanvasTexture(c)
@@ -219,7 +223,7 @@ export default function CloudLayer({ tier, reduced, camZ, fov }: { tier: Tier; r
             opacity={b.opacity}
             speed={reduced ? 0 : b.speed}
             growth={3}
-            fade={12}
+            fade={18}
             concentrate="inside"
           />
           <Cloud
@@ -232,7 +236,7 @@ export default function CloudLayer({ tier, reduced, camZ, fov }: { tier: Tier; r
             opacity={Math.min(0.92, b.opacity * 0.95)}
             speed={reduced ? 0 : b.speed * 1.3}
             growth={2.5}
-            fade={12}
+            fade={18}
             concentrate="inside"
           />
           {b.z > -12 && (
@@ -246,7 +250,7 @@ export default function CloudLayer({ tier, reduced, camZ, fov }: { tier: Tier; r
               opacity={b.opacity * 0.35}
               speed={reduced ? 0 : b.speed * 1.6}
               growth={1.5}
-              fade={12}
+              fade={18}
               concentrate="inside"
             />
           )}
