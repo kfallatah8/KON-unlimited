@@ -105,9 +105,9 @@ export async function crmCreateLead(l: CrmLead): Promise<string | null> {
     Email: l.email || undefined,
     Mobile: l.phone || undefined,
     City: l.city || undefined,
-    Lead_Source: 'Website diagnosis',
-    Rating: l.fit === 'high' ? 'Hot' : l.fit === 'medium' ? 'Warm' : 'Cold',
-    Description: `${l.report}\n\n— PDPL consent given ${l.consentAt} (language: ${l.lang})`,
+    // Lead_Source is a picklist in Zoho: add a "Website diagnosis" value there, then set ZOHO_LEAD_SOURCE.
+    Lead_Source: env('ZOHO_LEAD_SOURCE') || undefined,
+    Description: `Source: website diagnosis · fit ${l.fit} · urgency ${l.urgency}/5${l.support ? ' · free support request' : ''}\n\n${l.report}\n\n— PDPL consent given ${l.consentAt} (language: ${l.lang})`,
   }
   const res = await fetch(`${zohoApi()}/Leads`, {
     method: 'POST',
