@@ -8,7 +8,7 @@
 //            self-hosted copies in public/demos/ on the live site.
 // previewUrl optional: used only in the single-file claude.ai preview, where the
 //            self-hosted paths don't exist yet.
-// embed      true for a 360° tour that can load inside the page (live site only).
+// embed      true for a ⁦360°⁩ tour that can load inside the page (live site only).
 
 import type { ServiceId } from './site'
 import { tourUrl } from './site'
@@ -30,7 +30,14 @@ export const demos: Demo[] = [
   {
     service: 'tours',
     title: { ar: 'جولة داخل فيلا سكنية', en: 'Walk through a villa' },
-    note: { ar: 'جولة 360° تفاعلية بين الغرف', en: 'Interactive 360° tour, room to room' },
+    note: { ar: 'جولة ⁦360°⁩ تفاعلية بين الغرف', en: 'Interactive ⁦360°⁩ tour, room to room' },
+    url: tourUrl,
+    embed: true,
+  },
+  {
+    service: 'maps',
+    title: { ar: 'جرّب تجربة ⁦360°⁩ بنفسك', en: 'Try a ⁦360°⁩ experience yourself' },
+    note: { ar: 'مثال من مشاريعنا: تنقّل بين الغرف كما يتنقّل عميلك داخل مكانك', en: 'An example from our work: move between rooms the way your customer will move through your place' },
     url: tourUrl,
     embed: true,
   },

@@ -29,6 +29,8 @@ const paths: Record<IconId, ReactElement> = {
   train: (<><path d="M3 9l9-5 9 5-9 5z" /><path d="M7 11.3V16c3 2 7 2 10 0v-4.7" /><path d="M21 9v5" /></>),
   // a sphere with an orbit = 360° tour
   tour: (<><circle cx="12" cy="12" r="8.5" /><ellipse cx="12" cy="12" rx="8.5" ry="3.2" /><path d="M17.5 9.3l2.3 1.4-2.6.9" /></>),
+  // a map pin inside a 360° ring
+  pin: (<><path d="M12 15.5s-4.2-4-4.2-7a4.2 4.2 0 0 1 8.4 0c0 3-4.2 7-4.2 7z" /><circle cx="12" cy="8.5" r="1.4" /><ellipse cx="12" cy="17.5" rx="8.5" ry="3" /></>),
   // a browser window
   web: (<><rect x="3" y="4.5" width="18" height="15" rx="2" /><path d="M3 8.5h18" /><path d="M6 6.5h.01M8.2 6.5h.01" /><path d="M7 13h6M7 16h10" opacity=".6" /></>),
   // a pen nib drawing a mark

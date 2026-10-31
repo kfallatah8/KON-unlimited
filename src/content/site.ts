@@ -7,10 +7,10 @@ export type IconId =
   | 'flex' | 'aligned' | 'spark' | 'layers' | 'ai' | 'cycle' | 'mind' | 'field'
   | 'storm' | 'anchor' | 'rise' | 'seed' | 'compass'
   | 'eye' | 'people' | 'train' | 'bulb'
-  | 'tour' | 'web' | 'brand' | 'guest' | 'sales' | 'growth' | 'systems'
+  | 'tour' | 'pin' | 'web' | 'brand' | 'guest' | 'sales' | 'growth' | 'systems'
 
 /** Solutions. Demos for each one live in content/ready.ts. */
-export type ServiceId = 'tours' | 'web' | 'brand' | 'guest' | 'sales' | 'growth' | 'systems'
+export type ServiceId = 'tours' | 'maps' | 'web' | 'brand' | 'guest' | 'sales' | 'growth' | 'systems'
 
 export interface Option { id: string; label: string }
 export interface Question {
@@ -37,7 +37,7 @@ export interface CaseItem {
 }
 
 /** Where onboarding briefs go. Empty = not connected yet (the form says so plainly). */
-/** Embeddable 360° tour (Kuula). The page loads it only when a visitor asks for it. */
+/** Embeddable ⁦360°⁩ tour (Kuula). The page loads it only when a visitor asks for it. */
 export const tourUrl = 'https://kuula.co/share/collection/7MZVN?logo=1&info=1&fs=1&vr=0&sd=1&thumbs=1'
 
 export const contact = {
@@ -205,7 +205,7 @@ const ar = {
       { sector: 'ريادة الأعمال', tag: 'مجتمع · ورش عمل', title: 'مجتمع KON لروّاد الأعمال', body: 'تأسيس المجتمع في المدينة المنورة، وتشغيله، وتقديم ورش العمل فيه', metric: '+3,000', metricLabel: 'ساعة مع روّاد الأعمال' },
     ] as CaseItem[],
     tail: 'وأكثر من 12 مشروعًا آخر في 11 قطاعًا، من الضيافة إلى الواقع المعزّز',
-    tour: { eyebrow: 'جولة افتراضية 360°', title: 'ادخل أحد مشاريعنا', body: 'تجوّل داخل إحدى الفلل، وانتقل بين الغرف كما لو كنت هناك', cta: 'ابدأ الجولة', open: 'افتح في نافذة جديدة', close: 'إغلاق الجولة' },
+    tour: { eyebrow: 'جولة افتراضية ⁦360°⁩', title: 'ادخل أحد مشاريعنا', body: 'تجوّل داخل إحدى الفلل، وانتقل بين الغرف كما لو كنت هناك', cta: 'ابدأ الجولة', open: 'افتح في نافذة جديدة', close: 'إغلاق الجولة' },
   },
 
 
@@ -228,7 +228,7 @@ const ar = {
     apps: {
       eyebrow: 'مكتبة التطبيقات',
       title: 'أكثر من 100 تطبيق أعمال جاهز، نختار لك منها ما يحتاجه نشاطك فقط',
-      lede: 'لا تحتاج أن تعرف أسماءها. اختر قطاعك، وشاهد ما نجهّزه لأمثالك: **بالعربية، ومربوطًا ببعضه، مع تدريب فريقك**',
+      lede: 'لا تحتاج أن تعرف أسماءها. اختر قطاعك، وشاهد ما نجهّزه لأمثالك: **على حسب احتياجك، ومربوطًا ببعضه، مع تدريب فريقك**',
       teaser: 'أنظمة جاهزة لـ 21 قطاعًا، من المطاعم إلى المصانع',
       count: (n: number) => `${n} تطبيقًا لهذا القطاع`,
       showAll: (n: number) => `اعرض الكل (${n})`,
@@ -241,6 +241,12 @@ const ar = {
         pain: 'تحجز موعد المعاينة، وتقطع الطريق، ثم يقول العميل من أول دقيقة: ليس هذا ما أبحث عنه',
         line: 'المشتري يتجوّل في العقار من جواله، فلا يصلك للمعاينة إلا الجادّ',
         includes: ['وقت فريقك يذهب للمشترين الجادّين، لا لمعاينات بلا نتيجة', 'المشتري من مدينة أو دولة أخرى يرى العقار كاملًا قبل أن يسافر', 'إعلانك يبقى في ذهن العميل أطول، لأنه دخل العقار ولم يكتفِ بالصور'],
+      },
+      {
+        id: 'maps' as ServiceId, icon: 'pin' as IconId, title: 'تصوير ⁦360°⁩ على خرائط Google',
+        pain: 'قبل أن يختار مطعمًا أو مقهى، يقارن العميل بين عدة أماكن على الخريطة. ويخاف أن يصل فيجد المكان غير ما رآه في الصور',
+        line: 'العميل يدخل مكانك من خرائط Google قبل أن يزورك، فيأتيك واثقًا',
+        includes: ['حين يقارن العميل بينك وبين من حولك، يرى مكانك كاملًا، فيختارك عن ثقة', 'يرى الجلسات والأجواء كما هي، فيزول خوفه من أن يصل فيجد المكان مختلفًا', 'من يبحث عن مكان قريب يكتشفك، فيتحوّل البحث إلى زيارة، والزيارة إلى عميل جديد', 'الضيف يصل وتوقعاته في مكانها، فتكون تجربته أجمل، ويعود'],
       },
       {
         id: 'web' as ServiceId, icon: 'web' as IconId, title: 'تصميم المواقع',
@@ -280,7 +286,7 @@ const ar = {
         id: 'systems' as ServiceId, icon: 'systems' as IconId, title: 'أنظمة وتطبيقات الأعمال',
         pain: 'كل شيء في رأسك، وفي واتساب، وفي ملفات إكسل. وإن غبت يومًا، تعطّل العمل',
         line: 'أنظمة تحفظ عملك وأرقامك، فيستمر مشروعك حتى في غيابك',
-        includes: ['تعرف مبيعاتك ومخزونك وأداء فريقك اليوم، لا في آخر الشهر', 'أنظمة مجرّبة عالميًا، دون رسوم ترخيص على كل مستخدم، نجهّزها بالعربية لنشاطك', 'ندرّب فريقك حتى يصبح النظام جزءًا من يومه، لا عبئًا عليه'],
+        includes: ['تعرف مبيعاتك ومخزونك وأداء فريقك اليوم، لا في آخر الشهر', 'أنظمة مجرّبة عالميًا، دون رسوم ترخيص على كل مستخدم، نجهزها على حسب احتياجك', 'ندرّب فريقك حتى يصبح النظام جزءًا من يومه، لا عبئًا عليه'],
         proof: { label: 'روافد للتسويق العقاري', href: '#work' },
       },
     ],
@@ -538,7 +544,7 @@ const en: Content = {
       { sector: 'Entrepreneurship', tag: 'Community · Workshops', title: 'KON Entrepreneurs Community', body: 'Founding and running the community in Madinah, and leading its workshops', metric: '3,000+', metricLabel: 'hours with entrepreneurs' },
     ],
     tail: 'Plus 12 more projects across 11 sectors, from hospitality to augmented reality',
-    tour: { eyebrow: '360° virtual tour', title: 'Step inside one of our projects', body: 'Walk through one of the villas and move between rooms as if you were there', cta: 'Start the tour', open: 'Open in a new tab', close: 'Close the tour' },
+    tour: { eyebrow: '⁦360°⁩ virtual tour', title: 'Step inside one of our projects', body: 'Walk through one of the villas and move between rooms as if you were there', cta: 'Start the tour', open: 'Open in a new tab', close: 'Close the tour' },
   },
 
 
@@ -558,7 +564,7 @@ const en: Content = {
     apps: {
       eyebrow: 'Apps library',
       title: 'Over 100 ready business apps. We pick only what your business needs',
-      lede: 'You don\'t need to know their names. Pick your sector and see what we set up for businesses like yours: **in Arabic, connected, with your team trained**',
+      lede: 'You don\'t need to know their names. Pick your sector and see what we set up for businesses like yours: **set up around your needs, connected, with your team trained**',
       teaser: 'Ready systems for 21 sectors, from restaurants to factories',
       count: (n: number) => `${n} apps for this sector`,
       showAll: (n: number) => `Show all (${n})`,
@@ -571,6 +577,12 @@ const en: Content = {
         pain: 'You book the viewing, drive across town, and the client knows in a minute it isn\'t what they want',
         line: 'Buyers walk through the property on their phone, so only serious ones come to view',
         includes: ['Your team\'s time goes to serious buyers, not viewings that lead nowhere', 'A buyer in another city or country sees the whole property before they travel', 'Your listing stays on the buyer\'s mind longer, because they walked in instead of scrolling photos'],
+      },
+      {
+        id: 'maps' as ServiceId, icon: 'pin' as IconId, title: '⁦360°⁩ photos on Google Maps',
+        pain: 'Before picking a restaurant or cafe, people compare places on the map. And they worry the place won\'t look like the photos when they arrive',
+        line: 'Customers step inside your place from Google Maps before they visit, so they arrive confident',
+        includes: ['When customers compare you with places nearby, they see all of yours, and choose you with confidence', 'They see the seating and the atmosphere as they really are, so the fear of a different place disappears', 'People searching for somewhere nearby discover you, so a search becomes a visit and a visit becomes a new customer', 'Guests arrive with the right expectations, so the experience feels better, and they come back'],
       },
       {
         id: 'web' as ServiceId, icon: 'web' as IconId, title: 'Website design',
@@ -610,7 +622,7 @@ const en: Content = {
         id: 'systems' as ServiceId, icon: 'systems' as IconId, title: 'Business systems & apps',
         pain: 'Everything lives in your head, in WhatsApp and in spreadsheets. Take one day off and work stops',
         line: 'Systems that hold your work and your numbers, so the business runs even when you\'re away',
-        includes: ['See your sales, stock and team performance today, not at month end', 'Proven systems with no per-user licence fees, set up in Arabic for your business', 'We train your team until the system is part of their day, not a burden on it'],
+        includes: ['See your sales, stock and team performance today, not at month end', 'Proven systems with no per-user licence fees, set up around your needs', 'We train your team until the system is part of their day, not a burden on it'],
         proof: { label: 'Rwafed Real Estate Marketing', href: '#work' },
       },
     ],

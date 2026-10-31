@@ -394,8 +394,8 @@ export const apps: Record<string, App> = {
  },
  "pannellum": {
   "name": "Pannellum",
-  "ar": "عارض صور 360° وجولات افتراضية مجاني تستضيفه على موقعك، بديل لـ Kuula",
-  "en": "Free 360° panorama and virtual-tour viewer you can host on your own site (a Kuula alternative)"
+  "ar": "عارض صور ⁦360°⁩ وجولات افتراضية مجاني تستضيفه على موقعك، بديل لـ Kuula",
+  "en": "Free ⁦360°⁩ panorama and virtual-tour viewer you can host on your own site (a Kuula alternative)"
  },
  "paperless": {
   "name": "Paperless-ngx",
@@ -790,8 +790,8 @@ export const sectors: Sector[] = [
   "ar": "التطوير والتسويق العقاري",
   "en": "Real estate",
   "line": {
-   "ar": "عميل مهتم يضيع بين الاتصالات والمعاينات؟ موقع للوحدات، وجولات 360°، وإدارة للمشترين، وحجوزات موقّعة إلكترونيًا",
-   "en": "Interested buyers lost between calls and viewings? A listings site, 360° tours, buyer management and e-signed reservations"
+   "ar": "عميل مهتم يضيع بين الاتصالات والمعاينات؟ موقع للوحدات، وجولات ⁦360°⁩، وإدارة للمشترين، وحجوزات موقّعة إلكترونيًا",
+   "en": "Interested buyers lost between calls and viewings? A listings site, ⁦360°⁩ tours, buyer management and e-signed reservations"
   },
   "apps": [
    "pwb",
