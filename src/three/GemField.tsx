@@ -383,11 +383,17 @@ export default function GemField({ tier, reduced }: { tier: Tier; reduced: boole
   const count = tier === 'high' ? 330 : tier === 'mid' ? 250 : 170
   // Bloom only where the GPU has headroom; the fresnel rim carries the glow elsewhere.
   const [rich, setRich] = useState(tier === 'high')
-  const [dpr, setDpr] = useState(tier === 'high' ? 1.5 : tier === 'mid' ? 1.25 : 1.25)
+  const [dpr, setDpr] = useState(tier === 'high' ? 1.5 : 1.25)
+  // Every quality change resizes the drawing buffer, which blanks it for a frame, so step down
+  // once at most rather than flicking back and forth.
+  const stepped = useRef(false)
   return (
     <Canvas
       className="gem-canvas"
       dpr={dpr}
+      // The stage never changes size on scroll; ignore scroll for measuring, and settle window
+      // resizes before reallocating (meanwhile the last frame just stretches, never blanks).
+      resize={{ scroll: false, debounce: { scroll: 0, resize: 180 } }}
       camera={{ position: [0, 0, CAM_Z], fov: FOV, near: 0.1, far: 60 }}
       gl={{ antialias: !rich, alpha: true, powerPreference: 'high-performance', stencil: false }}
       style={{ pointerEvents: 'none' }}
@@ -397,9 +403,10 @@ export default function GemField({ tier, reduced }: { tier: Tier; reduced: boole
         onDecline={() => {
           // The opening is always heavy (first compiles, every gem blooming in): judging the GPU
           // then would resize the canvas mid-entrance, and each resize blanks it for a frame.
-          if (!motion.live || performance.now() - motion.live < 5000) return
+          if (!motion.live || performance.now() - motion.live < 5000 || stepped.current) return
+          stepped.current = true
           setDpr((d) => Math.max(1, d - 0.25))
-          if (dpr <= 1.25) setRich(false)
+          setRich(false)
         }}
       />
       <ambientLight intensity={0.25} />

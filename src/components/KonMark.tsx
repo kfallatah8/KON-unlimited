@@ -28,7 +28,7 @@ export function KonMark({ solid }: { solid?: boolean }) {
       const scale = (width * pxPerUnit) / total
       const dpr = Math.min(2, window.devicePixelRatio || 1)
       // Padding around the glyphs so the glow is never clipped by the canvas edge.
-      const P = solid ? 0 : 70
+      const P = solid ? 0 : 120
       const cssW = (total + P * 2) * scale
       const cssH = (KON.H + P * 2) * scale
       cv.style.width = `${cssW}px`
@@ -51,24 +51,25 @@ export function KonMark({ solid }: { solid?: boolean }) {
         drawKon(ctx, 0, (l, x, y) => ctx.fillText(l, x, y))
         return
       }
-      // Soft inner tint, a wide teal bloom, then a fine bright outline with a tight glow.
-      ctx.fillStyle = 'rgba(63, 208, 189, 0.08)'
+      // Soft inner tint, then glow built up in layers from wide and faint to narrow, so it melts
+      // into the night with a long, even falloff. The line itself is a soft light, not a hard
+      // edge: no bright core stroke.
+      ctx.fillStyle = 'rgba(63, 208, 189, 0.07)'
       drawKon(ctx, 0, (l, x, y) => ctx.fillText(l, x, y))
       ctx.strokeStyle = g
-      ctx.shadowColor = 'rgba(47, 224, 203, 0.5)'
-      ctx.shadowBlur = blur(34)
-      ctx.lineWidth = 3 / scale
-      ctx.globalAlpha = 0.55
-      drawKon(ctx, 0, (l, x, y) => ctx.strokeText(l, x, y))
+      const pass = (color: string, b: number, w: number, a: number) => {
+        ctx.shadowColor = color
+        ctx.shadowBlur = blur(b)
+        ctx.lineWidth = w / scale
+        ctx.globalAlpha = a
+        drawKon(ctx, 0, (l, x, y) => ctx.strokeText(l, x, y))
+      }
+      pass('rgba(47, 224, 203, 0.35)', 46, 2.4, 0.22)
+      pass('rgba(47, 224, 203, 0.45)', 24, 2, 0.32)
+      pass('rgba(168, 245, 234, 0.55)', 10, 1.4, 0.5)
+      pass('rgba(168, 245, 234, 0.5)', 4, 1, 0.42)
       ctx.globalAlpha = 1
-      ctx.shadowColor = 'rgba(168, 245, 234, 0.8)'
-      ctx.shadowBlur = blur(8)
-      ctx.lineWidth = 1.8 / scale
-      drawKon(ctx, 0, (l, x, y) => ctx.strokeText(l, x, y))
       ctx.shadowBlur = 0
-      ctx.strokeStyle = 'rgba(244, 252, 250, 0.5)'
-      ctx.lineWidth = 0.7 / scale
-      drawKon(ctx, 0, (l, x, y) => ctx.strokeText(l, x, y))
     }
     paint()
     let id = 0

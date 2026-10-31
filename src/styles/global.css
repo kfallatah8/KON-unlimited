@@ -99,7 +99,9 @@ button, input, select, textarea { font: inherit; color: inherit; }
 @media (prefers-reduced-motion: reduce) { [data-reveal] { opacity: 1; transform: none; transition: none; } }
 
 /* ---------- stage ---------- */
-.stage { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.stage { position: fixed; inset: 0 0 auto; height: 100vh; height: 100lvh; z-index: 0; pointer-events: none; }
+/* Sized to the largest viewport, so the 3D canvas never resizes (and blanks) while a phone's
+   browser bar slides in and out during scrolling. */
 .stage-glow {
   position: absolute; inset: -10%;
   background:
@@ -139,6 +141,9 @@ main, .site-footer { position: relative; z-index: 1; }
   background: rgba(1, 15, 17, 0.74); backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3);
   border-color: var(--line); padding-block: calc(0.8rem + env(safe-area-inset-top, 0px)) 0.8rem;
 }
+/* On phones and tablets a live blur over the moving 3D layer costs a full re-blur every frame:
+   a deeper tint reads the same and keeps scrolling smooth. */
+.tier-low .site-header.is-scrolled:not(.is-open), .tier-mid .site-header.is-scrolled:not(.is-open) { background: rgba(1, 14, 16, 0.9); backdrop-filter: none; -webkit-backdrop-filter: none; }
 .page-progress { position: absolute; inset-inline: 0; bottom: -1px; height: 1px; background: linear-gradient(90deg, var(--teal-deep), var(--teal-hi), var(--gold)); transform-origin: left; transform: scaleX(0); }
 :root[dir='rtl'] .page-progress { transform-origin: right; }
 .logo { position: relative; z-index: 2; display: flex; align-items: center; gap: 0.6rem; text-decoration: none; font-family: 'Readex Pro', sans-serif; font-weight: 300; font-size: 1.02rem; letter-spacing: 0.05em; }
@@ -493,9 +498,16 @@ main, .site-footer { position: relative; z-index: 1; }
 .finale-copy { position: relative; display: grid; justify-items: center; gap: 0.2rem; opacity: clamp(0, calc((var(--fin) - 0.8) * 5), 1); transform: translateY(calc((1 - clamp(0, calc((var(--fin) - 0.8) * 5), 1)) * 20px)); }
 
 /* ---------- footer ---------- */
-.site-footer { position: relative; z-index: 1; border-top: 1px solid var(--line); background: linear-gradient(180deg, rgba(2, 18, 20, 0.96), #010a0c); padding-block: clamp(3rem, 7vw, 5rem) max(1.6rem, env(safe-area-inset-bottom)); color: var(--muted); font-size: 0.86rem; }
+.site-footer { position: relative; z-index: 1; overflow: hidden; border-top: 1px solid var(--line); background: linear-gradient(180deg, rgba(2, 18, 20, 0.96), #010a0c); padding-block: clamp(3rem, 7vw, 5rem) max(1.6rem, env(safe-area-inset-bottom)); color: var(--muted); font-size: 0.86rem; }
 .footer-grid { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 2rem; }
-.footer-word { margin: 0; display: flex; align-items: baseline; gap: 0.9rem; font-family: 'Readex Pro', sans-serif; font-weight: 500; font-size: clamp(3.4rem, 9vw, 6.5rem); line-height: 0.95; letter-spacing: 0.12em; background: linear-gradient(170deg, #ffffff 0%, var(--aqua) 30%, var(--teal) 70%, var(--teal-deep) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 6px 30px rgba(18, 165, 150, 0.35)); }
+.footer-brand { position: relative; isolation: isolate; }
+/* The wordmark's glow is its own feathered layer (a drop-shadow on gradient text is clipped to the
+   text box in Safari, which left hard edges). Eased stops fade it to nothing with no visible rim. */
+.footer-brand::before {
+  content: ''; position: absolute; z-index: -1; left: 50%; top: -5.6rem; width: min(44rem, 140%); height: 15rem; transform: translateX(-50%); pointer-events: none;
+  background: radial-gradient(closest-side, rgba(18, 165, 150, 0.260) 0%, rgba(18, 165, 150, 0.206) 10%, rgba(18, 165, 150, 0.159) 20%, rgba(18, 165, 150, 0.119) 30%, rgba(18, 165, 150, 0.085) 40%, rgba(18, 165, 150, 0.057) 50%, rgba(18, 165, 150, 0.035) 60%, rgba(18, 165, 150, 0.018) 70%, rgba(18, 165, 150, 0.008) 80%, rgba(18, 165, 150, 0.002) 90%, rgba(18, 165, 150, 0.000) 100%);
+}
+.footer-word { margin: 0; display: flex; align-items: baseline; gap: 0.9rem; font-family: 'Readex Pro', sans-serif; font-weight: 500; font-size: clamp(3.4rem, 9vw, 6.5rem); line-height: 0.95; letter-spacing: 0.12em; background: linear-gradient(170deg, #ffffff 0%, var(--aqua) 30%, var(--teal) 70%, var(--teal-deep) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .footer-word span { font-size: 0.24em; font-weight: 300; letter-spacing: 0.32em; text-transform: uppercase; color: var(--text-2); -webkit-text-fill-color: var(--text-2); }
 .footer-slogan { margin-top: 0.9rem; color: var(--text-2); }
 :root[lang='en'] .footer-slogan { font-family: var(--display); font-style: italic; font-size: 1.15rem; }
@@ -720,6 +732,7 @@ main, .site-footer { position: relative; z-index: 1; }
   .stage-glow::before, .stage-glow::after, .kon-halo::before, .btn-primary::after { animation: none; }
 }
 .tier-low .stage-glow::after { display: none; }
+.tier-low .stage-glow::before { animation: none; will-change: auto; }
 
 /* 360° tour */
 .tour-card { margin: clamp(2.5rem, 5vw, 4rem) auto 0; max-width: 980px; padding: clamp(1.6rem, 3vw, 2.4rem); display: grid; justify-items: center; gap: 0.7rem; text-align: center; }
@@ -732,7 +745,7 @@ main, .site-footer { position: relative; z-index: 1; }
 
 /* Hero proof row sits on a frosted plate so the orbiting gems never cut through the numbers. */
 .proof { position: relative; background: linear-gradient(180deg, rgba(2, 22, 24, 0.72), rgba(1, 14, 16, 0.82)); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--line); border-radius: 20px; box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(168, 245, 234, 0.08) inset; }
-.tier-low .proof { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(1, 14, 16, 0.88); }
+.tier-low .proof, .tier-mid .proof { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(1, 14, 16, 0.88); }
 .hero-slogan { position: relative; text-shadow: 0 0 18px rgba(1, 10, 12, 0.95), 0 0 4px rgba(1, 10, 12, 0.9); }
 
 /* Three persona paths side by side (entrepreneur · business · investor) */
