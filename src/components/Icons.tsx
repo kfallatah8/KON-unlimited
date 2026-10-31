@@ -27,6 +27,22 @@ const paths: Record<IconId, ReactElement> = {
   eye: (<><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" /></>),
   people: (<><circle cx="8" cy="8" r="3" /><circle cx="17" cy="9" r="2.4" /><path d="M2.5 20a5.5 5.5 0 0 1 11 0" /><path d="M14 15.2A4.5 4.5 0 0 1 21.5 19" /></>),
   train: (<><path d="M3 9l9-5 9 5-9 5z" /><path d="M7 11.3V16c3 2 7 2 10 0v-4.7" /><path d="M21 9v5" /></>),
+  // a sphere with an orbit = 360° tour
+  tour: (<><circle cx="12" cy="12" r="8.5" /><ellipse cx="12" cy="12" rx="8.5" ry="3.2" /><path d="M17.5 9.3l2.3 1.4-2.6.9" /></>),
+  // a map pin inside a 360° ring
+  pin: (<><path d="M12 15.5s-4.2-4-4.2-7a4.2 4.2 0 0 1 8.4 0c0 3-4.2 7-4.2 7z" /><circle cx="12" cy="8.5" r="1.4" /><ellipse cx="12" cy="17.5" rx="8.5" ry="3" /></>),
+  // a browser window
+  web: (<><rect x="3" y="4.5" width="18" height="15" rx="2" /><path d="M3 8.5h18" /><path d="M6 6.5h.01M8.2 6.5h.01" /><path d="M7 13h6M7 16h10" opacity=".6" /></>),
+  // a pen nib drawing a mark
+  brand: (<><path d="M12 3l5 6-5 9-5-9z" /><path d="M12 11v7" /><circle cx="12" cy="10" r="1.2" /><path d="M5 21h14" /></>),
+  // a service bell
+  guest: (<><path d="M4 17a8 8 0 0 1 16 0z" /><path d="M2.5 20h19" /><path d="M12 9V6.5M10.5 6.5h3" /></>),
+  // a target with an arrow home
+  sales: (<><circle cx="11" cy="13" r="8" /><circle cx="11" cy="13" r="4" /><path d="M11 13l9-9M16.5 4H20v3.5" /></>),
+  // a stepped path climbing to a flag
+  growth: (<><path d="M3 20h5v-5h5v-5h5" /><path d="M18 10V3l3 1.5-3 1.5" /></>),
+  // a 2×2 grid of modules
+  systems: (<><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" /><rect x="13.5" y="3.5" width="7" height="7" rx="1.5" /><rect x="3.5" y="13.5" width="7" height="7" rx="1.5" /><rect x="13.5" y="13.5" width="7" height="7" rx="1.5" opacity=".55" /></>),
   bulb: (<><path d="M9 18h6M10 21h4" /><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2h5c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3z" /></>),
 }
 

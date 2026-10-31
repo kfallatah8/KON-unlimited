@@ -42,7 +42,7 @@ const defs: Record<Persona, StepDef[]> = {
     },
     {
       title: { ar: 'ما الذي يوقفك؟', en: 'What’s holding you back?' },
-      lede: { ar: 'اختر كل ما ينطبق. لا توجد إجابة خاطئة.', en: 'Pick all that apply. There are no wrong answers.' },
+      lede: { ar: 'اختر كل ما ينطبق. لا توجد إجابة خاطئة', en: 'Pick all that apply. There are no wrong answers' },
       questions: [
         { id: 'pains', kind: 'multi', label: { ar: 'التحديات', en: 'Challenges' }, options: [
           o('start', 'لا أعرف من أين أبدأ', 'I don’t know where to start'),
@@ -115,7 +115,7 @@ const defs: Record<Persona, StepDef[]> = {
     },
     {
       title: { ar: 'ما الذي يثقلك؟', en: 'What’s weighing on you?' },
-      lede: { ar: 'اختر كل ما ينطبق. كثير من الشركات تختار أكثر من ثلاثة.', en: 'Pick all that apply. Most companies pick more than three.' },
+      lede: { ar: 'اختر كل ما ينطبق. كثير من الشركات تختار أكثر من ثلاثة', en: 'Pick all that apply. Most companies pick more than three' },
       questions: [
         { id: 'pains', kind: 'multi', label: { ar: 'التحديات', en: 'Challenges' }, options: [
           o('profit', 'الأرباح لا تتبع المبيعات', 'Profit doesn’t follow sales'),
