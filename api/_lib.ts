@@ -43,15 +43,16 @@ export async function verify(ref: string, token: string) {
 
 // ---------- email (Resend) ----------
 
-export async function sendEmail(subject: string, text: string, replyTo?: string) {
+// idempotencyKey stops Resend sending the same alert twice if a request is retried.
+export async function sendEmail(subject: string, text: string, replyTo?: string, idempotencyKey?: string) {
   const key = env('RESEND_API_KEY')
   const to = env('LEAD_NOTIFY_EMAIL')
   if (!key || !to) return 'skipped'
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
-    headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json' },
+    headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json', ...(idempotencyKey ? { 'idempotency-key': idempotencyKey } : {}) },
     body: JSON.stringify({
-      from: env('LEAD_FROM_EMAIL') || 'KON Leads <leads@kon-unlimited.com>',
+      from: env('LEAD_FROM_EMAIL') || 'KON Leads <leads@notify.kon-unlimited.com>',
       to: to.split(','),
       subject,
       text,

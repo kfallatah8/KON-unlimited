@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   const text = `Diagnosis accuracy: ${score}/10\nPersona: ${persona}\nRecommended: ${primary}${comment ? `\nComment: ${comment}` : ''}`
   const [crm, email, hook] = await Promise.all([
     isCrm ? crmAddNote(b.ref, `Diagnosis accuracy ${score}/10`, text).catch(() => 'error') : 'skipped',
-    sendEmail(`تقييم دقة التشخيص: ${score}/10`, `${text}\nRef: ${b.ref}`).catch(() => 'error'),
+    sendEmail(`تقييم دقة التشخيص: ${score}/10`, `${text}\nRef: ${b.ref}`, undefined, `rating-${b.ref}`).catch(() => 'error'),
     sendWebhook('lead.rated', { ref: b.ref, score, comment, persona, primary }).catch(() => 'error'),
   ])
   console.info('rating', { ref: b.ref, score, crm, email, hook })

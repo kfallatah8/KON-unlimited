@@ -38,7 +38,7 @@ export async function POST(req: Request) {
   const subject = `عميل جديد: ${lead.name}${lead.company ? ` (${lead.company})` : ''} · ${lead.fit || '-'}${tag}`
   const crmLine = crmId ? `\nCRM: lead ${crmId}` : '\nCRM: not connected yet'
   const [email, whatsapp, hook] = await Promise.all([
-    sendEmail(subject, `${lead.report}\n\n—\nConsent: ${lead.consentAt} (v${lead.consentVersion || '1'})${crmLine}\nRef: ${ref}`, lead.email || undefined).catch(() => 'error'),
+    sendEmail(subject, `${lead.report}\n\n—\nConsent: ${lead.consentAt} (v${lead.consentVersion || '1'})${crmLine}\nRef: ${ref}`, lead.email || undefined, `lead-${ref}`).catch(() => 'error'),
     sendWhatsApp(`KON · عميل جديد\n${lead.name}${lead.company ? ` · ${lead.company}` : ''}\nالمسار: ${lead.persona}${tag}\nالأولوية: ${lead.fit} · إلحاح ${lead.urgency}/5\nالتفاصيل في بريدك وفي الـ CRM`).catch(() => 'error'),
     sendWebhook('lead.created', { ref, lead }).catch(() => 'error'),
   ])
