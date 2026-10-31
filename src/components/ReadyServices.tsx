@@ -4,6 +4,7 @@ import { useRef, useState } from 'react'
 import type { KeyboardEvent } from 'react'
 import { useContent } from '../content/useContent'
 import { demos } from '../content/ready'
+import { apps, sectors } from '../content/apps'
 import type { Demo } from '../content/ready'
 import { startOnboarding, useStore } from '../state/store'
 import { Icon, GemMark } from './Icons'
@@ -93,6 +94,7 @@ export function ReadyServices() {
           <div className="ready-info">
             <Icon id={it.icon} className="icon icon-lg" />
             <h3>{it.title}</h3>
+            <blockquote className="ready-pain"><span>{r.pain}</span>{it.pain}</blockquote>
             <p className="ready-line">{it.line}</p>
             <p className="ready-label">{r.includes}</p>
             <ul className="ready-list">
@@ -122,14 +124,66 @@ export function ReadyServices() {
                   <DemoCard key={d.url} d={d} onEmbed={d.embed && !SINGLE ? () => setEmbed(d) : undefined} />
                 ))}
               </div>
+            ) : it.id === 'systems' ? (
+              <a className="demo-empty apps-teaser" href="#apps">
+                <b dir="ltr">+{Object.keys(apps).length}</b>
+                <p>{r.apps.teaser}</p>
+                <em>{r.browseApps} <span aria-hidden="true">↓</span></em>
+              </a>
             ) : (
               <div className="demo-empty"><GemMark className="demo-gem" /><p>{r.noDemo}</p></div>
             )}
           </div>
         </div>
 
+        <AppsLibrary />
+
         <p className="ready-tail" data-reveal><Rich text={r.tail} /></p>
       </div>
     </section>
+  )
+}
+
+const FIRST = 9
+
+/** Every business app KON sets up, by sector. Data in content/apps.ts. */
+function AppsLibrary() {
+  const a = useContent().ready.apps
+  const lang = useStore((s) => s.lang)
+  const [sec, setSec] = useState(0)
+  const [all, setAll] = useState(false)
+  const sx = sectors[sec]
+  const shown = all ? sx.apps : sx.apps.slice(0, FIRST)
+  return (
+    <div id="apps" className="apps-lib">
+      <div className="narrow center sec-head">
+        <p className="eyebrow" data-reveal>{a.eyebrow}</p>
+        <h3 className="apps-title" data-reveal>{a.title}</h3>
+        <p className="body-lg" data-reveal><Rich text={a.lede} /></p>
+      </div>
+      <div className="ready-tabs apps-tabs" role="tablist" aria-label={a.eyebrow} data-reveal>
+        {sectors.map((x, i) => (
+          <button key={x.id} type="button" role="tab" aria-selected={i === sec} aria-controls="apps-panel" className={i === sec ? 'is-on' : ''} onClick={() => { setSec(i); setAll(false) }}>
+            <span>{x[lang]}</span>
+          </button>
+        ))}
+      </div>
+      <div id="apps-panel" role="tabpanel" className="apps-panel" key={sx.id}>
+        <p className="apps-line">{sx.line[lang]}</p>
+        <p className="ready-label">{a.count(sx.apps.length)}</p>
+        <ul className="apps-grid">
+          {shown.map((id) => (
+            <li key={id} className="app-card">
+              <b dir="ltr">{apps[id].name}</b>
+              <span>{apps[id][lang]}</span>
+            </li>
+          ))}
+        </ul>
+        {sx.apps.length > FIRST && (
+          <button type="button" className="btn btn-ghost apps-more" onClick={() => setAll((v) => !v)}><span>{all ? a.showLess : a.showAll(sx.apps.length)}</span></button>
+        )}
+        <p className="fine apps-foot">{a.foot}</p>
+      </div>
+    </div>
   )
 }

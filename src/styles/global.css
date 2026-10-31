@@ -902,3 +902,28 @@ html.is-ready .stage-glow { opacity: 1; }
   .ready-info .btn { width: 100%; }
   .ready-demos .tour-actions .btn { width: auto; }
 }
+
+/* solutions: pain quote + apps library */
+.ready-pain { margin: 0.2rem 0 0.1rem; padding-inline-start: 1rem; border-inline-start: 2px solid var(--gold); color: var(--text); font-size: 1.02rem; line-height: 1.7; }
+.ready-pain span { display: block; font-size: 0.72rem; color: var(--gold); margin-bottom: 0.2rem; }
+:root[lang='en'] .ready-pain span { text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.66rem; }
+:root[lang='en'] .ready-pain { line-height: 1.55; }
+.apps-teaser { text-decoration: none; transition: border-color 0.3s; }
+.apps-teaser:hover { border-color: var(--teal-hi); }
+.apps-teaser b { font-family: 'Readex Pro', sans-serif; font-weight: 200; font-size: clamp(3rem, 6vw, 4.4rem); line-height: 1; background: linear-gradient(180deg, #fff, var(--aqua) 60%, var(--teal-hi)); -webkit-background-clip: text; background-clip: text; color: transparent; padding-block: 0.1em; }
+.apps-teaser em { font-style: normal; color: var(--teal-hi); font-size: 0.9rem; }
+.apps-lib { margin-top: clamp(4rem, 9vw, 7rem); scroll-margin-top: 6rem; }
+.apps-title { font-family: var(--display); font-weight: 300; font-size: clamp(1.6rem, 3.2vw, 2.6rem); line-height: 1.45; max-width: 26ch; margin: 0 auto 1rem; }
+:root[lang='en'] .apps-title { line-height: 1.15; }
+.apps-tabs button { min-height: 44px; padding: 0.45rem 1rem; font-size: 0.88rem; }
+.apps-panel { max-width: 70rem; margin-inline: auto; animation: obIn 0.7s var(--ease); }
+.apps-line { max-width: 44rem; margin: 0 auto 0.8rem; color: var(--text-2); font-size: 1.04rem; }
+.apps-grid { list-style: none; padding: 0; margin: 1rem 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.8rem; text-align: start; }
+.app-card { display: grid; align-content: start; gap: 0.35rem; padding: 1.1rem 1.2rem; border-radius: 16px; border: 1px solid var(--line); background: linear-gradient(160deg, rgba(8, 48, 48, 0.5), rgba(2, 18, 20, 0.7)); }
+.app-card b { font-weight: 500; color: var(--text); font-size: 0.98rem; text-align: start; }
+:root[dir='rtl'] .app-card b { text-align: right; }
+.app-card span { color: var(--muted); font-size: 0.86rem; line-height: 1.6; }
+.apps-more { margin-top: 1.2rem; }
+.apps-foot { margin-top: 1.2rem !important; }
+@media (max-width: 1100px) { .apps-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .apps-grid { grid-template-columns: 1fr; } .apps-more { width: 100%; } }
