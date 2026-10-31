@@ -319,7 +319,6 @@ function Why() {
 
 function Human() {
   const h = useContent().human
-  const s = useContent().services
   return (
     <section className="band human" aria-labelledby="human-title">
       <div className="wrap">
@@ -338,19 +337,6 @@ function Human() {
               </div>
             </article>
           ))}
-        </div>
-        <div className="services" aria-labelledby="services-title">
-          <p className="eyebrow" data-reveal>{s.eyebrow}</p>
-          <h3 id="services-title" className="services-title" data-reveal>{s.title}</h3>
-          <ul className="service-list">
-            {s.items.map((it, i) => (
-              <li key={it.title} data-reveal style={{ transitionDelay: `${(i % 3) * 70}ms` }}>
-                <GemMark className="svc-gem" />
-                <b>{it.title}</b>
-                <span>{it.body}</span>
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
     </section>

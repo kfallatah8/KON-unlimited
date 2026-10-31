@@ -35,13 +35,6 @@ export const demos: Demo[] = [
     embed: true,
   },
   {
-    service: 'maps',
-    title: { ar: 'جرّب تجربة ⁦360°⁩ بنفسك', en: 'Try a ⁦360°⁩ experience yourself' },
-    note: { ar: 'مثال من مشاريعنا: تنقّل بين الغرف كما يتنقّل عميلك داخل مكانك', en: 'An example from our work: move between rooms the way your customer will move through your place' },
-    url: tourUrl,
-    embed: true,
-  },
-  {
     service: 'web',
     title: { ar: 'الكلاسيكي الداكن', en: 'Dark Classic' },
     note: { ar: 'تصميم سابق لموقع KON، بلمسة شمبانيا', en: 'An earlier KON site, champagne accents' },

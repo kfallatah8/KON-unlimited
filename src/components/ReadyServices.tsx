@@ -144,7 +144,7 @@ export function ReadyServices() {
   )
 }
 
-const FIRST = 9
+const FIRST = 6
 
 /** Every business app KON sets up, by sector. Data in content/apps.ts. */
 function AppsLibrary() {

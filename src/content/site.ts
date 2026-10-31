@@ -223,7 +223,7 @@ const ar = {
     proof: 'حدث فعلًا مع',
     cta: 'أريد هذا الحل',
     browseApps: 'تصفّح مكتبة التطبيقات',
-    noDemo: 'نريك نماذج هذا الحل في جلسة التشخيص، بتفاصيل لا ننشرها هنا احترامًا لعملائنا',
+    noDemo: 'نشرح لك هذا الحل بالتفصيل في جلسة التشخيص المجانية، على واقع مشروعك أنت',
     tail: 'مشكلتك ليست هنا؟ **أخبرنا بها، ونبني حلها**',
     apps: {
       eyebrow: 'مكتبة التطبيقات',
@@ -559,7 +559,7 @@ const en: Content = {
     proof: 'It happened with',
     cta: 'I want this solution',
     browseApps: 'Browse the apps library',
-    noDemo: 'We show you examples of this in your diagnosis session, with details we keep private out of respect for our clients',
+    noDemo: 'We walk you through this solution in your free diagnosis session, applied to your own business',
     tail: 'Your problem isn\'t here? **Tell us, and we\'ll build the solution**',
     apps: {
       eyebrow: 'Apps library',
