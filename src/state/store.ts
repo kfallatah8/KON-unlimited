@@ -78,6 +78,16 @@ export const motion = {
   heroOut: 0,
   /** Signed scroll velocity, px per frame, smoothed. */
   vel: 0,
+  /** performance.now() when the 3D scene had compiled and was shown (0 = not yet). */
+  live: 0,
+  /** performance.now() when the page opening started (fonts in). */
+  readyAt: 0,
   /** Element under the pointer wants extra glow (CTA hover). */
   glow: 0,
+}
+
+/** Milliseconds since both the 3D scene and the page opening were ready (0 until then). */
+export function introElapsed() {
+  if (!motion.live || !motion.readyAt) return 0
+  return Math.max(0, performance.now() - Math.max(motion.live, motion.readyAt))
 }

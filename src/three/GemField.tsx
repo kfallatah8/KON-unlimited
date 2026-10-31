@@ -1,15 +1,18 @@
 // The gem stream: faceted teal gemstones that orbit the hero, drift with the scroll, part around
 // the pointer, and gather into the word "KON" at the end of the page.
 // One InstancedMesh per cut; all motion is computed per frame from scroll + time (no React state).
-import { Suspense, useMemo, useRef, useState } from 'react'
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Environment, Lightformer, PerformanceMonitor } from '@react-three/drei'
 import { Bloom, EffectComposer } from '@react-three/postprocessing'
 import * as THREE from 'three'
 import type { Tier } from '../lib/capabilities'
-import { motion } from '../state/store'
+import { introElapsed, motion } from '../state/store'
 import { drawKon, konLayout, KON, measureKon } from './konGlyphs'
 import CloudLayer from './CloudLayer'
+import { SafeBoundary } from '../components/SafeBoundary'
+import { bakedTexture } from './texUtil'
+import gemGlowUrl from '../assets/gem-glow.png'
 
 const CAM_Z = 14
 const FOV = 34
@@ -108,24 +111,6 @@ interface Gem {
 
 const rimUniform = { value: 0.9 }
 
-/** Soft radial falloff used for each gem's halo: a real glow without a post-processing pass. */
-function glowTexture() {
-  const n = 256
-  const c = document.createElement('canvas')
-  c.width = c.height = n
-  const ctx = c.getContext('2d')!
-  const g = ctx.createRadialGradient(n / 2, n / 2, 0, n / 2, n / 2, n / 2)
-  // Gaussian-like falloff in many stops: the halo melts away with no visible rim.
-  for (let i = 0; i <= 24; i++) {
-    const t = i / 24
-    g.addColorStop(t, `rgba(255,255,255,${(Math.exp(-t * t * 7) * (1 - t * t)).toFixed(4)})`)
-  }
-  ctx.fillStyle = g
-  ctx.fillRect(0, 0, n, n)
-  const t = new THREE.CanvasTexture(c)
-  t.colorSpace = THREE.SRGBColorSpace
-  return t
-}
 const HALO = new THREE.Color('#2fe0cb')
 
 function makeMaterial() {
@@ -173,7 +158,7 @@ function Gems({ count, reduced }: { count: number; reduced: boolean }) {
   const halo = useRef<THREE.InstancedMesh>(null)
   const haloGeo = useMemo(() => new THREE.PlaneGeometry(1, 1), [])
   const haloMat = useMemo(() => new THREE.MeshBasicMaterial({
-    map: glowTexture(), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false,
+    map: bakedTexture(gemGlowUrl), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false,
   }), [])
   const hc = useMemo(() => new THREE.Color(), [])
   const counts = useMemo(() => [Math.round(count * 0.5), Math.round(count * 0.3), count - Math.round(count * 0.5) - Math.round(count * 0.3)], [count])
@@ -237,9 +222,10 @@ function Gems({ count, reduced }: { count: number; reduced: boolean }) {
     const dt = Math.min(dtRaw, 0.05)
     if (!reduced) tmp.t += dt
     const t = tmp.t
-    // Opening: gems bloom in one by one over ~2.5s instead of popping into place.
-    // Wall-clock based, so a slow first few frames can't stretch the opening out.
-    tmp.intro = reduced ? 1.6 : Math.min(1.6, state.clock.elapsedTime / 2.4)
+    // Opening: gems bloom in one by one over ~2.5s instead of popping into place. The clock starts
+    // once shaders are compiled and the page opening has begun, so the two move together and no
+    // compile stall eats into the animation. Wall-clock based, so slow frames can't stretch it.
+    tmp.intro = reduced ? 1.6 : Math.min(1.6, introElapsed() / 2400)
     const vh = 2 * Math.tan(THREE.MathUtils.degToRad(FOV / 2)) * CAM_Z
     const vw = vh * (size.width / size.height)
     const narrow = size.width < 700
@@ -378,6 +364,23 @@ function Gems({ count, reduced }: { count: number; reduced: boolean }) {
   )
 }
 
+/** Compiles every shader up front, then fades the canvas in two frames later, so the entrance
+ *  never stutters on first-use shader compiles. */
+function Warmup() {
+  const { gl, scene, camera } = useThree()
+  useEffect(() => {
+    gl.compile(scene, camera)
+    let id = requestAnimationFrame(() => {
+      id = requestAnimationFrame(() => {
+        motion.live = performance.now()
+        gl.domElement.closest('.gem-canvas')?.classList.add('is-live')
+      })
+    })
+    return () => cancelAnimationFrame(id)
+  }, [gl, scene, camera])
+  return null
+}
+
 export default function GemField({ tier, reduced }: { tier: Tier; reduced: boolean }) {
   const count = tier === 'high' ? 330 : tier === 'mid' ? 250 : 170
   // Bloom only where the GPU has headroom; the fresnel rim carries the glow elsewhere.
@@ -390,7 +393,6 @@ export default function GemField({ tier, reduced }: { tier: Tier; reduced: boole
       camera={{ position: [0, 0, CAM_Z], fov: FOV, near: 0.1, far: 60 }}
       gl={{ antialias: !rich, alpha: true, powerPreference: 'high-performance', stencil: false }}
       style={{ pointerEvents: 'none' }}
-      onCreated={({ gl }) => requestAnimationFrame(() => gl.domElement.closest('.gem-canvas')?.classList.add('is-live'))}
     >
       {/* Drop resolution, then bloom, if frames start to slip: smoothness beats sparkle. */}
       <PerformanceMonitor
@@ -408,10 +410,13 @@ export default function GemField({ tier, reduced }: { tier: Tier; reduced: boole
         <Lightformer form="rect" intensity={2.5} color="#e9d9b0" position={[6, -1, 2]} rotation-y={-Math.PI / 2} scale={[8, 2, 1]} />
         <Lightformer form="ring" intensity={3} color="#3fe0cf" position={[0, -4, 4]} scale={4} />
       </Environment>
-      <Suspense fallback={null}>
-        <CloudLayer tier={tier} reduced={reduced} camZ={CAM_Z} fov={FOV} />
-      </Suspense>
+      <SafeBoundary>
+        <Suspense fallback={null}>
+          <CloudLayer tier={tier} reduced={reduced} camZ={CAM_Z} fov={FOV} />
+        </Suspense>
+      </SafeBoundary>
       <Gems count={count} reduced={reduced} />
+      <Warmup />
       {rich && (
         <EffectComposer multisampling={0} enableNormalPass={false}>
           <Bloom mipmapBlur intensity={0.72} luminanceThreshold={0.55} luminanceSmoothing={0.25} radius={0.7} />

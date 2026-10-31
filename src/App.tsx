@@ -14,6 +14,7 @@ import { lenis, SmoothScroll } from './components/SmoothScroll'
 import { SplitReveal } from './components/SplitReveal'
 import { Rich } from './components/Rich'
 import { KonMark } from './components/KonMark'
+import { SafeBoundary } from './components/SafeBoundary'
 
 // The WebGL stage is its own chunk: copy and layout never wait for it.
 const GemField = lazy(() => import('./three/GemField'))
@@ -629,6 +630,7 @@ export default function App() {
       if (done) return
       done = true
       id = requestAnimationFrame(() => requestAnimationFrame(() => {
+        motion.readyAt = performance.now()
         setReady(true)
         document.documentElement.classList.add('is-ready')
       }))
@@ -653,9 +655,11 @@ export default function App() {
       <div className="stage" aria-hidden="true">
         <div className="stage-glow" />
         {webgl && (
-          <Suspense fallback={null}>
-            <GemField tier={caps.tier} reduced={caps.reducedMotion} />
-          </Suspense>
+          <SafeBoundary>
+            <Suspense fallback={null}>
+              <GemField tier={caps.tier} reduced={caps.reducedMotion} />
+            </Suspense>
+          </SafeBoundary>
         )}
         <div className="stage-veil" />
         <div className="stage-vignette" />

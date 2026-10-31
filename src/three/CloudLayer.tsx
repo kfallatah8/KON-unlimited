@@ -1,91 +1,17 @@
-// Volumetric-looking clouds: drei's instanced cloud sprites with a puff texture painted at
-// runtime (no network fetch). Three depth layers sit around the gem stream, so gems drift in
+// Volumetric-looking clouds: drei's instanced cloud sprites with a baked puff texture
+// (src/assets/cloud.png, generated once, so nothing is computed on the main thread at load). Three depth layers sit around the gem stream, so gems drift in
 // front of some banks and behind others. They part and dim for the closing "KON".
 import { useMemo, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { Cloud, Clouds } from '@react-three/drei'
 import * as THREE from 'three'
 import type { Tier } from '../lib/capabilities'
-import { motion } from '../state/store'
-
-/** A cloud sprite: fractal noise (fbm) inside a soft round mask, so every puff has wisps and
- *  dense lumps like a real cumulus instead of reading as a flat disc. */
-function puffTexture() {
-  const n = 384
-  const c = document.createElement('canvas')
-  c.width = c.height = n
-  const ctx = c.getContext('2d')!
-  // Value noise on a small lattice, smoothly interpolated, summed over five octaves.
-  const G = 64
-  let seed = 7
-  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647)
-  const lat = Float32Array.from({ length: G * G }, rnd)
-  const at = (x: number, y: number) => lat[((y % G) + G) % G * G + (((x % G) + G) % G)]
-  const noise = (x: number, y: number) => {
-    const xi = Math.floor(x), yi = Math.floor(y)
-    const xf = x - xi, yf = y - yi
-    const u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf)
-    const a = at(xi, yi), b = at(xi + 1, yi), cc = at(xi, yi + 1), d = at(xi + 1, yi + 1)
-    return a + (b - a) * u + (cc - a) * v + (a - b - cc + d) * u * v
-  }
-  const fbm = (x: number, y: number, oct: number) => {
-    let f = 0, amp = 0.5, fr = 1
-    for (let o = 0; o < oct; o++) {
-      f += amp * noise(x * fr, y * fr)
-      amp *= 0.5
-      fr *= 2
-    }
-    return f
-  }
-  const img = ctx.createImageData(n, n)
-  for (let y = 0; y < n; y++) {
-    for (let x = 0; x < n; x++) {
-      // Domain warp: the lookup is pushed around by a second noise field, which turns blobs
-      // into the curls and billows of real cumulus.
-      const u = (x / n) * 4, v = (y / n) * 4
-      const wx = fbm(u + 3.1, v + 1.7, 3), wy = fbm(u + 8.3, v + 2.8, 3)
-      const f = fbm(u + wx * 1.6, v + wy * 1.6, 4)
-      const dx = (x - n / 2) / (n / 2), dy = (y - n / 2) / (n / 2)
-      const r = Math.sqrt(dx * dx + dy * dy * 1.15)
-      // Smoothstep falloff to the rim: no visible sprite edge, the puff just dissolves.
-      const m = Math.max(0, Math.min(1, 1 - r))
-      const mask = Math.pow(m * m * (3 - 2 * m), 1.6)
-      // Dense where noise and mask agree; a soft ramp (no hard threshold) keeps wisps feathered.
-      const k = Math.max(0, Math.min(1, (f - 0.22) / 0.5))
-      const a = k * k * (3 - 2 * k) * mask
-      const i = (y * n + x) * 4
-      img.data[i] = img.data[i + 1] = img.data[i + 2] = 255
-      img.data[i + 3] = Math.round(a * 235)
-    }
-  }
-  ctx.putImageData(img, 0, 0)
-  // A light blur pass irons out pixel speckle, so the puffs read as smooth vapour, never dots.
-  const out = document.createElement('canvas')
-  out.width = out.height = n
-  const o = out.getContext('2d')!
-  o.filter = 'blur(2.5px)'
-  o.drawImage(c, 0, 0)
-  return out.toDataURL('image/png')
-}
-
-/** A soft radial glow: the moonlit sky behind the far banks, so the clouds silhouette against light. */
-function glowTexture() {
-  const n = 256
-  const c = document.createElement('canvas')
-  c.width = c.height = n
-  const ctx = c.getContext('2d')!
-  const g = ctx.createRadialGradient(n / 2, n / 2, 0, n / 2, n / 2, n / 2)
-  // Gaussian-like falloff in many stops, so the glow fades out with no ring or edge.
-  for (let i = 0; i <= 24; i++) {
-    const t = i / 24
-    g.addColorStop(t, `rgba(255,255,255,${(Math.exp(-t * t * 5) * (1 - t * t)).toFixed(4)})`)
-  }
-  ctx.fillStyle = g
-  ctx.fillRect(0, 0, n, n)
-  const t = new THREE.CanvasTexture(c)
-  t.colorSpace = THREE.SRGBColorSpace
-  return t
-}
+import { introElapsed, motion } from '../state/store'
+import { bakedTexture } from './texUtil'
+// Baked once from the original canvas generators: no work at load, and no canvas readback,
+// which Safari salts with noise (that was the source of the coloured speckles).
+import cloudUrl from '../assets/cloud.png'
+import cloudGlowUrl from '../assets/cloud-glow.png'
 
 interface Bank {
   /** Position as a fraction of the visible width/height at its depth. */
@@ -144,20 +70,22 @@ function easeOut(x: number) {
 }
 
 export default function CloudLayer({ tier, reduced, camZ, fov }: { tier: Tier; reduced: boolean; camZ: number; fov: number }) {
-  const texture = useMemo(puffTexture, [])
+  const texture = cloudUrl
   const list = useMemo(() => banks(tier), [tier])
   const refs = useRef<(THREE.Group | null)[]>([])
   const { size } = useThree()
   const st = useRef({ t: 0, sy: 0, fin: 0, post: 0, intro: 0 })
-  const glow = useMemo(glowTexture, [])
+  const glow = useMemo(() => bakedTexture(cloudGlowUrl), [])
   const moon = useRef<THREE.Mesh>(null)
-  const limit = list.reduce((a, b) => a + Math.ceil(b.segments * 0.6) + Math.ceil(b.segments * 0.4) + (b.z > -12 ? Math.max(3, Math.ceil(b.segments * 0.15)) : 0), 0)
+  // The champagne rim is a detail layer: only where the GPU has headroom.
+  const rimmed = (b: Bank) => b.z > -12 && tier === 'high'
+  const limit = list.reduce((a, b) => a + Math.ceil(b.segments * 0.6) + Math.ceil(b.segments * 0.4) + (rimmed(b) ? Math.max(3, Math.ceil(b.segments * 0.15)) : 0), 0)
 
   useFrame((state, dtRaw) => {
     const dt = Math.min(dtRaw, 0.05)
     const s = st.current
     if (!reduced) s.t += dt
-    s.intro = Math.min(1, state.clock.elapsedTime / 2.6)
+    s.intro = Math.min(1, introElapsed() / 2600)
     const k = 1 - Math.exp(-dt * 4)
     s.sy += (window.scrollY / window.innerHeight - s.sy) * k
     s.fin += (motion.finale - s.fin) * (1 - Math.exp(-dt * 3))
@@ -233,7 +161,7 @@ export default function CloudLayer({ tier, reduced, camZ, fov }: { tier: Tier; r
             fade={18}
             concentrate="inside"
           />
-          {b.z > -12 && (
+          {rimmed(b) && (
             <Cloud
               seed={b.seed + 90}
               segments={Math.max(3, Math.ceil(b.segments * 0.15))}
