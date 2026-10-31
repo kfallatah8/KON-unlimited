@@ -188,7 +188,7 @@ const ar = {
     featured: [
       { sector: 'الاتصالات', tag: 'تطوير أعمال · GTM', title: 'دخول Telkomsel إلى السوق السعودي', body: 'تطوير الأعمال، وبناء استراتيجية دخول السوق وتنفيذها لشركة الاتصالات الإندونيسية Telkomsel في السعودية.', metric: '14M', metricLabel: 'ريال إيرادات تحققت' },
       { sector: 'الترفيه والضيافة', tag: 'تطوير أعمال · تشغيل', title: 'Games Club (GC)', body: 'إعادة بناء التشغيل كاملًا: هندسة القائمة، وتدريب الفريق، وتجربة الضيف، وإجراءات تشغيل قياسية (SOPs)، وشراكات جديدة.', metric: '+161.11%', metricLabel: 'نمو الإيرادات خلال 30 يومًا', extra: '+511.11% متوسط الإيرادات الشهرية' },
-      { sector: 'الأغذية والمشروبات', tag: 'من الفكرة إلى السوق', title: 'علامة عصائر من الصفر', body: 'بناء العلامة وتشغيلها من مجرد فكرة: المنتج، والتشغيل، والبيع.', metric: '4K', metricLabel: 'ريال إيراد يومي' },
+      { sector: 'الأغذية والمشروبات', tag: 'من الفكرة إلى السوق', title: 'روسـيـلا: علامة عصائر من الصفر', body: 'بناء العلامة وتشغيلها من مجرد فكرة: المنتج، والتشغيل، والبيع.', metric: '4K', metricLabel: 'ريال إيراد يومي' },
       { sector: 'العقار والاستثمار', tag: 'استراتيجية · تنفيذ', title: 'صفقة عقارية مع مستثمر خاص', body: 'بناء الاستراتيجية الكاملة وتنفيذ الصفقة مع مستثمر من القطاع الخاص.', metric: '1.4M', metricLabel: 'ريال قيمة الصفقة' },
     ] as CaseItem[],
     more: [
@@ -442,7 +442,7 @@ const en: Content = {
     featured: [
       { sector: 'Telecoms', tag: 'Business development · GTM', title: 'Telkomsel’s entry into Saudi Arabia', body: 'Business development, plus building and executing the go-to-market strategy that brought Indonesian telecom operator Telkomsel into the Saudi market.', metric: '14M', metricLabel: 'SAR revenue generated' },
       { sector: 'Entertainment & hospitality', tag: 'Business development · Operations', title: 'Games Club (GC)', body: 'A full operational rebuild: menu engineering, staff training, guest experience, standard operating procedures and new partnerships.', metric: '+161.11%', metricLabel: 'revenue growth in 30 days', extra: '+511.11% average monthly revenue' },
-      { sector: 'Food & beverage', tag: 'Idea to market', title: 'A juice brand, from zero', body: 'Building and running the brand from a bare idea: product, operations and sales.', metric: '4K', metricLabel: 'SAR revenue per day' },
+      { sector: 'Food & beverage', tag: 'Idea to market', title: 'Rosella: a juice brand, from zero', body: 'Building and running the brand from a bare idea: product, operations and sales.', metric: '4K', metricLabel: 'SAR revenue per day' },
       { sector: 'Real estate & investment', tag: 'Strategy · Execution', title: 'A private-investor property deal', body: 'Building the full strategy and executing a real estate deal with a private investor.', metric: '1.4M', metricLabel: 'SAR deal value' },
     ],
     more: [
