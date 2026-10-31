@@ -440,6 +440,18 @@ main, .site-footer { position: relative; z-index: 1; }
 .ob-raw summary { cursor: pointer; font-size: 0.86rem; color: var(--text-2); min-height: 44px; display: flex; align-items: center; }
 .ob-raw textarea { margin-top: 0.4rem; font-family: var(--mono); font-size: 0.78rem !important; }
 .ob-link { justify-self: start; text-decoration: underline; text-underline-offset: 4px; }
+.ob-toggle a { color: var(--teal-hi); text-decoration: underline; text-underline-offset: 3px; }
+.ob-trap { position: absolute !important; inset-inline-start: -9999px; width: 1px !important; height: 1px; opacity: 0; pointer-events: none; }
+.ob-sent { font-size: 0.9rem; color: var(--aqua); padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid var(--line-strong); background: rgba(18, 165, 150, 0.1); }
+.ob-rate { display: grid; gap: 0.7rem; padding: 1.2rem 1.3rem; border-radius: 18px; border: 1px solid var(--line); background: rgba(1, 14, 16, 0.55); }
+.ob-rate .btn { justify-self: start; }
+.ob-scale-10 { display: grid; grid-template-columns: repeat(10, minmax(0, 44px)); gap: 0.4rem; }
+.ob-scale-10 .ob-dot { width: 100%; height: auto; aspect-ratio: 1; }
+.ob-rate .ob-scale-ends { max-width: calc(10 * 44px + 9 * 0.4rem); }
+@media (max-width: 560px) {
+  .ob-scale-10 { grid-template-columns: repeat(5, 48px); }
+  .ob-rate .ob-scale-ends { max-width: calc(5 * 48px + 4 * 0.4rem); }
+}
 
 /* ---------- finale ---------- */
 .finale-line { font-family: var(--display); font-size: clamp(1.3rem, 2.6vw, 2.1rem); color: var(--text); }
