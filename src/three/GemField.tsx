@@ -364,17 +364,15 @@ function Gems({ count, reduced }: { count: number; reduced: boolean }) {
   )
 }
 
-/** Compiles every shader up front, then fades the canvas in two frames later, so the entrance
- *  never stutters on first-use shader compiles. */
+/** Starts shader compiles in parallel (where the browser supports it) without blocking the main
+ *  thread, and shows the canvas from its first frame, so the opening never waits on the GPU. */
 function Warmup() {
   const { gl, scene, camera } = useThree()
   useEffect(() => {
-    gl.compile(scene, camera)
-    let id = requestAnimationFrame(() => {
-      id = requestAnimationFrame(() => {
-        motion.live = performance.now()
-        gl.domElement.closest('.gem-canvas')?.classList.add('is-live')
-      })
+    gl.compileAsync(scene, camera).catch(() => {})
+    const id = requestAnimationFrame(() => {
+      motion.live = performance.now()
+      gl.domElement.closest('.gem-canvas')?.classList.add('is-live')
     })
     return () => cancelAnimationFrame(id)
   }, [gl, scene, camera])
@@ -397,6 +395,9 @@ export default function GemField({ tier, reduced }: { tier: Tier; reduced: boole
       {/* Drop resolution, then bloom, if frames start to slip: smoothness beats sparkle. */}
       <PerformanceMonitor
         onDecline={() => {
+          // The opening is always heavy (first compiles, every gem blooming in): judging the GPU
+          // then would resize the canvas mid-entrance, and each resize blanks it for a frame.
+          if (!motion.live || performance.now() - motion.live < 5000) return
           setDpr((d) => Math.max(1, d - 0.25))
           if (dpr <= 1.25) setRich(false)
         }}
