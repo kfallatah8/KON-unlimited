@@ -38,6 +38,9 @@ export interface CaseItem {
 
 /** Where onboarding briefs go. Empty = not connected yet (the form says so plainly). */
 /** Embeddable ⁦360°⁩ tour (Kuula). The page loads it only when a visitor asks for it. */
+/** Solutions section (الحلول). Hidden on the live site for now (khalid, 2026-10-31); flip to true to show it again. */
+export const SHOW_SOLUTIONS = false
+
 export const tourUrl = 'https://kuula.co/share/collection/7MZVN?logo=1&info=1&fs=1&vr=0&sd=1&thumbs=1'
 
 export const contact = {
@@ -55,7 +58,7 @@ const ar = {
     { href: '#why', label: 'لماذا KON' },
     { href: '#offer', label: 'العرض' },
     { href: '#work', label: 'أعمالنا' },
-    { href: '#ready', label: 'الحلول' },
+    ...(SHOW_SOLUTIONS ? [{ href: '#ready', label: 'الحلول' }] : []),
     { href: '#founder', label: 'المؤسس' },
   ],
   headerCta: 'ابدأ التشخيص',
@@ -398,7 +401,7 @@ const en: Content = {
     { href: '#why', label: 'Why KON' },
     { href: '#offer', label: 'The offer' },
     { href: '#work', label: 'Work' },
-    { href: '#ready', label: 'Solutions' },
+    ...(SHOW_SOLUTIONS ? [{ href: '#ready', label: 'Solutions' }] : []),
     { href: '#founder', label: 'Founder' },
   ],
   headerCta: 'Start diagnosis',
