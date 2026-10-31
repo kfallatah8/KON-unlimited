@@ -7,6 +7,10 @@ export type IconId =
   | 'flex' | 'aligned' | 'spark' | 'layers' | 'ai' | 'cycle' | 'mind' | 'field'
   | 'storm' | 'anchor' | 'rise' | 'seed' | 'compass'
   | 'eye' | 'people' | 'train' | 'bulb'
+  | 'tour' | 'web' | 'brand' | 'guest' | 'sales' | 'growth' | 'systems'
+
+/** Ready-made services. Demos for each one live in content/ready.ts. */
+export type ServiceId = 'tours' | 'web' | 'brand' | 'guest' | 'sales' | 'growth' | 'systems'
 
 export interface Option { id: string; label: string }
 export interface Question {
@@ -51,6 +55,7 @@ const ar = {
     { href: '#why', label: 'لماذا KON' },
     { href: '#offer', label: 'العرض' },
     { href: '#work', label: 'أعمالنا' },
+    { href: '#ready', label: 'خدمات جاهزة' },
     { href: '#founder', label: 'المؤسس' },
   ],
   headerCta: 'ابدأ التشخيص',
@@ -203,6 +208,31 @@ const ar = {
     tour: { eyebrow: 'جولة افتراضية 360°', title: 'ادخل أحد مشاريعنا', body: 'تجوّل داخل إحدى الفلل، وانتقل بين الغرف كما لو كنت هناك.', cta: 'ابدأ الجولة', open: 'افتح في نافذة جديدة', close: 'إغلاق الجولة' },
   },
 
+
+  // Ready-made services. Add a service: give it an id in ServiceId, an icon, and an entry here
+  // (both languages). Add demos for it in content/ready.ts.
+  ready: {
+    eyebrow: 'خدمات جاهزة',
+    title: 'خدمات جاهزة، مجرّبة في مشاريع حقيقية',
+    lede: 'نطاق واضح، وخطوات معروفة، ونتيجة تراها بعينك. **شاهد نماذج حيّة** قبل أن تقرّر.',
+    includes: 'ماذا تشمل',
+    demos: 'نماذج حيّة',
+    open: 'افتح النموذج',
+    proof: 'من أعمالنا',
+    cta: 'أريد هذه الخدمة',
+    noDemo: 'نعرض نماذج هذه الخدمة في جلسة التشخيص، مع تفاصيل لا تُنشر هنا.',
+    tail: 'تحتاج شيئًا غير موجود هنا؟ **نبنيه لك**',
+    items: [
+      { id: 'tours' as ServiceId, icon: 'tour' as IconId, title: 'جولات افتراضية للعقارات', line: 'دع المشتري يدخل العقار قبل أن يزوره', includes: ['جولة 360° يتنقل فيها الزائر بين الغرف', 'رابط واحد تضعه في إعلانك أو ترسله للعميل', 'تُعرض داخل موقعك، فيبقى الزائر عندك'] },
+      { id: 'web' as ServiceId, icon: 'web' as IconId, title: 'تصميم المواقع', line: 'موقع يليق بمشروعك، ويعمل على كل شاشة', includes: ['عربي وإنجليزي من اليوم الأول', 'تجربة ثلاثية الأبعاد حين تخدم رسالتك', 'متجاوب مع الجوال، وسريع'] },
+      { id: 'brand' as ServiceId, icon: 'brand' as IconId, title: 'هندسة الهوية التجارية', line: 'هوية تُبنى على من تخدم، لا على ذوق اللحظة', includes: ['الرسالة ونبرة الصوت', 'الشعار والألوان والخطوط', 'دليل استخدام يحفظ الهوية من التشتّت'], proof: { label: 'علامة عصائر من الصفر', href: '#work' } },
+      { id: 'guest' as ServiceId, icon: 'guest' as IconId, title: 'تحسين تجربة الضيف', line: 'الضيف لا يتذكّر ما قدّمته. يتذكّر كيف شعر', includes: ['رحلة الضيف من الوصول إلى العودة', 'المتسوق الخفي لقياس التجربة كما هي', 'معايير خدمة وإجراءات تشغيل (SOPs) للفريق'], proof: { label: 'Games Club (GC)', href: '#work' } },
+      { id: 'sales' as ServiceId, icon: 'sales' as IconId, title: 'تدريب فرق المبيعات', line: 'تدريب يظهر أثره في الأرقام، لا في الشهادات', includes: ['تدريب على مواقف البيع الحقيقية', 'التعامل مع الاعتراضات وإغلاق الصفقة', 'متابعة في الميدان بعد التدريب'], proof: { label: 'Games Club (GC)', href: '#work' } },
+      { id: 'growth' as ServiceId, icon: 'growth' as IconId, title: 'استراتيجيات تطوير الأعمال', line: 'خطة نمو تُنفَّذ، لا تُحفظ في درج', includes: ['خطة دخول السوق (GTM)', 'الشراكات وقنوات البيع', 'مؤشرات واضحة نقيس بها التقدّم'], proof: { label: 'دخول Telkomsel إلى السوق السعودي', href: '#work' } },
+      { id: 'systems' as ServiceId, icon: 'systems' as IconId, title: 'أنظمة تشغيل جاهزة', line: 'أنظمة مجرّبة عالميًا، نجهّزها لنشاطك', includes: ['نختار النظام المناسب لقطاعك: مبيعات، حجوزات، مخزون، تقارير', 'نجهّزه بالعربية ونربطه بطريقة عملك', 'ندرّب فريقك حتى يصبح جزءًا من يومه'], proof: { label: 'روافد للتسويق العقاري', href: '#work' } },
+    ],
+  },
+
   // CONFIRM: how requests are selected.
   support: {
     eyebrow: 'مبادرة KON',
@@ -309,6 +339,7 @@ const en: Content = {
     { href: '#why', label: 'Why KON' },
     { href: '#offer', label: 'The offer' },
     { href: '#work', label: 'Work' },
+    { href: '#ready', label: 'Ready-made' },
     { href: '#founder', label: 'Founder' },
   ],
   headerCta: 'Start diagnosis',
@@ -455,6 +486,29 @@ const en: Content = {
     ],
     tail: 'Plus 12 more projects across 11 sectors, from hospitality to augmented reality',
     tour: { eyebrow: '360° virtual tour', title: 'Step inside one of our projects', body: 'Walk through one of the villas and move between rooms as if you were there.', cta: 'Start the tour', open: 'Open in a new tab', close: 'Close the tour' },
+  },
+
+
+  ready: {
+    eyebrow: 'Ready-made services',
+    title: 'Ready-made services, proven on real projects',
+    lede: 'A clear scope, known steps, and a result you can see. **Try the live demos** before you decide.',
+    includes: 'What you get',
+    demos: 'Live demos',
+    open: 'Open demo',
+    proof: 'From our work',
+    cta: 'I want this',
+    noDemo: 'We walk you through examples of this service in your diagnosis session, with details we don\'t publish here.',
+    tail: 'Need something that isn\'t here? **We\'ll build it**',
+    items: [
+      { id: 'tours' as ServiceId, icon: 'tour' as IconId, title: 'Virtual tours for real estate', line: 'Let buyers walk in before they visit', includes: ['A 360° tour visitors move through room by room', 'One link for your listing or your client', 'Embedded in your own site, so visitors stay with you'] },
+      { id: 'web' as ServiceId, icon: 'web' as IconId, title: 'Website design', line: 'A site worthy of your business, on every screen', includes: ['Arabic and English from day one', 'A 3D experience where it serves your message', 'Fast, and built for mobile'] },
+      { id: 'brand' as ServiceId, icon: 'brand' as IconId, title: 'Brand identity engineering', line: 'An identity built on who you serve, not on a passing taste', includes: ['Message and tone of voice', 'Logo, colours and type', 'A brand guide that keeps it consistent'], proof: { label: 'A juice brand from scratch', href: '#work' } },
+      { id: 'guest' as ServiceId, icon: 'guest' as IconId, title: 'Guest experience enhancement', line: 'Guests forget what you served. They remember how it felt', includes: ['The guest journey, from arrival to return', 'Mystery shopping to measure the experience as it is', 'Service standards and SOPs for the team'], proof: { label: 'Games Club (GC)', href: '#work' } },
+      { id: 'sales' as ServiceId, icon: 'sales' as IconId, title: 'Sales team training', line: 'Training that shows in the numbers, not on the wall', includes: ['Practice on real selling situations', 'Handling objections and closing', 'Follow-up in the field after training'], proof: { label: 'Games Club (GC)', href: '#work' } },
+      { id: 'growth' as ServiceId, icon: 'growth' as IconId, title: 'Business development strategy', line: 'A growth plan that gets executed, not filed away', includes: ['Go-to-market plan (GTM)', 'Partnerships and sales channels', 'Clear indicators to measure progress'], proof: { label: 'Telkomsel\'s Saudi market entry', href: '#work' } },
+      { id: 'systems' as ServiceId, icon: 'systems' as IconId, title: 'Ready-made business systems', line: 'Proven systems, set up for your business', includes: ['The right system for your sector: sales, bookings, inventory, reporting', 'Set up in Arabic and fitted to how you work', 'Your team trained until it\'s part of their day'], proof: { label: 'Rwafed Real Estate Marketing', href: '#work' } },
+    ],
   },
 
   support: {

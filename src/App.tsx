@@ -3,7 +3,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useContent } from './content/useContent'
 import type { CaseItem } from './content/site'
-import { contact, tourUrl } from './content/site'
+import { contact } from './content/site'
 import { detectCapabilities } from './lib/capabilities'
 import { motion, setLang, startOnboarding, useStore } from './state/store'
 import { Cursor } from './components/Cursor'
@@ -14,6 +14,7 @@ import { lenis, SmoothScroll } from './components/SmoothScroll'
 import { SplitReveal } from './components/SplitReveal'
 import { Rich } from './components/Rich'
 import { KonMark } from './components/KonMark'
+import { ReadyServices } from './components/ReadyServices'
 
 // The WebGL stage is its own chunk: copy and layout never wait for it.
 const GemField = lazy(() => import('./three/GemField'))
@@ -414,35 +415,8 @@ function Work() {
           {w.more.map((it) => <CaseCard key={it.title} it={it} mark={w.confirmMark} />)}
         </div>
         <p className="work-tail" data-reveal>{w.tail}</p>
-        <Tour />
       </div>
     </section>
-  )
-}
-
-// The single-file preview runs in a sandbox that blocks third-party frames, so there it links out.
-const EMBED_TOUR = import.meta.env.MODE !== 'single'
-
-function Tour() {
-  const t = useContent().work.tour
-  const [open, setOpen] = useState(false)
-  return (
-    <div className="tour-card glass" data-reveal>
-      <p className="eyebrow centered">{t.eyebrow}</p>
-      <h3>{t.title}</h3>
-      <p className="tour-body">{t.body}</p>
-      {open ? (
-        <div className="tour-frame">
-          <iframe src={tourUrl} title={t.eyebrow} allow="fullscreen; xr-spatial-tracking; gyroscope; accelerometer" allowFullScreen loading="lazy" />
-        </div>
-      ) : null}
-      <div className="tour-actions">
-        {EMBED_TOUR ? (
-          <button type="button" className={open ? 'btn btn-ghost' : 'btn btn-primary'} onClick={() => setOpen((v) => !v)}><span>{open ? t.close : t.cta}</span></button>
-        ) : null}
-        <a className={EMBED_TOUR ? 'link-btn' : 'btn btn-primary'} href={tourUrl} target="_blank" rel="noopener noreferrer"><span>{EMBED_TOUR ? t.open : t.cta}</span></a>
-      </div>
-    </div>
   )
 }
 
@@ -683,6 +657,7 @@ export default function App() {
         <Human />
         <Offer />
         <Work />
+        <ReadyServices />
         <Support />
         <Founder />
         <Finale fallback={!webgl} />
