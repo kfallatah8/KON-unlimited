@@ -64,7 +64,7 @@ const ar = {
   headerCta: 'ابدأ التشخيص',
 
   hero: {
-    eyebrow: 'استشارات · تطوير أعمال · تشغيل · ++ابتكار++',
+    eyebrow: 'استشارات · تطوير أعمال · تشغيل · ابتكار',
     rotating: ['نرفع كفاءة مشروعك', 'نبتكر حلولًا تسبق التحدي', 'نحسّن كفاءة التشغيل', 'نحوّل فكرتك إلى مشروع يعمل', 'نجعل استثمارك يعمل بذكاء'],
     promise: 'وعدنا بسيط: **نطوّر أي عملية تشغيلية، ونحسّنها**',
     lede: 'من **الفكرة الأولى** إلى **شركة تعمل بانتظام**، دون أن تحمل كل شيء وحدك',
@@ -407,7 +407,7 @@ const en: Content = {
   headerCta: 'Start diagnosis',
 
   hero: {
-    eyebrow: 'Advisory · Business development · Operations · ++Innovation++',
+    eyebrow: 'Advisory · Business development · Operations · Innovation',
     rotating: ['We make your business run better', 'We innovate ahead of every challenge', 'We sharpen how you operate', 'We turn ideas into working businesses', 'We make your capital work smarter'],
     promise: 'Our promise is simple: **we optimise and develop any operation**',
     lede: 'From **the first idea** to **a company that runs steadily**, without you carrying all of it alone',

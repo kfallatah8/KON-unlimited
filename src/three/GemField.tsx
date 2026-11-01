@@ -1,9 +1,9 @@
 // The gem stream: faceted teal gemstones that orbit the hero, drift with the scroll, part around
 // the pointer, and gather into the word "KON" at the end of the page.
 // One InstancedMesh per cut; all motion is computed per frame from scroll + time (no React state).
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
+import { Suspense, useEffect, useMemo, useRef } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { Environment, Lightformer, PerformanceMonitor } from '@react-three/drei'
+import { Environment, Lightformer } from '@react-three/drei'
 import { Bloom, EffectComposer } from '@react-three/postprocessing'
 import * as THREE from 'three'
 import type { Tier } from '../lib/capabilities'
@@ -399,14 +399,36 @@ function Warmup() {
   return null
 }
 
+// Safari composites post-processed WebGL frames less reliably (brief black frames under load),
+// so it renders without the bloom pass; the fresnel rim and halos carry the glow there.
+const SAFARI = typeof navigator !== 'undefined' && /^((?!chrome|chromium|crios|android|edg).)*safari/i.test(navigator.userAgent)
+
+/** Blank-proofing: if the browser drops the WebGL context (memory pressure on phones), fade the
+ *  canvas out instead of showing a hard black cut, and fade it back once the context returns. */
+function ContextGuard() {
+  const { gl } = useThree()
+  useEffect(() => {
+    const el = gl.domElement
+    const wrap = el.closest('.gem-canvas')
+    const lost = (e: Event) => { e.preventDefault(); wrap?.classList.add('is-lost') }
+    const back = () => requestAnimationFrame(() => requestAnimationFrame(() => wrap?.classList.remove('is-lost')))
+    el.addEventListener('webglcontextlost', lost)
+    el.addEventListener('webglcontextrestored', back)
+    return () => {
+      el.removeEventListener('webglcontextlost', lost)
+      el.removeEventListener('webglcontextrestored', back)
+    }
+  }, [gl])
+  return null
+}
+
 export default function GemField({ tier, reduced }: { tier: Tier; reduced: boolean }) {
   const count = tier === 'high' ? 330 : tier === 'mid' ? 250 : 170
-  // Bloom only where the GPU has headroom; the fresnel rim carries the glow elsewhere.
-  const [rich, setRich] = useState(tier === 'high')
-  const [dpr, setDpr] = useState(tier === 'high' ? 1.5 : 1.25)
-  // Every quality change resizes the drawing buffer, which blanks it for a frame, so step down
-  // once at most rather than flicking back and forth.
-  const stepped = useRef(false)
+  // Quality is chosen once, up front, and never changed mid-visit: every runtime switch (resolution
+  // or bloom) reallocates the drawing buffer and flashes the canvas. Bloom only on desktop GPUs
+  // outside Safari; elsewhere the fresnel rim carries the glow.
+  const rich = tier === 'high' && !SAFARI
+  const dpr = tier === 'high' && !SAFARI ? 1.5 : 1.25
   return (
     <Canvas
       className="gem-canvas"
@@ -418,17 +440,7 @@ export default function GemField({ tier, reduced }: { tier: Tier; reduced: boole
       gl={{ antialias: !rich, alpha: true, powerPreference: 'high-performance', stencil: false }}
       style={{ pointerEvents: 'none' }}
     >
-      {/* Drop resolution, then bloom, if frames start to slip: smoothness beats sparkle. */}
-      <PerformanceMonitor
-        onDecline={() => {
-          // The opening is always heavy (first compiles, every gem blooming in): judging the GPU
-          // then would resize the canvas mid-entrance, and each resize blanks it for a frame.
-          if (!motion.live || performance.now() - motion.live < 5000 || stepped.current) return
-          stepped.current = true
-          setDpr((d) => Math.max(1, d - 0.25))
-          setRich(false)
-        }}
-      />
+      <ContextGuard />
       <ambientLight intensity={0.25} />
       <directionalLight position={[4, 6, 8]} intensity={1.6} color="#dffcf7" />
       <directionalLight position={[-6, -3, 4]} intensity={0.8} color="#2bd1c0" />
