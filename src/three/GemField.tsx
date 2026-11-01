@@ -18,12 +18,32 @@ const CAM_Z = 14
 const FOV = 34
 const TEALS = ['#012f2e', '#023f3c', '#04524d', '#066560', '#087a72', '#0b9184', '#14ab9a', '#3fd0bd', '#034a52', '#056470']
 
-/** Lathe profile (radius, height) from culet to table → faceted gem. */
+/** Lathe profile (radius, height) from culet to table → faceted gem.
+ *  Normals are part facet, part rounded: the facets still read crisply, but light glides across
+ *  each face as the gem turns instead of switching on and off one face at a time. */
 function cut(profile: [number, number][], segments: number, rot = 0) {
   const g = new THREE.LatheGeometry(profile.map(([r, y]) => new THREE.Vector2(r, y)), segments, rot)
   const flat = g.toNonIndexed()
-  flat.computeVertexNormals()
   g.dispose()
+  flat.computeVertexNormals() // per-face (non-indexed)
+  const pos = flat.attributes.position as THREE.BufferAttribute
+  const nor = flat.attributes.normal as THREE.BufferAttribute
+  // Rounded normals: average the face normals of every corner that shares a position.
+  const key = (i: number) => `${pos.getX(i).toFixed(4)},${pos.getY(i).toFixed(4)},${pos.getZ(i).toFixed(4)}`
+  const sum = new Map<string, THREE.Vector3>()
+  for (let i = 0; i < pos.count; i++) {
+    const k = key(i)
+    const v = sum.get(k) ?? new THREE.Vector3()
+    sum.set(k, v.add(new THREE.Vector3(nor.getX(i), nor.getY(i), nor.getZ(i))))
+  }
+  const f = new THREE.Vector3(), r = new THREE.Vector3()
+  for (let i = 0; i < pos.count; i++) {
+    f.set(nor.getX(i), nor.getY(i), nor.getZ(i))
+    r.copy(sum.get(key(i))!).normalize()
+    f.lerp(r, 0.42).normalize()
+    nor.setXYZ(i, f.x, f.y, f.z)
+  }
+  nor.needsUpdate = true
   return flat
 }
 const CUTS = [
@@ -117,9 +137,10 @@ function makeMaterial() {
   const m = new THREE.MeshPhysicalMaterial({
     color: '#ffffff',
     metalness: 0.45,
-    roughness: 0.05,
+    // A touch of softness widens each highlight, so it travels across a facet as the gem turns.
+    roughness: 0.14,
     clearcoat: 1,
-    clearcoatRoughness: 0.04,
+    clearcoatRoughness: 0.09,
     iridescence: 0.4,
     iridescenceIOR: 1.35,
     ior: 2.2,
@@ -127,7 +148,6 @@ function makeMaterial() {
     envMapIntensity: 2.1,
     emissive: '#03302e',
     emissiveIntensity: 0.5,
-    flatShading: true,
   })
   // Fresnel rim in each gem's own shade: the "glow from inside" read, cheap enough for phones.
   m.onBeforeCompile = (s) => {
@@ -302,7 +322,7 @@ function Gems({ count, reduced }: { count: number; reduced: boolean }) {
       tmp.p.set(x + g.ox / persp, y + g.oy / persp, z)
 
       // Rotation: tumbling in the stream, turning its table to the viewer in the word.
-      g.angle += dt * (g.spin + Math.min(Math.abs(motion.vel) * 0.012, 1.2) * Math.sign(g.spin)) * (reduced ? 0 : 1)
+      g.angle += dt * (g.spin + Math.min(Math.abs(motion.vel) * 0.008, 0.8) * Math.sign(g.spin)) * (reduced ? 0 : 1)
       tmp.qa.setFromAxisAngle(g.axis, g.angle)
       if (f > 0) {
         tmp.q.copy(tmp.face).multiply(g.tilt).multiply(tmp.q2.setFromAxisAngle(THREE.Object3D.DEFAULT_UP, t * 0.22 + g.seed * 6))
@@ -413,10 +433,13 @@ export default function GemField({ tier, reduced }: { tier: Tier; reduced: boole
       <directionalLight position={[4, 6, 8]} intensity={1.6} color="#dffcf7" />
       <directionalLight position={[-6, -3, 4]} intensity={0.8} color="#2bd1c0" />
       <Environment resolution={128} frames={1}>
-        <Lightformer form="rect" intensity={4} color="#ffffff" position={[0, 5, -6]} scale={[10, 2, 1]} />
-        <Lightformer form="rect" intensity={3} color="#9ff7ec" position={[-6, 0, 2]} rotation-y={Math.PI / 2} scale={[8, 3, 1]} />
-        <Lightformer form="rect" intensity={2.5} color="#e9d9b0" position={[6, -1, 2]} rotation-y={-Math.PI / 2} scale={[8, 2, 1]} />
-        <Lightformer form="ring" intensity={3} color="#3fe0cf" position={[0, -4, 4]} scale={4} />
+        {/* Soft-edged studio lights (round, broad, slightly dimmer than hard strips): reflections
+            fade in and out across the facets instead of snapping. */}
+        <Lightformer form="circle" intensity={3.2} color="#ffffff" position={[0, 5, -6]} scale={[11, 4, 1]} />
+        <Lightformer form="circle" intensity={2.4} color="#9ff7ec" position={[-6, 0, 2]} rotation-y={Math.PI / 2} scale={[9, 5, 1]} />
+        <Lightformer form="circle" intensity={2} color="#e9d9b0" position={[6, -1, 2]} rotation-y={-Math.PI / 2} scale={[9, 4, 1]} />
+        <Lightformer form="ring" intensity={2.4} color="#3fe0cf" position={[0, -4, 4]} scale={5} />
+        <Lightformer form="circle" intensity={0.6} color="#bff6ee" position={[0, 0, 9]} scale={[14, 10, 1]} />
       </Environment>
       <SafeBoundary>
         <Suspense fallback={null}>
