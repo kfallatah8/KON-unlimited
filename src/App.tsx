@@ -189,7 +189,7 @@ function Hero({ ready }: { ready: boolean }) {
   return (
     <section id="top" className="hero" aria-labelledby="hero-title">
       <div className="hero-copy">
-        <p className="eyebrow hero-fade">{h.eyebrow}</p>
+        <p className="eyebrow hero-fade"><span className="eyebrow-text"><Rich text={h.eyebrow} /></span></p>
         <h1 id="hero-title" className="hero-title">
           <span className="sr-only">{h.rotating.join(' ')}</span>
           <Rotator lines={h.rotating} ready={ready} />

@@ -465,6 +465,10 @@ main, .site-footer { position: relative; z-index: 1; }
   padding-bottom: 0.12em;
 }
 .is-in .lux, .is-in.lux, [data-reveal].is-in .lux { animation: luxGleam 2.4s var(--ease) 0.5s both; }
+.is-ready .hero-copy .lux { animation: luxGleam 2.6s var(--ease) 1.3s both; }
+/* In small caps lines (eyebrows) the gold carries it alone: no underline. */
+.eyebrow-text { text-align: center; min-width: 0; }
+.eyebrow .lux { background-size: 220% 100%, 0 0; padding-bottom: 0; font-weight: 600; }
 @keyframes luxGleam { from { background-position: 100% 0, 0 100%; } to { background-position: 0 0, 0 100%; } }
 @media (prefers-reduced-motion: reduce) { .lux { animation: none !important; } }
 .hero-promise .kw { background: none; color: var(--gold); font-weight: inherit; }
