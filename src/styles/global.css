@@ -96,6 +96,9 @@ button, input, select, textarea { font: inherit; color: inherit; }
 /* reveal */
 [data-reveal] { opacity: 0; transform: translateY(28px); transition: opacity 1.1s var(--ease), transform 1.2s var(--ease); }
 [data-reveal].is-in { opacity: 1; transform: none; }
+/* Phones: a shorter, lighter rise, so content is settled by the time a flick stops. */
+@media (pointer: coarse) { [data-reveal] { transform: translateY(16px); transition-duration: 0.7s, 0.8s; } }
+.tier-low .offer-shine { animation: none; }
 @media (prefers-reduced-motion: reduce) { [data-reveal] { opacity: 1; transform: none; transition: none; } }
 
 /* ---------- stage ---------- */
@@ -450,6 +453,20 @@ main, .site-footer { position: relative; z-index: 1; }
 
 /* ---------- keywords ---------- */
 .kw { font-weight: 500; color: var(--text); background: linear-gradient(transparent 64%, rgba(18, 165, 150, 0.32) 64%, rgba(18, 165, 150, 0.32) 92%, transparent 92%); padding-inline: 0.08em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+/* Signature highlight: champagne gold leaf that catches the light once as it scrolls in. Gradient
+   text only (no text-shadow: Safari paints it over clipped text), with a hairline gold underline. */
+.lux {
+  font-weight: 500; padding-inline: 0.06em; -webkit-box-decoration-break: clone; box-decoration-break: clone;
+  background:
+    linear-gradient(100deg, #b98d4f 0%, #e9d3a1 22%, #fff4d6 34%, #d8b678 48%, #b98d4f 62%, #f1dfb2 80%, #c9a465 100%) 0 0 / 220% 100% no-repeat,
+    linear-gradient(90deg, rgba(214, 192, 143, 0), rgba(214, 192, 143, 0.75) 18%, rgba(241, 227, 191, 0.9) 50%, rgba(214, 192, 143, 0.75) 82%, rgba(214, 192, 143, 0)) 0 100% / 100% 1px no-repeat;
+  -webkit-background-clip: text, border-box; background-clip: text, border-box;
+  color: transparent; -webkit-text-fill-color: transparent;
+  padding-bottom: 0.12em;
+}
+.is-in .lux, .is-in.lux, [data-reveal].is-in .lux { animation: luxGleam 2.4s var(--ease) 0.5s both; }
+@keyframes luxGleam { from { background-position: 100% 0, 0 100%; } to { background-position: 0 0, 0 100%; } }
+@media (prefers-reduced-motion: reduce) { .lux { animation: none !important; } }
 .hero-promise .kw { background: none; color: var(--gold); font-weight: inherit; }
 .founder-text .kw, .offer-guarantee .kw { color: var(--aqua); }
 
@@ -495,6 +512,8 @@ main, .site-footer { position: relative; z-index: 1; }
     radial-gradient(closest-side at 50% 52%, rgba(168, 245, 234, 0.10), transparent 40%);
   opacity: clamp(0, calc((var(--fin) - 0.35) * 1.6), 1);
 }
+/* Without 3D there are no gems gathering, so the solid KON rises in early instead of leaving an empty stretch. */
+.finale.is-static .kon-mark { opacity: clamp(0, calc(var(--fin) * 3), 1); }
 .finale-copy { position: relative; display: grid; justify-items: center; gap: 0.2rem; opacity: clamp(0, calc((var(--fin) - 0.8) * 5), 1); transform: translateY(calc((1 - clamp(0, calc((var(--fin) - 0.8) * 5), 1)) * 20px)); }
 
 /* ---------- footer ---------- */

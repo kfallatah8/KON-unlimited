@@ -25,21 +25,36 @@ gsap.registerPlugin(ScrollTrigger)
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
-/** Adds .is-in to [data-reveal] elements once they enter the viewport (CSS does the motion). */
+/** Adds .is-in to [data-reveal] elements just before they scroll into view (CSS does the motion).
+ *  Content starts its fade while still below the fold, so a fast flick on a phone never lands on
+ *  an empty screen, and anything the scroll skipped over (anchor jumps, flicks) is shown at once. */
 function useReveal(lang: string) {
   useEffect(() => {
-    const els = document.querySelectorAll('[data-reveal]:not(.is-in)')
+    const pending = new Set(document.querySelectorAll<HTMLElement>('[data-reveal]:not(.is-in)'))
+    const show = (el: Element) => {
+      el.classList.add('is-in')
+      pending.delete(el as HTMLElement)
+      io.unobserve(el)
+    }
     const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => {
-        if (e.isIntersecting) {
-          e.target.classList.add('is-in')
-          io.unobserve(e.target)
-        }
-      }),
-      { rootMargin: '0px 0px -8% 0px' },
+      (entries) => entries.forEach((e) => { if (e.isIntersecting) show(e.target) }),
+      { rootMargin: '0px 0px 12% 0px' },
     )
-    els.forEach((el) => io.observe(el))
-    return () => io.disconnect()
+    pending.forEach((el) => io.observe(el))
+    let frame = 0
+    const sweep = () => {
+      frame = 0
+      const limit = window.innerHeight * 1.12
+      pending.forEach((el) => { if (el.getBoundingClientRect().top < limit) show(el) })
+      if (!pending.size) window.removeEventListener('scroll', onScroll)
+    }
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(sweep) }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      io.disconnect()
+      cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', onScroll)
+    }
   }, [lang])
 }
 
@@ -486,7 +501,7 @@ function Start() {
 function Finale({ fallback }: { fallback: boolean }) {
   const f = useContent().finale
   return (
-    <section id="finale" className="finale" aria-label="KON">
+    <section id="finale" className={`finale${fallback ? ' is-static' : ''}`} aria-label="KON">
       <div className="finale-sticky">
         <div className="kon-stage">
           <div className="kon-halo" aria-hidden="true" />
@@ -585,7 +600,11 @@ function useMotionInputs() {
         lastFin = fin
       }
       const mid = motion.heroOut * (1 - motion.finale)
-      const veil = Math.round(Math.max(narrow() ? Math.max(mid, 0.62 * (1 - motion.finale)) : mid, motion.post * 0.8) * 100) / 100
+      // The reading veil dims the 3D only where copy sits over it. Once the finale starts there is no
+      // copy until the KON forms, so it lifts quickly and the gathering gems stay bright (on phones
+      // a lingering veil read as a dark, empty screen).
+      const lift = 1 - Math.min(1, motion.finale * 4)
+      const veil = Math.round(Math.max((narrow() ? Math.max(mid, 0.62 * (1 - motion.finale)) : mid) * lift, motion.post * 0.8) * 100) / 100
       if (veil !== lastVeil && veilEl) {
         veilEl.style.opacity = String(veil)
         lastVeil = veil

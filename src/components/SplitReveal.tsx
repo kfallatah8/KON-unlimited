@@ -34,7 +34,7 @@ export function SplitReveal({ as = 'h2', text, className, id, play, delay = 0 }:
         ease: 'expo.out',
         stagger: quick ? 0.04 : 0.06,
         delay,
-        scrollTrigger: play ? undefined : { trigger: el, start: quick ? 'top 98%' : 'top 88%', once: true },
+        scrollTrigger: play ? undefined : { trigger: el, start: quick ? 'top 108%' : 'top 92%', once: true },
       },
     )
     return () => {

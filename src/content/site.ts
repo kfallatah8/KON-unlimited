@@ -70,7 +70,7 @@ const ar = {
     lede: 'من **الفكرة الأولى** إلى **شركة تعمل بانتظام**، دون أن تحمل كل شيء وحدك',
     primary: 'ابدأ تشخيصك المجاني',
     secondary: 'شاهد النتائج',
-    slogan: 'أينما كان التحدي، وكيفما كان، سنكون هناك',
+    slogan: 'أيًّا كان التحدي، وكيفما كان، وأينما كان… سنكون هناك',
     scroll: 'مرّر',
     proof: [
       { n: '+4,200', l: 'ساعة استشارية' },
@@ -102,7 +102,7 @@ const ar = {
       { persona: 'founder' as Persona, label: 'رائد أعمال', qs: ['مقتنع بفكرتك تمامًا. فلماذا لم تبدأ حتى الآن؟', 'ماذا لو كان أول عميل لك أقرب مما تظن؟'] },
       { persona: 'investor' as Persona, label: 'مستثمر', qs: ['استثماراتك: هل تعمل لك، أم تعمل أنت لها؟', 'كم فرصة تركتها لأن أحدًا لم يقرأ أرقامها بصدق؟'] },
     ],
-    tail: 'الإجابة نادرًا ما تكون حيث تبحث. **ونحن نعرف أين نبحث**',
+    tail: 'الإجابة نادرًا ما تكون حيث تبحث. ++ونحن نعرف أين نبحث++',
     cta: 'اكتشف إجابتك',
   },
 
@@ -126,7 +126,7 @@ const ar = {
     you: { n: '20%', label: 'عليك: القرار والرؤية' },
     badge: 'أتعابنا على النتائج',
     title: 'نحمل 80% من العمل. وأجرنا على النتائج',
-    body: 'لا نسلّمك تقريرًا ونختفي. **ننزل إلى الميدان، ونبني، وندرّب، ونتابع حتى يعمل.** وأجرنا **مرتبط بالنتائج التي نصنعها لك**: حين تتحرك أرقامك، نستحق أتعابنا',
+    body: 'لا نسلّمك تقريرًا ونختفي. **ننزل إلى الميدان، ونبني، وندرّب، ونتابع حتى يعمل.** وأجرنا ++مرتبط بالنتائج التي نصنعها لك++: حين تتحرك أرقامك، نستحق أتعابنا',
     fine: 'طريقة ربط الأتعاب بالنتائج نتفق عليها معك بوضوح، ومكتوبة، قبل أن نبدأ',
   },
 
@@ -175,7 +175,7 @@ const ar = {
   offer: {
     eyebrow: 'العرض',
     title: 'التشخيص الأول علينا',
-    lede: 'جلسة تشخيص مع **خبير أول** من فريقنا. تخرج منها **بصورة أوضح لوضعك**، حتى لو لم نعمل معًا بعدها',
+    lede: 'جلسة تشخيص مع ++خبير أول++ من فريقنا. تخرج منها **بصورة أوضح لوضعك**، حتى لو لم نعمل معًا بعدها',
     includes: [
       'جلسة تشخيص مركّزة، 60 دقيقة',
       'قراءة لوضعك من ثمانية أبعاد',
@@ -299,7 +299,7 @@ const ar = {
   support: {
     eyebrow: 'مبادرة KON',
     title: 'مشروعك يتعثّر، ولا تملك الميزانية؟ هذا لك',
-    body: 'نقدّم الاستشارة المتقدّمة والدعم التشغيلي الكامل **مجانًا** للمشاريع المتعثّرة التي لا تستطيع تحمّل تكلفته. بلا مقابل، وبلا شروط خفية',
+    body: 'نقدّم الاستشارة المتقدّمة والدعم التشغيلي الكامل ++مجانًا++ للمشاريع المتعثّرة التي لا تستطيع تحمّل تكلفته. بلا مقابل، وبلا شروط خفية',
     dedication: 'صدقةً عن والدي رحمه الله، وعن جميع المسلمين',
     note: 'نستقبل الطلبات بحسب طاقتنا، ونردّ على كل طلب',
     cta: 'قدّم طلب الدعم',
@@ -309,10 +309,10 @@ const ar = {
   founder: {
     eyebrow: 'كلمة المؤسس',
     paragraphs: [
-      'أنا خالد. منذ عام 2007 وأنا تحت إشراف الإدارة العامة لتربية الموهوبين بالمدينة المنورة',
+      'أنا خالد. منذ عام 2007 وأنا تحت إشراف ++الإدارة العامة لتربية الموهوبين++ بالمدينة المنورة',
       'أخصائي نفسي، ورائد أعمال، ومطوّر أعمال',
-      'عملت في مناصب مختلفة وقطاعات مختلفة، وقدّمت أكثر من **4,200 ساعة استشارية** لروّاد أعمال ومشاريع متنوعة. وخضت مشاريع لم تنجح، فكانت أصدق مدرسة مررت بها',
-      'شغفي **الابتكار**، وأؤمن بقدرتي على إضافة قيمة حقيقية لأي كيان تجاري ولأي رائد أعمال',
+      'عملت في مناصب مختلفة وقطاعات مختلفة، وقدّمت أكثر من ++4,200 ساعة استشارية++ لروّاد أعمال ومشاريع متنوعة. وخضت مشاريع لم تنجح، فكانت أصدق مدرسة مررت بها',
+      'شغفي ++الابتكار++، وأؤمن بقدرتي على إضافة قيمة حقيقية لأي كيان تجاري ولأي رائد أعمال',
     ],
     punch: 'كلّنا لدينا مشكلات. لكن المشكلة بداية الحل',
     cta: 'ابدأ تشخيصك',
@@ -384,7 +384,7 @@ const ar = {
 
   footer: {
     rights: '© 2026 KON Unlimited. جميع الحقوق محفوظة',
-    slogan: 'أينما كان التحدي، وكيفما كان، سنكون هناك',
+    slogan: 'أيًّا كان التحدي، وكيفما كان، وأينما كان… سنكون هناك',
     top: 'إلى الأعلى',
   },
 }
@@ -413,7 +413,7 @@ const en: Content = {
     lede: 'From **the first idea** to **a company that runs steadily**, without you carrying all of it alone',
     primary: 'Start your free diagnosis',
     secondary: 'See the results',
-    slogan: 'Anywhere. Any challenge. Any way. We’ll be there',
+    slogan: 'Any challenge. Any way. Anywhere… We’ll be there',
     scroll: 'Scroll',
     proof: [
       { n: '4,200+', l: 'advisory hours' },
@@ -444,7 +444,7 @@ const en: Content = {
       { persona: 'founder', label: 'Entrepreneur', qs: ['You believe in your idea. So why haven’t you started?', 'What if your first customer is closer than you think?'] },
       { persona: 'investor', label: 'Investor', qs: ['Are your investments working for you, or are you working for them?', 'How many deals did you pass on because no one read the numbers honestly?'] },
     ],
-    tail: 'The answer is rarely where you’re looking. **We know where to look**',
+    tail: 'The answer is rarely where you’re looking. ++We know where to look++',
     cta: 'Find your answer',
   },
 
@@ -467,7 +467,7 @@ const en: Content = {
     you: { n: '20%', label: 'is yours: the vision and the call' },
     badge: 'Paid on results',
     title: 'We carry 80% of the work. We get paid on results',
-    body: 'We don’t hand you a report and disappear. **We go into the field, build, train and follow through until it works.** Our fees are **tied to the results we create for you**: when your numbers move, we earn our fee',
+    body: 'We don’t hand you a report and disappear. **We go into the field, build, train and follow through until it works.** Our fees are ++tied to the results we create for you++: when your numbers move, we earn our fee',
     fine: 'How fees link to results is agreed with you clearly, in writing, before we start',
   },
 
@@ -514,7 +514,7 @@ const en: Content = {
   offer: {
     eyebrow: 'The offer',
     title: 'Your first diagnosis is on us',
-    lede: 'A diagnosis session with a **senior advisor**. You leave with **a clearer picture of where you stand**, even if we never work together after',
+    lede: 'A diagnosis session with a ++senior advisor++. You leave with **a clearer picture of where you stand**, even if we never work together after',
     includes: [
       'A focused 60-minute diagnosis session',
       'A read of your situation across eight dimensions',
@@ -634,7 +634,7 @@ const en: Content = {
   support: {
     eyebrow: 'The KON initiative',
     title: 'Your business is struggling and there’s no budget? This is for you',
-    body: 'We offer advanced advisory and full operational support **free of charge** to struggling businesses that can’t afford it. No fee, no hidden conditions',
+    body: 'We offer advanced advisory and full operational support ++free of charge++ to struggling businesses that can’t afford it. No fee, no hidden conditions',
     dedication: 'Given as sadaqah for my late father, may God have mercy on him, and for all Muslims',
     note: 'We take requests as our capacity allows, and we reply to every one',
     cta: 'Apply for support',
@@ -643,10 +643,10 @@ const en: Content = {
   founder: {
     eyebrow: 'A note from the founder',
     paragraphs: [
-      'I’m Khalid. Since 2007, I’ve been under the supervision of the General Directorate for Gifted Education in Madinah',
+      'I’m Khalid. Since 2007, I’ve been under the supervision of the ++General Directorate for Gifted Education++ in Madinah',
       'Psychologist, entrepreneur and business developer',
-      'I’ve held different roles across different sectors and given more than **4,200 hours of advisory work** to entrepreneurs and businesses. Some of my own ventures failed, and they were the most honest teachers I’ve had',
-      '**Innovation** drives me, and I believe I can add real value to any business and any founder',
+      'I’ve held different roles across different sectors and given more than ++4,200 hours of advisory work++ to entrepreneurs and businesses. Some of my own ventures failed, and they were the most honest teachers I’ve had',
+      '++Innovation++ drives me, and I believe I can add real value to any business and any founder',
     ],
     punch: 'We all have problems. But a problem is where the solution begins',
     cta: 'Start your diagnosis',
@@ -718,7 +718,7 @@ const en: Content = {
 
   footer: {
     rights: '© 2026 KON Unlimited. All rights reserved',
-    slogan: 'Anywhere. Any challenge. Any way. We’ll be there',
+    slogan: 'Any challenge. Any way. Anywhere… We’ll be there',
     top: 'Back to top',
   },
 }
