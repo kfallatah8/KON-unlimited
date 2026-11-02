@@ -310,8 +310,8 @@ const ar = {
     cta: 'قدّم طلب الدعم',
   },
 
-  // CONFIRM: "free for talent", "never shared without your permission", the real-world challenge
-  // step, and the company next step are program promises waiting for khalid's OK.
+  // Prove step confirmed by khalid (2026-11-02): the challenge runs only when an opportunity matches.
+  // CONFIRM: "free for talent", "never shared without your permission", and the company next step.
   talent: {
     eyebrow: 'مواهب KON',
     title: 'تعرف أنك قادر على أكثر. لكن أحدًا لم يسألك',
@@ -335,7 +335,7 @@ const ar = {
       title: 'من الموهبة إلى الأثر، في ثلاث خطوات',
       steps: [
         { title: 'نكتشف', body: 'أسئلة تكشف ما تجيده فعلًا، لا ما كُتب عنك' },
-        { title: 'نختبر', body: 'تحدٍّ قصير من الواقع، يُظهر طريقة تفكيرك وعملك' },
+        { title: 'نختبر', body: 'حين تظهر فرصة تناسب قيمتك الحقيقية، نختبرها معك بتحدٍّ قصير من الواقع' },
         { title: 'نضعك', body: 'في مشروع مع KON، أو في شركة تحتاجك. وبإذنك دائمًا' },
       ],
     },
@@ -764,7 +764,7 @@ const en: Content = {
       title: 'From talent to impact, in three steps',
       steps: [
         { title: 'Discover', body: 'Questions that reveal what you’re truly good at, not what’s written about you' },
-        { title: 'Prove', body: 'A short real-world challenge that shows how you think and work' },
+        { title: 'Prove', body: 'When an opportunity matches your real value, we test the fit together with a short real-world challenge' },
         { title: 'Place', body: 'On a KON project, or at a company that needs you. Always with your permission' },
       ],
     },
