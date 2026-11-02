@@ -406,6 +406,7 @@ export function Talent() {
           <p className="eyebrow centered" data-reveal>{t.eyebrow}</p>
           <SplitReveal as="h2" id="talent-title" className="display" text={t.title} />
           <p className="body-lg" data-reveal><Rich text={t.lede} /></p>
+          <p className="talent-proof" data-reveal><GemMark className="li-gem" />{t.proof}</p>
         </div>
 
         <div className="talent-teaser" data-reveal>

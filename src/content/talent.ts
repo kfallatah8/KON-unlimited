@@ -76,10 +76,10 @@ const defs: Record<TalentSide, StepDef[]> = {
       ],
     },
     {
-      title: { ar: 'أرِنا، لا تخبرنا', en: 'Show us, don’t tell us' },
-      lede: { ar: 'هذه أهم إجابة. هنا نرى ما لا تقوله السيرة الذاتية', en: 'This is the answer that matters most. It shows what a CV can’t' },
+      title: { ar: 'كيف تفكّر؟', en: 'How do you think?' },
+      lede: { ar: 'هذه أهم إجابة. طريقة تفكيرك تقول عنك ما لا تقوله أي سيرة ذاتية', en: 'This is the answer that matters most. The way you think says what no CV can' },
       questions: [
-        { id: 'proof', kind: 'text', label: { ar: 'احكِ لنا عن شيء صنعته، أو حللته، أو حسّنته. حتى لو لم يطلبه منك أحد', en: 'Tell us about something you built, solved or improved. Even if nobody asked you to' }, placeholder: { ar: 'ماذا كان الوضع؟ ماذا فعلت؟ ماذا تغيّر؟', en: 'What was the situation? What did you do? What changed?' } },
+        { id: 'proof', kind: 'text', label: { ar: 'احكِ لنا عن مشكلة واجهتها: كيف فكّرت فيها؟ وماذا فعلت؟ وماذا تغيّر؟', en: 'Tell us about a problem you faced: how did you think it through? What did you do? What changed?' }, placeholder: { ar: 'ما الذي لاحظته أولًا؟ ولماذا اخترت هذا الحل؟', en: 'What did you notice first? Why did you choose that solution?' } },
         { id: 'flow', kind: 'text', optional: true, label: { ar: 'متى تنسى الوقت وأنت تعمل؟', en: 'When do you lose track of time while working?' }, placeholder: { ar: 'جملة واحدة تكفي', en: 'One sentence is enough' } },
         { id: 'link', kind: 'text', optional: true, label: { ar: 'رابط لعمل لك', en: 'A link to your work' }, placeholder: { ar: 'معرض أعمال، أو حساب، أو LinkedIn', en: 'Portfolio, profile, or LinkedIn' } },
       ],
@@ -172,7 +172,7 @@ const defs: Record<TalentSide, StepDef[]> = {
           o('honest', 'واضح وأمين', 'Straight and honest'),
         ] },
         { id: 'success', kind: 'text', optional: true, label: { ar: 'بعد 90 يومًا، ما الذي يجعلكم تقولون: هذا هو الشخص الصحيح؟', en: 'After 90 days, what would make you say “this is the right person”?' }, placeholder: { ar: 'نتيجة واحدة واضحة تكفي', en: 'One clear result is enough' } },
-        { id: 'open', kind: 'single', label: { ar: 'هل تقبلون شخصًا بلا شهادة أو خبرة رسمية، إذا أثبت قدرته بعمل حقيقي؟', en: 'Would you take someone without a degree or formal experience, if they prove themselves with real work?' }, options: [
+        { id: 'open', kind: 'single', label: { ar: 'هل تقبلون شخصًا بلا شهادة أو خبرة رسمية، إذا أظهرت طريقة تفكيره أنه الأنسب؟', en: 'Would you take someone without a degree or formal experience, if the way they think shows they’re the best fit?' }, options: [
           o('yes', 'نعم', 'Yes'), o('depends', 'حسب الدور', 'Depends on the role'), o('no', 'لا', 'No'),
         ] },
         { id: 'urgency', kind: 'scale', label: { ar: 'كم تحتاجونه الآن؟', en: 'How soon do you need them?' } },

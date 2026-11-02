@@ -1049,3 +1049,6 @@ html.is-ready .stage-glow { opacity: 1; }
   .talent-doors { grid-template-columns: 1fr; }
   .talent-side { padding: 1.4rem 1.3rem 1rem; }
 }
+
+.talent-proof { display: flex; justify-content: center; align-items: flex-start; gap: 0.5rem; margin-top: 1.1rem; font-size: 0.86rem; color: var(--gold); line-height: 1.7; }
+.talent-proof .li-gem { width: 15px; height: 15px; margin-top: 0.35em; color: var(--gold); }
