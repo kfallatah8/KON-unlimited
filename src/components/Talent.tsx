@@ -321,24 +321,76 @@ function NextSteps({ title, steps }: { title: string; steps: string[] }) {
   )
 }
 
-// Three gems joined in a triangle: talent, company, KON. Purely decorative.
-function WinTriangle() {
+// Three winners on a triangle (talent, company, KON) meeting at "impact" in the middle.
+// The lit corner follows the card being read; it cycles gently on its own until someone hovers.
+const VERTS: [number, number][] = [[160, 34], [282, 236], [38, 236]]
+function WinTriangle({ on, labels, center }: { on: number; labels: string[]; center: string }) {
   return (
-    <svg className="win-tri" viewBox="0 0 240 210" aria-hidden="true">
+    <svg className="win-tri" viewBox="0 0 320 290" aria-hidden="true">
       <defs>
         <linearGradient id="wt-line" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#5fe3d2" stopOpacity="0.8" />
-          <stop offset="1" stopColor="#d6c08f" stopOpacity="0.8" />
+          <stop offset="0" stopColor="#5fe3d2" stopOpacity="0.85" />
+          <stop offset="1" stopColor="#d6c08f" stopOpacity="0.85" />
         </linearGradient>
+        <radialGradient id="wt-glow">
+          <stop offset="0" stopColor="#5fe3d2" stopOpacity="0.55" />
+          <stop offset="1" stopColor="#5fe3d2" stopOpacity="0" />
+        </radialGradient>
       </defs>
-      <path d="M120 22 L214 182 L26 182 Z" fill="none" stroke="url(#wt-line)" strokeWidth="1.2" />
-      <path d="M120 22 L120 128 M214 182 L120 128 M26 182 L120 128" stroke="rgba(214,192,143,0.35)" strokeWidth="1" strokeDasharray="3 5" />
-      {[[120, 22], [214, 182], [26, 182]].map(([x, y]) => (
-        <path key={`${x}-${y}`} d={`M${x} ${y - 12} L${x + 10} ${y - 3} L${x} ${y + 12} L${x - 10} ${y - 3} Z`} fill="rgba(30,194,176,0.35)" stroke="#5fe3d2" strokeWidth="1.2" />
+      <path d={`M${VERTS[0]} L${VERTS[1]} L${VERTS[2]} Z`} fill="rgba(30,194,176,0.04)" stroke="url(#wt-line)" strokeWidth="1.2" />
+      {VERTS.map(([x, y], i) => (
+        <path key={`l${i}`} className={`wt-spoke${on === i ? ' is-on' : ''}`} d={`M${x} ${y} L160 168`} />
       ))}
-      <circle cx="120" cy="128" r="20" fill="rgba(2,24,26,0.9)" stroke="#d6c08f" strokeWidth="1" />
-      <text x="120" y="133" textAnchor="middle" fontSize="13" letterSpacing="1.5" fill="#d6c08f" fontFamily="inherit">KON</text>
+      {VERTS.map(([x, y], i) => (
+        <g key={`v${i}`} className={`wt-node${on === i ? ' is-on' : ''}`}>
+          <circle cx={x} cy={y} r="26" fill="url(#wt-glow)" className="wt-halo" />
+          <path d={`M${x} ${y - 14} L${x + 12} ${y - 3} L${x} ${y + 14} L${x - 12} ${y - 3} Z`} className="wt-gem" />
+          <text x={x} y={i === 0 ? y - 22 : y + 32} textAnchor="middle" className="wt-label">{labels[i]}</text>
+        </g>
+      ))}
+      <circle cx="160" cy="168" r="27" fill="rgba(2,24,26,0.92)" stroke="#d6c08f" strokeWidth="1" />
+      <text x="160" y="173" textAnchor="middle" className="wt-center">{center}</text>
     </svg>
+  )
+}
+
+function Wins() {
+  const w = useContent().talent.wins
+  const [on, setOn] = useState(0)
+  const [held, setHeld] = useState(false)
+  useEffect(() => {
+    if (held || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const id = window.setInterval(() => setOn((x) => (x + 1) % 3), 3200)
+    return () => window.clearInterval(id)
+  }, [held])
+  return (
+    <div className="talent-wins-block">
+      <div className="center">
+        <p className="talent-sub" data-reveal>{w.title}</p>
+        <p className="talent-wins-lede" data-reveal>{w.lede}</p>
+      </div>
+      <div className="win-tri-wrap" data-reveal><WinTriangle on={on} labels={w.items.map((x) => x.k)} center={w.center} /></div>
+      {/* data-reveal sits on the list: the cards' own className changes with the lit corner,
+          and React would wipe a reveal class added to them. */}
+      <ul className="talent-wins" data-reveal onPointerLeave={() => setHeld(false)}>
+        {w.items.map((x, i) => (
+          <li
+            key={x.k}
+            className={`talent-win${on === i ? ' is-on' : ''}`}
+            tabIndex={0}
+            onPointerEnter={() => { setHeld(true); setOn(i) }}
+            onFocus={() => { setHeld(true); setOn(i) }}
+            onBlur={() => setHeld(false)}
+          >
+            <span className="talent-win-n" dir="ltr">{String(i + 1).padStart(2, '0')}</span>
+            <b>{x.k}</b>
+            <h3>{x.gain}</h3>
+            <p><Rich text={x.body} /></p>
+          </li>
+        ))}
+      </ul>
+      <p className="talent-sum" data-reveal>{w.sum}</p>
+    </div>
   )
 }
 
@@ -393,20 +445,7 @@ export function Talent() {
           </ol>
         </div>
 
-        <div className="talent-wins-block">
-          <p className="talent-sub center" data-reveal>{t.wins.title}</p>
-          <div className="talent-wins-row">
-            <div className="win-tri-wrap" data-reveal><WinTriangle /></div>
-            <ul className="talent-wins">
-              {t.wins.items.map((w, i) => (
-                <li key={w.k} className="talent-win" data-reveal style={{ transitionDelay: `${i * 80}ms` }}>
-                  <b>{w.k}</b>
-                  <p><Rich text={w.body} /></p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
+        <Wins />
 
         <div className="talent-flow-wrap" data-reveal>
           <TalentFlow preset={preset} />
