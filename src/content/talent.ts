@@ -45,7 +45,7 @@ const defs: Record<TalentSide, StepDef[]> = {
         { id: 'now', kind: 'single', label: { ar: 'وضعك اليوم', en: 'Your situation today' }, options: [
           o('student', 'أدرس', 'Studying'),
           o('grad', 'تخرّجت وأبحث عن بدايتي', 'Graduated, looking for my start'),
-          o('under', 'أعمل، لكن قدراتي أكبر من دوري', 'Working, but I’m capable of more than my role'),
+          o('under', 'أعمل، وقدراتي أكبر من دوري', 'Working, and capable of more than my role'),
           o('free', 'أعمل حرًّا', 'Freelancing'),
           o('between', 'بين عملين', 'Between jobs'),
           o('switch', 'أريد أن أغيّر مساري', 'Changing direction'),
@@ -56,7 +56,7 @@ const defs: Record<TalentSide, StepDef[]> = {
     },
     {
       title: { ar: 'ما الذي يأتيك بسهولة؟', en: 'What comes easily to you?' },
-      lede: { ar: 'اختر ثلاثة على الأكثر. ما تفعله دون جهد، ويتعب فيه غيرك، غالبًا هو موهبتك', en: 'Pick up to three. What you do without effort, while others struggle, is usually your talent' },
+      lede: { ar: 'ما تفعله دون جهد، ويتعب فيه غيرك، غالبًا هو موهبتك', en: 'What you do without effort, while others struggle, is usually your talent' },
       questions: [
         { id: 'strengths', kind: 'multi', max: 3, label: { ar: 'نقاط قوتك', en: 'Your strengths' }, options: [
           o('fix', 'أحلّ المشكلات التي يتجنّبها الآخرون', 'I fix the problems others avoid'),
@@ -72,12 +72,12 @@ const defs: Record<TalentSide, StepDef[]> = {
           o('lead', 'يتبعني الناس حين تصعب الأمور', 'People follow me when things get hard'),
           o('detail', 'ألاحظ ما يفوت الجميع', 'I notice what everyone misses'),
         ] },
-        { id: 'askedFor', kind: 'text', optional: true, label: { ar: 'ما الذي يطلبه منك الناس دائمًا؟', en: 'What do people always come to you for?' }, placeholder: { ar: 'حتى لو بدا لك أمرًا عاديًا', en: 'Even if it feels ordinary to you' } },
+        { id: 'askedFor', kind: 'text', optional: true, label: { ar: 'في أي شيء يلجأ إليك الناس دائمًا؟', en: 'What do people always come to you for?' }, placeholder: { ar: 'حتى لو بدا لك أمرًا عاديًا. غالبًا ليس كذلك', en: 'Even if it feels ordinary to you. It usually isn’t' } },
       ],
     },
     {
       title: { ar: 'أرِنا، لا تخبرنا', en: 'Show us, don’t tell us' },
-      lede: { ar: 'هنا نرى ما لا تقوله السيرة الذاتية', en: 'This is where we see what a CV can’t say' },
+      lede: { ar: 'هذه أهم إجابة. هنا نرى ما لا تقوله السيرة الذاتية', en: 'This is the answer that matters most. It shows what a CV can’t' },
       questions: [
         { id: 'proof', kind: 'text', label: { ar: 'احكِ لنا عن شيء صنعته، أو حللته، أو حسّنته. حتى لو لم يطلبه منك أحد', en: 'Tell us about something you built, solved or improved. Even if nobody asked you to' }, placeholder: { ar: 'ماذا كان الوضع؟ ماذا فعلت؟ ماذا تغيّر؟', en: 'What was the situation? What did you do? What changed?' } },
         { id: 'flow', kind: 'text', optional: true, label: { ar: 'متى تنسى الوقت وأنت تعمل؟', en: 'When do you lose track of time while working?' }, placeholder: { ar: 'جملة واحدة تكفي', en: 'One sentence is enough' } },
@@ -99,7 +99,7 @@ const defs: Record<TalentSide, StepDef[]> = {
       ],
     },
     {
-      title: { ar: 'كيف نعمل معًا؟', en: 'How should we work together?' },
+      title: { ar: 'كيف تريد أن نعمل معًا؟', en: 'How would you like to work with us?' },
       questions: [
         { id: 'intent', kind: 'multi', label: { ar: 'ما الذي تريده', en: 'What you want' }, options: [
           o('collab', 'أن أعمل مع KON في مشاريع', 'To work with KON on projects'),
@@ -210,49 +210,67 @@ export function talentOption(side: TalentSide, qid: string, id: string, lang: La
 // creates value, and which of KON's eight dimensions it feeds. Rule-based, not an AI model.
 export type Archetype = 'solver' | 'builder' | 'connector' | 'creator' | 'analyst' | 'maker' | 'developer' | 'host' | 'leader'
 
-export const archetypes: Record<Archetype, { name: T; where: T; dims: Dim[] }> = {
+export const archetypes: Record<Archetype, { name: T; power: T; where: T; roles: { ar: string[]; en: string[] }; dims: Dim[] }> = {
   solver: {
     name: { ar: 'مفكّك المشكلات', en: 'The Problem-solver' },
+    power: { ar: 'ترى السبب حيث يرى غيرك العَرَض', en: 'You see the cause where others see the symptom' },
+    roles: { ar: ['تحسين العمليات', 'إدارة المشاريع', 'الاستشارات'], en: ['Process improvement', 'Project management', 'Consulting'] },
     where: { ar: 'تضيف قيمة حيث تتعطّل الأمور ولا يعرف أحد لماذا', en: 'You add value where things break and nobody knows why' },
     dims: ['strategy', 'ops'],
   },
   builder: {
     name: { ar: 'صانع الأنظمة', en: 'The Systems-builder' },
+    power: { ar: 'تحوّل الفوضى إلى طريقة عمل يكرّرها الجميع', en: 'You turn chaos into a way of working anyone can repeat' },
+    roles: { ar: ['إدارة التشغيل', 'إجراءات العمل (SOPs)', 'الجودة'], en: ['Operations management', 'SOPs', 'Quality'] },
     where: { ar: 'تضيف قيمة حيث الفوضى، وحيث يجب أن يستمر العمل دون أن يعتمد على شخص', en: 'You add value where there’s chaos, and work must run without depending on one person' },
     dims: ['ops'],
   },
   connector: {
     name: { ar: 'صانع العلاقات', en: 'The Connector' },
+    power: { ar: 'تفتح أبوابًا يطرقها غيرك شهورًا', en: 'You open doors others knock on for months' },
+    roles: { ar: ['المبيعات', 'الشراكات', 'تطوير الأعمال'], en: ['Sales', 'Partnerships', 'Business development'] },
     where: { ar: 'تضيف قيمة حيث تحتاج الشركة عملاء جددًا وشراكات تفتح الأبواب', en: 'You add value where a company needs new customers and partnerships that open doors' },
     dims: ['revenue', 'marketing'],
   },
   creator: {
     name: { ar: 'المبدع', en: 'The Creator' },
+    power: { ar: 'تجعل الفكرة تُرى وتُحَس', en: 'You make an idea seen and felt' },
+    roles: { ar: ['المحتوى', 'التصميم', 'بناء العلامة'], en: ['Content', 'Design', 'Brand building'] },
     where: { ar: 'تضيف قيمة حيث تحتاج العلامة أن تُرى، وتُفهم، وتُتذكّر', en: 'You add value where a brand needs to be seen, understood and remembered' },
     dims: ['marketing', 'cx'],
   },
   analyst: {
     name: { ar: 'قارئ الأرقام', en: 'The Analyst' },
+    power: { ar: 'تقرأ في الأرقام قصة لا يراها غيرك', en: 'You read a story in the numbers others miss' },
+    roles: { ar: ['التحليل المالي', 'ذكاء الأعمال', 'التخطيط'], en: ['Financial analysis', 'Business intelligence', 'Planning'] },
     where: { ar: 'تضيف قيمة حيث تُتّخذ قرارات كبيرة دون أرقام واضحة', en: 'You add value where big decisions are made without clear numbers' },
     dims: ['finance', 'strategy'],
   },
   maker: {
     name: { ar: 'الباني', en: 'The Maker' },
+    power: { ar: 'تبني الأداة بدل أن تشتكي من غيابها', en: 'You build the tool instead of complaining it’s missing' },
+    roles: { ar: ['الأتمتة', 'التحوّل الرقمي', 'المنتجات الرقمية'], en: ['Automation', 'Digital transformation', 'Digital products'] },
     where: { ar: 'تضيف قيمة حيث ما زال العمل يدويًا، ويمكن أن يصبح أذكى', en: 'You add value where work is still manual and could be smarter' },
     dims: ['tech', 'ops'],
   },
   developer: {
     name: { ar: 'مطوّر الناس', en: 'The People-developer' },
+    power: { ar: 'يصبح الناس حولك أفضل مما كانوا', en: 'People around you become better than they were' },
+    roles: { ar: ['التدريب', 'الموارد البشرية', 'قيادة الفرق'], en: ['Training', 'HR', 'Team leadership'] },
     where: { ar: 'تضيف قيمة حيث يحتاج الفريق أن يتعلّم، وينمو، ويثبت', en: 'You add value where a team needs to learn, grow and stay' },
     dims: ['people'],
   },
   host: {
     name: { ar: 'المضيف', en: 'The Host' },
+    power: { ar: 'يشعر الناس معك أنهم مهمّون', en: 'People feel they matter around you' },
+    roles: { ar: ['تجربة العملاء', 'الضيافة', 'خدمة العملاء'], en: ['Customer experience', 'Hospitality', 'Customer service'] },
     where: { ar: 'تضيف قيمة في اللحظة التي يقرّر فيها العميل: هل يعود أم لا', en: 'You add value in the moment a customer decides whether to come back' },
     dims: ['cx'],
   },
   leader: {
     name: { ar: 'القائد', en: 'The Leader' },
+    power: { ar: 'تحمل الفريق حين يثقل الحِمل', en: 'You carry the team when the load gets heavy' },
+    roles: { ar: ['إدارة الفروع', 'قيادة الفرق الميدانية', 'الإشراف'], en: ['Branch management', 'Field team leadership', 'Supervision'] },
     where: { ar: 'تضيف قيمة حيث يحتاج فريق إلى من يحمله في الأيام الصعبة', en: 'You add value where a team needs someone to carry it through hard days' },
     dims: ['people', 'ops'],
   },

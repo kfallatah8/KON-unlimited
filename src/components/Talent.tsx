@@ -4,7 +4,7 @@
 // Everything stays client-side; sending works like the main onboarding (WhatsApp / email / copy).
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { contact as inbox } from '../content/site'
-import { archetypes, dims, talentOption, talentRead, talentSteps, type TalentSide } from '../content/talent'
+import { archetypes, dims, talentOption, talentRead, talentSteps, type Archetype, type TalentSide } from '../content/talent'
 import { useContent } from '../content/useContent'
 import { motion, useStore } from '../state/store'
 import { scrollToHash } from './SmoothScroll'
@@ -41,7 +41,7 @@ function load(): Draft {
   return EMPTY
 }
 
-function TalentFlow() {
+function TalentFlow({ preset }: { preset: { side: TalentSide; n: number } | null }) {
   const t = useContent().talent
   const lang = useStore((s) => s.lang)
   const [d, setD] = useState<Draft>(load)
@@ -78,6 +78,10 @@ function TalentFlow() {
     setD((p) => ({ ...p, side, answers: p.side === side ? p.answers : {}, other: p.side === side ? p.other : {} }))
     go(0)
   }
+  useEffect(() => {
+    if (preset) pick(preset.side)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [preset])
   const setAnswer = (id: string, v: Answers[string]) => setD((p) => ({ ...p, answers: { ...p.answers, [id]: v } }))
 
   const validStep = (i: number) => steps[i].questions.every((q) => {
@@ -149,6 +153,7 @@ function TalentFlow() {
       {step === -1 && (
         <div className="ob-screen" key="doors">
           <h3 tabIndex={-1}>{t.doorsQ}</h3>
+          <p className="ob-lede">{t.doorsTime}</p>
           <div className="ob-personas talent-doors">
             {(['talent', 'company'] as TalentSide[]).map((s) => (
               <button
@@ -209,34 +214,29 @@ function TalentFlow() {
         </div>
       )}
 
-      {step === n + 1 && d.side === 'talent' && read && (
+      {step === n + 1 && d.side === 'talent' && read && read.top.length > 0 && (
         <div className="ob-screen ob-summary" key="read">
           <h3 tabIndex={-1}>{t.read.title}</h3>
           <p className="ob-lede">{t.read.lede}</p>
           <div className="ob-rec talent-read">
+            <GemMark className="talent-read-gem" />
             <p className="ob-rec-k">{t.read.you}</p>
-            {read.top.map((k) => (
-              <div key={k} className="talent-arch">
-                <p className="ob-rec-v">{archetypes[k].name[lang]}</p>
-                <p className="talent-where">{archetypes[k].where[lang]}</p>
-              </div>
-            ))}
-            {read.dims.length > 0 && (
-              <>
-                <p className="ob-rec-k">{t.read.where}</p>
-                <p className="tags">{read.dims.map((x) => <span key={x}>{dims[x][lang]}</span>)}</p>
-              </>
+            <p className="ob-rec-v">{archetypes[read.top[0]].name[lang]}</p>
+            <p className="talent-power">{archetypes[read.top[0]].power[lang]}</p>
+            <p className="talent-where">{archetypes[read.top[0]].where[lang]}</p>
+            {read.top[1] && (
+              <p className="talent-also"><span>{t.read.also}</span> <b>{archetypes[read.top[1]].name[lang]}</b>: {archetypes[read.top[1]].power[lang]}</p>
             )}
           </div>
           <dl className="ob-overview">
-            {list('strengths').length > 0 && <div className="wide"><dt>{t.read.strengths}</dt><dd className="tags">{list('strengths').map((x) => <span key={x}>{x}</span>)}</dd></div>}
-            {list('intent').length > 0 && <div className="wide"><dt>{t.read.want}</dt><dd className="tags">{list('intent').map((x) => <span key={x}>{x}</span>)}</dd></div>}
+            <div className="wide"><dt>{t.read.roles}</dt><dd className="tags">{rolesOf(read.top, lang).map((x) => <span key={x}>{x}</span>)}</dd></div>
+            <div className="wide"><dt>{t.read.where}</dt><dd className="tags">{read.dims.map((x) => <span key={x}>{dims[x][lang]}</span>)}</dd></div>
+            {typeof d.answers.proof === 'string' && d.answers.proof.trim() && (
+              <div className="wide"><dt>{t.read.story}</dt><dd><blockquote className="talent-story">{clip(d.answers.proof.trim(), 240)}</blockquote></dd></div>
+            )}
           </dl>
-          <div className="ob-next">
-            <p className="ob-rec-k">{t.read.next}</p>
-            <p>{t.read.nextBody}</p>
-            <p className="talent-promise">{t.read.promise}</p>
-          </div>
+          <NextSteps title={t.read.next} steps={t.read.steps} />
+          <p className="talent-promise">{t.read.promise}</p>
           <Actions brief={brief} subject={subject} copy={copy} copied={copied} />
           <button type="button" className="ob-link" onClick={() => go(0)}>{t.edit}</button>
         </div>
@@ -247,6 +247,7 @@ function TalentFlow() {
           <h3 tabIndex={-1}>{t.brief.title}</h3>
           <p className="ob-lede">{t.brief.lede}</p>
           <dl className="ob-overview">
+            {typeof d.answers.role === 'string' && d.answers.role.trim() && <div className="wide"><dt>{t.brief.role}</dt><dd>{d.answers.role.trim()}</dd></div>}
             {list('areas').length > 0 && <div className="wide"><dt>{t.brief.areas}</dt><dd className="tags">{list('areas').map((x) => <span key={x}>{x}</span>)}</dd></div>}
             {d.answers.type && <div><dt>{t.brief.type}</dt><dd>{L('type', d.answers.type)}</dd></div>}
             {list('traits').length > 0 && <div><dt>{t.brief.traits}</dt><dd className="tags">{list('traits').map((x) => <span key={x}>{x}</span>)}</dd></div>}
@@ -254,14 +255,11 @@ function TalentFlow() {
           </dl>
           {(d.answers.open === 'yes' || pains.includes('unclear')) && (
             <div className="ob-rec">
-              {d.answers.open === 'yes' && <p className="talent-where">{t.brief.openYes}</p>}
+              {d.answers.open === 'yes' && <p className="talent-where"><Rich text={t.brief.openYes} /></p>}
               {pains.includes('unclear') && <p className="talent-where">{t.brief.unclear}</p>}
             </div>
           )}
-          <div className="ob-next">
-            <p className="ob-rec-k">{t.brief.next}</p>
-            <p>{t.brief.nextBody}</p>
-          </div>
+          <NextSteps title={t.brief.next} steps={t.brief.steps} />
           <Actions brief={brief} subject={subject} copy={copy} copied={copied} />
           <button type="button" className="ob-link" onClick={() => go(0)}>{t.edit}</button>
         </div>
@@ -305,8 +303,50 @@ function Actions({ brief, subject, copy, copied }: { brief: () => string; subjec
   )
 }
 
+const clip = (x: string, n: number) => (x.length > n ? x.slice(0, n).trimEnd() + '…' : x)
+function rolesOf(top: Archetype[], lang: 'ar' | 'en') {
+  const out: string[] = []
+  top.forEach((k) => archetypes[k].roles[lang].forEach((r) => !out.includes(r) && out.push(r)))
+  return out.slice(0, 5)
+}
+
+function NextSteps({ title, steps }: { title: string; steps: string[] }) {
+  return (
+    <div className="ob-next">
+      <p className="ob-rec-k">{title}</p>
+      <ol className="talent-next">
+        {steps.map((x, i) => <li key={x}><span dir="ltr">{String(i + 1).padStart(2, '0')}</span>{x}</li>)}
+      </ol>
+    </div>
+  )
+}
+
+// Three gems joined in a triangle: talent, company, KON. Purely decorative.
+function WinTriangle() {
+  return (
+    <svg className="win-tri" viewBox="0 0 240 210" aria-hidden="true">
+      <defs>
+        <linearGradient id="wt-line" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#5fe3d2" stopOpacity="0.8" />
+          <stop offset="1" stopColor="#d6c08f" stopOpacity="0.8" />
+        </linearGradient>
+      </defs>
+      <path d="M120 22 L214 182 L26 182 Z" fill="none" stroke="url(#wt-line)" strokeWidth="1.2" />
+      <path d="M120 22 L120 128 M214 182 L120 128 M26 182 L120 128" stroke="rgba(214,192,143,0.35)" strokeWidth="1" strokeDasharray="3 5" />
+      {[[120, 22], [214, 182], [26, 182]].map(([x, y]) => (
+        <path key={`${x}-${y}`} d={`M${x} ${y - 12} L${x + 10} ${y - 3} L${x} ${y + 12} L${x - 10} ${y - 3} Z`} fill="rgba(30,194,176,0.35)" stroke="#5fe3d2" strokeWidth="1.2" />
+      ))}
+      <circle cx="120" cy="128" r="20" fill="rgba(2,24,26,0.9)" stroke="#d6c08f" strokeWidth="1" />
+      <text x="120" y="133" textAnchor="middle" fontSize="13" letterSpacing="1.5" fill="#d6c08f" fontFamily="inherit">KON</text>
+    </svg>
+  )
+}
+
 export function Talent() {
   const t = useContent().talent
+  const lang = useStore((s) => s.lang)
+  const [preset, setPreset] = useState<{ side: TalentSide; n: number } | null>(null)
+  const open = (side: TalentSide) => setPreset((p) => ({ side, n: (p?.n ?? 0) + 1 }))
   return (
     <section id="talent" className="band talent" aria-labelledby="talent-title">
       <div className="wrap">
@@ -315,17 +355,61 @@ export function Talent() {
           <SplitReveal as="h2" id="talent-title" className="display" text={t.title} />
           <p className="body-lg" data-reveal><Rich text={t.lede} /></p>
         </div>
-        <ul className="talent-wins">
-          {t.wins.map((w, i) => (
-            <li key={w.k} className="talent-win glass" data-reveal style={{ transitionDelay: `${i * 80}ms` }}>
-              <span className="talent-k"><GemMark className="li-gem" />{w.k}</span>
-              <h3>{w.title}</h3>
-              <p><Rich text={w.body} /></p>
-            </li>
-          ))}
-        </ul>
+
+        <div className="talent-teaser" data-reveal>
+          <p className="talent-teaser-q">{t.teaserQ}</p>
+          <ul className="talent-arches">
+            {(Object.keys(archetypes) as Archetype[]).map((k) => <li key={k}><GemMark className="chip-gem" />{archetypes[k].name[lang]}</li>)}
+          </ul>
+          <button type="button" className="btn btn-primary" onClick={() => open('talent')}><span>{t.teaserCta}</span></button>
+        </div>
+
+        <div className="talent-mirror">
+          <p className="talent-sub center" data-reveal>{t.mirror.title}</p>
+          <div className="talent-mirror-grid">
+            {(['talent', 'company'] as TalentSide[]).map((side) => {
+              const m = t.mirror[side]
+              return (
+                <article key={side} className={`talent-side glass is-${side}`} data-reveal>
+                  <p className="talent-k"><GemMark className="li-gem" />{m.k}</p>
+                  <ul>{m.lines.map((x) => <li key={x}>{x}</li>)}</ul>
+                  <button type="button" className="link-btn" onClick={() => open(side)}><span>{m.cta}</span> <span aria-hidden="true">{lang === 'ar' ? '←' : '→'}</span></button>
+                </article>
+              )
+            })}
+          </div>
+        </div>
+
+        <div className="talent-journey">
+          <p className="talent-sub center" data-reveal>{t.journey.title}</p>
+          <ol className="journey">
+            {t.journey.steps.map((st, i) => (
+              <li key={st.title} data-reveal style={{ transitionDelay: `${i * 90}ms` }}>
+                <span className="journey-n" dir="ltr">{String(i + 1).padStart(2, '0')}</span>
+                <h3>{st.title}</h3>
+                <p>{st.body}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        <div className="talent-wins-block">
+          <p className="talent-sub center" data-reveal>{t.wins.title}</p>
+          <div className="talent-wins-row">
+            <div className="win-tri-wrap" data-reveal><WinTriangle /></div>
+            <ul className="talent-wins">
+              {t.wins.items.map((w, i) => (
+                <li key={w.k} className="talent-win" data-reveal style={{ transitionDelay: `${i * 80}ms` }}>
+                  <b>{w.k}</b>
+                  <p><Rich text={w.body} /></p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
         <div className="talent-flow-wrap" data-reveal>
-          <TalentFlow />
+          <TalentFlow preset={preset} />
         </div>
       </div>
     </section>
