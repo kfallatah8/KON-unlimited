@@ -21,6 +21,8 @@ export interface Question {
   options?: Option[]
   optional?: boolean
   placeholder?: string
+  /** Multi-choice only: most options a person may pick. */
+  max?: number
 }
 export interface Step { title: string; lede?: string; questions: Question[] }
 
@@ -40,6 +42,8 @@ export interface CaseItem {
 /** Embeddable ⁦360°⁩ tour (Kuula). The page loads it only when a visitor asks for it. */
 /** Solutions section (الحلول). Hidden on the live site for now (khalid, 2026-10-31); flip to true to show it again. */
 export const SHOW_SOLUTIONS = false
+/** KON Talent section (المواهب). Flip to false to hide the section and its nav link. */
+export const SHOW_TALENT = true
 
 export const tourUrl = 'https://kuula.co/share/collection/7MZVN?logo=1&info=1&fs=1&vr=0&sd=1&thumbs=1'
 
@@ -59,6 +63,7 @@ const ar = {
     { href: '#offer', label: 'العرض' },
     { href: '#work', label: 'أعمالنا' },
     ...(SHOW_SOLUTIONS ? [{ href: '#ready', label: 'الحلول' }] : []),
+    ...(SHOW_TALENT ? [{ href: '#talent', label: 'المواهب' }] : []),
     { href: '#founder', label: 'المؤسس' },
   ],
   headerCta: 'ابدأ التشخيص',
@@ -305,6 +310,72 @@ const ar = {
     cta: 'قدّم طلب الدعم',
   },
 
+  // CONFIRM: "free for talent", "we never share your profile without asking", and the company next step.
+  talent: {
+    eyebrow: 'مواهب KON',
+    title: 'موهبتك أكبر من سيرتك الذاتية',
+    lede: 'نبحث عن أشخاص يملكون أكثر مما أُتيح لهم أن يُظهروه. **نتعرّف عليك كما أنت**، ثم نعمل معك، أو نوصلك لمن يحتاجك فعلًا',
+    wins: [
+      { k: 'لك', title: 'تُرى على حقيقتك', body: 'نكتشف ما تجيده فعلًا، ونضعك حيث تظهر قيمتك، لا حيث تُقرأ شهادتك فقط' },
+      { k: 'للشركات', title: 'الشخص الصحيح، لا السيرة الأجمل', body: 'أشخاص يناسبون الدور والفريق. **نعرف عملهم قبل أوراقهم**' },
+      { k: 'لنا جميعًا', title: 'نكبر معًا', body: 'فريق أوسع نبني معه مشاريع حقيقية. حين تنجح أنت، وتنجح الشركة، ننجح نحن' },
+    ],
+    doorsQ: 'من أي باب تدخل؟',
+    doors: {
+      talent: { label: 'لديّ موهبة', sub: 'أريد أن تُرى قدراتي، وأن أضعها حيث تصنع فرقًا' },
+      company: { label: 'نبحث عن مواهب', sub: 'نريد الشخص المناسب، لا السيرة الأجمل' },
+    },
+    free: 'التسجيل مجاني للمواهب، دائمًا',
+    next: 'التالي',
+    back: 'رجوع',
+    finish: 'اعرض النتيجة',
+    stepOf: (a: number, b: number) => `الخطوة ${a} من ${b}`,
+    required: 'أكمل هذه الخطوة للمتابعة',
+    maxNote: (n: number) => `${n} على الأكثر`,
+    contact: {
+      title: 'أين نجدك؟',
+      lede: 'نستخدم بياناتك للتواصل معك فقط. ولن نشارك ملفك مع أي شركة قبل أن نستأذنك',
+      ledeCompany: 'نستخدم بياناتك للتواصل معك بخصوص طلبك فقط',
+      name: 'الاسم',
+      company: 'اسم الشركة',
+      job: 'منصبك',
+      phone: 'رقم الجوال (واتساب)',
+      email: 'البريد الإلكتروني',
+      city: 'المدينة والدولة',
+      needOne: 'أضف اسمك ووسيلة تواصل واحدة على الأقل',
+    },
+    read: {
+      title: 'هذا ما رأيناه فيك',
+      lede: 'قراءة أولى من إجاباتك. ونكملها نحن حين نقرأ قصتك',
+      you: 'قد تكون',
+      where: 'أين تضيف قيمة',
+      strengths: 'ما يأتيك بسهولة',
+      want: 'ما تريده',
+      next: 'الخطوة التالية',
+      nextBody: 'أرسل ملفك. نقرأ كل ملف بأنفسنا، وحين يظهر مشروع أو فرصة تناسبك، نتواصل معك',
+      promise: 'لا نعدك بوظيفة. نعدك أن نقرأك بجدية',
+    },
+    brief: {
+      title: 'هذا طلبكم',
+      lede: 'قرأنا إجاباتكم. هذا ما فهمناه',
+      areas: 'المجال',
+      type: 'نوع الارتباط',
+      pains: 'ما لم ينجح',
+      traits: 'أهم الصفات',
+      openYes: 'أنتم منفتحون على الموهبة قبل الورق. وهنا تحديدًا نستطيع أن نفاجئكم',
+      unclear: 'قبل أن توظّفوا، قد تحتاجون أن نصمّم الدور معكم. وهذا جزء من عملنا في محور الفريق',
+      next: 'الخطوة التالية',
+      nextBody: 'أرسلوا الطلب. نتواصل معكم لنفهم الدور أكثر، ثم نرشّح من رأينا عمله، لا سيرته فقط',
+    },
+    sendWhatsapp: 'أرسل عبر واتساب',
+    sendEmail: 'أرسل بالبريد',
+    copy: 'انسخ الملخص',
+    copied: 'نُسخ',
+    raw: 'اعرض نص الملخص',
+    edit: 'عدّل إجاباتي',
+    restart: 'ابدأ من جديد',
+  },
+
   // LOCKED (khalid, 2026-10-25)
   founder: {
     eyebrow: 'كلمة المؤسس',
@@ -402,6 +473,7 @@ const en: Content = {
     { href: '#offer', label: 'The offer' },
     { href: '#work', label: 'Work' },
     ...(SHOW_SOLUTIONS ? [{ href: '#ready', label: 'Solutions' }] : []),
+    ...(SHOW_TALENT ? [{ href: '#talent', label: 'Talent' }] : []),
     { href: '#founder', label: 'Founder' },
   ],
   headerCta: 'Start diagnosis',
@@ -638,6 +710,71 @@ const en: Content = {
     dedication: 'Given as sadaqah for my late father, may God have mercy on him, and for all Muslims',
     note: 'We take requests as our capacity allows, and we reply to every one',
     cta: 'Apply for support',
+  },
+
+  talent: {
+    eyebrow: 'KON Talent',
+    title: 'Your talent is bigger than your CV',
+    lede: 'We’re looking for people who hold more than they’ve had the chance to show. **We get to know you as you are**, then work with you, or bring you to the people who truly need you',
+    wins: [
+      { k: 'For you', title: 'Seen for who you are', body: 'We find what you’re genuinely good at and put you where your value shows, not just where your degree is read' },
+      { k: 'For companies', title: 'The right person, not the prettiest CV', body: 'People who fit the role and the team. **We know their work before their paperwork**' },
+      { k: 'For all of us', title: 'We grow together', body: 'A wider team to build real projects with. When you win and the company wins, we win' },
+    ],
+    doorsQ: 'Which door is yours?',
+    doors: {
+      talent: { label: 'I have talent', sub: 'I want my abilities seen, and put where they make a difference' },
+      company: { label: 'We’re looking for talent', sub: 'We want the right person, not the prettiest CV' },
+    },
+    free: 'Always free for talent',
+    next: 'Next',
+    back: 'Back',
+    finish: 'See the result',
+    stepOf: (a: number, b: number) => `Step ${a} of ${b}`,
+    required: 'Complete this step to continue',
+    maxNote: (n: number) => `up to ${n}`,
+    contact: {
+      title: 'Where can we find you?',
+      lede: 'We use your details only to reach you. We never share your profile with a company before asking you',
+      ledeCompany: 'We use your details only to follow up on your request',
+      name: 'Name',
+      company: 'Company name',
+      job: 'Your position',
+      phone: 'Mobile (WhatsApp)',
+      email: 'Email',
+      city: 'City and country',
+      needOne: 'Add your name and at least one way to reach you',
+    },
+    read: {
+      title: 'Here’s what we see in you',
+      lede: 'A first read from your answers. We complete it once we’ve read your story',
+      you: 'You might be',
+      where: 'Where you add value',
+      strengths: 'What comes easily to you',
+      want: 'What you want',
+      next: 'Next step',
+      nextBody: 'Send us your profile. We read every one ourselves, and when a project or opportunity fits you, we reach out',
+      promise: 'We don’t promise you a job. We promise to take you seriously',
+    },
+    brief: {
+      title: 'Your request',
+      lede: 'We’ve read your answers. Here’s what we understood',
+      areas: 'Area',
+      type: 'Engagement',
+      pains: 'What hasn’t worked',
+      traits: 'Top traits',
+      openYes: 'You’re open to talent before paperwork. That’s exactly where we can surprise you',
+      unclear: 'Before you hire, you may need us to design the role with you. That’s part of our work on people and teams',
+      next: 'Next step',
+      nextBody: 'Send the request. We’ll reach out to understand the role better, then put forward people whose work we’ve seen, not just their CVs',
+    },
+    sendWhatsapp: 'Send on WhatsApp',
+    sendEmail: 'Send by email',
+    copy: 'Copy the summary',
+    copied: 'Copied',
+    raw: 'Show the summary text',
+    edit: 'Edit my answers',
+    restart: 'Start over',
   },
 
   founder: {

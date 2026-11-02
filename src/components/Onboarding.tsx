@@ -40,7 +40,7 @@ const CHIP_TO_PAIN: Record<string, string> = {
 }
 export const chipPain = (chip: string) => CHIP_TO_PAIN[chip]
 
-function QuestionField({ q, value, other, onChange, onOther, lang }: {
+export function QuestionField({ q, value, other, onChange, onOther, lang }: {
   q: Question; value: Answers[string]; other: string; lang: Lang
   onChange: (v: Answers[string]) => void; onOther: (v: string) => void
 }) {
@@ -73,17 +73,24 @@ function QuestionField({ q, value, other, onChange, onOther, lang }: {
   const sel = multi ? ((value as string[]) ?? []) : [value as string].filter(Boolean)
   return (
     <fieldset className="ob-q">
-      <legend className="ob-label">{q.label}{q.optional && <em> · {lang === 'ar' ? 'اختياري' : 'optional'}</em>}</legend>
+      <legend className="ob-label">
+        {q.label}
+        {q.optional && <em> · {lang === 'ar' ? 'اختياري' : 'optional'}</em>}
+        {multi && q.max && <em> · {lang === 'ar' ? `${q.max} على الأكثر` : `up to ${q.max}`}</em>}
+      </legend>
       <div className="ob-chips">
         {q.options?.map((op) => {
           const on = sel.includes(op.id)
+          const full = multi && !!q.max && !on && sel.length >= q.max
           return (
             <button
               key={op.id}
               type="button"
               aria-pressed={on}
-              className={`chip${on ? ' is-on' : ''}`}
+              aria-disabled={full || undefined}
+              className={`chip${on ? ' is-on' : ''}${full ? ' is-full' : ''}`}
               onClick={() => {
+                if (full) return
                 if (multi) onChange(on ? sel.filter((x) => x !== op.id) : [...sel, op.id])
                 else onChange(on ? undefined : op.id)
               }}

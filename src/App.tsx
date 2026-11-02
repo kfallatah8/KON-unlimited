@@ -3,7 +3,8 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useContent } from './content/useContent'
 import type { CaseItem } from './content/site'
-import { contact, SHOW_SOLUTIONS, tourUrl } from './content/site'
+import { contact, SHOW_SOLUTIONS, SHOW_TALENT, tourUrl } from './content/site'
+import { Talent } from './components/Talent'
 import { detectCapabilities } from './lib/capabilities'
 import { motion, setLang, startOnboarding, useStore } from './state/store'
 import { Cursor } from './components/Cursor'
@@ -555,7 +556,10 @@ function DockCta() {
       const atForm = start ? start.getBoundingClientRect().top < window.innerHeight * 0.9 : false
       const fin = document.getElementById('finale')?.getBoundingClientRect()
       const atFinale = fin ? fin.top < window.innerHeight * 0.5 : false
-      setShow(window.scrollY > window.innerHeight * 0.9 && !atForm && !atFinale)
+      // The talent section has its own flow; a "start diagnosis" button over it only distracts.
+      const tal = document.getElementById('talent')?.getBoundingClientRect()
+      const atTalent = tal ? tal.top < window.innerHeight * 0.6 && tal.bottom > window.innerHeight * 0.4 : false
+      setShow(window.scrollY > window.innerHeight * 0.9 && !atForm && !atFinale && !atTalent)
     }
     const on = () => { if (!frame) frame = requestAnimationFrame(check) }
     window.addEventListener('scroll', on, { passive: true })
@@ -696,6 +700,7 @@ export default function App() {
         <Work />
         {SHOW_SOLUTIONS && <Suspense fallback={null}><ReadyServices /></Suspense>}
         <Support />
+        {SHOW_TALENT && <Talent />}
         <Founder />
         <Finale fallback={!webgl} />
         <Start />

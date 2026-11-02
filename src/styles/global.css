@@ -965,3 +965,31 @@ html.is-ready .stage-glow { opacity: 1; }
 @media (max-width: 1100px) { .apps-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 700px) { .apps-grid { grid-template-columns: 1fr; } .apps-more { width: 100%; } }
 .band .apps-title { font-family: var(--display); }
+
+/* ---------- KON Talent ---------- */
+.talent-wins { list-style: none; margin: 2.6rem auto 0; padding: 0; max-width: 64rem; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.talent-win { padding: 1.6rem 1.5rem; display: grid; gap: 0.55rem; align-content: start; }
+.talent-k { display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.8rem; color: var(--gold); letter-spacing: 0.02em; }
+.talent-k .li-gem { width: 16px; height: 16px; margin: 0; color: var(--gold); }
+.talent-win h3 { font-size: 1.2rem; }
+.talent-win p { font-size: 0.96rem; color: var(--text-2); }
+.talent-flow-wrap { margin: 2.4rem auto 0; max-width: 46rem; scroll-margin-top: 6rem; }
+.talent-ob { scroll-margin-top: 6rem; min-height: 26rem; text-align: start; }
+.talent-ob h3, .talent-ob .ob-step, .talent-ob .ob-lede { text-align: center; }
+.talent-doors { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.talent-free { display: flex; justify-content: center; align-items: center; gap: 0.5rem; font-size: 0.86rem; color: var(--gold); }
+.talent-free .li-gem { width: 16px; height: 16px; margin: 0; color: var(--gold); }
+.talent-read { gap: 0.55rem; }
+.talent-arch { display: grid; gap: 0.15rem; }
+.talent-arch .ob-rec-v { margin-bottom: 0; }
+.talent-where { color: var(--text-2); font-size: 0.96rem; }
+.talent-promise { font-family: var(--display); color: var(--gold); font-size: clamp(1.05rem, 1.8vw, 1.3rem); margin-top: 0.4rem; }
+.talent-restart { margin-top: 1.2rem; }
+.chip.is-full { opacity: 0.42; cursor: not-allowed; }
+.chip.is-full:hover { border-color: var(--line-strong); color: var(--text-2); }
+@media (max-width: 860px) {
+  .talent-wins { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .talent-doors { grid-template-columns: 1fr; }
+}
