@@ -314,7 +314,7 @@ const ar = {
   // CONFIRM: "free for talent", "never shared without your permission", and the company next step.
   talent: {
     eyebrow: 'مواهب KON',
-    title: 'تعرف أنك قادر على أكثر. لكن أحدًا لم يسألك',
+    title: 'تعرف أنك قادر على أكثر. لكن محد سألك؟',
     lede: 'نحن نسأل. نكتشف موهبتك من **عملك، لا من أوراقك**، ثم نضعها حيث تصنع فرقًا: في مشاريعنا، أو في شركة تحتاجك فعلًا',
     teaserQ: 'أيّها أنت؟',
     teaserCta: 'اكتشف نمطك في 3 دقائق',
