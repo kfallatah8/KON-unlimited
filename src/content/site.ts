@@ -21,6 +21,8 @@ export interface Question {
   options?: Option[]
   optional?: boolean
   placeholder?: string
+  /** Multi-choice only: most options a person may pick. */
+  max?: number
 }
 export interface Step { title: string; lede?: string; questions: Question[] }
 
@@ -40,6 +42,8 @@ export interface CaseItem {
 /** Embeddable ⁦360°⁩ tour (Kuula). The page loads it only when a visitor asks for it. */
 /** Solutions section (الحلول). Hidden on the live site for now (khalid, 2026-10-31); flip to true to show it again. */
 export const SHOW_SOLUTIONS = false
+/** KON Talent section (المواهب). Flip to false to hide the section and its nav link. */
+export const SHOW_TALENT = true
 
 export const tourUrl = 'https://kuula.co/share/collection/7MZVN?logo=1&info=1&fs=1&vr=0&sd=1&thumbs=1'
 
@@ -59,6 +63,7 @@ const ar = {
     { href: '#offer', label: 'العرض' },
     { href: '#work', label: 'أعمالنا' },
     ...(SHOW_SOLUTIONS ? [{ href: '#ready', label: 'الحلول' }] : []),
+    ...(SHOW_TALENT ? [{ href: '#talent', label: 'المواهب' }] : []),
     { href: '#founder', label: 'المؤسس' },
   ],
   headerCta: 'ابدأ التشخيص',
@@ -305,6 +310,105 @@ const ar = {
     cta: 'قدّم طلب الدعم',
   },
 
+  // Prove step confirmed by khalid (2026-11-02): the challenge runs only when an opportunity matches.
+  // CONFIRM: "free for talent", "never shared without your permission", and the company next step.
+  talent: {
+    eyebrow: 'مواهب KON',
+    title: 'تعرف أنك قادر على أكثر. لكن محد سألك؟',
+    lede: 'نحن نسأل. نكتشف موهبتك من **طريقة تفكيرك**، فترى ما تملكه فعلًا، ثم نصلك بالناس والفرص التي تُطلق ++كامل إمكاناتك++',
+    proof: 'خلف هذه القراءة خبرة في علم النفس، وتحليل السلوك، وأنماط الشخصية، وبناء بيئات العمل الصحية',
+    teaserQ: 'أيّها أنت؟',
+    teaserCta: 'اكتشف نمطك في 3 دقائق',
+    mirror: {
+      title: 'هل تعرف هذا الشعور؟',
+      talent: {
+        k: 'إن كنت موهبة',
+        lines: ['تؤدي عملك جيدًا، وتعرف أنك تُهدر نصف ما تستطيع', 'تُرفض لأن الورق لا يشبهك', 'لديك أفكار كبيرة، ولا تعرف لمن تقولها'],
+        cta: 'اكتشف موهبتك',
+      },
+      company: {
+        k: 'إن كنتم شركة',
+        lines: ['وظّفتم السيرة الأجمل، فجاء الأداء أقل منها', 'تبحثون أشهرًا، والمقعد ما زال فارغًا', 'الجيدون يرحلون قبل أن تكتمل الصورة'],
+        cta: 'اطلبوا موهبة',
+      },
+    },
+    journey: {
+      title: 'من الموهبة إلى الأثر، في ثلاث خطوات',
+      steps: [
+        { title: 'نكتشف', body: 'نقرأ طريقة تفكيرك، وما يحرّكك، وكيف تتخذ قراراتك. فترى في نفسك ما لم تكن تراه' },
+        { title: 'نختبر', body: 'حين تظهر فرصة تناسب قيمتك الحقيقية، نختبرها معك بتحدٍّ قصير من الواقع' },
+        { title: 'نوصلك', body: 'بأناس حقيقيين وفرص حقيقية: مشروع مع KON، أو شركة تحتاجك. وبإذنك دائمًا' },
+      ],
+    },
+    wins: {
+      title: 'لا نرشّح أحدًا، إلا إذا ربح الجميع',
+      lede: 'ترشيحٌ يربح فيه طرف واحد، يخسر فيه الجميع لاحقًا',
+      center: 'أثر',
+      items: [
+        { k: 'الموهبة', gain: 'مكانٌ يليق بك', body: 'تُرى على حقيقتك، وتُفهم طريقة تفكيرك، وتعمل حيث تلمع وتكبر' },
+        { k: 'الشركة', gain: 'الشخص الصحيح، من أول مرة', body: 'شخص نفهم طريقة تفكيره، يناسب الدور والفريق، ويُختار ليبقى' },
+        { k: 'KON', gain: 'سمعة تُبنى على النتائج', body: 'شبكة من أناس حقيقيين نبني بها مشاريع أكبر. ونجاحكما هو ++سمعتنا++' },
+      ],
+      sum: 'وعيٌ أعلى، وعلاقات حقيقية، وإمكانات تنطلق كاملة. هذا هو الأثر الذي يبقى',
+    },
+    doorsQ: 'من أي باب تدخل؟',
+    doorsTime: 'نحو 3 دقائق',
+    doors: {
+      talent: { label: 'لديّ موهبة', sub: 'أريد أن تُرى قدراتي، وأن أضعها حيث تصنع فرقًا' },
+      company: { label: 'نبحث عن موهبة', sub: 'نريد الشخص الصحيح، لا السيرة الأجمل' },
+    },
+    free: 'مجاني للمواهب، دائمًا',
+    next: 'التالي',
+    back: 'رجوع',
+    finish: 'اعرض النتيجة',
+    stepOf: (a: number, b: number) => `الخطوة ${a} من ${b}`,
+    required: 'أكمل هذه الخطوة للمتابعة',
+    contact: {
+      title: 'أين نجدك؟',
+      lede: 'نستخدم بياناتك للتواصل معك فقط. ولا يصل ملفك إلى أي شركة دون إذنك',
+      ledeCompany: 'نستخدم بياناتكم للتواصل بخصوص طلبكم فقط',
+      name: 'الاسم',
+      company: 'اسم الشركة',
+      job: 'منصبك',
+      phone: 'رقم الجوال (واتساب)',
+      email: 'البريد الإلكتروني',
+      city: 'المدينة والدولة',
+      needOne: 'أضف اسمك ووسيلة تواصل واحدة على الأقل',
+    },
+    read: {
+      title: 'هذا ما رأيناه فيك',
+      lede: 'قراءة أولى من إجاباتك. ونكملها حين نقرأ طريقة تفكيرك',
+      you: 'نمطك الأقرب',
+      also: 'ومعه لمسة من',
+      roles: 'أدوار قد تلمع فيها',
+      where: 'أين تضيف قيمة',
+      story: 'كيف تفكّر',
+      next: 'ماذا بعد؟',
+      steps: ['ترسل ملفك', 'نقرؤه بأنفسنا، كلمة كلمة', 'نتواصل معك حين تظهر فرصة تناسبك'],
+      promise: 'لا نعدك بوظيفة. نعدك أن نقرأك بجدية',
+    },
+    brief: {
+      title: 'هذا ما تبحثون عنه',
+      lede: 'قرأنا إجاباتكم. هذا ما فهمناه',
+      areas: 'المجال',
+      role: 'الدور',
+      type: 'نوع الارتباط',
+      pains: 'ما لم ينجح',
+      traits: 'أهم الصفات',
+      openYes: 'أنتم تنظرون إلى طريقة التفكير قبل الشهادة. وهنا تحديدًا نستطيع أن ++نفاجئكم++',
+      unclear: 'قبل أن توظّفوا، قد تحتاجون أن نصمّم الدور معكم. وهذا جزء من عملنا في محور الفريق',
+      next: 'ماذا بعد؟',
+      steps: ['ترسلون الطلب', 'نفهم الدور معكم بعمق', 'نرشّح من فهمنا طريقة تفكيره، لا سيرته فقط'],
+    },
+    sendWhatsapp: 'أرسل عبر واتساب',
+    sendEmail: 'أرسل بالبريد',
+    copy: 'انسخ الملخص',
+    copied: 'نُسخ',
+    raw: 'اعرض نص الملخص',
+    edit: 'عدّل إجاباتي',
+    restart: 'ابدأ من جديد',
+  },
+
   // LOCKED (khalid, 2026-10-25)
   founder: {
     eyebrow: 'كلمة المؤسس',
@@ -402,6 +506,7 @@ const en: Content = {
     { href: '#offer', label: 'The offer' },
     { href: '#work', label: 'Work' },
     ...(SHOW_SOLUTIONS ? [{ href: '#ready', label: 'Solutions' }] : []),
+    ...(SHOW_TALENT ? [{ href: '#talent', label: 'Talent' }] : []),
     { href: '#founder', label: 'Founder' },
   ],
   headerCta: 'Start diagnosis',
@@ -638,6 +743,103 @@ const en: Content = {
     dedication: 'Given as sadaqah for my late father, may God have mercy on him, and for all Muslims',
     note: 'We take requests as our capacity allows, and we reply to every one',
     cta: 'Apply for support',
+  },
+
+  talent: {
+    eyebrow: 'KON Talent',
+    title: 'You know you can do more. Nobody has asked you yet',
+    lede: 'We’re asking. We discover your talent from **the way you think**, so you see what you truly have, then connect you with the people and opportunities that unlock ++your full potential++',
+    proof: 'Behind this read: psychology, behavioral analysis, personality types, and building healthy workplaces',
+    teaserQ: 'Which one are you?',
+    teaserCta: 'Find yours in 3 minutes',
+    mirror: {
+      title: 'Know the feeling?',
+      talent: {
+        k: 'If you’re the talent',
+        lines: ['You do your job well, and know you’re wasting half of what you can do', 'You get turned down because the paper doesn’t look like you', 'You have big ideas, and no one to bring them to'],
+        cta: 'Discover your talent',
+      },
+      company: {
+        k: 'If you’re a company',
+        lines: ['You hired the best CV, and got less than it promised', 'Months of searching, and the seat is still empty', 'The good ones leave before the picture is complete'],
+        cta: 'Request talent',
+      },
+    },
+    journey: {
+      title: 'From talent to impact, in three steps',
+      steps: [
+        { title: 'Discover', body: 'We read how you think, what drives you and how you decide. So you see in yourself what you hadn’t seen before' },
+        { title: 'Prove', body: 'When an opportunity matches your real value, we test the fit together with a short real-world challenge' },
+        { title: 'Connect', body: 'With real people and real opportunities: a KON project, or a company that needs you. Always with your permission' },
+      ],
+    },
+    wins: {
+      title: 'We don’t make a match unless everyone wins',
+      lede: 'A match where only one side wins is one everyone loses later',
+      center: 'Impact',
+      items: [
+        { k: 'The talent', gain: 'A place worthy of you', body: 'Seen for who you are, understood for how you think, working where you shine and grow' },
+        { k: 'The company', gain: 'The right person, the first time', body: 'Someone whose thinking we understand, who fits the role and the team, chosen to stay' },
+        { k: 'KON', gain: 'A reputation built on results', body: 'A network of real people to build bigger projects with. Your success is ++our reputation++' },
+      ],
+      sum: 'Higher awareness, real connections, potential fully unlocked. That’s the impact that lasts',
+    },
+    doorsQ: 'Which door is yours?',
+    doorsTime: 'About 3 minutes',
+    doors: {
+      talent: { label: 'I have talent', sub: 'I want my abilities seen, and put where they make a difference' },
+      company: { label: 'We’re looking for talent', sub: 'We want the right person, not the prettiest CV' },
+    },
+    free: 'Always free for talent',
+    next: 'Next',
+    back: 'Back',
+    finish: 'See the result',
+    stepOf: (a: number, b: number) => `Step ${a} of ${b}`,
+    required: 'Complete this step to continue',
+    contact: {
+      title: 'Where can we find you?',
+      lede: 'We use your details only to reach you. Your profile never reaches a company without your permission',
+      ledeCompany: 'We use your details only to follow up on your request',
+      name: 'Name',
+      company: 'Company name',
+      job: 'Your position',
+      phone: 'Mobile (WhatsApp)',
+      email: 'Email',
+      city: 'City and country',
+      needOne: 'Add your name and at least one way to reach you',
+    },
+    read: {
+      title: 'Here’s what we see in you',
+      lede: 'A first read from your answers. We complete it once we’ve read the way you think',
+      you: 'Your closest pattern',
+      also: 'With a touch of',
+      roles: 'Roles where you could shine',
+      where: 'Where you add value',
+      story: 'How you think',
+      next: 'What happens next?',
+      steps: ['You send your profile', 'We read it ourselves, word by word', 'We reach out when an opportunity fits you'],
+      promise: 'We don’t promise you a job. We promise to take you seriously',
+    },
+    brief: {
+      title: 'Here’s who you’re looking for',
+      lede: 'We’ve read your answers. Here’s what we understood',
+      areas: 'Area',
+      role: 'Role',
+      type: 'Engagement',
+      pains: 'What hasn’t worked',
+      traits: 'Top traits',
+      openYes: 'You look at how people think before their certificates. That’s exactly where we can ++surprise you++',
+      unclear: 'Before you hire, you may need us to design the role with you. That’s part of our work on people and teams',
+      next: 'What happens next?',
+      steps: ['You send the request', 'We get to know the role with you, in depth', 'We put forward people whose thinking we understand, not just their CVs'],
+    },
+    sendWhatsapp: 'Send on WhatsApp',
+    sendEmail: 'Send by email',
+    copy: 'Copy the summary',
+    copied: 'Copied',
+    raw: 'Show the summary text',
+    edit: 'Edit my answers',
+    restart: 'Start over',
   },
 
   founder: {
