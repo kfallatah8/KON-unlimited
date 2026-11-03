@@ -1,6 +1,8 @@
 // Personalised onboarding: persona → persona questions (one screen at a time) → contact → a
 // situation overview with recommended services. Runs fully client-side; where the brief goes is
 // set in content/site.ts → contact, and the UI says plainly when nothing is connected yet.
+// With consent, the finished brief is posted to /api/lead (alerts KON and files the CRM lead), and
+// the visitor can rate the diagnosis 1–10 via /api/rating. The manual send buttons stay as a fallback.
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { contact as inbox, type Lang, type Persona, type Question } from '../content/site'
 import { leadRead, optionLabel, recommend, serviceNames, stepsFor, type Answers } from '../content/onboarding'
@@ -15,8 +17,57 @@ interface Draft {
   answers: Answers
   other: Record<string, string>
   who: { name: string; company: string; phone: string; email: string; city: string; prefer: string }
+  consent: boolean
 }
-const EMPTY: Draft = { persona: null, support: false, answers: {}, other: {}, who: { name: '', company: '', phone: '', email: '', city: '', prefer: 'whatsapp' } }
+const EMPTY: Draft = { persona: null, support: false, answers: {}, other: {}, who: { name: '', company: '', phone: '', email: '', city: '', prefer: 'whatsapp' }, consent: false }
+// Bump when the privacy notice changes materially; it is stored with each lead as proof of consent.
+const CONSENT_VERSION = '2026-10-31'
+
+type Sent = { state: 'idle' | 'sending' | 'sent' | 'failed'; ref?: string; token?: string }
+
+async function post(path: string, body: unknown) {
+  const res = await fetch(path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
+  if (!res.ok) throw new Error(String(res.status))
+  return res.json()
+}
+
+function Rating({ sent, persona, primary }: { sent: Sent; persona: string; primary: string }) {
+  const r = useContent().onboarding.summary.rate
+  const [score, setScore] = useState(0)
+  const [comment, setComment] = useState('')
+  const [state, setState] = useState<'idle' | 'sending' | 'done'>('idle')
+  if (!sent.ref || !sent.token) return null
+  if (state === 'done') return <p className="ob-sent" role="status">{r.thanks}</p>
+  const submit = async () => {
+    if (!score) return
+    setState('sending')
+    try {
+      await post('/api/rating', { ref: sent.ref, token: sent.token, score, comment, persona, primary })
+    } catch {
+      /* a lost rating is not worth bothering the visitor about */
+    }
+    setState('done')
+  }
+  return (
+    <div className="ob-rate">
+      <p className="ob-label" id="ob-rate-l">{r.title}</p>
+      <div className="ob-scale ob-scale-10" role="radiogroup" aria-labelledby="ob-rate-l">
+        {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
+          <button key={n} type="button" role="radio" aria-checked={score === n} className={`ob-dot${score >= n ? ' is-on' : ''}`} onClick={() => setScore(n)}>
+            <span dir="ltr">{n}</span>
+          </button>
+        ))}
+      </div>
+      <div className="ob-scale-ends"><span>{r.low}</span><span>{r.high}</span></div>
+      {score > 0 && (
+        <>
+          <textarea className="ob-other" rows={2} maxLength={1000} value={comment} placeholder={r.comment} onChange={(e) => setComment(e.target.value)} />
+          <button type="button" className="btn btn-ghost" disabled={state === 'sending'} onClick={submit}><span>{r.send}</span></button>
+        </>
+      )}
+    </div>
+  )
+}
 const KEY = 'kon-onboarding-draft'
 
 function load(): Draft {
@@ -110,15 +161,19 @@ export function Onboarding() {
   const [step, setStep] = useState(-1)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
+  const [sent, setSent] = useState<Sent>({ state: 'idle' })
+  const [trap, setTrap] = useState('')
   const card = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    // Once the brief has been delivered, keep no copy of the visitor's details on this device.
+    if (sent.state === 'sent') return
     try {
       localStorage.setItem(KEY, JSON.stringify(d))
     } catch {
       /* storage unavailable */
     }
-  }, [d])
+  }, [d, sent.state])
 
   // Entry from anywhere on the page (problem chips, who-we-help cards, support CTA).
   useEffect(() => {
@@ -161,6 +216,8 @@ export function Onboarding() {
     if (step === n) {
       const w = d.who
       if (!w.name.trim() || !(w.phone.trim() || w.email.trim())) return setError(ob.contact.needOne)
+      if (!d.consent) return setError(ob.contact.needConsent)
+      submit()
     }
     setError('')
     setStep((s) => Math.min(s + 1, n + 1))
@@ -206,6 +263,23 @@ export function Onboarding() {
       lines.push(`Lead fit (internal): ${lead.fit} · urgency ${lead.urgency}/5`)
     }
     return lines.join('\n')
+  }
+
+  const submit = async () => {
+    if (!d.persona || !rec || sent.state === 'sending' || sent.state === 'sent') return
+    setSent({ state: 'sending' })
+    try {
+      const r = await post('/api/lead', {
+        who: d.who, persona: d.persona, support: d.support, lang, report: brief(),
+        fit: lead.fit, urgency: lead.urgency, primary: serviceNames[rec.primary].en,
+        consent: d.consent, consentVersion: CONSENT_VERSION, website: trap,
+      })
+      if (!r.ok || !r.delivered) throw new Error('not delivered')
+      setSent({ state: 'sent', ref: r.ref, token: r.token })
+      try { localStorage.removeItem(KEY) } catch { /* storage unavailable */ }
+    } catch {
+      setSent({ state: 'failed' })
+    }
   }
 
   const copy = async () => {
@@ -298,6 +372,7 @@ export function Onboarding() {
               </label>
             ))}
           </div>
+          <input className="ob-trap" tabIndex={-1} autoComplete="off" aria-hidden="true" value={trap} onChange={(e) => setTrap(e.target.value)} />
           <fieldset className="ob-q">
             <legend className="ob-label">{ob.contact.prefer}</legend>
             <div className="ob-chips">
@@ -306,6 +381,10 @@ export function Onboarding() {
               ))}
             </div>
           </fieldset>
+          <label className="ob-toggle">
+            <input type="checkbox" checked={d.consent} onChange={(e) => setD((p) => ({ ...p, consent: e.target.checked }))} />
+            <span>{ob.contact.consent} <a href={`/privacy.html${lang === 'en' ? '#en' : ''}`} target="_blank" rel="noreferrer">{ob.contact.consentLink}</a></span>
+          </label>
         </div>
       )}
 
@@ -335,12 +414,16 @@ export function Onboarding() {
             <p className="ob-rec-k">{ob.summary.next}</p>
             <p>{ob.summary.nextBody}</p>
           </div>
+          {sent.state !== 'idle' && (
+            <p className={sent.state === 'failed' ? 'ob-note' : 'ob-sent'} role="status">{ob.summary[sent.state]}</p>
+          )}
+          {d.persona && <Rating key={sent.ref} sent={sent} persona={d.persona} primary={serviceNames[rec.primary].en} />}
           <div className="ob-actions">
             {inbox.whatsapp && (
-              <a className="btn btn-primary" target="_blank" rel="noreferrer" href={`https://wa.me/${inbox.whatsapp}?text=${encodeURIComponent(brief())}`}><span>{ob.summary.sendWhatsapp}</span></a>
+              <a className={`btn ${sent.state === 'sent' ? 'btn-ghost' : 'btn-primary'}`} target="_blank" rel="noreferrer" href={`https://wa.me/${inbox.whatsapp}?text=${encodeURIComponent(brief())}`}><span>{ob.summary.sendWhatsapp}</span></a>
             )}
             {inbox.email && (
-              <a className="btn btn-primary" href={`mailto:${inbox.email}?subject=${encodeURIComponent('KON · ' + d.who.name)}&body=${encodeURIComponent(brief())}`}><span>{ob.summary.sendEmail}</span></a>
+              <a className={`btn ${sent.state === 'sent' ? 'btn-ghost' : 'btn-primary'}`} href={`mailto:${inbox.email}?subject=${encodeURIComponent('KON · ' + d.who.name)}&body=${encodeURIComponent(brief())}`}><span>{ob.summary.sendEmail}</span></a>
             )}
             <button type="button" className={`btn ${inbox.whatsapp || inbox.email ? 'btn-ghost' : 'btn-primary'}`} onClick={copy}><span>{copied ? ob.summary.copied : ob.summary.copy}</span></button>
           </div>
