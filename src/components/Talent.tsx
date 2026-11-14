@@ -42,7 +42,7 @@ function load(): Draft {
   return EMPTY
 }
 
-function TalentFlow({ preset }: { preset: { side: TalentSide; n: number } | null }) {
+function TalentFlow({ preset }: { preset: { side: TalentSide; n: number; quiet?: boolean } | null }) {
   const t = useContent().talent
   const lang = useStore((s) => s.lang)
   const [d, setD] = useState<Draft>(load)
@@ -80,7 +80,10 @@ function TalentFlow({ preset }: { preset: { side: TalentSide; n: number } | null
     go(0)
   }
   useEffect(() => {
-    if (preset) pick(preset.side)
+    if (!preset) return
+    // A door from the home page only pre-selects the side; the visitor reads the page from the top first.
+    if (preset.quiet) { setD((p) => ({ ...p, side: preset.side })); return }
+    pick(preset.side)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preset])
   const setAnswer = (id: string, v: Answers[string]) => setD((p) => ({ ...p, answers: { ...p.answers, [id]: v } }))
@@ -451,7 +454,7 @@ function Lanes({ onTalent, onCompany }: { onTalent: () => void; onCompany: () =>
 export function Talent() {
   const t = useContent().talent
   const lang = useStore((s) => s.lang)
-  const [preset, setPreset] = useState<{ side: TalentSide; n: number } | null>(null)
+  const [preset, setPreset] = useState<{ side: TalentSide; n: number; quiet?: boolean } | null>(null)
   const open = (side: TalentSide) => setPreset((p) => ({ side, n: (p?.n ?? 0) + 1 }))
   // A door on the home page (talent or company) opens its own flow when the page lands.
   useEffect(() => {
@@ -459,8 +462,7 @@ export function Talent() {
     const side = w.__konTalentSide
     if (side !== 'talent' && side !== 'company') return
     w.__konTalentSide = undefined
-    const id = window.setTimeout(() => open(side), 450)
-    return () => window.clearTimeout(id)
+    setPreset((p) => ({ side, n: (p?.n ?? 0) + 1, quiet: true }))
   }, [])
   return (
     <section id="talent" className="band talent" aria-labelledby="talent-title">
