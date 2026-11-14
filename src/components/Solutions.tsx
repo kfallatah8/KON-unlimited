@@ -5,7 +5,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { KeyboardEvent } from 'react'
 import { apps } from '../content/apps'
-import { contact as inbox } from '../content/site'
+import { contact as inbox, type IconId } from '../content/site'
 import { reqCopy, solCopy, solSectors, type Extra, type Pick, type SolSector, type ToolId } from '../content/solutions'
 import { useContent } from '../content/useContent'
 import { startOnboarding, useStore } from '../state/store'
@@ -268,6 +268,8 @@ function SectorPanel({ sec, onRequest }: { sec: SolSector; onRequest: (r: Req) =
   )
 }
 
+const SECTOR_ICONS: Record<string, IconId> = { food: 'guest', re: 'house', fnb: 'cup', fac: 'factory', retail: 'bag', home: 'family', all: 'systems' }
+
 export function Solutions() {
   const lang = useStore((s) => s.lang)
   const s = solCopy[lang]
@@ -300,7 +302,7 @@ export function Solutions() {
               aria-selected={i === sec} aria-controls="sol-panel" tabIndex={i === sec ? 0 : -1}
               className={i === sec ? 'is-on' : ''} onClick={() => setSec(i)}
             >
-              <GemMark className="sol-gem" /><span>{x.name[lang]}</span>
+              <Icon id={SECTOR_ICONS[x.id] ?? 'systems'} className="icon sol-gem" /><span>{x.name[lang]}</span>
             </button>
           ))}
         </div>

@@ -311,3 +311,17 @@ html.cta-pulse .stage-glow { animation: ctaPulse 1.8s cubic-bezier(0.16, 1, 0.3,
 .sol-subtabs b, .sol-tabs b { font-size: 0.8rem; }
 .fr-card { text-align: center; align-items: center; }
 .fr-card > * { margin-inline: auto; }
+
+/* ---------- One icon language (2026-11-14): hairline teal icons in a soft halo, no diamonds on cards ---------- */
+.card-icon {
+  width: 52px; height: 52px; padding: 11px; box-sizing: border-box; margin: 0 auto 0.3rem;
+  border-radius: 16px; color: var(--teal-hi);
+  background: radial-gradient(circle at 50% 35%, rgba(95, 227, 210, 0.16), rgba(95, 227, 210, 0.03) 70%);
+  border: 1px solid rgba(95, 227, 210, 0.22);
+  filter: drop-shadow(0 0 12px rgba(95, 227, 210, 0.3));
+}
+.more-card.is-1 .card-icon, .fr-card.is-1 .card-icon { color: var(--gold); border-color: rgba(214, 192, 143, 0.32); background: radial-gradient(circle at 50% 35%, rgba(214, 192, 143, 0.16), rgba(214, 192, 143, 0.03) 70%); filter: drop-shadow(0 0 12px rgba(214, 192, 143, 0.25)); }
+.more-card .more-gem { display: none; }
+.sv-icon { width: 34px; height: 34px; color: var(--teal-hi); margin-bottom: 0.2rem; filter: drop-shadow(0 0 10px rgba(95, 227, 210, 0.35)); }
+.sol-sectors .sol-gem { width: 18px; height: 18px; }
+.path-gem.icon { width: 22px; height: 22px; color: var(--teal-hi); }

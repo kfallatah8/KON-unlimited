@@ -8,6 +8,7 @@ export type IconId =
   | 'storm' | 'anchor' | 'rise' | 'seed' | 'compass'
   | 'eye' | 'people' | 'train' | 'bulb'
   | 'tour' | 'pin' | 'web' | 'brand' | 'guest' | 'sales' | 'growth' | 'systems'
+  | 'talent' | 'company' | 'calc' | 'session' | 'care' | 'scan' | 'flow' | 'mask' | 'house' | 'cup' | 'factory' | 'bag' | 'family'
 
 /** Solutions. Demos for each one live in content/ready.ts. */
 export type ServiceId = 'tours' | 'maps' | 'web' | 'brand' | 'guest' | 'sales' | 'growth' | 'systems'

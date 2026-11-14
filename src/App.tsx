@@ -3,7 +3,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useContent } from './content/useContent'
 import type { CaseItem } from './content/site'
-import { BOOKING_URL, contact, SHOW_SOLUTIONS, SHOW_TALENT, tourUrl } from './content/site'
+import { BOOKING_URL, contact, SHOW_SOLUTIONS, SHOW_TALENT, tourUrl, type IconId } from './content/site'
 import { Talent } from './components/Talent'
 import { Solutions } from './components/Solutions'
 import { KonFooterMark } from './components/KonFooterMark'
@@ -262,7 +262,7 @@ function Problem() {
         {p.paths.map((path) => (
           <div key={path.persona} className="path glass" data-reveal>
             <button type="button" className="path-head" onClick={() => startOnboarding({ persona: path.persona })}>
-              <GemMark className="path-gem" /><span>{path.label}</span><i aria-hidden="true">{lang === 'ar' ? '←' : '→'}</i>
+              <Icon id={path.persona === 'founder' ? 'seed' : path.persona === 'investor' ? 'compass' : 'company'} className="icon path-gem" /><span>{path.label}</span><i aria-hidden="true">{lang === 'ar' ? '←' : '→'}</i>
             </button>
             <div className="path-chips">
               {path.q.map((q) => (
@@ -361,12 +361,7 @@ function Interlude() {
         <div className="il-fact">
           <p className="il-kick" style={{ ['--d' as string]: 0 }}>{t.fact.kick}</p>
           <p className="il-hero" style={{ ['--d' as string]: 0.008 }}>{t.fact.lead} <em>{t.fact.key}</em></p>
-          <div className="il-elem" dir="ltr" style={{ ['--d' as string]: 0.016 }} aria-label={t.fact.el}>
-            <span className="il-elem-n" dir="ltr">6</span>
-            <b dir="ltr">C</b>
-            <span className="il-elem-name">{t.fact.el}</span>
-          </div>
-          <p className="il-diff" style={{ ['--d' as string]: 0.024 }}><span className="il-q">{t.fact.q}</span> <strong>{t.fact.a1}</strong>{t.fact.mid}<strong>{t.fact.a2}</strong></p>
+          <p className="il-diff" style={{ ['--d' as string]: 0.016 }}><span className="il-q">{t.fact.q}</span> <strong>{t.fact.a1}</strong>{t.fact.mid}<strong>{t.fact.a2}</strong></p>
         </div>
         <div className="il-calm">
           <p className="il-kick" style={{ ['--d' as string]: 0 }}>{t.value.kick}</p>
@@ -429,6 +424,9 @@ function Approach() {
   )
 }
 
+const SV_ICONS: IconId[] = ['scan', 'compass', 'flow', 'mask', 'web', 'ai']
+const FR_ICONS: IconId[] = ['calc', 'session', 'care']
+
 function Services() {
   const v = useContent().services
   return (
@@ -442,6 +440,7 @@ function Services() {
           {v.items.map((it, i) => (
             <li key={it.title} className="sv-card" data-reveal style={{ transitionDelay: `${(i % 3) * 70}ms` }}>
               <span className="sv-num" dir="ltr">{pad(i + 1)}</span>
+              <Icon id={SV_ICONS[i] ?? 'spark'} className="icon sv-icon" />
               <h3>{it.title}</h3>
               <p>{it.body}</p>
             </li>
@@ -468,7 +467,8 @@ function Freebies() {
         <div className="fr-grid">
           {f.items.map((it, i) => (
             <a key={it.k} href={it.href} onClick={go(it.href)} className={`fr-card is-${i}`} data-reveal style={{ transitionDelay: `${i * 90}ms` }}>
-              <span className="fr-tag"><GemMark className="fr-gem" />{it.k}</span>
+              <Icon id={FR_ICONS[i] ?? 'spark'} className="icon icon-lg card-icon" />
+              <span className="fr-tag">{it.k}</span>
               <h3>{it.title}</h3>
               <p>{it.body}</p>
               <span className="fr-cta">{it.cta} <i aria-hidden="true" className="fr-arr">{lang === 'ar' ? '←' : '→'}</i></span>
@@ -494,7 +494,7 @@ function More() {
         <div className="more-grid more-duo">
           {m.items.map((it, i) => (
             <a key={it.side} href={it.href} onClick={() => { (window as unknown as { __konTalentSide?: string }).__konTalentSide = it.side }} className={`more-card glass is-${i}`} data-reveal style={{ transitionDelay: `${i * 90}ms` }}>
-              <GemMark className="more-gem" />
+              <Icon id={it.side === 'company' ? 'company' : 'talent'} className="icon icon-lg card-icon" />
               <span className="more-k">{it.k}</span>
               <h3>{it.title}</h3>
               <p><Rich text={it.body} /></p>
