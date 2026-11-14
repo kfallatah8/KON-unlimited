@@ -453,6 +453,15 @@ export function Talent() {
   const lang = useStore((s) => s.lang)
   const [preset, setPreset] = useState<{ side: TalentSide; n: number } | null>(null)
   const open = (side: TalentSide) => setPreset((p) => ({ side, n: (p?.n ?? 0) + 1 }))
+  // A door on the home page (talent or company) opens its own flow when the page lands.
+  useEffect(() => {
+    const w = window as unknown as { __konTalentSide?: string }
+    const side = w.__konTalentSide
+    if (side !== 'talent' && side !== 'company') return
+    w.__konTalentSide = undefined
+    const id = window.setTimeout(() => open(side), 450)
+    return () => window.clearTimeout(id)
+  }, [])
   return (
     <section id="talent" className="band talent" aria-labelledby="talent-title">
       <div className="wrap">

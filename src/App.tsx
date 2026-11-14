@@ -337,16 +337,16 @@ const INTERLUDE = {
   ar: {
     press: 'الضغط لا يكسرك…',
     reveal: 'يكشفك',
-    fact: ['الألماس والفحم من عنصرٍ واحد: الكربون', 'الفرق؟ ضغطٌ هائل، ووقتٌ طويل'],
-    value: 'منحنا الحجر قيمةً عالية… ونسينا أن نمنحها لأنفسنا',
-    within: 'التغيير يبدأ من الداخل',
+    fact: { kick: 'الألماس والفحم', lead: 'من عنصرٍ', key: 'واحد', el: 'الكربون', q: 'الفرق؟', a1: 'ضغطٌ هائل', mid: '، و', a2: 'وقتٌ طويل' },
+    value: { kick: 'منحنا الحجرَ قيمةً عالية…', lead: 'ونسينا أن نمنحها', key: 'لأنفسنا' },
+    within: { lead: 'التغيير يبدأ', key: 'من الداخل', label: 'التغيير يبدأ من الداخل' },
   },
   en: {
     press: "Pressure doesn't break you…",
     reveal: 'It reveals you',
-    fact: ['Diamond and coal are the same element: carbon', 'The difference? Immense pressure, and time'],
-    value: 'We gave a stone a priceless value… and forgot to give it to ourselves',
-    within: 'Change begins within',
+    fact: { kick: 'Diamond and coal', lead: 'are one', key: 'element', el: 'Carbon', q: 'The difference?', a1: 'Immense pressure', mid: ', and ', a2: 'time' },
+    value: { kick: 'We gave a stone priceless value…', lead: 'and forgot to give it to', key: 'ourselves' },
+    within: { lead: 'Change begins', key: 'within', label: 'Change begins within' },
   },
 }
 
@@ -354,17 +354,24 @@ function Interlude() {
   const lang = useStore((s) => s.lang)
   const t = INTERLUDE[lang]
   return (
-    <section id="interlude" className="interlude" aria-label={t.within}>
+    <section id="interlude" className="interlude" aria-label={t.within.label}>
       <div className="interlude-sticky">
         <p className="il-line il-press">{t.press}</p>
         <p className="il-reveal"><span>{t.reveal}</span></p>
         <div className="il-fact">
-          <p className="il-line">{t.fact[0]}</p>
-          <p className="il-sub">{t.fact[1]}</p>
+          <p className="il-kick" style={{ ['--d' as string]: 0 }}>{t.fact.kick}</p>
+          <p className="il-hero" style={{ ['--d' as string]: 0.008 }}>{t.fact.lead} <em>{t.fact.key}</em></p>
+          <div className="il-elem" dir="ltr" style={{ ['--d' as string]: 0.016 }} aria-label={t.fact.el}>
+            <span className="il-elem-n" dir="ltr">6</span>
+            <b dir="ltr">C</b>
+            <span className="il-elem-name">{t.fact.el}</span>
+          </div>
+          <p className="il-diff" style={{ ['--d' as string]: 0.024 }}><span className="il-q">{t.fact.q}</span> <strong>{t.fact.a1}</strong>{t.fact.mid}<strong>{t.fact.a2}</strong></p>
         </div>
         <div className="il-calm">
-          <p className="il-line">{t.value}</p>
-          <p className="il-within">{t.within}</p>
+          <p className="il-kick" style={{ ['--d' as string]: 0 }}>{t.value.kick}</p>
+          <p className="il-hero" style={{ ['--d' as string]: 0.01 }}>{t.value.lead} <em>{t.value.key}</em></p>
+          <p className="il-within" style={{ ['--d' as string]: 0.02 }}>{t.within.lead} <em>{t.within.key}</em></p>
         </div>
       </div>
     </section>
@@ -482,14 +489,15 @@ function More() {
         <div className="narrow center sec-head">
           <p className="eyebrow centered" data-reveal>{m.eyebrow}</p>
           <SplitReveal as="h2" id="more-title" className="display" text={m.title} />
+          {m.lede && <p className="body-lg" data-reveal><Rich text={m.lede} /></p>}
         </div>
-        <div className="more-grid">
+        <div className="more-grid more-duo">
           {m.items.map((it, i) => (
-            <a key={it.href} href={it.href} className={`more-card glass is-${i}`} data-reveal style={{ transitionDelay: `${i * 90}ms` }}>
+            <a key={it.side} href={it.href} onClick={() => { (window as unknown as { __konTalentSide?: string }).__konTalentSide = it.side }} className={`more-card glass is-${i}`} data-reveal style={{ transitionDelay: `${i * 90}ms` }}>
               <GemMark className="more-gem" />
               <span className="more-k">{it.k}</span>
               <h3>{it.title}</h3>
-              <p>{it.body}</p>
+              <p><Rich text={it.body} /></p>
               <span className="more-cta">{it.cta} <i aria-hidden="true">{lang === 'ar' ? '←' : '→'}</i></span>
             </a>
           ))}

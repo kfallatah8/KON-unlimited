@@ -206,7 +206,7 @@ export const solCopy = {
     nextLabel: 'تبغى هذا الرقم يتحسّن كل يوم، بدون حاسبة؟',
     nextCta: 'شاهد الحل',
     tail: 'قطاعك ليس هنا؟ **أخبرنا بمشكلتك، ونبني حلها**',
-    tailCta: 'ابدأ التشخيص',
+    tailCta: 'أخبرنا عنها',
   },
   en: {
     eyebrow: 'Solutions',
@@ -231,7 +231,7 @@ export const solCopy = {
     nextLabel: 'Want this number improving every day, without a calculator?',
     nextCta: 'See the solution',
     tail: 'Your sector isn’t here? **Tell us the problem, and we’ll build its solution**',
-    tailCta: 'Start the diagnosis',
+    tailCta: 'Tell us about it',
   },
 }
 

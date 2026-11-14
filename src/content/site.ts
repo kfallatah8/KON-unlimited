@@ -140,9 +140,9 @@ const ar = {
 
   approach: {
     eyebrow: 'طريقتنا',
-    title: 'ثلاثة أشياء نفعلها بطريقة مختلفة',
+    title: 'لماذا تتحرك الأرقام معنا',
     pillars: [
-      { icon: 'mind' as IconId, title: 'نبدأ من الإنسان', body: 'كل رقم في شركتك قرارُ إنسان: عميل تردّد، أو موظف تعب، أو مدير استعجل، نقرأ **سلوك عميلك وعقلية فريقك** بخلفية في علم النفس، فنصل إلى السبب الذي تخفيه الأرقام' },
+      { icon: 'mind' as IconId, title: 'نبدأ من الإنسان', body: 'كل رقم في شركتك قرارُ إنسان: عميل تردّد، أو موظف تعب، أو مدير استعجل، نقرأ **سلوك عميلك وعقلية فريقك** بعين أخصائي نفسي، فنصل إلى السبب الذي تخفيه الأرقام' },
       { icon: 'field' as IconId, title: 'ننزل الميدان حتى يعمل', body: 'نبني، وندرّب، ونكتب إجراءات التشغيل، ونتابع فريقك حتى يصير الجديد **عادة يومية** تعيش بعدنا' },
       { icon: 'aligned' as IconId, title: 'نربح حين تربح', body: 'أتعابنا **مرتبطة بالنتائج** التي نصنعها لك، ونتفق على طريقة الربط كتابيًا، قبل أن نبدأ' },
     ],
@@ -150,10 +150,12 @@ const ar = {
   },
 
   more: {
-    eyebrow: 'من عالم كُن',
-    title: 'لمن يريد أن يتعمّق',
+    eyebrow: 'مواهب KON',
+    title: 'نكتشف الموهبة، ونضعها حيث تلمع',
+    lede: 'الموهبة الحقيقية لا تظهر في السيرة الذاتية، تظهر في **طريقة التفكير**، ونحن نقرؤها',
     items: [
-      { href: '#/talent', k: 'مواهب KON', title: 'تعرف أنك قادر على أكثر، لكن محد سألك؟', body: 'نكتشف موهبتك من طريقة تفكيرك، ونصلك بالفرصة التي تليق بك', cta: 'اكتشف نمطك' },
+      { href: '#/talent', side: 'talent', k: 'للمواهب', title: 'تعرف أنك قادر على أكثر، لكن محد سألك؟', body: 'نكتشف موهبتك من طريقة تفكيرك، ونصلك بالفرصة التي تليق بك', cta: 'اكتشف نمطك' },
+      { href: '#/talent', side: 'company', k: 'للشركات', title: 'تبحثون عن موهبة تصنع الفرق، لا عن سيرة أجمل؟', body: 'نرشّح لكم **العقلية** التي يحتاجها الدور، قبل الأوراق', cta: 'اطلبوا موهبة' },
     ],
   },
 
@@ -200,7 +202,7 @@ const ar = {
 
   freebies: {
     eyebrow: 'مجانًا',
-    title: 'ابدأ معنا قبل أن تدفع ريالًا',
+    title: 'القيمة أولًا، قبل أي التزام',
     items: [
       { k: 'أدوات مجانية', title: 'احسب ما يضيع منك الآن', body: 'حاسبات لكل قطاع تقرأ أرقامك بعدسة كُن، وتعمل على جهازك فقط', cta: 'جرّب الأدوات', href: '#solutions' },
       { k: 'تشخيص مجاني', title: 'التشخيص الأول علينا', body: 'جلسة 30 دقيقة مع خبير أول، وخريطة طريق مبدئية مكتوبة', cta: 'احجز تشخيصك', href: '#start' },
@@ -212,7 +214,7 @@ const ar = {
   offer: {
     eyebrow: 'العرض',
     title: 'صورة أوضح لمشروعك، في جلسة واحدة',
-    lede: 'جلسة تشخيص مع ++خبير أول++ من فريقنا، تخرج منها **بصورة أوضح لوضعك**، حتى لو لم نعمل معًا بعدها',
+    lede: 'مع ++خبير أول++ من فريقنا، تخرج وأنت تعرف **من أين تبدأ، ولماذا**، حتى لو لم نعمل معًا بعدها',
     includes: [
       'جلسة تشخيص مركّزة، 30 دقيقة',
       'قراءة لوضعك من ثمانية أبعاد',
@@ -228,7 +230,7 @@ const ar = {
   work: {
     eyebrow: 'أعمالنا',
     title: 'أرقام من الميدان',
-    lede: 'ما أنجزناه نقول إنه أُنجز، وما زلنا نبنيه نقول إننا نبنيه',
+    lede: 'كل رقم هنا حقيقي، وكل مشروع موسوم بحالته كما هي',
     confirmMark: 'بانتظار التأكيد',
     featured: [
       { sector: 'الاتصالات', tag: 'تطوير أعمال · GTM', title: 'دخول Telkomsel إلى السوق السعودي', body: 'تطوير الأعمال، وبناء استراتيجية دخول السوق وتنفيذها لشركة الاتصالات الإندونيسية Telkomsel في السعودية', metric: '14M', metricLabel: 'ريال إيرادات تحققت' },
@@ -467,7 +469,7 @@ const ar = {
 
   onboarding: {
     eyebrow: 'ابدأ هنا',
-    title: 'دقيقتان، وتحصل على صورة أوضح لوضعك',
+    title: 'دقيقتان، ونصل إلى الجلسة وقد فهمنا وضعك',
     lede: 'أسئلة قليلة، **مصمّمة لتفهمك أنت**، كلما كانت إجاباتك أصدق، كانت جلستك أنفع',
     start: 'لنبدأ',
     next: 'التالي',
@@ -620,9 +622,9 @@ const en: Content = {
 
   approach: {
     eyebrow: 'How we work',
-    title: 'Three things we do differently',
+    title: 'Why the numbers move with us',
     pillars: [
-      { icon: 'mind' as IconId, title: 'We start with people', body: 'Every number in your company is a human decision: a customer who hesitated, an employee who got tired, a manager who rushed. We read **your customers’ behaviour and your team’s mindset** with a background in psychology, and find the cause the numbers hide' },
+      { icon: 'mind' as IconId, title: 'We start with people', body: 'Every number in your company is a human decision: a customer who hesitated, an employee who got tired, a manager who rushed. We read **your customers’ behaviour and your team’s mindset** through a psychologist’s eyes, and find the cause the numbers hide' },
       { icon: 'field' as IconId, title: 'We stay on the ground until it works', body: 'We build, train, write the operating procedures, and stay with your team until the new way becomes **a daily habit** that outlives us' },
       { icon: 'aligned' as IconId, title: 'We win when you win', body: 'Our fees are **tied to the results** we create for you. We agree how, in writing, before we start' },
     ],
@@ -630,10 +632,12 @@ const en: Content = {
   },
 
   more: {
-    eyebrow: 'The world of KON',
-    title: 'For those who want to go deeper',
+    eyebrow: 'KON Talent',
+    title: 'We find talent, and place it where it shines',
+    lede: 'Real talent rarely shows on a CV. It shows in **the way you think**, and that is what we read',
     items: [
-      { href: '#/talent', k: 'KON Talent', title: 'You know you can do more. But has anyone asked?', body: 'We discover your talent from the way you think, and connect you with the opportunity that fits you', cta: 'Find your pattern' },
+      { href: '#/talent', side: 'talent', k: 'For talent', title: 'You know you can do more. But has anyone asked?', body: 'We discover your talent from the way you think, and connect you with the opportunity that fits you', cta: 'Find your pattern' },
+      { href: '#/talent', side: 'company', k: 'For companies', title: 'Looking for talent that makes a difference, not a nicer CV?', body: 'We put forward the **mindset** the role needs, before the paperwork', cta: 'Request talent' },
     ],
   },
 
@@ -679,7 +683,7 @@ const en: Content = {
 
   freebies: {
     eyebrow: 'Free',
-    title: 'Start with us before you spend a riyal',
+    title: 'Value first, before any commitment',
     items: [
       { k: 'Free tools', title: 'See what you’re losing right now', body: 'Calculators for every sector that read your numbers through the KON lens, and run on your device only', cta: 'Try the tools', href: '#solutions' },
       { k: 'Free diagnosis', title: 'Your first diagnosis is on us', body: 'A 30-minute session with a senior advisor, plus a written first-draft roadmap', cta: 'Book your diagnosis', href: '#start' },
@@ -690,7 +694,7 @@ const en: Content = {
   offer: {
     eyebrow: 'The offer',
     title: 'A clearer picture of your business, in one session',
-    lede: 'A diagnosis session with a ++senior advisor++. You leave with **a clearer picture of where you stand**, even if we never work together after',
+    lede: 'With a ++senior advisor++ from our team. You leave knowing **where to start, and why**, even if we never work together after',
     includes: [
       'A focused 30-minute diagnosis session',
       'A read of your situation across eight dimensions',
@@ -706,7 +710,7 @@ const en: Content = {
   work: {
     eyebrow: 'Work',
     title: 'Numbers from the field',
-    lede: 'If it’s delivered, we say delivered. If we’re still building it, we say so',
+    lede: 'Every number here is real, and every project is labeled as it stands',
     confirmMark: 'Pending confirmation',
     featured: [
       { sector: 'Telecoms', tag: 'Business development · GTM', title: 'Telkomsel’s entry into Saudi Arabia', body: 'Business development, plus building and executing the go-to-market strategy that brought Indonesian telecom operator Telkomsel into the Saudi market', metric: '14M', metricLabel: 'SAR revenue generated' },
@@ -938,7 +942,7 @@ const en: Content = {
 
   onboarding: {
     eyebrow: 'Start here',
-    title: 'Two minutes. A clearer picture of where you stand',
+    title: 'Two minutes, and we arrive already understanding your situation',
     lede: 'A few questions, **built to understand you**. The more honest the answers, the more useful your session',
     start: 'Let’s begin',
     next: 'Next',
