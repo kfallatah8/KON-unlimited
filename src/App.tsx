@@ -3,7 +3,10 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useContent } from './content/useContent'
 import type { CaseItem } from './content/site'
-import { contact, SHOW_SOLUTIONS, tourUrl } from './content/site'
+import { BOOKING_URL, contact, SHOW_SOLUTIONS, SHOW_TALENT, tourUrl } from './content/site'
+import { Talent } from './components/Talent'
+import { Solutions } from './components/Solutions'
+import { KonFooterMark } from './components/KonFooterMark'
 import { detectCapabilities } from './lib/capabilities'
 import { motion, setLang, startOnboarding, useStore } from './state/store'
 import { Cursor } from './components/Cursor'
@@ -15,20 +18,45 @@ import { SplitReveal } from './components/SplitReveal'
 import { Rich } from './components/Rich'
 import { KonMark } from './components/KonMark'
 import { SafeBoundary } from './components/SafeBoundary'
+import { ChapterRail, CountUp, useCardLight, useHeaderAutoHide } from './components/Elevate'
 
 // The WebGL stage is its own chunk: copy and layout never wait for it.
 const GemField = lazy(() => import('./three/GemField'))
-// Solutions is switched off for now; as its own chunk it costs nothing while hidden.
-const ReadyServices = lazy(() => import('./components/ReadyServices').then((m) => ({ default: m.ReadyServices })))
+
 
 gsap.registerPlugin(ScrollTrigger)
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
+/** Hash routes for the inner pages (#/solutions, #/talent, #/code, #/work). Any other hash is the
+ *  homepage, and after switching back we land on the section it names. */
+const readRoute = () => (location.hash.startsWith('#/') ? location.hash.slice(2) : '')
+function useRoute() {
+  const [r, setR] = useState(readRoute)
+  const first = useRef(true)
+  useEffect(() => {
+    const on = () => setR(readRoute())
+    window.addEventListener('hashchange', on)
+    return () => window.removeEventListener('hashchange', on)
+  }, [])
+  useEffect(() => {
+    if (first.current) { first.current = false; return }
+    const id = requestAnimationFrame(() => requestAnimationFrame(() => {
+      const h = location.hash
+      const el = !r && h.length > 1 && !h.startsWith('#/') ? document.querySelector<HTMLElement>(h) : null
+      const y = el ? el.getBoundingClientRect().top + window.scrollY : 0
+      lenis?.scrollTo(y, { immediate: true, force: true })
+      window.scrollTo(0, y)
+    }))
+    return () => cancelAnimationFrame(id)
+  }, [r])
+  return r
+}
+
 /** Adds .is-in to [data-reveal] elements just before they scroll into view (CSS does the motion).
  *  Content starts its fade while still below the fold, so a fast flick on a phone never lands on
  *  an empty screen, and anything the scroll skipped over (anchor jumps, flicks) is shown at once. */
-function useReveal(lang: string) {
+function useReveal(lang: string, route = '') {
   useEffect(() => {
     const pending = new Set(document.querySelectorAll<HTMLElement>('[data-reveal]:not(.is-in)'))
     const show = (el: Element) => {
@@ -55,7 +83,7 @@ function useReveal(lang: string) {
       cancelAnimationFrame(frame)
       window.removeEventListener('scroll', onScroll)
     }
-  }, [lang])
+  }, [lang, route])
 }
 
 function LangSwitch() {
@@ -190,11 +218,9 @@ function Hero({ ready }: { ready: boolean }) {
     <section id="top" className="hero" aria-labelledby="hero-title">
       <div className="hero-copy">
         <p className="eyebrow hero-fade"><span className="eyebrow-text"><Rich text={h.eyebrow} /></span></p>
-        <h1 id="hero-title" className="hero-title">
-          <span className="sr-only">{h.rotating.join(' ')}</span>
-          <Rotator lines={h.rotating} ready={ready} />
+        <h1 id="hero-title" className="hero-title hero-statement">
+          {h.statement.map((l, i) => <span key={l} className="hs-line" style={{ transitionDelay: `${0.15 + i * 0.22}s` }}>{l}</span>)}
         </h1>
-        <p className="hero-promise hero-fade"><Rich text={h.promise} /></p>
         <p className="hero-lede hero-fade"><Rich text={h.lede} /></p>
         <div className="hero-ctas hero-fade">
           <MagneticButton href="#start">{h.primary}</MagneticButton>
@@ -203,11 +229,11 @@ function Hero({ ready }: { ready: boolean }) {
       </div>
       <ul className="proof hero-fade" aria-label="KON">
         {h.proof.map((p) => (
-          <li key={p.l}><b dir="ltr">{p.n}</b><span>{p.l}</span></li>
+          <li key={p.l}><b dir="ltr"><CountUp value={p.n} play={ready} /></b><span>{p.l}</span></li>
         ))}
       </ul>
       <p className="hero-slogan hero-fade">{h.slogan}</p>
-      <a href="#problem" className="scroll-cue"><span>{h.scroll}</span><i aria-hidden="true" /></a>
+      <a href="#problem" className="scroll-cue"><b className="breath-ring" aria-hidden="true" /><span>{h.scroll}</span><i aria-hidden="true" /></a>
     </section>
   )
 }
@@ -292,6 +318,48 @@ function Who() {
   )
 }
 
+/** The turn of the story. The page has been gathering a storm since the first screen; here every
+ *  stone is pulled into one core of coal, it holds, trembles, and breaks open into light. The words
+ *  land one beat at a time, each one on its own moment of the scroll (--ip, 0..1 through the section).
+ *  (Draft copy, awaiting khalid's approval.) */
+const INTERLUDE = {
+  ar: {
+    press: 'الضغط لا يكسرك…',
+    reveal: 'يكشفك',
+    fact: ['الألماس والفحم من عنصرٍ واحد: الكربون', 'الفرق؟ ضغطٌ هائل، ووقتٌ طويل'],
+    value: 'منحنا الحجر قيمةً عالية… ونسينا أن نمنحها لأنفسنا',
+    within: 'التغيير يبدأ من الداخل',
+  },
+  en: {
+    press: "Pressure doesn't break you…",
+    reveal: 'It reveals you',
+    fact: ['Diamond and coal are the same element: carbon', 'The difference? Immense pressure, and time'],
+    value: 'We gave a stone a priceless value… and forgot to give it to ourselves',
+    within: 'Change begins within',
+  },
+}
+
+function Interlude() {
+  const lang = useStore((s) => s.lang)
+  const t = INTERLUDE[lang]
+  return (
+    <section id="interlude" className="interlude" aria-label={t.within}>
+      <div className="interlude-sticky">
+        <p className="il-line il-press">{t.press}</p>
+        <p className="il-reveal"><span>{t.reveal}</span></p>
+        <div className="il-fact">
+          <p className="il-line">{t.fact[0]}</p>
+          <p className="il-sub">{t.fact[1]}</p>
+        </div>
+        <div className="il-calm">
+          <p className="il-line">{t.value}</p>
+          <p className="il-within">{t.within}</p>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function Commit() {
   const c = useContent().commit
   return (
@@ -306,6 +374,116 @@ function Commit() {
         </div>
         <p className="body-lg" data-reveal><Rich text={c.body} /></p>
         <p className="fine" data-reveal>{c.fine}</p>
+      </div>
+    </section>
+  )
+}
+
+function Approach() {
+  const c = useContent()
+  const a = c.approach
+  const m = c.commit
+  return (
+    <section id="approach" className="band approach" aria-labelledby="approach-title">
+      <div className="wrap">
+        <div className="narrow center sec-head">
+          <p className="eyebrow centered" data-reveal>{a.eyebrow}</p>
+          <SplitReveal as="h2" id="approach-title" className="display" text={a.title} />
+        </div>
+        <ol className="ap-grid">
+          {a.pillars.map((p, i) => (
+            <li key={p.title} className="ap-card glass" data-reveal style={{ transitionDelay: `${i * 90}ms` }}>
+              <span className="ap-num" dir="ltr">{pad(i + 1)}</span>
+              <Icon id={p.icon} className="icon icon-lg" />
+              <h3>{p.title}</h3>
+              <p><Rich text={p.body} /></p>
+              {i === 1 && (
+                <div className="split-bar ap-bar" aria-hidden="true">
+                  <span className="seg seg-80"><b dir="ltr">{m.work.n}</b><em>{m.work.label}</em></span>
+                  <span className="seg seg-20"><b dir="ltr">{m.you.n}</b><em>{m.you.label}</em></span>
+                </div>
+              )}
+            </li>
+          ))}
+        </ol>
+        <p className="ap-foot" data-reveal>{a.foot}</p>
+      </div>
+    </section>
+  )
+}
+
+function Services() {
+  const v = useContent().services
+  return (
+    <section id="services" className="band services-band" aria-labelledby="services-title">
+      <div className="wrap">
+        <div className="narrow center sec-head">
+          <p className="eyebrow centered" data-reveal>{v.eyebrow}</p>
+          <SplitReveal as="h2" id="services-title" className="display" text={v.title} />
+        </div>
+        <ol className="sv-grid">
+          {v.items.map((it, i) => (
+            <li key={it.title} className="sv-card" data-reveal style={{ transitionDelay: `${(i % 3) * 70}ms` }}>
+              <span className="sv-num" dir="ltr">{pad(i + 1)}</span>
+              <h3>{it.title}</h3>
+              <p>{it.body}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  )
+}
+
+function Freebies() {
+  const f = useContent().freebies
+  const lang = useStore((s) => s.lang)
+  const go = (href: string) => (e: { preventDefault(): void }) => {
+    if (href === '#support') { e.preventDefault(); startOnboarding({ persona: 'business', support: true }) }
+  }
+  return (
+    <section id="free" className="band freebies" aria-labelledby="free-title">
+      <div className="wrap">
+        <div className="narrow center sec-head">
+          <p className="eyebrow centered" data-reveal>{f.eyebrow}</p>
+          <SplitReveal as="h2" id="free-title" className="display" text={f.title} />
+        </div>
+        <div className="fr-grid">
+          {f.items.map((it, i) => (
+            <a key={it.k} href={it.href} onClick={go(it.href)} className={`fr-card is-${i}`} data-reveal style={{ transitionDelay: `${i * 90}ms` }}>
+              <span className="fr-tag"><GemMark className="fr-gem" />{it.k}</span>
+              <h3>{it.title}</h3>
+              <p>{it.body}</p>
+              <span className="fr-cta">{it.cta} <i aria-hidden="true" className="fr-arr">{lang === 'ar' ? '←' : '→'}</i></span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function More() {
+  const m = useContent().more
+  const lang = useStore((s) => s.lang)
+  return (
+    <section id="more" className="band more" aria-labelledby="more-title">
+      <div className="wrap">
+        <div className="narrow center sec-head">
+          <p className="eyebrow centered" data-reveal>{m.eyebrow}</p>
+          <SplitReveal as="h2" id="more-title" className="display" text={m.title} />
+        </div>
+        <div className="more-grid">
+          {m.items.map((it, i) => (
+            <a key={it.href} href={it.href} className={`more-card glass is-${i}`} data-reveal style={{ transitionDelay: `${i * 90}ms` }}>
+              <GemMark className="more-gem" />
+              <span className="more-k">{it.k}</span>
+              <h3>{it.title}</h3>
+              <p>{it.body}</p>
+              <span className="more-cta">{it.cta} <i aria-hidden="true">{lang === 'ar' ? '←' : '→'}</i></span>
+            </a>
+          ))}
+        </div>
       </div>
     </section>
   )
@@ -403,8 +581,23 @@ function CaseCard({ it, mark, big }: { it: CaseItem; mark: string; big?: boolean
   )
 }
 
-function Work() {
+function Work({ full }: { full?: boolean }) {
   const w = useContent().work
+  if (!full) {
+    return (
+      <section id="work" className="band work" aria-labelledby="work-title">
+        <div className="wrap">
+          <p className="eyebrow" data-reveal>{w.eyebrow}</p>
+          <SplitReveal as="h2" id="work-title" className="display" text={w.title} />
+          <p className="body-lg" data-reveal>{w.lede}</p>
+          <div className="case-grid">
+            {w.featured.map((it) => <CaseCard key={it.title} it={it} mark={w.confirmMark} big />)}
+          </div>
+          <p className="work-all" data-reveal><a href="#/work" className="btn btn-ghost"><span>{w.all}</span></a></p>
+        </div>
+      </section>
+    )
+  }
   return (
     <section id="work" className="band work" aria-labelledby="work-title">
       <div className="wrap">
@@ -418,7 +611,7 @@ function Work() {
           {w.more.map((it) => <CaseCard key={it.title} it={it} mark={w.confirmMark} />)}
         </div>
         <p className="work-tail" data-reveal>{w.tail}</p>
-        {!SHOW_SOLUTIONS && <Tour />}
+        <Tour />
       </div>
     </section>
   )
@@ -482,19 +675,76 @@ function Founder() {
   )
 }
 
-function Start() {
-  const o = useContent().onboarding
+function Booking() {
+  const lang = useStore((s) => s.lang)
+  const [open, setOpen] = useState(false)
+  if (!BOOKING_URL) return null
+  const L = lang === 'ar'
+  const src = `${BOOKING_URL}${BOOKING_URL.includes('?') ? '&' : '?'}embed_type=Inline&hide_gdpr_banner=1&hide_landing_page_details=1&background_color=03191c&text_color=eaf4f1&primary_color=5fe3d2&locale=${L ? 'ar' : 'en'}`
   return (
-    <section id="start" className="band start" aria-labelledby="start-title">
-      <div className="wrap start-stack">
-        <div className="start-intro center">
-          <p className="eyebrow" data-reveal>{o.eyebrow}</p>
-          <SplitReveal as="h2" id="start-title" className="display" text={o.title} />
-          <p className="body-lg" data-reveal><Rich text={o.lede} /></p>
+    <div className={`booking-card${open ? ' is-open' : ''}`} id="book" data-reveal>
+      <p className="bk-title">{L ? 'احجز جلستك مباشرة' : 'Book your session directly'}</p>
+      <p className="bk-body">{L ? 'اختر اليوم، ثم الوقت المتاح، ويصلك التأكيد والتذكير تلقائيًا' : 'Pick a day, then an open time. Confirmation and reminders arrive automatically'}</p>
+      {!open && (
+        <div className="bk-actions">
+          <button type="button" className="btn btn-primary" onClick={() => setOpen(true)}><span>{L ? 'احجز موعدك' : 'Book your time'}</span></button>
         </div>
+      )}
+      {open && (
+        <div className="bk-inline">
+          <iframe src={src} title={L ? 'حجز موعد' : 'Book a time'} />
+        </div>
+      )}
+    </div>
+  )
+}
+
+function Start() {
+  const c = useContent()
+  const o = c.offer
+  const s = c.support
+  return (
+    <section id="start" className="band start" aria-labelledby="offer-title">
+      <div className="wrap start-stack">
+        <div className="offer-card" data-reveal>
+          <div className="offer-shine" aria-hidden="true" />
+          <p className="eyebrow">{o.eyebrow}</p>
+          <SplitReveal as="h2" id="offer-title" className="display" text={o.title} />
+          <p className="body-lg"><Rich text={o.lede} /></p>
+          <ul className="offer-list">
+            {o.includes.map((x) => <li key={x}><GemMark className="li-gem" />{x}</li>)}
+          </ul>
+          <p className="offer-guarantee"><Rich text={o.guarantee} /></p>
+          <p className="fine">{o.value} · {o.note}</p>
+        </div>
+        <Booking />
         <Onboarding />
+        <div className="support-strip" id="support" data-reveal>
+          <p className="ss-title">{s.title}</p>
+          <p className="ss-body"><Rich text={s.body} /></p>
+          <p className="dedication">{s.dedication}</p>
+          <button type="button" className="btn btn-ghost" onClick={() => startOnboarding({ persona: 'business', support: true })}><span>{s.cta}</span></button>
+        </div>
       </div>
     </section>
+  )
+}
+
+function Page({ route }: { route: string }) {
+  const c = useContent()
+  return (
+    <div className="page-view">
+      <div className="wrap page-back"><a href="#top" className="link-btn"><span className="arr" aria-hidden="true">→</span> {c.meta.home}</a></div>
+      {route === 'solutions' && <Solutions />}
+      {route === 'talent' && <Talent />}
+      {route === 'work' && <><Work full /><Support /></>}
+      <section className="band page-next">
+        <div className="wrap narrow center">
+          <p className="body-lg">{c.offer.title}</p>
+          <MagneticButton href="#start">{c.offer.cta}</MagneticButton>
+        </div>
+      </section>
+    </div>
   )
 }
 
@@ -524,7 +774,7 @@ function Footer() {
     <footer className="site-footer">
       <div className="wrap footer-grid">
         <div className="footer-brand">
-          <p className="footer-word" dir="ltr">KON<span>Unlimited</span></p>
+          <KonFooterMark />
           <p className="footer-slogan">{f.slogan}</p>
           <p className="footer-contact" dir="ltr">
             <a href={`mailto:${contact.email}`}>{contact.email}</a>
@@ -555,7 +805,13 @@ function DockCta() {
       const atForm = start ? start.getBoundingClientRect().top < window.innerHeight * 0.9 : false
       const fin = document.getElementById('finale')?.getBoundingClientRect()
       const atFinale = fin ? fin.top < window.innerHeight * 0.5 : false
-      setShow(window.scrollY > window.innerHeight * 0.9 && !atForm && !atFinale)
+      // The talent section has its own flow; a "start diagnosis" button over it only distracts.
+      const tal = document.getElementById('talent')?.getBoundingClientRect()
+      const atTalent = tal ? tal.top < window.innerHeight * 0.6 && tal.bottom > window.innerHeight * 0.4 : false
+      // Same over the solutions tools: the visitor is already busy with a calculator there.
+      const sol = document.getElementById('solutions')?.getBoundingClientRect()
+      const atSol = sol ? sol.top < window.innerHeight * 0.6 && sol.bottom > window.innerHeight * 0.4 : false
+      setShow(window.scrollY > window.innerHeight * 0.9 && !atForm && !atFinale && !atTalent && !atSol)
     }
     const on = () => { if (!frame) frame = requestAnimationFrame(check) }
     window.addEventListener('scroll', on, { passive: true })
@@ -574,15 +830,29 @@ function DockCta() {
 function useMotionInputs() {
   useEffect(() => {
     let finTop = 0, finH = 1, last = window.scrollY, raf = 0, lastFin = -1, lastVeil = -1
-    let finEl: HTMLElement | null = null, veilEl: HTMLElement | null = null
+    let finEl: HTMLElement | null = null, veilEl: HTMLElement | null = null, trioEl: HTMLElement | null = null
+    let intTop = 1e9, intH = 1, lastStorm = '', stageEl: HTMLElement | null = null, intEl: HTMLElement | null = null
+    // QA: ?storm=0.8 or ?calm=1 pins the arc for screenshots.
+    const q = new URLSearchParams(location.search)
+    const pinStorm = q.has('storm') ? Number(q.get('storm')) : -1
+    const pinCalm = q.has('calm') ? Number(q.get('calm')) : -1
+    // QA: ?ip=0.3 pins the interlude's progress (0.3 = deep in the pressure, 0.45 = just after the break).
+    const pinIp = q.has('ip') ? Number(q.get('ip')) : -1
+    const sstep = (a: number, b: number, x: number) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t) }
     const narrow = () => window.innerWidth < 700
     const measure = () => {
       finEl = document.getElementById('finale')
       veilEl = document.querySelector('.stage-veil')
+      stageEl = document.querySelector('.stage')
+      intEl = document.getElementById('interlude')
+      if (intEl) {
+        intTop = intEl.getBoundingClientRect().top + window.scrollY
+        intH = intEl.offsetHeight
+      } else { intTop = 1e9; intH = 1 }
       if (finEl) {
         finTop = finEl.getBoundingClientRect().top + window.scrollY
         finH = finEl.offsetHeight
-      }
+      } else { finTop = 1e9; finH = 1 }
     }
     const tick = () => {
       const y = window.scrollY
@@ -592,6 +862,37 @@ function useMotionInputs() {
       const p = (y + vh * 0.55 - finTop) / Math.max(1, (finH - vh) * 0.65 + vh * 0.55)
       motion.finale = Math.min(1, Math.max(0, p))
       motion.post = Math.min(1, Math.max(0, (y - (finTop + finH - vh)) / vh))
+      // The storm: it starts as a faint unease on the first screen and gathers (slowly, then faster).
+      // In the interlude every stone is pulled into one core of coal (0 → 36%), the core holds and
+      // trembles, and at 40% it breaks. Then the words, one beat at a time.
+      const c = y + vh * 0.5
+      const ip = pinIp >= 0 ? pinIp : (c - intTop) / Math.max(1, intH)
+      const peak = intTop + intH * 0.36
+      // Clean cut: no storm across the page; the tension gathers only inside the interlude.
+      const build = sstep(-0.12, 0.36, ip) * (peak > 0 ? 1 : 0)
+      const calm = pinCalm >= 0 ? pinCalm : sstep(0.4, 0.6, ip)
+      motion.calm = calm
+      motion.storm = pinStorm >= 0 ? pinStorm : build * (1 - calm)
+      motion.press = sstep(0.0, 0.34, ip) * (ip < 1.2 ? 1 : 0)
+      if (ip >= 0.4 && !motion.burstAt) {
+        // Only play the break if the visitor is actually here; arriving further down, it has already happened.
+        motion.burstAt = performance.now() - (ip < 0.75 ? 0 : 20000)
+        intEl?.classList.add('is-burst')
+      } else if (ip < 0.36 && motion.burstAt) {
+        motion.burstAt = 0
+        intEl?.classList.remove('is-burst')
+      }
+      const key = motion.storm.toFixed(2) + calm.toFixed(2) + Math.min(1.2, Math.max(-0.2, ip)).toFixed(3)
+      if (key !== lastStorm) {
+        lastStorm = key
+        for (const el of [stageEl, intEl]) {
+          el?.style.setProperty('--press', motion.press.toFixed(3))
+          el?.style.setProperty('--storm', motion.storm.toFixed(2))
+          el?.style.setProperty('--calm', calm.toFixed(2))
+        }
+        intEl?.style.setProperty('--ip', Math.min(1.2, Math.max(-0.2, ip)).toFixed(3))
+        intEl?.style.setProperty('--press', motion.press.toFixed(3))
+      }
       motion.vel += (y - last - motion.vel) * 0.2
       last = y
       const fin = Math.round(motion.finale * 200) / 200
@@ -604,7 +905,18 @@ function useMotionInputs() {
       // copy until the KON forms, so it lifts quickly and the gathering gems stay bright (on phones
       // a lingering veil read as a dark, empty screen).
       const lift = 1 - Math.min(1, motion.finale * 4)
-      const veil = Math.round(Math.max((narrow() ? Math.max(mid, 0.62 * (1 - motion.finale)) : mid) * lift, motion.post * 0.8) * 100) / 100
+      // Spotlights: where the 3D is the story (the coal-to-gem break, the three-stone orbit) the
+      // reading veil lifts completely, so nothing dark ever sits over them.
+      const intSpot = sstep(-0.12, 0.04, ip) * (1 - sstep(0.94, 1.04, ip))
+      if (!trioEl || !trioEl.isConnected) trioEl = document.querySelector('.trio-stage')
+      let trioSpot = 0
+      if (trioEl) {
+        const r = trioEl.getBoundingClientRect()
+        const d = Math.abs(r.top + r.height / 2 - vh / 2) / (vh * 0.62)
+        trioSpot = 1 - sstep(0.45, 1, d)
+      }
+      const spot = Math.max(intSpot, trioSpot)
+      const veil = Math.round(Math.max((narrow() ? Math.max(mid, 0.5 * (1 - motion.finale)) : mid) * lift * 0.8 * (1 - spot), motion.post * 0.8) * 100) / 100
       if (veil !== lastVeil && veilEl) {
         veilEl.style.opacity = String(veil)
         lastVeil = veil
@@ -619,11 +931,24 @@ function useMotionInputs() {
     ro.observe(document.body)
     measure()
     raf = requestAnimationFrame(tick)
+        // Only a CTA sends the wave and the pulse through the stones; the rest of the page stays still.
+    const down = (e: PointerEvent) => {
+      if (!(e.target as HTMLElement).closest?.('.btn, .header-cta, .dock-cta, .fr-card, .more-card, .sol-req, .link-btn, .path-head')) return
+      document.documentElement.classList.remove('cta-pulse')
+      void document.documentElement.offsetWidth
+      document.documentElement.classList.add('cta-pulse')
+      window.setTimeout(() => document.documentElement.classList.remove('cta-pulse'), 1800)
+      motion.rx = (e.clientX / window.innerWidth) * 2 - 1
+      motion.ry = -((e.clientY / window.innerHeight) * 2 - 1)
+      motion.rt = performance.now()
+    }
+    window.addEventListener('pointerdown', down, { passive: true })
     window.addEventListener('pointermove', move, { passive: true })
     return () => {
       ro.disconnect()
       cancelAnimationFrame(raf)
       window.removeEventListener('pointermove', move)
+      window.removeEventListener('pointerdown', down)
     }
   }, [])
 }
@@ -633,8 +958,11 @@ export default function App() {
   const c = useContent()
   const lang = useStore((s) => s.lang)
   const [ready, setReady] = useState(false)
+  const route = useRoute()
   useMotionInputs()
-  useReveal(lang)
+  useReveal(lang, route)
+  useHeaderAutoHide()
+  useCardLight()
 
   useEffect(() => {
     document.title = c.meta.title
@@ -673,6 +1001,7 @@ export default function App() {
       <Cursor />
       <div className="stage" aria-hidden="true">
         <div className="stage-glow" />
+        <div className="stage-dream"><i /><i /></div>
         {webgl && (
           <SafeBoundary>
             <Suspense fallback={null}>
@@ -680,25 +1009,33 @@ export default function App() {
             </Suspense>
           </SafeBoundary>
         )}
+        <div className="stage-flash" />
+        <div className="stage-burst" />
         <div className="stage-veil" />
         <div className="stage-vignette" />
       </div>
       <Header />
+      <ChapterRail />
+      <div className="grain" aria-hidden="true" />
       <main id="main">
-        <Hero ready={ready} />
-        <Problem />
-        <Loops />
-        <Who />
-        <Commit />
-        <Why />
-        <Human />
-        <Offer />
-        <Work />
-        {SHOW_SOLUTIONS && <Suspense fallback={null}><ReadyServices /></Suspense>}
-        <Support />
-        <Founder />
-        <Finale fallback={!webgl} />
-        <Start />
+        {route && ['solutions', 'talent', 'work'].includes(route) ? (
+          <Page key={route} route={route} />
+        ) : (
+          <>
+            <Hero ready={ready} />
+            <Problem />
+            <Interlude />
+            <Approach />
+            <Services />
+            <Freebies />
+            <Solutions />
+            <Work />
+            <More />
+            <Founder />
+            <Finale fallback={!webgl} />
+            <Start />
+          </>
+        )}
       </main>
       <Footer />
       <DockCta />

@@ -21,6 +21,8 @@ export interface Question {
   options?: Option[]
   optional?: boolean
   placeholder?: string
+  /** Multi-choice only: most options a person may pick. */
+  max?: number
 }
 export interface Step { title: string; lede?: string; questions: Question[] }
 
@@ -39,9 +41,15 @@ export interface CaseItem {
 /** Where onboarding briefs go. Empty = not connected yet (the form says so plainly). */
 /** Embeddable ⁦360°⁩ tour (Kuula). The page loads it only when a visitor asks for it. */
 /** Solutions section (الحلول). Hidden on the live site for now (khalid, 2026-10-31); flip to true to show it again. */
-export const SHOW_SOLUTIONS = false
+export const SHOW_SOLUTIONS = true
+/** KON Talent section (المواهب). Flip to false to hide the section and its nav link. */
+export const SHOW_TALENT = true
 
 export const tourUrl = 'https://kuula.co/share/collection/7MZVN?logo=1&info=1&fs=1&vr=0&sd=1&thumbs=1'
+
+/** Real booking. Paste the Calendly event link here (e.g. https://calendly.com/<name>/diagnosis)
+ * and every booking CTA opens it; leave it empty and the CTAs fall back to the onboarding form. */
+export const BOOKING_URL: string = 'https://calendly.com/k-fallatah8/30min'
 
 export const contact = {
   email: 'info@kon-unlimited.com',
@@ -52,22 +60,23 @@ const ar = {
   meta: {
     switchTo: 'EN', switchLabel: 'Switch to English', menu: 'القائمة', close: 'إغلاق', skip: 'تخطَّ إلى المحتوى',
     title: 'KON Unlimited · نرفع كفاءة مشروعك',
+    home: 'الرئيسية',
   },
   nav: [
-    { href: '#who', label: 'من نساعد' },
-    { href: '#why', label: 'لماذا KON' },
-    { href: '#offer', label: 'العرض' },
+    { href: '#services', label: 'خدماتنا' },
+    { href: '#solutions', label: 'القطاعات' },
     { href: '#work', label: 'أعمالنا' },
-    ...(SHOW_SOLUTIONS ? [{ href: '#ready', label: 'الحلول' }] : []),
+    { href: '#/talent', label: 'المواهب' },
     { href: '#founder', label: 'المؤسس' },
   ],
   headerCta: 'ابدأ التشخيص',
 
   hero: {
     eyebrow: 'استشارات · تطوير أعمال · تشغيل · ابتكار',
-    rotating: ['نرفع كفاءة مشروعك', 'نبتكر حلولًا تسبق التحدي', 'نحسّن كفاءة التشغيل', 'نحوّل فكرتك إلى مشروع يعمل', 'نجعل استثمارك يعمل بذكاء'],
+    rotating: ['نرفع كفاءة مشروعك', 'نبتكر حلولًا تسبق التحدي', 'نضبط تشغيلك اليومي', 'نحوّل فكرتك إلى مشروع يعمل', 'نجعل استثمارك أذكى'],
+    statement: ['ما تراه في أرقامك،', 'بدأ في عقل إنسان'],
     promise: 'وعدنا بسيط: **نطوّر أي عملية تشغيلية، ونحسّنها**',
-    lede: 'من **الفكرة الأولى** إلى **شركة تعمل بانتظام**، دون أن تحمل كل شيء وحدك',
+    lede: 'نقرأ الإنسان خلف الرقم: **عميلك، وفريقك، وأنت**، ثم ننزل معك الميدان حتى تتحرك الأرقام',
     primary: 'ابدأ تشخيصك المجاني',
     secondary: 'شاهد النتائج',
     slogan: 'أيًّا كان التحدي، وكيفما كان، وأينما كان… سنكون هناك',
@@ -75,8 +84,6 @@ const ar = {
     proof: [
       { n: '+4,200', l: 'ساعة استشارية' },
       { n: '11', l: 'قطاعًا' },
-      { n: '14M', l: 'إيرادات في دخول سوق واحد' },
-      { n: '+161%', l: 'نمو إيرادات أحد عملائنا خلال 30 يومًا' },
     ],
   },
 
@@ -98,11 +105,11 @@ const ar = {
     title: 'هل سألت نفسك يومًا…',
     pick: 'اختر ما يشبهك:',
     groups: [
-      { persona: 'business' as Persona, label: 'كيان تجاري', qs: ['مبيعاتك تزيد. فلماذا لا يزيد ربحك؟', 'لماذا يتوقف كل شيء حين تأخذ يوم إجازة؟'] },
-      { persona: 'founder' as Persona, label: 'رائد أعمال', qs: ['مقتنع بفكرتك تمامًا. فلماذا لم تبدأ حتى الآن؟', 'ماذا لو كان أول عميل لك أقرب مما تظن؟'] },
-      { persona: 'investor' as Persona, label: 'مستثمر', qs: ['استثماراتك: هل تعمل لك، أم تعمل أنت لها؟', 'كم فرصة تركتها لأن أحدًا لم يقرأ أرقامها بصدق؟'] },
+      { persona: 'business' as Persona, label: 'كيان تجاري', qs: ['مبيعاتك تزيد، فلماذا لا يزيد ربحك؟', 'لماذا يتوقف كل شيء حين تأخذ يوم إجازة؟'] },
+      { persona: 'founder' as Persona, label: 'رائد أعمال', qs: ['مقتنع بفكرتك تمامًا، فلماذا لم تبدأ حتى الآن؟', 'ماذا لو كان أول عميل لك أقرب مما تظن؟'] },
+      { persona: 'investor' as Persona, label: 'مستثمر', qs: ['استثماراتك: هل تعمل لك، أم تعمل أنت لها؟', 'كم فرصة تركتها لأن أحدًا لم يقرأ أرقامها كما هي؟'] },
     ],
-    tail: 'الإجابة نادرًا ما تكون حيث تبحث. ++ونحن نعرف أين نبحث++',
+    tail: 'الإجابة نادرًا ما تكون حيث تبحث، ++ونحن نعرف أين نبحث++',
     cta: 'اكتشف إجابتك',
   },
 
@@ -111,10 +118,10 @@ const ar = {
     title: 'أينما كنت اليوم، نعرف الخطوة التالية',
     groups: [
       { icon: 'storm' as IconId, persona: 'business' as Persona, title: 'شركات تتعثّر', line: 'نوقف النزيف أولًا', body: 'حين تضغط التكاليف والسيولة والفريق في وقت واحد، **نثبّت الوضع**، ثم نعيد البناء على أساس صحيح' },
-      { icon: 'anchor' as IconId, persona: 'business' as Persona, title: 'شركات مستقرة', line: 'الاستقرار الطويل يخفي فرصًا ضائعة', body: 'تعمل جيدًا، وتشعر أنها قادرة على أكثر. نجد **الهدر الصامت**، ونحوّله إلى **هامش ربح**' },
-      { icon: 'rise' as IconId, persona: 'business' as Persona, title: 'شركات تنمو', line: 'النمو يكسر ما كان يعمل', body: 'فروع جديدة، وفريق أكبر، وأنظمة لم تُصمَّم لهذا الحجم. نبني **تشغيلًا يتحمّل التوسّع**' },
-      { icon: 'seed' as IconId, persona: 'founder' as Persona, title: 'روّاد أعمال', line: 'من الفكرة إلى أول ريال', body: 'عندك فكرة أو شركة ناشئة ولا تعرف من أين تبدأ؟ **نموذج العمل، ودخول السوق، وأول العملاء**، وأول موظف. خطوة بخطوة، معك' },
-      { icon: 'compass' as IconId, persona: 'investor' as Persona, title: 'مستثمرون', line: 'فرص أوضح، واستثمارات تُدار بعقل', body: 'نبحث معك عن **فرص جديدة** ونقرؤها بصدق، وندير استثماراتك القائمة **بنظام يحميها وينمّيها**' },
+      { icon: 'anchor' as IconId, persona: 'business' as Persona, title: 'شركات مستقرة', line: 'الاستقرار الطويل يخفي فرصًا ضائعة', body: 'تعمل جيدًا، وتشعر أنها قادرة على أكثر، نجد **الهدر الصامت**، ونحوّله إلى **هامش ربح**' },
+      { icon: 'rise' as IconId, persona: 'business' as Persona, title: 'شركات تنمو', line: 'النمو يكسر ما كان يعمل', body: 'فروع جديدة، وفريق أكبر، وأنظمة لم تُصمَّم لهذا الحجم، نبني **تشغيلًا يتحمّل التوسّع**' },
+      { icon: 'seed' as IconId, persona: 'founder' as Persona, title: 'روّاد أعمال', line: 'من الفكرة إلى أول ريال', body: 'عندك فكرة أو شركة ناشئة ولا تعرف من أين تبدأ؟ **نموذج العمل، ودخول السوق، وأول العملاء**، وأول موظف، ونمشيها معك من أول يوم' },
+      { icon: 'compass' as IconId, persona: 'investor' as Persona, title: 'مستثمرون', line: 'فرص أوضح، واستثمارات تُدار بعقل', body: 'نبحث معك عن **فرص جديدة** ونقرؤها بأرقامها، وندير استثماراتك القائمة **بنظام يحميها وينمّيها**' },
     ],
     cta: 'هذا أنا',
   },
@@ -125,64 +132,93 @@ const ar = {
     work: { n: '80%', label: 'من العمل علينا' },
     you: { n: '20%', label: 'عليك: القرار والرؤية' },
     badge: 'أتعابنا على النتائج',
-    title: 'نحمل 80% من العمل. وأجرنا على النتائج',
-    body: 'لا نسلّمك تقريرًا ونختفي. **ننزل إلى الميدان، ونبني، وندرّب، ونتابع حتى يعمل.** وأجرنا ++مرتبط بالنتائج التي نصنعها لك++: حين تتحرك أرقامك، نستحق أتعابنا',
+    title: 'نحمل 80% من العمل، وأجرنا على النتائج',
+    body: 'لا نسلّمك تقريرًا ونختفي، **ننزل إلى الميدان، ونبني، وندرّب، ونتابع حتى يعمل**، وأجرنا ++مرتبط بالنتائج التي نصنعها لك++: حين تتحرك أرقامك، نستحق أتعابنا',
     fine: 'طريقة ربط الأتعاب بالنتائج نتفق عليها معك بوضوح، ومكتوبة، قبل أن نبدأ',
+  },
+
+  approach: {
+    eyebrow: 'طريقتنا',
+    title: 'ثلاثة أشياء نفعلها بطريقة مختلفة',
+    pillars: [
+      { icon: 'mind' as IconId, title: 'نبدأ من الإنسان', body: 'كل رقم في شركتك قرارُ إنسان: عميل تردّد، أو موظف تعب، أو مدير استعجل، نقرأ **سلوك عميلك وعقلية فريقك** بخلفية في علم النفس، فنصل إلى السبب الذي تخفيه الأرقام' },
+      { icon: 'field' as IconId, title: 'ننزل الميدان حتى يعمل', body: 'نبني، وندرّب، ونكتب إجراءات التشغيل، ونتابع فريقك حتى يصير الجديد **عادة يومية** تعيش بعدنا' },
+      { icon: 'aligned' as IconId, title: 'نربح حين تربح', body: 'أتعابنا **مرتبطة بالنتائج** التي نصنعها لك، ونتفق على طريقة الربط كتابيًا، قبل أن نبدأ' },
+    ],
+    foot: 'خبرة في 11 قطاعًا، من الاتصالات إلى الضيافة، والذكاء الاصطناعي يقوم عندنا بعمل فرق كاملة، والقرار يبقى بشريًا',
+  },
+
+  more: {
+    eyebrow: 'من عالم كُن',
+    title: 'لمن يريد أن يتعمّق',
+    items: [
+      { href: '#/talent', k: 'مواهب KON', title: 'تعرف أنك قادر على أكثر، لكن محد سألك؟', body: 'نكتشف موهبتك من طريقة تفكيرك، ونصلك بالفرصة التي تليق بك', cta: 'اكتشف نمطك' },
+    ],
   },
 
   why: {
     eyebrow: 'لماذا KON',
-    title: 'لأنك لا تحتاج مستشارًا آخر. تحتاج من يُكمل معك الطريق',
+    title: 'لأنك لا تحتاج مستشارًا آخر، تحتاج من يُكمل معك الطريق',
     items: [
-      { icon: 'flex' as IconId, title: 'مرنون مع أي وضع', body: 'ميزانية محدودة؟ وقت ضيّق؟ وضع معقّد؟ نصمّم طريقة العمل **حول واقعك**، لا العكس' },
-      { icon: 'aligned' as IconId, title: 'نربح حين تربح', body: '**مصلحتنا مربوطة بنتيجتك.** إن لم تتحرك أرقامك، فلم ننجز عملنا بعد' },
+      { icon: 'flex' as IconId, title: 'مرنون مع أي وضع', body: 'ميزانية محدودة؟ وقت ضيّق؟ وضع معقّد؟ نفصّل طريقة العمل **على مقاس واقعك**' },
+      { icon: 'aligned' as IconId, title: 'نربح حين تربح', body: '**مصلحتنا مربوطة بنتيجتك**، إن لم تتحرك أرقامك، فلم ننجز عملنا بعد' },
       { icon: 'spark' as IconId, title: 'مبتكرون', body: 'حين لا يكفي الموجود، نبني **ما لم يكن موجودًا**: أنظمة، وأدوات، وتجارب' },
-      { icon: 'layers' as IconId, title: 'خبرة في 11 قطاعًا', body: 'اتصالات، وعقار، وضيافة، وترفيه، وأغذية، وفعاليات، وسلاسل إمداد. **ننقل ما نجح هناك إلى عندك**' },
-      { icon: 'ai' as IconId, title: 'آلاف الموظفين، بجزء من التكلفة', body: 'نوظّف **الذكاء الاصطناعي** ليقوم **بعمل فرق كاملة**: تحليل، ومتابعة، وتقارير، وخدمة عملاء. والقرار يبقى بشريًا' },
-      { icon: 'cycle' as IconId, title: 'استدامة، لا مسكّنات', body: 'أنظمة، وإجراءات تشغيل (SOPs)، وفريق يعرف ماذا يفعل. فتبقى **النتيجة بعد أن ننتهي**' },
-      { icon: 'mind' as IconId, title: 'نفهم الإنسان قبل الرقم', body: 'خلفيتنا في علم النفس تجعلنا نقرأ **سلوك العميل وعقلية الموظف**. وهما خلف كل رقم' },
-      { icon: 'field' as IconId, title: 'ننفّذ، لا ننصح فقط', body: 'نقف مع فريقك في الميدان حتى يصبح الجديد **عادة يومية**' },
+      { icon: 'layers' as IconId, title: 'خبرة في 11 قطاعًا', body: 'اتصالات، وعقار، وضيافة، وترفيه، وأغذية، وفعاليات، وسلاسل إمداد، **ننقل ما نجح هناك إلى عندك**' },
+      { icon: 'ai' as IconId, title: 'آلاف الموظفين، بجزء من التكلفة', body: 'نوظّف **الذكاء الاصطناعي** ليقوم **بعمل فرق كاملة**: تحليل، ومتابعة، وتقارير، وخدمة عملاء، والقرار يبقى بشريًا' },
+      { icon: 'cycle' as IconId, title: 'نتائج تعيش بعدنا', body: 'أنظمة، وإجراءات تشغيل (SOPs)، وفريق يعرف ماذا يفعل، فيستمر **الأثر بعد أن نغادر**' },
+      { icon: 'mind' as IconId, title: 'نفهم الإنسان قبل الرقم', body: 'خلفيتنا في علم النفس تجعلنا نقرأ **سلوك العميل وعقلية الموظف**، وهما خلف كل رقم' },
+      { icon: 'field' as IconId, title: 'ننزل الميدان معك', body: 'لا نسلّمك تقريرًا ونمشي، نقف مع فريقك حتى يصير الجديد **عادة يومية**' },
     ],
   },
 
   human: {
     eyebrow: 'ما يميّزنا',
-    title: 'خلف كل رقم إنسان. ونحن نبدأ منه',
-    lede: 'الشركات لا تتعثّر بسبب الجداول. تتعثّر حين **لا يُفهم العميل، ولا يُفهم الموظف**. هنا تبدأ ميزتنا',
+    title: 'خلف كل رقم إنسان، ونحن نبدأ منه',
+    lede: 'الشركات لا تتعثّر بسبب الجداول، تتعثّر حين **لا يُفهم العميل، ولا يُفهم الموظف**، هنا تبدأ ميزتنا',
     pillars: [
       { icon: 'eye' as IconId, title: 'سلوك المستهلك', body: 'لماذا يشتري عميلك؟ ولماذا يتردد؟ ولماذا لا يعود؟ نقرأ القرار من داخله، و**نعيد تصميم التجربة** حوله' },
-      { icon: 'people' as IconId, title: 'عقلية الموظف', body: 'الموظف لا يقاوم التغيير. **يقاوم الغموض.** نجعل التغيير واضحًا، فيصبح الفريق جزءًا منه' },
-      { icon: 'train' as IconId, title: 'تدريب يغيّر السلوك', body: 'تدريب **يظهر أثره في الميدان** من الأسبوع الأول، لا شهادة تُعلَّق على الجدار' },
-      { icon: 'bulb' as IconId, title: 'ابتكار عملي', body: 'أنظمة تشغيل داخلية، وأدوات ميدانية، وتجارب رقمية. نبتكر **ما يُستخدم كل يوم**، لا ما يُعرض مرة' },
+      { icon: 'people' as IconId, title: 'عقلية الموظف', body: 'الموظف لا يقاوم التغيير، **يقاوم الغموض**، نجعل التغيير واضحًا، فيصبح الفريق جزءًا منه' },
+      { icon: 'train' as IconId, title: 'تدريب يغيّر السلوك', body: 'تدريب **يظهر أثره في الميدان** من الأسبوع الأول، والمقياس سلوك الفريق، لا عدد الحضور' },
+      { icon: 'bulb' as IconId, title: 'ابتكار عملي', body: 'أنظمة تشغيل داخلية، وأدوات ميدانية، وتجارب رقمية، نبتكر **ما يفتحه فريقك كل صباح**' },
     ],
   },
 
   // From the locked v3 services list, with Mystery Shopper.
   services: {
     eyebrow: 'خدماتنا',
-    title: 'ست أدوات. هدف واحد: تشغيل أفضل',
+    title: 'ست خدمات، هدف واحد: تشغيل أفضل',
     items: [
       { title: 'التشخيص', body: 'نرى شركتك من ثمانية أبعاد' },
       { title: 'الاستراتيجية', body: 'نحدد وجهتك، وما يجب أن تتركه خلفك' },
       { title: 'العمليات', body: 'نزيل ما يُبطئك' },
       { title: 'المتسوق الخفي', body: 'نزورك كعميل عادي، ونرى ما يراه عملاؤك فعلًا' },
-      { title: 'الحلول الرقمية', body: 'نبني الأداة التي تحتاجها، لا التي تُباع لك' },
+      { title: 'الحلول الرقمية', body: 'أداة على مقاس شغلك، تملكها أنت' },
       { title: 'الذكاء الاصطناعي', body: 'يُسرّع التحليل، ويبقى القرار بشريًا' },
     ],
   },
 
-  // Confirmed by khalid 2026-10-27: 60 minutes, limited number each month.
+  freebies: {
+    eyebrow: 'مجانًا',
+    title: 'ابدأ معنا قبل أن تدفع ريالًا',
+    items: [
+      { k: 'أدوات مجانية', title: 'احسب ما يضيع منك الآن', body: 'حاسبات لكل قطاع تقرأ أرقامك بعدسة كُن، وتعمل على جهازك فقط', cta: 'جرّب الأدوات', href: '#solutions' },
+      { k: 'تشخيص مجاني', title: 'التشخيص الأول علينا', body: 'جلسة 30 دقيقة مع خبير أول، وخريطة طريق مبدئية مكتوبة', cta: 'احجز تشخيصك', href: '#start' },
+      { k: 'دعم مجاني', title: 'للمشاريع المتعثّرة', body: 'استشارة متقدّمة ودعم تشغيلي كامل بلا مقابل، لمن لا يستطيع تحمّل التكلفة', cta: 'قدّم طلب الدعم', href: '#support' },
+    ],
+  },
+
+  // khalid 2026-11-10: 30 minutes (matches his Calendly event), limited number each month.
   offer: {
     eyebrow: 'العرض',
     title: 'التشخيص الأول علينا',
-    lede: 'جلسة تشخيص مع ++خبير أول++ من فريقنا. تخرج منها **بصورة أوضح لوضعك**، حتى لو لم نعمل معًا بعدها',
+    lede: 'جلسة تشخيص مع ++خبير أول++ من فريقنا، تخرج منها **بصورة أوضح لوضعك**، حتى لو لم نعمل معًا بعدها',
     includes: [
-      'جلسة تشخيص مركّزة، 60 دقيقة',
+      'جلسة تشخيص مركّزة، 30 دقيقة',
       'قراءة لوضعك من ثمانية أبعاد',
       'أهم 3 فرص يمكنك البدء بها فورًا',
       'خريطة طريق مبدئية مكتوبة',
     ],
-    value: 'بلا تكلفة. بلا التزام',
+    value: 'بلا تكلفة، بلا التزام',
     guarantee: 'إن لم تخرج **بفكرة واحدة على الأقل تستحق وقتك**، فنحن من خسر الوقت، لا أنت',
     cta: 'احجز تشخيصك المجاني',
     note: 'عدد الجلسات محدود كل شهر، لأننا نحضّر لكل جلسة بعناية',
@@ -190,8 +226,8 @@ const ar = {
 
   work: {
     eyebrow: 'أعمالنا',
-    title: 'أرقام حقيقية، من مشاريع حقيقية',
-    lede: 'ما أنجزناه نقول إنه أُنجز. وما زلنا نبنيه نقول إننا نبنيه',
+    title: 'أرقام من الميدان',
+    lede: 'ما أنجزناه نقول إنه أُنجز، وما زلنا نبنيه نقول إننا نبنيه',
     confirmMark: 'بانتظار التأكيد',
     featured: [
       { sector: 'الاتصالات', tag: 'تطوير أعمال · GTM', title: 'دخول Telkomsel إلى السوق السعودي', body: 'تطوير الأعمال، وبناء استراتيجية دخول السوق وتنفيذها لشركة الاتصالات الإندونيسية Telkomsel في السعودية', metric: '14M', metricLabel: 'ريال إيرادات تحققت' },
@@ -208,6 +244,7 @@ const ar = {
       { sector: 'ريادة الأعمال', tag: 'مجتمع · ورش عمل', title: 'مجتمع KON لروّاد الأعمال', body: 'تأسيس المجتمع في المدينة المنورة، وتشغيله، وتقديم ورش العمل فيه', metric: '+3,000', metricLabel: 'ساعة مع روّاد الأعمال' },
     ] as CaseItem[],
     tail: 'وأكثر من 12 مشروعًا آخر في 11 قطاعًا، من الضيافة إلى الواقع المعزّز',
+    all: 'كل أعمالنا، وجولة افتراضية داخل أحدها',
     tour: { eyebrow: 'جولة افتراضية ⁦360°⁩', title: 'ادخل أحد مشاريعنا', body: 'تجوّل داخل إحدى الفلل، وانتقل بين الغرف كما لو كنت هناك', cta: 'ابدأ الجولة', open: 'افتح في نافذة جديدة', close: 'إغلاق الجولة' },
   },
 
@@ -217,7 +254,7 @@ const ar = {
   // Live demos go in content/ready.ts, business apps in content/apps.ts.
   ready: {
     eyebrow: 'الحلول',
-    title: 'كل حل هنا بدأ من مشكلة حقيقية',
+    title: 'كل حل هنا بدأ بمشكلة عشناها مع عميل',
     lede: 'اختر المشكلة التي تشبه مشكلتك، وشاهد كيف نحلّها، **بنماذج حيّة** من أعمالنا',
     pain: 'هل تعرف هذا الشعور؟',
     includes: 'ما الذي يتغيّر عندك',
@@ -231,12 +268,12 @@ const ar = {
     apps: {
       eyebrow: 'مكتبة التطبيقات',
       title: 'أكثر من 100 تطبيق أعمال جاهز، نختار لك منها ما يحتاجه نشاطك فقط',
-      lede: 'لا تحتاج أن تعرف أسماءها. اختر قطاعك، وشاهد ما نجهّزه لأمثالك: **على حسب احتياجك، ومربوطًا ببعضه، مع تدريب فريقك**',
+      lede: 'لا تحتاج أن تعرف أسماءها، اختر قطاعك، وشاهد ما نجهّزه لأمثالك: **على حسب احتياجك، ومربوطًا ببعضه، مع تدريب فريقك**',
       teaser: 'أنظمة جاهزة لـ 21 قطاعًا، من المطاعم إلى المصانع',
       count: (n: number) => `${n} تطبيقًا لهذا القطاع`,
       showAll: (n: number) => `اعرض الكل (${n})`,
       showLess: 'اعرض أقل',
-      foot: 'كل التطبيقات مفتوحة المصدر ومجرّبة عالميًا. نحن نختار، ونجهّز، وندرّب، ونتابع',
+      foot: 'كل التطبيقات مفتوحة المصدر ومجرّبة عالميًا، نحن نختار، ونجهّز، وندرّب، ونتابع',
     },
     items: [
       {
@@ -247,13 +284,13 @@ const ar = {
       },
       {
         id: 'maps' as ServiceId, icon: 'pin' as IconId, title: 'تصوير ⁦360°⁩ على خرائط Google',
-        pain: 'قبل أن يختار مطعمًا أو مقهى، يقارن العميل بين عدة أماكن على الخريطة. ويخاف أن يصل فيجد المكان غير ما رآه في الصور',
+        pain: 'قبل أن يختار مطعمًا أو مقهى، يقارن العميل بين عدة أماكن على الخريطة، ويخاف أن يصل فيجد المكان غير ما رآه في الصور',
         line: 'العميل يدخل مكانك من خرائط Google قبل أن يزورك، فيأتيك واثقًا',
         includes: ['حين يقارن العميل بينك وبين من حولك، يرى مكانك كاملًا، فيختارك عن ثقة', 'يرى الجلسات والأجواء كما هي، فيزول خوفه من أن يصل فيجد المكان مختلفًا', 'من يبحث عن مكان قريب يكتشفك، فيتحوّل البحث إلى زيارة، والزيارة إلى عميل جديد', 'الضيف يصل وتوقعاته في مكانها، فتكون تجربته أجمل، ويعود'],
       },
       {
         id: 'web' as ServiceId, icon: 'web' as IconId, title: 'تصميم المواقع',
-        pain: 'عميلك يبحث عنك قبل أن يتصل بك. وما يجده اليوم لا يعكس حجمك الحقيقي',
+        pain: 'عميلك يبحث عنك قبل أن يتصل بك، وما يجده اليوم أصغر من حجمك بكثير',
         line: 'موقع يجعل الزائر يثق بك قبل أول مكالمة، ثم يطلب',
         includes: ['عميلك الخليجي يقرأ بلغته، والشريك الأجنبي يفهمك دون وسيط', 'انطباع فاخر من أول ثانية يبرّر سعرك، فلا تضطر للمنافسة بالخصومات', 'يفتح بسرعة على الجوال، حيث يتصفّح عملاؤك ويقرّرون'],
       },
@@ -266,14 +303,14 @@ const ar = {
       },
       {
         id: 'guest' as ServiceId, icon: 'guest' as IconId, title: 'تحسين تجربة الضيف',
-        pain: 'الضيف يأتي مرة، ولا يعود. ولا أحد يخبرك لماذا',
+        pain: 'الضيف يأتي مرة، ولا يعود، ولا أحد يخبرك لماذا',
         line: 'تجربة يعود الضيف من أجلها، ويحكي عنها لغيره',
         includes: ['تعرف ما يحدث فعلًا في غيابك، عبر زيارات المتسوّق الخفي', 'كل لحظة في رحلة الضيف مصمَّمة، من الاستقبال إلى الوداع', 'فريقك يقدّم المستوى نفسه في كل وردية، بمعايير وإجراءات تشغيل (SOPs) مكتوبة'],
         proof: { label: 'Games Club (GC)', href: '#work' },
       },
       {
         id: 'sales' as ServiceId, icon: 'sales' as IconId, title: 'تدريب فرق المبيعات',
-        pain: 'العملاء يسألون كثيرًا، ويشترون قليلًا. والصفقة تضيع غالبًا في لحظة واحدة من المحادثة',
+        pain: 'العملاء يسألون كثيرًا، ويشترون قليلًا، والصفقة تضيع غالبًا في لحظة واحدة من المحادثة',
         line: 'فريق يعرف كيف يحوّل السؤال إلى صفقة',
         includes: ['تدريب على المواقف التي يواجهها فريقك كل يوم، لا على أمثلة من الكتب', 'ردود جاهزة على «السعر غالي» و«خلّني أفكّر»، فلا تضيع الصفقة عند الاعتراض', 'نتابع الفريق في الميدان بعد التدريب، حتى يتحوّل الكلام إلى عادة، والعادة إلى أرقام'],
         proof: { label: 'Games Club (GC)', href: '#work' },
@@ -281,15 +318,15 @@ const ar = {
       {
         id: 'growth' as ServiceId, icon: 'growth' as IconId, title: 'استراتيجيات تطوير الأعمال',
         pain: 'وصلت إلى سقف: العملاء أنفسهم، والأرقام نفسها، ولا تعرف من أين يأتي النمو القادم',
-        line: 'خطة نمو بأرقام، ننفّذها معك خطوة بخطوة',
+        line: 'خطة نمو بالأرقام، ننفّذها معك على الأرض',
         includes: ['نحدّد السوق أو الشريحة التالية، ونحسب تكلفة دخولها قبل أن تدفع ريالًا', 'شراكات وقنوات بيع توصلك إلى عملاء لم تكن تصل إليهم', 'مؤشرات أسبوعية تريك إن كنت تتقدّم فعلًا، لا مجرد شعور بالحركة'],
         proof: { label: 'دخول Telkomsel إلى السوق السعودي', href: '#work' },
       },
       {
         id: 'systems' as ServiceId, icon: 'systems' as IconId, title: 'أنظمة وتطبيقات الأعمال',
-        pain: 'كل شيء في رأسك، وفي واتساب، وفي ملفات إكسل. وإن غبت يومًا، تعطّل العمل',
+        pain: 'كل شيء في رأسك، وفي واتساب، وفي ملفات إكسل، وإن غبت يومًا، تعطّل العمل',
         line: 'أنظمة تحفظ عملك وأرقامك، فيستمر مشروعك حتى في غيابك',
-        includes: ['تعرف مبيعاتك ومخزونك وأداء فريقك اليوم، لا في آخر الشهر', 'أنظمة مجرّبة عالميًا، دون رسوم ترخيص على كل مستخدم، نجهزها على حسب احتياجك', 'ندرّب فريقك حتى يصبح النظام جزءًا من يومه، لا عبئًا عليه'],
+        includes: ['تعرف مبيعاتك ومخزونك وأداء فريقك اليوم، قبل أن يفاجئك آخر الشهر', 'أنظمة مجرّبة عالميًا، دون رسوم ترخيص على كل مستخدم، نجهزها على حسب احتياجك', 'ندرّب فريقك حتى يصبح النظام جزءًا من يومه، يرتاح به ولا يتعب منه'],
         proof: { label: 'روافد للتسويق العقاري', href: '#work' },
       },
     ],
@@ -299,29 +336,138 @@ const ar = {
   support: {
     eyebrow: 'مبادرة KON',
     title: 'مشروعك يتعثّر، ولا تملك الميزانية؟ هذا لك',
-    body: 'نقدّم الاستشارة المتقدّمة والدعم التشغيلي الكامل ++مجانًا++ للمشاريع المتعثّرة التي لا تستطيع تحمّل تكلفته. بلا مقابل، وبلا شروط خفية',
+    body: 'نقدّم الاستشارة المتقدّمة والدعم التشغيلي الكامل ++مجانًا++ للمشاريع المتعثّرة التي لا تستطيع تحمّل تكلفته، بلا مقابل، وبلا شروط خفية',
     dedication: 'صدقةً عن والدي رحمه الله، وعن جميع المسلمين',
     note: 'نستقبل الطلبات بحسب طاقتنا، ونردّ على كل طلب',
     cta: 'قدّم طلب الدعم',
+  },
+
+  // Prove step confirmed by khalid (2026-11-02): the challenge runs only when an opportunity matches.
+  // CONFIRM: "free for talent", "never shared without your permission", and the company next step.
+  talent: {
+    eyebrow: 'مواهب KON',
+    title: 'تعرف أنك قادر على أكثر، لكن محد سألك؟',
+    lede: 'نحن نسأل، نكتشف موهبتك من **طريقة تفكيرك**، فترى ما تملكه فعلًا، ثم نصلك بالناس والفرص التي تُطلق ++كامل إمكاناتك++',
+    proof: 'خلف هذه القراءة خبرة في علم النفس، وتحليل السلوك، وأنماط الشخصية، وبناء بيئات العمل الصحية',
+    teaserQ: 'أيّها أنت؟',
+    teaserCta: 'اكتشف نمطك في 3 دقائق',
+    lanes: {
+      title: 'لكل عقلية مسار تلمع فيه',
+      lede: 'المشكلة نادرًا ما تكون في قدراتك، غالبًا أنت في **المسار الخطأ**',
+      shines: 'تلمع في',
+      wasted: 'تنطفئ',
+      company: 'وللشركات: نرشّح لكم **العقلية** التي يحتاجها الدور، قبل الأوراق',
+      ctaTalent: 'اكتشف عقليتك ومسارك',
+      ctaCompany: 'نبحث عن عقلية محددة',
+    },
+    mirror: {
+      title: 'هل تعرف هذا الشعور؟',
+      talent: {
+        k: 'إن كنت موهبة',
+        lines: ['تؤدي عملك جيدًا، وتعرف أنك تُهدر نصف ما تستطيع', 'تُرفض لأن الورق لا يشبهك', 'لديك أفكار كبيرة، ولا تعرف لمن تقولها'],
+        cta: 'اكتشف موهبتك',
+      },
+      company: {
+        k: 'إن كنتم شركة',
+        lines: ['وظّفتم السيرة الأجمل، فجاء الأداء أقل منها', 'تبحثون أشهرًا، والمقعد ما زال فارغًا', 'الجيدون يرحلون قبل أن تكتمل الصورة'],
+        cta: 'اطلبوا موهبة',
+      },
+    },
+    journey: {
+      title: 'من الموهبة إلى الأثر، في ثلاث خطوات',
+      steps: [
+        { title: 'نكتشف', body: 'نقرأ طريقة تفكيرك، وما يحرّكك، وكيف تتخذ قراراتك، فترى في نفسك ما لم تكن تراه' },
+        { title: 'نختبر', body: 'حين تظهر فرصة على قدر قيمتك، نختبرها معك بتحدٍّ قصير من الواقع' },
+        { title: 'نوصلك', body: 'بالأشخاص والفرص المناسبة: مشروع مع KON، أو شركة تحتاجك، وبإذنك دائمًا' },
+      ],
+    },
+    wins: {
+      title: 'لا نرشّح أحدًا، إلا إذا ربح الجميع',
+      lede: 'ترشيحٌ يربح فيه طرف واحد، يخسر فيه الجميع لاحقًا',
+      center: 'أثر',
+      items: [
+        { k: 'الموهبة', gain: 'مكانٌ يليق بك', body: 'تُرى على حقيقتك، وتُفهم طريقة تفكيرك، وتعمل حيث تلمع وتكبر' },
+        { k: 'الشركة', gain: 'الشخص الصحيح، من أول مرة', body: 'شخص نفهم طريقة تفكيره، يناسب الدور والفريق، ويُختار ليبقى' },
+        { k: 'KON', gain: 'سمعة تُبنى على النتائج', body: 'شبكة من أناس حقيقيين نبني بها مشاريع أكبر، ونجاحكما هو ++سمعتنا++' },
+      ],
+      sum: 'وعيٌ أعلى، وعلاقات حقيقية، وإمكانات تنطلق كاملة، هذا هو الأثر الذي يبقى',
+    },
+    doorsQ: 'من أي باب تدخل؟',
+    doorsTime: 'نحو 3 دقائق',
+    doors: {
+      talent: { label: 'لديّ موهبة', sub: 'أريد أن تُرى قدراتي، وأن أضعها حيث تصنع فرقًا' },
+      company: { label: 'نبحث عن موهبة', sub: 'الشخص المناسب للدور، من أول مرة' },
+    },
+    free: 'مجاني للمواهب، دائمًا',
+    next: 'التالي',
+    back: 'رجوع',
+    finish: 'اعرض النتيجة',
+    stepOf: (a: number, b: number) => `الخطوة ${a} من ${b}`,
+    required: 'أكمل هذه الخطوة للمتابعة',
+    contact: {
+      title: 'أين نجدك؟',
+      lede: 'نستخدم بياناتك للتواصل معك فقط، ولا يصل ملفك إلى أي شركة دون إذنك',
+      ledeCompany: 'نستخدم بياناتكم للتواصل بخصوص طلبكم فقط',
+      name: 'الاسم',
+      company: 'اسم الشركة',
+      job: 'منصبك',
+      phone: 'رقم الجوال (واتساب)',
+      email: 'البريد الإلكتروني',
+      city: 'المدينة والدولة',
+      needOne: 'أضف اسمك ووسيلة تواصل واحدة على الأقل',
+    },
+    read: {
+      title: 'هذا ما رأيناه فيك',
+      lede: 'قراءة أولى من إجاباتك، ونكملها حين نقرأ طريقة تفكيرك',
+      you: 'نمطك الأقرب',
+      lane: 'مسارك',
+      also: 'ومعه لمسة من',
+      roles: 'أدوار قد تلمع فيها',
+      where: 'أين تضيف قيمة',
+      story: 'كيف تفكّر',
+      next: 'ماذا بعد؟',
+      steps: ['ترسل ملفك', 'نقرؤه بأنفسنا، كلمة كلمة', 'نتواصل معك حين تظهر فرصة تناسبك'],
+      promise: 'لا نعدك بوظيفة، نعدك أن نقرأك بجدية',
+    },
+    brief: {
+      title: 'هذا ما تبحثون عنه',
+      lede: 'قرأنا إجاباتكم، هذا ما فهمناه',
+      areas: 'المجال',
+      role: 'الدور',
+      type: 'نوع الارتباط',
+      pains: 'ما لم ينجح',
+      traits: 'أهم الصفات',
+      openYes: 'أنتم تنظرون إلى طريقة التفكير قبل الشهادة، وهنا تحديدًا نستطيع أن ++نفاجئكم++',
+      unclear: 'قبل أن توظّفوا، قد تحتاجون أن نصمّم الدور معكم، وهذا جزء من عملنا في محور الفريق',
+      next: 'ماذا بعد؟',
+      steps: ['ترسلون الطلب', 'نفهم الدور معكم بعمق', 'نرشّح لكم من عرفنا طريقة تفكيره'],
+    },
+    sendWhatsapp: 'أرسل عبر واتساب',
+    sendEmail: 'أرسل بالبريد',
+    copy: 'انسخ الملخص',
+    copied: 'نُسخ',
+    raw: 'اعرض نص الملخص',
+    edit: 'عدّل إجاباتي',
+    restart: 'ابدأ من جديد',
   },
 
   // LOCKED (khalid, 2026-10-25)
   founder: {
     eyebrow: 'كلمة المؤسس',
     paragraphs: [
-      'أنا خالد. منذ عام 2007 وأنا تحت إشراف ++الإدارة العامة لتربية الموهوبين++ بالمدينة المنورة',
+      'أنا خالد، منذ عام 2007 وأنا تحت إشراف ++الإدارة العامة لتربية الموهوبين++ بالمدينة المنورة',
       'أخصائي نفسي، ورائد أعمال، ومطوّر أعمال',
-      'عملت في مناصب مختلفة وقطاعات مختلفة، وقدّمت أكثر من ++4,200 ساعة استشارية++ لروّاد أعمال ومشاريع متنوعة. وخضت مشاريع لم تنجح، فكانت أصدق مدرسة مررت بها',
+      'عملت في مناصب مختلفة وقطاعات مختلفة، وقدّمت أكثر من ++4,200 ساعة استشارية++ لروّاد أعمال ومشاريع متنوعة، وخضت مشاريع لم تنجح، فكانت أصدق مدرسة مررت بها',
       'شغفي ++الابتكار++، وأؤمن بقدرتي على إضافة قيمة حقيقية لأي كيان تجاري ولأي رائد أعمال',
     ],
-    punch: 'كلّنا لدينا مشكلات. لكن المشكلة بداية الحل',
+    punch: 'كلّنا لدينا مشاكل، لكن المشكلة بداية الحل',
     cta: 'ابدأ تشخيصك',
   },
 
   onboarding: {
     eyebrow: 'ابدأ هنا',
-    title: 'دقيقتان. وتحصل على صورة أوضح لوضعك',
-    lede: 'أسئلة قليلة، **مصمّمة لتفهمك أنت**. كلما كانت إجاباتك أصدق، كانت جلستك أنفع',
+    title: 'دقيقتان، وتحصل على صورة أوضح لوضعك',
+    lede: 'أسئلة قليلة، **مصمّمة لتفهمك أنت**، كلما كانت إجاباتك أصدق، كانت جلستك أنفع',
     start: 'لنبدأ',
     next: 'التالي',
     back: 'رجوع',
@@ -341,7 +487,7 @@ const ar = {
     scaleHigh: 'عاجل جدًا',
     contact: {
       title: 'أين نجدك؟',
-      lede: 'لن نشارك بياناتك مع أحد. نستخدمها فقط للتواصل معك بخصوص طلبك',
+      lede: 'لن نشارك بياناتك مع أحد، نستخدمها فقط للتواصل معك بخصوص طلبك',
       name: 'الاسم',
       company: 'اسم المشروع أو الشركة',
       phone: 'رقم الجوال (واتساب)',
@@ -353,7 +499,7 @@ const ar = {
     },
     summary: {
       title: 'هذه خطوتك الأولى',
-      lede: 'قرأنا إجاباتك. هذا ما نراه، وهذه أول خطوة نقترحها',
+      lede: 'قرأنا إجاباتك، هذا ما نراه، وهذه أول خطوة نقترحها',
       persona: 'المسار',
       stage: 'الوضع الحالي',
       pains: 'ما يثقلك',
@@ -363,7 +509,7 @@ const ar = {
       primary: 'نقترح أن نبدأ بـ',
       also: 'وقد يفيدك أيضًا',
       next: 'الخطوة التالية',
-      nextBody: 'جلسة التشخيص المجانية. نأتيك وقد قرأنا كل هذا، فلا نبدأ من الصفر',
+      nextBody: 'جلسة التشخيص المجانية، نأتيك وقد قرأنا كل هذا، فلا نبدأ من الصفر',
       sendWhatsapp: 'أرسلها لنا عبر واتساب',
       sendEmail: 'أرسل بالبريد',
       copy: 'انسخ الملخص',
@@ -371,7 +517,7 @@ const ar = {
       download: 'نزّل الملخص',
       edit: 'عدّل إجاباتي',
       raw: 'اعرض نص الملخص',
-      notConnected: 'نسخة تجريبية: النموذج غير مربوط بعد بأي جهة استقبال، ولا يُرسل شيء تلقائيًا. انسخ ملخصك وأرسله لنا بنفسك',
+      notConnected: 'نسخة تجريبية: النموذج غير مربوط بعد بأي جهة استقبال، ولا يُرسل شيء تلقائيًا، انسخ ملخصك وأرسله لنا بنفسك',
       supportBadge: 'طلب ضمن مبادرة الدعم المجاني',
     },
   },
@@ -395,13 +541,13 @@ const en: Content = {
   meta: {
     switchTo: 'ع', switchLabel: 'التبديل إلى العربية', menu: 'Menu', close: 'Close', skip: 'Skip to content',
     title: 'KON Unlimited · We make your business run better',
+    home: 'Home',
   },
   nav: [
-    { href: '#who', label: 'Who we help' },
-    { href: '#why', label: 'Why KON' },
-    { href: '#offer', label: 'The offer' },
+    { href: '#services', label: 'Services' },
+    { href: '#solutions', label: 'Sectors' },
     { href: '#work', label: 'Work' },
-    ...(SHOW_SOLUTIONS ? [{ href: '#ready', label: 'Solutions' }] : []),
+    { href: '#/talent', label: 'Talent' },
     { href: '#founder', label: 'Founder' },
   ],
   headerCta: 'Start diagnosis',
@@ -409,8 +555,9 @@ const en: Content = {
   hero: {
     eyebrow: 'Advisory · Business development · Operations · Innovation',
     rotating: ['We make your business run better', 'We innovate ahead of every challenge', 'We sharpen how you operate', 'We turn ideas into working businesses', 'We make your capital work smarter'],
+    statement: ['What you see in your numbers', 'began in a human mind'],
     promise: 'Our promise is simple: **we optimise and develop any operation**',
-    lede: 'From **the first idea** to **a company that runs steadily**, without you carrying all of it alone',
+    lede: 'We read the people behind the number: **your customer, your team, and you**. Then we work on the ground with you until the numbers move',
     primary: 'Start your free diagnosis',
     secondary: 'See the results',
     slogan: 'Any challenge. Any way. Anywhere… We’ll be there',
@@ -418,8 +565,6 @@ const en: Content = {
     proof: [
       { n: '4,200+', l: 'advisory hours' },
       { n: '11', l: 'sectors' },
-      { n: '14M', l: 'revenue from one market entry' },
-      { n: '+161%', l: 'client revenue growth in 30 days' },
     ],
   },
 
@@ -442,7 +587,7 @@ const en: Content = {
     groups: [
       { persona: 'business', label: 'Business', qs: ['Sales keep rising. So why doesn’t profit?', 'Why does everything stop the day you take off?'] },
       { persona: 'founder', label: 'Entrepreneur', qs: ['You believe in your idea. So why haven’t you started?', 'What if your first customer is closer than you think?'] },
-      { persona: 'investor', label: 'Investor', qs: ['Are your investments working for you, or are you working for them?', 'How many deals did you pass on because no one read the numbers honestly?'] },
+      { persona: 'investor', label: 'Investor', qs: ['Are your investments working for you, or are you working for them?', 'How many deals did you pass on because no one read the numbers as they are?'] },
     ],
     tail: 'The answer is rarely where you’re looking. ++We know where to look++',
     cta: 'Find your answer',
@@ -456,7 +601,7 @@ const en: Content = {
       { icon: 'anchor', persona: 'business', title: 'Stable companies', line: 'Long stability hides missed upside', body: 'It works, and you sense it could do more. We find **the silent waste** and turn it into **margin**' },
       { icon: 'rise', persona: 'business', title: 'Growing companies', line: 'Growth breaks what used to work', body: 'New branches, a bigger team, systems never built for this size. We build **operations that can carry the scale**' },
       { icon: 'seed', persona: 'founder', title: 'Entrepreneurs', line: 'From idea to first riyal', body: 'An idea or an early startup, and no clear place to begin? **Business model, go-to-market, first customers**, first hire. Step by step, with you' },
-      { icon: 'compass', persona: 'investor', title: 'Investors', line: 'Clearer deals. Smarter portfolios', body: 'We source **new opportunities** with you, read them honestly, and run your existing investments with **a system that protects and grows them**' },
+      { icon: 'compass', persona: 'investor', title: 'Investors', line: 'Clearer deals. Smarter portfolios', body: 'We source **new opportunities** with you, read them by the numbers, and run your existing investments with **a system that protects and grows them**' },
     ],
     cta: 'That’s me',
   },
@@ -471,18 +616,37 @@ const en: Content = {
     fine: 'How fees link to results is agreed with you clearly, in writing, before we start',
   },
 
+  approach: {
+    eyebrow: 'How we work',
+    title: 'Three things we do differently',
+    pillars: [
+      { icon: 'mind' as IconId, title: 'We start with people', body: 'Every number in your company is a human decision: a customer who hesitated, an employee who got tired, a manager who rushed. We read **your customers’ behaviour and your team’s mindset** with a background in psychology, and find the cause the numbers hide' },
+      { icon: 'field' as IconId, title: 'We stay on the ground until it works', body: 'We build, train, write the operating procedures, and stay with your team until the new way becomes **a daily habit** that outlives us' },
+      { icon: 'aligned' as IconId, title: 'We win when you win', body: 'Our fees are **tied to the results** we create for you. We agree how, in writing, before we start' },
+    ],
+    foot: 'Experience across 11 sectors, from telecom to hospitality. AI does the work of whole teams for us, and the decisions stay human',
+  },
+
+  more: {
+    eyebrow: 'The world of KON',
+    title: 'For those who want to go deeper',
+    items: [
+      { href: '#/talent', k: 'KON Talent', title: 'You know you can do more. But has anyone asked?', body: 'We discover your talent from the way you think, and connect you with the opportunity that fits you', cta: 'Find your pattern' },
+    ],
+  },
+
   why: {
     eyebrow: 'Why KON',
     title: 'You don’t need another consultant. You need someone who stays for the whole road',
     items: [
-      { icon: 'flex', title: 'Flexible with any situation', body: 'Tight budget? Short timeline? Messy situation? We shape the way we work **around your reality**, not the other way round' },
+      { icon: 'flex', title: 'Flexible with any situation', body: 'Tight budget? Short timeline? Messy situation? We cut the way we work **to fit your reality**' },
       { icon: 'aligned', title: 'We win when you win', body: '**Our interest is tied to your outcome.** If your numbers haven’t moved, our work isn’t done' },
       { icon: 'spark', title: 'Genuinely innovative', body: 'When what exists isn’t enough, we build **what doesn’t exist yet**: systems, tools, experiences' },
       { icon: 'layers', title: 'Experience across 11 sectors', body: 'Telecoms, real estate, hospitality, entertainment, food, events, supply chain. **What worked there, we bring to you**' },
       { icon: 'ai', title: 'Thousands of staff, at a fraction of the cost', body: 'We put **AI** to work doing **what whole teams do**: analysis, follow-up, reporting, customer service. People still make the decisions' },
-      { icon: 'cycle', title: 'Sustainability, not painkillers', body: 'Systems, SOPs and a team that knows what to do. So **results last long after we leave**' },
+      { icon: 'cycle', title: 'Results that outlive us', body: 'Systems, SOPs and a team that knows what to do. So **results last long after we leave**' },
       { icon: 'mind', title: 'People before numbers', body: 'Our background in psychology lets us read **customer behaviour and employee mindset**, the two things behind every figure' },
-      { icon: 'field', title: 'We execute, not just advise', body: 'We stand in the field with your team until the new way becomes **the daily habit**' },
+      { icon: 'field', title: 'We go to the floor with you', body: 'No report-and-run. We stay with your team until the new way becomes **the daily habit**' },
     ],
   },
 
@@ -493,21 +657,31 @@ const en: Content = {
     pillars: [
       { icon: 'eye', title: 'Consumer behaviour', body: 'Why does your customer buy? Why do they hesitate? Why don’t they come back? We read the decision from the inside and **redesign the experience** around it' },
       { icon: 'people', title: 'Employee mindset', body: 'People don’t resist change. **They resist uncertainty.** We make change clear, so your team becomes part of it' },
-      { icon: 'train', title: 'Training that changes behaviour', body: 'Training **you can see on the floor** in week one, not a certificate on the wall' },
-      { icon: 'bulb', title: 'Practical innovation', body: 'Internal operating systems, field tools, digital experiences. We invent **what gets used every day**, not what gets demoed once' },
+      { icon: 'train', title: 'Training that changes behaviour', body: 'Training **you can see on the floor** in week one. We measure behaviour, not attendance' },
+      { icon: 'bulb', title: 'Practical innovation', body: 'Internal operating systems, field tools, digital experiences. We invent **what your team opens every morning**' },
     ],
   },
 
   services: {
     eyebrow: 'Services',
-    title: 'Six tools. One goal: a better-run business',
+    title: 'Six services. One goal: a better-run business',
     items: [
       { title: 'Diagnosis', body: 'We see your company from eight angles' },
       { title: 'Strategy', body: 'Where you’re going, and what to leave behind' },
       { title: 'Operations', body: 'We remove what slows you down' },
       { title: 'Mystery Shopper', body: 'We visit as an ordinary customer and see what your customers really see' },
-      { title: 'Digital', body: 'The tool you need, not the one you’re sold' },
+      { title: 'Digital', body: 'A tool cut to your work, and yours to own' },
       { title: 'AI', body: 'Faster analysis, human decisions' },
+    ],
+  },
+
+  freebies: {
+    eyebrow: 'Free',
+    title: 'Start with us before you spend a riyal',
+    items: [
+      { k: 'Free tools', title: 'See what you’re losing right now', body: 'Calculators for every sector that read your numbers through the KON lens, and run on your device only', cta: 'Try the tools', href: '#solutions' },
+      { k: 'Free diagnosis', title: 'Your first diagnosis is on us', body: 'A 30-minute session with a senior advisor, plus a written first-draft roadmap', cta: 'Book your diagnosis', href: '#start' },
+      { k: 'Free support', title: 'For struggling businesses', body: 'Advanced advisory and full operational support at no cost, for those who can’t afford it', cta: 'Apply for support', href: '#support' },
     ],
   },
 
@@ -516,7 +690,7 @@ const en: Content = {
     title: 'Your first diagnosis is on us',
     lede: 'A diagnosis session with a ++senior advisor++. You leave with **a clearer picture of where you stand**, even if we never work together after',
     includes: [
-      'A focused 60-minute diagnosis session',
+      'A focused 30-minute diagnosis session',
       'A read of your situation across eight dimensions',
       'Your top 3 quick wins, ready to start on',
       'A written first-draft roadmap',
@@ -529,7 +703,7 @@ const en: Content = {
 
   work: {
     eyebrow: 'Work',
-    title: 'Real numbers, from real projects',
+    title: 'Numbers from the field',
     lede: 'If it’s delivered, we say delivered. If we’re still building it, we say so',
     confirmMark: 'Pending confirmation',
     featured: [
@@ -547,13 +721,14 @@ const en: Content = {
       { sector: 'Entrepreneurship', tag: 'Community · Workshops', title: 'KON Entrepreneurs Community', body: 'Founding and running the community in Madinah, and leading its workshops', metric: '3,000+', metricLabel: 'hours with entrepreneurs' },
     ],
     tail: 'Plus 12 more projects across 11 sectors, from hospitality to augmented reality',
+    all: 'All our work, and a virtual tour inside one project',
     tour: { eyebrow: '⁦360°⁩ virtual tour', title: 'Step inside one of our projects', body: 'Walk through one of the villas and move between rooms as if you were there', cta: 'Start the tour', open: 'Open in a new tab', close: 'Close the tour' },
   },
 
 
   ready: {
     eyebrow: 'Solutions',
-    title: 'Every solution here started with a real problem',
+    title: 'Every solution here started with a problem we lived through with a client',
     lede: 'Pick the problem that sounds like yours, and see how we solve it, **with live examples** from our work',
     pain: 'Sound familiar?',
     includes: 'What changes for you',
@@ -617,7 +792,7 @@ const en: Content = {
       {
         id: 'growth' as ServiceId, icon: 'growth' as IconId, title: 'Business development strategy',
         pain: 'You\'ve hit a ceiling: same clients, same numbers, and no idea where the next growth comes from',
-        line: 'A growth plan with numbers, executed with you step by step',
+        line: 'A growth plan with numbers, executed with you on the ground',
         includes: ['We pick the next market or segment and cost the entry before you spend a riyal', 'Partnerships and sales channels that reach clients you couldn\'t reach before', 'Weekly indicators that show real progress, not just a feeling of movement'],
         proof: { label: 'Telkomsel\'s Saudi market entry', href: '#work' },
       },
@@ -625,7 +800,7 @@ const en: Content = {
         id: 'systems' as ServiceId, icon: 'systems' as IconId, title: 'Business systems & apps',
         pain: 'Everything lives in your head, in WhatsApp and in spreadsheets. Take one day off and work stops',
         line: 'Systems that hold your work and your numbers, so the business runs even when you\'re away',
-        includes: ['See your sales, stock and team performance today, not at month end', 'Proven systems with no per-user licence fees, set up around your needs', 'We train your team until the system is part of their day, not a burden on it'],
+        includes: ['See your sales, stock and team performance today, before month end surprises you', 'Proven systems with no per-user licence fees, set up around your needs', 'We train your team until the system is part of their day, not a burden on it'],
         proof: { label: 'Rwafed Real Estate Marketing', href: '#work' },
       },
     ],
@@ -638,6 +813,113 @@ const en: Content = {
     dedication: 'Given as sadaqah for my late father, may God have mercy on him, and for all Muslims',
     note: 'We take requests as our capacity allows, and we reply to every one',
     cta: 'Apply for support',
+  },
+
+  talent: {
+    eyebrow: 'KON Talent',
+    title: 'You know you can do more. Nobody has asked you yet',
+    lede: 'We’re asking. We discover your talent from **the way you think**, so you see what you truly have, then connect you with the people and opportunities that unlock ++your full potential++',
+    proof: 'Behind this read: psychology, behavioral analysis, personality types, and building healthy workplaces',
+    teaserQ: 'Which one are you?',
+    teaserCta: 'Find yours in 3 minutes',
+    lanes: {
+      title: 'Every mind has a lane where it shines',
+      lede: 'The problem is rarely your ability. Usually, you’re in **the wrong lane**',
+      shines: 'Shines in',
+      wasted: 'Fades',
+      company: 'For companies: we put forward the **mind** the role needs, before the paperwork',
+      ctaTalent: 'Find your mind and your lane',
+      ctaCompany: 'We need a specific mind',
+    },
+    mirror: {
+      title: 'Know the feeling?',
+      talent: {
+        k: 'If you’re the talent',
+        lines: ['You do your job well, and know you’re wasting half of what you can do', 'You get turned down because the paper doesn’t look like you', 'You have big ideas, and no one to bring them to'],
+        cta: 'Discover your talent',
+      },
+      company: {
+        k: 'If you’re a company',
+        lines: ['You hired the best CV, and got less than it promised', 'Months of searching, and the seat is still empty', 'The good ones leave before the picture is complete'],
+        cta: 'Request talent',
+      },
+    },
+    journey: {
+      title: 'From talent to impact, in three steps',
+      steps: [
+        { title: 'Discover', body: 'We read how you think, what drives you and how you decide. So you see in yourself what you hadn’t seen before' },
+        { title: 'Prove', body: 'When an opportunity matches your real value, we test the fit together with a short real-world challenge' },
+        { title: 'Connect', body: 'With real people and real opportunities: a KON project, or a company that needs you. Always with your permission' },
+      ],
+    },
+    wins: {
+      title: 'We don’t make a match unless everyone wins',
+      lede: 'A match where only one side wins is one everyone loses later',
+      center: 'Impact',
+      items: [
+        { k: 'The talent', gain: 'A place worthy of you', body: 'Seen for who you are, understood for how you think, working where you shine and grow' },
+        { k: 'The company', gain: 'The right person, the first time', body: 'Someone whose thinking we understand, who fits the role and the team, chosen to stay' },
+        { k: 'KON', gain: 'A reputation built on results', body: 'A network of real people to build bigger projects with. Your success is ++our reputation++' },
+      ],
+      sum: 'Higher awareness, real connections, potential fully unlocked. That’s the impact that lasts',
+    },
+    doorsQ: 'Which door is yours?',
+    doorsTime: 'About 3 minutes',
+    doors: {
+      talent: { label: 'I have talent', sub: 'I want my abilities seen, and put where they make a difference' },
+      company: { label: 'We’re looking for talent', sub: 'The right person for the role, first time' },
+    },
+    free: 'Always free for talent',
+    next: 'Next',
+    back: 'Back',
+    finish: 'See the result',
+    stepOf: (a: number, b: number) => `Step ${a} of ${b}`,
+    required: 'Complete this step to continue',
+    contact: {
+      title: 'Where can we find you?',
+      lede: 'We use your details only to reach you. Your profile never reaches a company without your permission',
+      ledeCompany: 'We use your details only to follow up on your request',
+      name: 'Name',
+      company: 'Company name',
+      job: 'Your position',
+      phone: 'Mobile (WhatsApp)',
+      email: 'Email',
+      city: 'City and country',
+      needOne: 'Add your name and at least one way to reach you',
+    },
+    read: {
+      title: 'Here’s what we see in you',
+      lede: 'A first read from your answers. We complete it once we’ve read the way you think',
+      you: 'Your closest pattern',
+      lane: 'Your lane',
+      also: 'With a touch of',
+      roles: 'Roles where you could shine',
+      where: 'Where you add value',
+      story: 'How you think',
+      next: 'What happens next?',
+      steps: ['You send your profile', 'We read it ourselves, word by word', 'We reach out when an opportunity fits you'],
+      promise: 'We don’t promise you a job. We promise to take you seriously',
+    },
+    brief: {
+      title: 'Here’s who you’re looking for',
+      lede: 'We’ve read your answers. Here’s what we understood',
+      areas: 'Area',
+      role: 'Role',
+      type: 'Engagement',
+      pains: 'What hasn’t worked',
+      traits: 'Top traits',
+      openYes: 'You look at how people think before their certificates. That’s exactly where we can ++surprise you++',
+      unclear: 'Before you hire, you may need us to design the role with you. That’s part of our work on people and teams',
+      next: 'What happens next?',
+      steps: ['You send the request', 'We get to know the role with you, in depth', 'We put forward people whose thinking we know'],
+    },
+    sendWhatsapp: 'Send on WhatsApp',
+    sendEmail: 'Send by email',
+    copy: 'Copy the summary',
+    copied: 'Copied',
+    raw: 'Show the summary text',
+    edit: 'Edit my answers',
+    restart: 'Start over',
   },
 
   founder: {

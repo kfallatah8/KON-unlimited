@@ -1,0 +1,301 @@
+/* ---------- «شيفرة كُن»: the book ---------- */
+.codex { overflow: clip; }
+.codex .body-lg { margin-top: 1rem; }
+
+.cx-stage {
+  --pw: min(31vw, 430px);
+  --ph: calc(var(--pw) * 1.4);
+  --t-ease: cubic-bezier(0.645, 0.045, 0.355, 1);
+  position: relative; display: block; margin: clamp(2.5rem, 5vw, 4rem) auto 0;
+  height: calc(var(--ph) + 7rem); perspective: 2400px; perspective-origin: 50% 30%;
+  overflow-x: clip; outline: none; user-select: none; -webkit-user-select: none; touch-action: pan-y;
+}
+.cx-stage.is-narrow { --pw: min(calc(100vw - 52px), 360px); height: calc(var(--ph) + 5.5rem); }
+.cx-stage:focus-visible .cx-book { outline: 2px solid var(--teal-hi); outline-offset: 10px; }
+
+.cx-float { position: absolute; top: 2.6rem; left: 50%; width: calc(var(--pw) * 2); margin-left: calc(var(--pw) * -1); transition: transform 1s var(--t-ease); }
+.cx-stage.is-closed .cx-float { animation: cxFloat 7s ease-in-out infinite; }
+@keyframes cxFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+.cx-book {
+  position: relative; width: calc(var(--pw) * 2); height: var(--ph); perspective: 2600px; cursor: pointer;
+  transform: translateX(var(--shift)) rotateX(var(--rx, 3deg)) rotateZ(var(--rz, 0deg));
+  transition: transform 1.1s var(--t-ease);
+}
+.cx-stage.is-closed .cx-book { --rx: 24deg; --rz: -2.5deg; }
+.cx-stage[dir='ltr'].is-closed .cx-book { --rz: 2.5deg; }
+.cx-stage.is-closed .cx-book:hover { --rx: 14deg; }
+.cx-stage.is-narrow .cx-book { --rx: 0deg; --rz: 0deg; }
+.cx-stage.is-narrow.is-closed .cx-book { --rx: 12deg; }
+
+.cx-shadow {
+  position: absolute; left: 50%; bottom: -2.2rem; width: calc(var(--pw) * 1.9); height: 3.4rem; transform: translateX(-50%);
+  background: radial-gradient(50% 50% at 50% 50%, rgba(0, 0, 0, 0.6), transparent 70%); filter: blur(6px); pointer-events: none;
+  transition: width 1.1s var(--t-ease), opacity 1.1s;
+}
+.cx-stage.is-closed .cx-shadow { width: calc(var(--pw) * 1.05); opacity: 0.85; }
+.cx-stage.is-narrow .cx-shadow { width: calc(var(--pw) * 1.05); }
+
+/* page stacks under the leaves: thickness follows how many leaves sit on each side; gilt edges */
+.cx-stack {
+  position: absolute; top: 0; width: 50%; height: 100%; border-radius: 3px 7px 7px 3px;
+  background: repeating-linear-gradient(90deg, rgba(0,0,0,.18) 0 1px, transparent 1px 3px), linear-gradient(180deg, #c9a75e, #7a5b24 40%, #b8954c 70%, #4f3b16);
+  box-shadow: 0 20px 40px -18px rgba(0, 0, 0, 0.7);
+}
+.cx-stack.is-unread { inset-inline-start: 50%; --c: var(--ul); }
+.cx-stack.is-read { inset-inline-end: 50%; --c: var(--rl); }
+.cx-stack { --t: calc(var(--c) * 1.3px); transform: translate(calc(var(--o) * var(--t)), var(--t)); opacity: min(1, var(--c)); transition: transform 0.9s var(--t-ease), opacity 0.25s 1s; }
+.cx-stage[dir='ltr'] .cx-stack.is-unread, .cx-stage[dir='rtl'] .cx-stack.is-read { --o: 1; }
+.cx-stage[dir='ltr'] .cx-stack.is-read, .cx-stage[dir='rtl'] .cx-stack.is-unread { --o: -1; border-radius: 7px 3px 3px 7px; }
+
+.cx-ribbon {
+  position: absolute; top: -3px; inset-inline-start: calc(50% + var(--pw) * 0.16); width: 13px; height: calc(100% + 54px);
+  background: linear-gradient(90deg, #6e521e, #d9b56a 45%, #6e521e); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 92%, 0 100%);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2); z-index: 0;
+}
+
+/* leaves */
+.cx-leaf {
+  position: absolute; top: 0; inset-inline-start: 50%; width: 50%; height: 100%;
+  transform-style: preserve-3d; transform-origin: left center; transition: transform 1.15s var(--t-ease);
+}
+.cx-stage[dir='rtl'] .cx-leaf { transform-origin: right center; }
+.cx-stage[dir='ltr'] .cx-leaf.is-turned { transform: rotateY(-180deg); }
+.cx-stage[dir='rtl'] .cx-leaf.is-turned { transform: rotateY(180deg); }
+
+.cx-face {
+  position: absolute; inset: 0; overflow: hidden; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  border-start-end-radius: 6px; border-end-end-radius: 6px;
+}
+.cx-face.is-backside { transform: rotateY(180deg); border-radius: 0; border-start-start-radius: 6px; border-end-start-radius: 6px; }
+/* the gutter: a soft shadow on the spine side of every page */
+.cx-face::after { content: ''; position: absolute; inset: 0; pointer-events: none; }
+.cx-stage[dir='ltr'] .cx-face.is-front::after, .cx-stage[dir='rtl'] .cx-face.is-backside::after { background: linear-gradient(90deg, rgba(0, 6, 7, 0.62), rgba(0, 6, 7, 0.16) 7%, transparent 16%); }
+.cx-stage[dir='rtl'] .cx-face.is-front::after, .cx-stage[dir='ltr'] .cx-face.is-backside::after { background: linear-gradient(270deg, rgba(0, 6, 7, 0.62), rgba(0, 6, 7, 0.16) 7%, transparent 16%); }
+.cx-face.is-cover::after, .cx-face.is-backcover::after { opacity: 0.8; }
+
+
+/* ---------- the look: dyed vellum, like the old black books of hours, written in ivory and gold ---------- */
+@counter-style cx-abjad { system: fixed; symbols: 'ا' 'ب' 'ج' 'د' 'ه' 'و' 'ز' 'ح' 'ط' 'ي'; suffix: ''; }
+.cx-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+.cx-paper {
+  position: absolute; inset: 0; container-type: inline-size; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 12% 13% 14%; text-align: center; color: #e9dfc4;
+  background:
+    radial-gradient(55% 38% at 28% 22%, rgba(95, 227, 210, 0.07), transparent 70%),
+    radial-gradient(48% 34% at 78% 80%, rgba(214, 180, 110, 0.06), transparent 70%),
+    radial-gradient(8% 5% at 18% 70%, rgba(0, 0, 0, 0.28), transparent 70%),
+    radial-gradient(6% 4% at 84% 30%, rgba(0, 0, 0, 0.24), transparent 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-50 -50 100 100'%3E%3Cg fill='none' stroke='%23d6b46e' stroke-opacity='0.085' stroke-width='0.45'%3E%3Ccircle r='47'/%3E%3Ccircle r='41' stroke-dasharray='0.5 1.6'/%3E%3Cpath d='M-27 -27H27V27H-27Z'/%3E%3Cpath d='M0 -38.2L38.2 0L0 38.2L-38.2 0Z'/%3E%3Cpath d='M-14 -14H14V14H-14Z' transform='rotate%2822.5%29'/%3E%3Cpath d='M-14 -14H14V14H-14Z' transform='rotate%2867.5%29'/%3E%3Ccircle r='9'/%3E%3C/g%3E%3C/svg%3E") 50% 48% / 82% auto no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.92  0 0 0 0 0.86  0 0 0 0 0.7  0.42 0 0 0 -0.16'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23g%29'/%3E%3C/svg%3E") 0 0 / 220px 220px,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='480'%3E%3Cfilter id='f' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.006 0.02' numOctaves='3' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.37  0 0 0 0 0.89  0 0 0 0 0.82  0 0 0 -0.24 0.12'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23f%29'/%3E%3C/svg%3E") 0 0 / 480px 480px,
+    radial-gradient(120% 90% at 50% 42%, #123634 0%, #0c2627 52%, #081a1b 84%, #040e0f 100%);
+  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.62), inset 0 0 12px rgba(0, 0, 0, 0.75), inset 0 0 0 1px rgba(214, 180, 110, 0.08);
+  text-shadow: 0 0 0.6px rgba(233, 223, 196, 0.45);
+  font-family: 'Amiri', 'IBM Plex Sans Arabic', serif;
+}
+:root[lang='en'] .cx-paper { font-family: 'Instrument Serif', Georgia, serif; }
+.cx-paper p, .cx-paper li { text-wrap: pretty; }
+/* ruled frame in gold leaf, double, with small lozenges at the corners */
+.cx-paper::before { content: ''; position: absolute; inset: 4.5%; border: 1px solid rgba(214, 180, 110, 0.32); outline: 1px solid rgba(214, 180, 110, 0.16); outline-offset: 1.3cqw; pointer-events: none; }
+
+.cx-gold, .cx-head, .cx-ch, .cx-h-title {
+  background: linear-gradient(100deg, #8a6a2a 0%, #e8cf8f 28%, #fff4d2 42%, #c9a254 58%, #7d5e22 100%) 0 0 / 260% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none;
+}
+.cx-gold { animation: cxShine 6s ease-in-out infinite; filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.7)) drop-shadow(0 0 12px rgba(95, 227, 210, 0.16)); }
+@keyframes cxShine { 0%, 100% { background-position: 100% 0; } 50% { background-position: 0 0; } }
+
+.cx-head { font: 700 7cqw / 1.35 'Amiri', serif; margin: 0; }
+:root[lang='en'] .cx-head { font: 400 7.6cqw / 1.2 'Instrument Serif', serif; }
+.cx-orn { width: 34cqw; height: auto; margin: 2.4cqw auto 3.6cqw; fill: none; stroke: #c9a254; stroke-width: 1; flex: none; opacity: 0.85; }
+.cx-orn circle, .cx-orn path:nth-child(2) { fill: #c9a254; }
+.cx-orn .is-in { fill: #5fe3d2; stroke: none; }
+.cx-p { font-size: 5.3cqw; line-height: 1.9; margin: 0 0 3.4cqw; }
+:root[lang='en'] .cx-p { font-size: 5.5cqw; line-height: 1.5; }
+.cx-p.is-lead { font-size: 6.1cqw; color: #f3e6c6; line-height: 1.7; }
+.cx-p strong, .cx-p b { color: #e8cf8f; font-weight: 700; }
+.cx-p.has-drop::first-letter { color: #e8cf8f; font-size: 1.5em; }
+.cx-centre { text-align: center; }
+.cx-pn { position: absolute; bottom: 5.4%; left: 50%; transform: translateX(-50%); font: 700 3.8cqw 'Amiri', serif; color: #c9a254; text-decoration: overline; text-decoration-color: rgba(201, 162, 84, 0.6); text-shadow: none; }
+:root[lang='en'] .cx-pn { font: italic 400 4cqw 'Instrument Serif', serif; text-decoration: none; letter-spacing: 0.08em; }
+.cx-pn:not(:empty)::before, .cx-pn:not(:empty)::after { content: '◆'; font-size: 0.5em; margin-inline: 0.9em; vertical-align: 0.35em; opacity: 0.55; text-decoration: none; display: inline-block; }
+
+/* the margin cipher: faint letters and dots, like notes left by someone who knew the key */
+.cx-marg { position: absolute; top: 50%; transform: translateY(-50%); display: grid; gap: 2.4cqw; pointer-events: none; font: 400 3.2cqw / 1 'Amiri', serif; color: rgba(201, 162, 84, 0.5); text-shadow: none; }
+.cx-marg i { font-style: normal; display: grid; justify-items: center; gap: 0.5cqw; }
+.cx-marg b { font-weight: 400; font-size: 2.6cqw; letter-spacing: 0.15em; color: rgba(95, 227, 210, 0.55); line-height: 0.6; }
+.cx-stage[dir='ltr'] .is-front .cx-marg, .cx-stage[dir='rtl'] .is-backside .cx-marg { right: 6.6%; }
+.cx-stage[dir='rtl'] .is-front .cx-marg, .cx-stage[dir='ltr'] .is-backside .cx-marg { left: 6.6%; }
+
+.cx-small { font: 500 3cqw 'IBM Plex Sans Arabic', 'IBM Plex Sans', sans-serif; letter-spacing: 0.1em; color: #5fe3d2; margin-bottom: 8cqw; border: 1px solid rgba(95, 227, 210, 0.4); padding: 0.5cqw 2.6cqw; border-radius: 99px; text-shadow: none; }
+.cx-h-title { font: 700 13cqw / 1.25 'Amiri', serif; margin: 0; }
+:root[lang='en'] .cx-h-title { font: 400 12cqw / 1.05 'Instrument Serif', serif; }
+.cx-sub { font-size: 5cqw; color: #d9cba6; margin: 0; }
+.cx-by { font-size: 4cqw; color: #a99a76; margin-top: 10cqw; }
+.cx-epi-page .cx-by { margin-top: 5cqw; }
+.cx-quote { margin: 0; font-size: 7.2cqw; line-height: 1.75; color: #f3e6c6; }
+:root[lang='en'] .cx-quote { font-style: italic; line-height: 1.35; }
+.cx-num { font-size: 4cqw; letter-spacing: 0.12em; color: #5fe3d2; margin: 0 0 2cqw; text-shadow: none; }
+:root[lang='en'] .cx-num { text-transform: uppercase; letter-spacing: 0.26em; font-size: 3cqw; font-family: 'IBM Plex Sans', sans-serif; }
+.cx-ch { font: 700 11.5cqw / 1.35 'Amiri', serif; margin: 0; }
+:root[lang='en'] .cx-ch { font: 400 10.5cqw / 1.1 'Instrument Serif', serif; }
+.cx-epi { font-size: 5.2cqw; line-height: 1.8; font-style: italic; color: #cfc09a; margin: 0 0 4cqw; }
+:root[lang='en'] .cx-epi { line-height: 1.4; }
+.cx-wip { margin-top: 5cqw; font: 500 3.1cqw 'IBM Plex Sans Arabic', 'IBM Plex Sans', sans-serif; color: #5fe3d2; border: 1px dashed rgba(95, 227, 210, 0.45); padding: 1cqw 3cqw; border-radius: 99px; text-shadow: none; }
+.cx-toc { list-style: none; padding: 0; margin: 0; width: 100%; display: grid; gap: 1.4cqw; }
+.cx-toc button {
+  width: 100%; display: flex; align-items: baseline; gap: 2cqw; background: none; border: 0; padding: 1.3cqw 0; cursor: pointer;
+  font: inherit; font-size: 4.8cqw; color: #e9dfc4; text-align: start;
+}
+.cx-toc button span { flex: none; max-width: 80%; transition: color 0.3s; }
+.cx-toc button i { flex: 1; border-bottom: 1px dotted rgba(201, 162, 84, 0.5); transform: translateY(-0.3em); }
+.cx-toc button em { font-style: normal; color: #c9a254; text-decoration: overline; text-decoration-color: rgba(201, 162, 84, 0.5); }
+:root[lang='en'] .cx-toc button em { font-style: italic; text-decoration: none; }
+.cx-toc button:hover span, .cx-toc button:focus-visible span { color: #5fe3d2; }
+.cx-steps { margin: 0; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 3cqw; text-align: start; width: 100%; }
+.cx-steps li { counter-increment: s; position: relative; padding-inline-start: 9cqw; font-size: 5cqw; line-height: 1.75; }
+.cx-steps li::before { content: counter(s, cx-abjad); position: absolute; inset-inline-start: 0; top: 0.15em; width: 6.2cqw; height: 6.2cqw; color: #e8cf8f; display: grid; place-items: center; font: 700 3.6cqw / 1 'Amiri', serif; text-shadow: none; }
+.cx-steps li::after { content: ''; position: absolute; inset-inline-start: 0.9cqw; top: calc(0.15em + 0.9cqw); width: 4.4cqw; height: 4.4cqw; transform: rotate(45deg); border: 1px solid rgba(201, 162, 84, 0.75); pointer-events: none; }
+:root[lang='en'] .cx-steps li::before { content: counter(s, lower-roman); font: italic 400 3.4cqw / 1 'Instrument Serif', serif; }
+.cx-end { margin-top: 6cqw; font-size: 5cqw; font-weight: 700; color: #5fe3d2; line-height: 1.6; text-shadow: 0 0 14px rgba(95, 227, 210, 0.25); }
+.cx-print {
+  margin-top: 5cqw; display: inline-block; padding: 2cqw 5cqw; border-radius: 99px; text-decoration: none; text-shadow: none;
+  background: linear-gradient(135deg, #d9b56a, #9b7633); color: #0a1c1d; font: 600 3.8cqw 'IBM Plex Sans Arabic', 'IBM Plex Sans', sans-serif;
+}
+
+/* chapter sigil: the coal stone turning to gem, small */
+.cx-sigil { width: 17cqw; height: 17cqw; margin-bottom: 3cqw; overflow: visible; flex: none; }
+.cx-sig-tick { stroke: rgba(201, 162, 84, 0.6); stroke-width: 0.8; }
+
+/* a teal wax seal pressed onto the title page */
+.cx-wax {
+  position: absolute; bottom: 9%; inset-inline-end: 13%; width: 15cqw; height: 15cqw; display: grid; place-items: center;
+  border-radius: 47% 53% 50% 50% / 52% 46% 54% 48%; transform: rotate(-9deg);
+  background: radial-gradient(circle at 36% 30%, #3fb8a8, #0d5e56 46%, #06302c 78%, #041f1d);
+  box-shadow: inset 0 0 0 1.6cqw rgba(0, 0, 0, 0.18), inset 0 0 0 2cqw rgba(140, 255, 238, 0.12), 0 1.2cqw 2.4cqw rgba(0, 0, 0, 0.55), 0 0 0 0.6cqw rgba(13, 94, 86, 0.6);
+}
+.cx-wax b { font: 700 5.6cqw / 1 'Amiri', serif; color: rgba(206, 255, 247, 0.62); text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5), 0 1px 0 rgba(160, 255, 240, 0.2); }
+
+/* ---------- leather cover: near-black teal, blind-tooled lattice, gold tooling ---------- */
+.cx-leather {
+  position: absolute; inset: 0; container-type: inline-size; display: grid; place-items: center; color: #e8cf8f; overflow: hidden;
+  background:
+    radial-gradient(70% 50% at 34% 26%, rgba(120, 240, 222, 0.11), transparent 70%),
+    radial-gradient(60% 40% at 70% 84%, rgba(95, 227, 210, 0.05), transparent 70%),
+    radial-gradient(120% 90% at 50% 50%, transparent 52%, rgba(0, 6, 7, 0.78)),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cg fill='none' stroke='%23d6b46e' stroke-opacity='0.07' stroke-width='0.7'%3E%3Cpath d='M22 0L44 22L22 44L0 22Z'/%3E%3Ccircle cx='22' cy='22' r='2.2'/%3E%3C/g%3E%3C/svg%3E") 50% 50% / 11cqw 11cqw,
+    linear-gradient(rgba(1, 16, 16, 0.42), rgba(1, 12, 12, 0.56)),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='520' height='520'%3E%3Cfilter id='c' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012 0.03' numOctaves='4' seed='11' stitchTiles='stitch' result='n'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0  0 0 0 0 0.02  0 0 0 0 0.02  0 0 0 -0.9 0.55'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23c%29'/%3E%3C/svg%3E") 0 0 / 520px 520px,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='l' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.62' numOctaves='3' seed='4' stitchTiles='stitch' result='n'/%3E%3CfeDiffuseLighting in='n' surfaceScale='2.8' lighting-color='%237fe6d6' diffuseConstant='1.05' result='d'%3E%3CfeDistantLight azimuth='235' elevation='58'/%3E%3C/feDiffuseLighting%3E%3CfeColorMatrix in='d' type='matrix' values='0.05 0 0 0 0.003  0 0.15 0 0 0.02  0 0 0.145 0 0.022  0 0 0 0 1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23l%29'/%3E%3C/svg%3E") 0 0 / 260px 260px;
+  background-color: #062221;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.6), inset 0 0 70px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(160, 255, 240, 0.1);
+}
+.cx-leather::after { content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(30% 20% at 70% 80%, rgba(255, 255, 255, 0.04), transparent 70%), radial-gradient(25% 15% at 25% 60%, rgba(0, 0, 0, 0.25), transparent 70%);
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.6); }
+.cx-frame { position: absolute; inset: 7cqw; border: 1px solid rgba(214, 180, 110, 0.7); box-shadow: 0 0 0 4px rgba(3, 20, 21, 0.7), 0 0 0 5px rgba(214, 180, 110, 0.38); border-radius: 2px; opacity: 0.9; }
+.cx-corner { position: absolute; width: 13cqw; height: 13cqw; overflow: visible; z-index: 1; fill: none; stroke: #d6b46e; stroke-width: 1.3; }
+.cx-corner.tl { top: 2cqw; left: 2cqw; }
+.cx-corner.tr { top: 2cqw; right: 2cqw; transform: scaleX(-1); }
+.cx-corner.bl { bottom: 2cqw; left: 2cqw; transform: scaleY(-1); }
+.cx-corner.br { bottom: 2cqw; right: 2cqw; transform: scale(-1, -1); }
+.cx-corner .cap { fill: url(#cxBrass); stroke: none; }
+.cx-cover-in { position: relative; z-index: 1; display: grid; justify-items: center; gap: 2cqw; padding: 0 12cqw; text-align: center; }
+.cx-name { font: 700 14cqw / 1.25 'Amiri', serif; margin: 0; }
+:root[lang='en'] .cx-name { font: 400 13cqw / 1.05 'Instrument Serif', serif; }
+.cx-leather .cx-orn { stroke: #d6b46e; margin: 1cqw auto 2cqw; }
+.cx-leather .cx-orn circle, .cx-leather .cx-orn path:nth-child(2) { fill: #d6b46e; }
+.cx-cover-sub { font: 400 5cqw 'Amiri', serif; color: #d9c08a; margin: 0; }
+:root[lang='en'] .cx-cover-sub { font: italic 400 5.2cqw 'Instrument Serif', serif; }
+.cx-cover-by { font: 500 3.1cqw 'IBM Plex Sans Arabic', 'IBM Plex Sans', sans-serif; letter-spacing: 0.14em; color: rgba(217, 192, 138, 0.7); margin-top: 6cqw; }
+.cx-back-line { margin: 0; max-width: 56cqw; font: 400 5cqw / 1.75 'Amiri', serif; color: #d9c08a; }
+:root[lang='en'] .cx-back-line { font: italic 400 5.4cqw / 1.35 'Instrument Serif', serif; }
+/* the abjad, tooled in two bands like a key printed on the binding */
+.cx-band { position: absolute; inset-inline: 0; margin: 0; text-align: center; font: 400 3.4cqw / 1 'Amiri', serif; letter-spacing: 0.32em; color: rgba(214, 180, 110, 0.55); z-index: 1; }
+.cx-band.is-top { top: 10.4cqw; }
+.cx-band.is-bottom { bottom: 10.4cqw; }
+/* a slow band of light passing over the leather, like a gem catching a lamp */
+.cx-sheen { position: absolute; inset: -20% -60%; pointer-events: none; z-index: 2; background: linear-gradient(105deg, transparent 40%, rgba(160, 255, 240, 0.07) 48%, rgba(255, 244, 210, 0.1) 50%, transparent 58%); transform: translateX(-60%); animation: cxSheen 9s ease-in-out infinite; }
+@keyframes cxSheen { 0%, 55% { transform: translateX(-60%); } 100% { transform: translateX(60%); } }
+/* raised bands near the spine */
+.cx-face.is-cover .cx-leather::before, .cx-face.is-backcover .cx-leather::before {
+  content: ''; position: absolute; top: 0; bottom: 0; width: 7cqw; z-index: 1;
+  background: repeating-linear-gradient(180deg, transparent 0 18%, rgba(214, 180, 110, 0.5) 18% 18.6%, transparent 18.6% 19.6%, rgba(214, 180, 110, 0.5) 19.6% 20.2%, transparent 20.2% 100%), linear-gradient(90deg, rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.04) 60%, rgba(0, 0, 0, 0.35));
+}
+.cx-stage[dir='ltr'] .cx-face.is-cover .cx-leather::before, .cx-stage[dir='rtl'] .cx-face.is-backcover .cx-leather::before { left: 0; }
+.cx-stage[dir='rtl'] .cx-face.is-cover .cx-leather::before, .cx-stage[dir='ltr'] .cx-face.is-backcover .cx-leather::before { right: 0; transform: scaleX(-1); }
+
+/* emblem */
+.cx-emblem { width: 42cqw; height: 42cqw; overflow: visible; margin-bottom: 4cqw; filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.55)); }
+.cx-emblem.is-small { width: 28cqw; height: 28cqw; margin: 0 0 3cqw; }
+.cx-em-ring { fill: none; stroke: url(#cxFoil); stroke-width: 0.6; }
+.cx-em-ring.is-dots { stroke-dasharray: 0.5 2.1; stroke-width: 0.8; }
+.cx-em-text { font: 700 6.4px 'Amiri', serif; fill: #d6b46e; opacity: 0.85; }
+.cx-em-turn { animation: cxTurn 90s linear infinite; transform-origin: 0 0; }
+@keyframes cxTurn { to { transform: rotate(-360deg); } }
+.cx-em-star { fill: rgba(0, 0, 0, 0.22); stroke: url(#cxFoil); stroke-width: 1.2; stroke-linejoin: round; }
+.cx-em-light { fill: none; stroke: #8ff7ea; stroke-width: 1; stroke-linecap: round; stroke-dasharray: 9 91; animation: cxTrace 7s linear infinite; opacity: 0.9; }
+.cx-em-light.is-b { animation-delay: -3.5s; }
+@keyframes cxTrace { to { stroke-dashoffset: -100; } }
+.cx-em-bezel { fill: #031314; stroke: url(#cxFoil); stroke-width: 2; }
+.cx-crack { fill: none; stroke: #8ff7ea; stroke-width: 0.7; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 1.5px #5fe3d2); animation: cxCrack 4.5s ease-in-out infinite; }
+@keyframes cxCrack { 0%, 100% { opacity: 0.45; } 50% { opacity: 1; } }
+
+/* marbled endpaper in the site's teal with gold veins, and an ivory bookplate */
+.cx-endpaper {
+  position: absolute; inset: 0; container-type: inline-size; display: grid; place-items: center;
+  background:
+    radial-gradient(40% 18% at 20% 20%, rgba(214, 180, 110, 0.28), transparent 70%),
+    radial-gradient(35% 22% at 80% 35%, rgba(95, 227, 210, 0.22), transparent 70%),
+    radial-gradient(45% 20% at 30% 70%, rgba(31, 179, 162, 0.22), transparent 70%),
+    radial-gradient(30% 16% at 75% 85%, rgba(214, 180, 110, 0.24), transparent 70%),
+    repeating-radial-gradient(ellipse at 40% 50%, #0a2c29 0 6px, #071f1e 6px 9px, #0f3d38 9px 13px, #071f1e 13px 16px);
+}
+.cx-exlibris { margin: 0; padding: 3.5cqw; background: #e9dcb8; border: 1px solid #8a6526; box-shadow: 0 0 0 3px #e9dcb8, 0 0 0 4px #8a6526, 0 8px 20px rgba(0, 0, 0, 0.5); max-width: 62cqw; }
+.cx-exlibris span { display: block; font: 400 5.4cqw / 1.6 'Amiri', serif; color: #2b1d0e; text-align: center; padding: 4cqw 3cqw; border: 1px dashed rgba(138, 101, 38, 0.6); }
+:root[lang='en'] .cx-exlibris span { font: italic 400 5.6cqw / 1.3 'Instrument Serif', serif; }
+
+/* ---------- the world around the book: teal glow, drifting mist, a great cipher ring turning slowly ---------- */
+.cx-aura { position: absolute; left: 50%; top: calc(2.6rem + var(--ph) / 2); width: calc(var(--pw) * 2.9); aspect-ratio: 1; transform: translate(-50%, -50%); pointer-events: none;
+  background: radial-gradient(closest-side, rgba(18, 165, 150, 0.2), rgba(18, 165, 150, 0.06) 55%, transparent 100%); }
+.cx-stage.is-narrow .cx-aura { width: calc(var(--pw) * 2.2); }
+.cx-aura-ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; animation: cxTurn 160s linear infinite; }
+.cx-aura-ring circle { fill: none; stroke: rgba(214, 180, 110, 0.14); stroke-width: 0.15; }
+.cx-aura-ring circle.is-dots { stroke-dasharray: 0.3 1.4; stroke: rgba(95, 227, 210, 0.2); stroke-width: 0.3; }
+.cx-aura-ring text { font: 400 2.4px 'Amiri', serif; fill: rgba(214, 180, 110, 0.2); }
+.cx-mist { position: absolute; width: 60%; height: 34%; border-radius: 50%; background: radial-gradient(closest-side, rgba(150, 230, 220, 0.09), transparent); }
+.cx-mist.is-a { left: 2%; top: 58%; animation: cxMist 26s ease-in-out infinite alternate; }
+.cx-mist.is-b { right: 0; top: 14%; animation: cxMist 32s ease-in-out -9s infinite alternate-reverse; }
+@keyframes cxMist { from { transform: translateX(-6%) scale(1); } to { transform: translateX(8%) scale(1.15); } }
+.tier-low .cx-aura-ring, .tier-low .cx-mist, .tier-low .cx-sheen { animation: none; }
+
+/* controls */
+.cx-bar { display: grid; justify-items: center; gap: 0.7rem; margin-top: 1.4rem; }
+.cx-nav { display: flex; align-items: center; justify-content: center; gap: 0.9rem; flex-wrap: wrap; }
+.cx-arrow {
+  width: 48px; height: 48px; border-radius: 50%; border: 1px solid rgba(214, 180, 110, 0.45); background: rgba(1, 14, 16, 0.6);
+  color: #e8cf8f; font-size: 1.15rem; cursor: pointer; transition: border-color 0.3s, background 0.3s;
+}
+.cx-arrow:hover:not(:disabled) { border-color: var(--teal-hi); background: rgba(18, 165, 150, 0.18); }
+.cx-arrow:disabled { opacity: 0.35; cursor: default; }
+.cx-count { min-width: 7.5rem; text-align: center; font: 500 0.88rem var(--mono); color: var(--text-2); }
+.cx-closebtn { background: none; border: 0; color: var(--muted); font: inherit; font-size: 0.86rem; cursor: pointer; min-height: 44px; padding-inline: 0.6rem; text-decoration: underline; text-underline-offset: 4px; }
+.cx-hint { min-height: 1.2em; font-size: 0.85rem; color: var(--muted); margin: 0; }
+.cx-reserve { margin-top: 0.4rem; }
+
+/* Safari: give every face its own 3D layer so hidden backs stay hidden */
+.cx-leaf { -webkit-transform-style: preserve-3d; }
+.cx-face.is-front { transform: rotateY(0deg); }
+/* a page in mid-turn darkens and catches the light */
+.cx-face::before { content: ''; position: absolute; inset: 0; z-index: 3; pointer-events: none; opacity: 0; background: linear-gradient(90deg, rgba(0, 0, 0, 0.55), rgba(160, 255, 240, 0.08) 60%, rgba(0, 0, 0, 0.3)); }
+.cx-leaf.is-moving .cx-face::before { animation: cxTurnShade 1.15s var(--t-ease) both; }
+@keyframes cxTurnShade { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .cx-leaf, .cx-book, .cx-float { transition-duration: 0.01s !important; }
+  .cx-stage.is-closed .cx-float, .cx-gold, .cx-em-light, .cx-em-turn, .cx-crack, .cx-sheen, .cx-aura-ring, .cx-mist { animation: none; }
+}
+.cx-em-text, .cx-aura-ring text { direction: ltr; unicode-bidi: normal; }
+.cx-ribbon { transition: opacity 0.4s; } .cx-book.at-back .cx-ribbon { opacity: 0; }

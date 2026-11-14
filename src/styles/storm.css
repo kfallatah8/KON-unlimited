@@ -1,0 +1,181 @@
+/* KON Tempest: the storm and the calm.
+   Every screen from the first one is quietly gathering a storm: the sky darkens toward the abyss,
+   the clouds pulse faster, light flickers inside them. At the interlude it peaks, holds, and then
+   passes as if it never came. --storm and --calm (0..1) are written by script on .stage and
+   #interlude only, so the rest of the page never restyles while scrolling. */
+:root {
+  --oxblood: #03302f;
+  --wine: #065a57;
+  --garnet: #d6c08f;
+  --rose: #e8d5a8;
+}
+
+/* ---------- the sky ---------- */
+.stage::before, .stage::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+}
+/* The storm: a low, deep-sea darkness pressing in from the edges and from above. */
+.stage::before {
+  background:
+    radial-gradient(90% 70% at 50% -10%, rgba(1, 12, 16, 0.85), transparent 65%),
+    radial-gradient(70% 60% at 85% 110%, rgba(2, 36, 40, 0.55), transparent 70%),
+    radial-gradient(120% 90% at 50% 50%, transparent 40%, rgba(0, 6, 8, 0.75));
+  /* lighter than before, and it opens up as the coal core forms so the morph is never in shadow */
+  opacity: calc(var(--storm, 0) * 0.6 * (1 - var(--press, 0) * 0.75));
+}
+/* The calm: the light comes back, softer and wider than before. */
+.stage::after {
+  background:
+    radial-gradient(60% 45% at 50% 18%, rgba(168, 245, 234, 0.12), transparent 70%),
+    radial-gradient(80% 60% at 50% 60%, rgba(18, 165, 150, 0.08), transparent 70%);
+  opacity: calc(var(--calm, 0) * 0.9);
+}
+/* Lightning seen through the sky: a faint cold wash, driven by the 3D layer. */
+.stage-flash {
+  position: absolute; inset: 0; pointer-events: none; opacity: 0;
+  background: radial-gradient(70% 55% at var(--bx, 30%) var(--by, 25%), rgba(226, 255, 250, 0.22), rgba(95, 227, 210, 0.07) 45%, transparent 75%);
+  will-change: opacity;
+}
+/* The teal pools dim under the storm; the deep pool swells. */
+.stage-glow { opacity: calc(1 - var(--storm, 0) * 0.55 + var(--calm, 0) * 0.15); }
+.stage-dream { opacity: calc(1 - var(--storm, 0) * 0.4); }
+
+/* ---------- the interlude: pressure, the break, the reveal ----------
+   --ip (0..1) is the visitor's progress through the section, --press the pull into the core.
+   The section is in its sticky hold from ~0.14 to ~0.86; every beat lands inside that window. */
+.interlude { position: relative; z-index: 1; height: 320vh; height: 320svh; }
+.interlude-sticky {
+  position: sticky; top: 0; height: 100vh; height: 100svh;
+  display: grid; place-items: center; text-align: center;
+  padding-inline: var(--gutter);
+}
+.interlude-sticky > * { grid-area: 1 / 1; }
+.il-line {
+  font-family: var(--display); font-weight: 300;
+  font-size: clamp(1.9rem, 4.4vw, 4rem); line-height: 1.3; letter-spacing: -0.01em;
+  max-width: 21ch; margin: 0 auto; text-wrap: balance;
+  padding-block: 0.12em 0.28em; /* room for Arabic dots under the last line (gradient text clips to the box) */
+  background: linear-gradient(180deg, #ffffff 20%, #d4f8f1 61.8%, var(--teal-hi));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+:root[lang='en'] .il-line { font-size: clamp(2.1rem, 4.6vw, 4.2rem); line-height: 1.1; letter-spacing: -0.02em; max-width: 19ch; }
+/* Beat 1: the pressure. It sits above the core, while every stone is drawn into it. */
+.il-press {
+  align-self: start; margin-top: clamp(4.5rem, 14vh, 9rem);
+  background: linear-gradient(180deg, #ffffff 10%, #d9fbf6 50%, var(--rose));
+  -webkit-background-clip: text; background-clip: text;
+  filter: drop-shadow(0 0 24px rgba(18, 165, 150, 0.45));
+  opacity: clamp(0, (var(--ip, 0) - 0.1) * 7, 1);
+  transform: scale(calc(1 - var(--press, 0) * 0.04));
+  transition: opacity 0.3s linear, transform 0.6s var(--ease), filter 0.6s var(--ease);
+}
+.is-burst .il-press { opacity: 0; transform: scale(1.14); filter: blur(14px); }
+/* Beat 2: the break. One word, thrown out of the light. */
+.il-reveal { margin: 0; opacity: clamp(0, (0.555 - var(--ip, 0)) * 12, 1); pointer-events: none; }
+.il-reveal span {
+  display: inline-block; font-family: var(--display); font-weight: 600;
+  font-size: clamp(4.2rem, 15vw, 12rem); line-height: 1.15; letter-spacing: -0.02em;
+  padding-block: 0.08em 0.24em;
+  background: linear-gradient(180deg, #ffffff 15%, #e9fffb 45%, #7ff3e6 75%, var(--rose));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 40px rgba(95, 227, 210, 0.55));
+  opacity: 0; transform: scale(0.55);
+}
+:root[lang='en'] .il-reveal span { font-size: clamp(3.4rem, 10vw, 8.6rem); line-height: 1.02; }
+.is-burst .il-reveal span { animation: ilReveal 1.5s cubic-bezier(0.16, 0.84, 0.24, 1) 0.08s both; }
+@keyframes ilReveal {
+  0% { opacity: 0; transform: scale(0.55); filter: blur(26px) drop-shadow(0 0 0 rgba(95, 227, 210, 0)); letter-spacing: 0.2em; }
+  35% { opacity: 1; }
+  100% { opacity: 1; transform: scale(1); filter: blur(0) drop-shadow(0 0 40px rgba(95, 227, 210, 0.55)); letter-spacing: -0.02em; }
+}
+/* Beat 3: the fact that turns the metaphor into truth. */
+.il-fact {
+  opacity: min(clamp(0, (var(--ip, 0) - 0.565) * 14, 1), clamp(0, (0.715 - var(--ip, 0)) * 14, 1));
+  transform: translateY(calc(clamp(-1, (var(--ip, 0) - 0.64) * 12, 1) * -0.9rem));
+}
+.il-sub {
+  margin: 1.2rem auto 0; max-width: 34ch; color: var(--text-2);
+  font-size: clamp(1.05rem, 1.7vw, 1.35rem); line-height: 1.7;
+}
+/* Beat 4: the mirror. The stone was never the point. */
+.il-calm {
+  opacity: clamp(0, (var(--ip, 0) - 0.725) * 12, 1);
+  transform: translateY(calc((1 - clamp(0, (var(--ip, 0) - 0.725) * 10, 1)) * 1.4rem));
+}
+.il-within {
+  margin-top: 1.618rem; font-size: 0.82rem; letter-spacing: 0.32em; text-transform: uppercase;
+  color: var(--aqua); opacity: 0.8;
+}
+:root[lang='ar'] .il-within { letter-spacing: 0.08em; font-size: 1.05rem; }
+.il-within::before, .il-within::after {
+  content: ''; display: inline-block; width: 2.4rem; height: 1px; vertical-align: middle; margin-inline: 0.9rem;
+  background: linear-gradient(90deg, transparent, var(--rose), var(--teal-hi), transparent);
+}
+/* The break, on the page: a white-teal flash from the core (opacity written by the 3D layer). */
+.stage-burst {
+  position: absolute; inset: 0; pointer-events: none; opacity: 0; will-change: opacity;
+  background: radial-gradient(55% 45% at 50% 52%, rgba(240, 255, 252, 0.9), rgba(127, 243, 230, 0.35) 38%, rgba(18, 165, 150, 0.08) 65%, transparent 80%);
+}
+@media (max-width: 700px) {
+  .interlude { height: 290vh; height: 290svh; }
+  .il-line { font-size: clamp(1.6rem, 7vw, 2.3rem); }
+  :root[lang='en'] .il-line { font-size: clamp(1.9rem, 8.4vw, 2.6rem); }
+  .il-press { margin-top: clamp(5.5rem, 16vh, 8rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .il-calm, .il-fact { transform: none; }
+  .is-burst .il-reveal span { animation: none; opacity: 1; transform: none; }
+  .stage-flash, .stage-burst { display: none; }
+}
+
+/* ---------- teal and champagne accents in the copy ---------- */
+.display .wi { background: linear-gradient(180deg, #ffffff 20%, #d4f8f1 61.8%, #9be8cf); -webkit-background-clip: text; background-clip: text; }
+.kw { background: linear-gradient(transparent 64%, rgba(18, 165, 150, 0.3) 64%, rgba(214, 192, 143, 0.32) 92%, transparent 92%); }
+
+/* ---------- footer: KON cut like a stone ---------- */
+.kon-foot { position: relative; width: min(100%, 44rem); margin-inline: auto; isolation: isolate; }
+.kon-foot::before {
+  content: ''; position: absolute; inset: 8% 6% 22%; z-index: -1; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(63, 224, 207, 0.22), rgba(63, 224, 207, 0.12) 61.8%, transparent);
+  filter: blur(18px); animation: breath var(--breath) ease-in-out infinite;
+}
+.kon-foot svg { display: block; width: 100%; height: auto; overflow: visible; }
+.kf-glyphs { font-family: 'Readex Pro', sans-serif; font-weight: 600; font-size: 250px; letter-spacing: 0.16em; }
+.kf-edge { opacity: 0.7; }
+.kf-reflection { opacity: 0.55; }
+.kf-sheen { animation: kfSheen 9s cubic-bezier(0.45, 0, 0.2, 1) infinite; }
+@keyframes kfSheen { 0%, 38.2% { transform: translateX(0); } 100% { transform: translateX(2000px); } }
+.kf-sub { margin: -1.2rem 0 0; text-align: center; }
+.kf-sub span {
+  font-family: 'Readex Pro', sans-serif; font-weight: 300; font-size: 0.82rem; letter-spacing: 0.62em; text-transform: uppercase;
+  color: var(--text-2); padding-inline-start: 0.62em;
+}
+.kf-sub::before, .kf-sub::after {
+  content: ''; display: inline-block; width: clamp(2rem, 8vw, 4.236rem); height: 1px; vertical-align: middle; margin-inline: 1rem;
+  background: linear-gradient(90deg, transparent, var(--teal-hi), #d6c08f, transparent);
+}
+.footer-brand::before { display: none; }
+@media (prefers-reduced-motion: reduce) { .kf-sheen, .kon-foot::before { animation: none; } }
+
+/* ---------- KON Talent in the Tempest palette: buried value, brought to light ---------- */
+.talent { background: radial-gradient(60% 40% at 50% 0%, rgba(63, 224, 207, 0.08), transparent 70%), radial-gradient(70% 50% at 50% 100%, rgba(18, 165, 150, 0.08), transparent 70%); }
+.wt-spoke.is-on { stroke: rgba(63, 224, 207, 0.85); }
+.wt-node.is-on .wt-gem { fill: rgba(63, 224, 207, 0.7); stroke: #a8f5ea; }
+.talent-read-gem { color: rgba(63, 224, 207, 0.14); }
+.footer-brand { width: 100%; }
+.kon-foot { width: min(100%, 46rem); }
+
+/* ---------- three winners: stones in one orbit, drawn by the 3D layer over this box ---------- */
+.trio-stage { position: relative; height: clamp(300px, 44vw, 470px); margin: 1.2rem auto 0.4rem; max-width: 46rem; pointer-events: none; }
+.trio-label {
+  position: absolute; left: 0; top: 0; will-change: transform; white-space: nowrap;
+  font-family: var(--display); font-size: 0.95rem; letter-spacing: 0.04em; color: var(--muted);
+  padding: 0.25rem 0.75rem; border-radius: 999px; border: 1px solid rgba(168, 245, 234, 0.14);
+  background: rgba(2, 20, 22, 0.55); transition: color 0.5s, border-color 0.5s, background 0.5s;
+}
+.trio-label.is-on { color: var(--aqua); border-color: rgba(95, 227, 210, 0.55); background: rgba(3, 40, 40, 0.7); }
+.trio-center {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, 2.1rem);
+  font-family: var(--display); font-size: 1rem; color: var(--gold); letter-spacing: 0.06em; opacity: 0.6;
+}
+@media (max-width: 700px) { .trio-stage { height: 260px; } .trio-label { font-size: 0.85rem; } }

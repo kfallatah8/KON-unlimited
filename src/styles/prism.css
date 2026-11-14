@@ -1,0 +1,97 @@
+/* KON Tempest (from KON Prism): teal leads, deep burgundy answers, in golden proportion.
+   (Tokens still named --emerald hold the burgundy-rose highlight in this version.) Everything that glows breathes on one shared rhythm: 10.9 s per breath
+   (~5.5 breaths a minute, the slow "coherent" pace that settles the nervous system). */
+:root {
+  --phi: 1.618;
+  --emerald: #e8d5a8; /* Tempest: the "second stone" is now a burgundy-rose highlight */
+  --emerald-deep: #065a57;
+  --garnet: #d6c08f;
+  --garnet-deep: #065a57;
+  --breath: 10.9s;
+  --hair: linear-gradient(135deg, rgba(168, 245, 234, 0.45), rgba(168, 245, 234, 0.12) 30%, rgba(214, 192, 143, 0.06) 61.8%, rgba(214, 192, 143, 0.4));
+}
+
+/* ---------- the sky: three soft pools of light drifting and breathing behind the stones ---------- */
+.stage-glow::before {
+  background: radial-gradient(closest-side, rgba(47, 224, 203, 0.15), rgba(18, 165, 150, 0.05) 55%, transparent);
+  animation: breath var(--breath) ease-in-out infinite;
+}
+.stage-glow::after {
+  width: 62vmax; height: 62vmax; right: -16vmax; bottom: -22vmax;
+  background: radial-gradient(closest-side, rgba(6, 101, 96, 0.16), rgba(4, 60, 58, 0.08) 50%, transparent);
+  animation: drift 38s ease-in-out infinite alternate, breathSoft var(--breath) ease-in-out infinite;
+}
+.stage-dream {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+}
+.stage-dream i {
+  position: absolute; border-radius: 50%; will-change: transform, opacity;
+}
+.stage-dream i:nth-child(1) {
+  width: 58vmax; height: 58vmax; left: -18vmax; top: -14vmax;
+  background: radial-gradient(closest-side, rgba(168, 245, 234, 0.13), rgba(6, 90, 87, 0.05) 55%, transparent);
+  animation: drift 46s ease-in-out -12s infinite alternate-reverse, breathSoft var(--breath) ease-in-out -2.7s infinite;
+}
+.stage-dream i:nth-child(2) {
+  width: 38.2vmax; height: 38.2vmax; left: 61.8%; top: 8%;
+  background: radial-gradient(closest-side, rgba(168, 245, 234, 0.08), rgba(214, 192, 143, 0.05) 60%, transparent);
+  animation: drift 61.8s ease-in-out -20s infinite alternate, breathSoft var(--breath) ease-in-out -5.45s infinite;
+}
+@keyframes breath { 0%, 100% { transform: scale(0.94); opacity: 0.7; } 50% { transform: scale(1.06); opacity: 1; } }
+@keyframes breathSoft { 0%, 100% { opacity: 0.65; } 50% { opacity: 1; } }
+@keyframes drift { from { translate: -3% 2%; } to { translate: 4% -3%; } }
+.tier-low .stage-dream i { mix-blend-mode: normal; animation-duration: 46s, var(--breath); }
+.tier-low .stage-glow::after { display: block; animation: breathSoft var(--breath) ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .stage-dream i, .stage-glow::before, .stage-glow::after { animation: none !important; } }
+
+/* ---------- typography in the three stones ---------- */
+.rot-line { background: linear-gradient(180deg, #ffffff 8%, #d9fbf6 38.2%, var(--aqua) 61.8%, #9ff0e3); -webkit-background-clip: text; background-clip: text; }
+.display .wi { background: linear-gradient(180deg, #ffffff 20%, #d4f8f1 61.8%, #9be8cf); -webkit-background-clip: text; background-clip: text; }
+.band .eyebrow::before { color: var(--emerald); border-inline-end-color: rgba(214, 192, 143, 0.45); }
+.band::before { background: linear-gradient(90deg, transparent, rgba(95, 227, 210, 0.3) 23.6%, rgba(168, 245, 234, 0.3) 50%, rgba(214, 192, 143, 0.32) 76.4%, transparent); }
+.proof b { background: linear-gradient(180deg, #fff, var(--aqua) 61.8%, var(--emerald)); -webkit-background-clip: text; background-clip: text; }
+.case-metric b { background: linear-gradient(180deg, #fff, var(--aqua) 61.8%, var(--emerald)); -webkit-background-clip: text; background-clip: text; }
+.kw { background: linear-gradient(transparent 64%, rgba(18, 165, 150, 0.3) 64%, rgba(168, 245, 234, 0.26) 92%, transparent 92%); }
+.chapter-rail a.is-active i { background: linear-gradient(90deg, var(--teal-hi), var(--emerald) 61.8%, var(--garnet)); }
+.page-progress { background: linear-gradient(90deg, var(--teal-deep), var(--teal-hi) 38.2%, var(--emerald) 61.8%, var(--garnet)); }
+
+/* ---------- golden-ratio rhythm: section spacing and card proportions ---------- */
+.band { padding-block: clamp(4rem, 9vw, 8rem); }
+.display { margin-bottom: 1.618rem; }
+
+/* ---------- cards: a garnet whisper under the hand ---------- */
+.glass::after, .why-item::after, .offer-card::after {
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(95, 227, 210, 0.14), rgba(168, 245, 234, 0.06) 38.2%, rgba(214, 192, 143, 0.05) 61.8%, transparent 75%);
+}
+.offer-card {
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(30, 194, 176, 0.26), transparent 60%),
+    radial-gradient(70% 60% at 100% 100%, rgba(6, 101, 96, 0.22), transparent 70%),
+    radial-gradient(60% 50% at 0% 100%, rgba(6, 90, 87, 0.2), transparent 70%),
+    linear-gradient(180deg, rgba(6, 52, 52, 0.92), rgba(2, 18, 20, 0.95));
+}
+.offer-card::before { background: linear-gradient(140deg, rgba(200, 255, 247, 0.7), rgba(168, 245, 234, 0.2) 38.2%, rgba(214, 192, 143, 0.15) 61.8%, rgba(214, 192, 143, 0.6)); }
+
+/* ---------- the breath, made visible: a ring under the scroll cue ---------- */
+.breath-ring {
+  display: block; width: 22px; height: 22px; margin: 0 auto 0.4rem; border-radius: 50%;
+  border: 1px solid rgba(168, 245, 234, 0.5);
+  box-shadow: 0 0 18px rgba(168, 245, 234, 0.35), inset 0 0 10px rgba(214, 192, 143, 0.25);
+  animation: ring var(--breath) ease-in-out infinite;
+}
+@keyframes ring { 0%, 100% { transform: scale(0.72); opacity: 0.55; } 50% { transform: scale(1.18); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .breath-ring { animation: none; } }
+
+/* ---------- the word: halo in all three stones, on the same breath ---------- */
+.kon-halo {
+  background:
+    radial-gradient(closest-side, rgba(63, 224, 207, 0.3), rgba(18, 165, 150, 0.16) 38.2%, rgba(6, 90, 87, 0.07) 61.8%, transparent),
+    radial-gradient(closest-side at 30% 60%, rgba(168, 245, 234, 0.1), transparent 55%),
+    radial-gradient(closest-side at 72% 58%, rgba(6, 101, 96, 0.12), transparent 55%);
+}
+.kon-halo::before { animation: breath var(--breath) ease-in-out infinite; }
+.finale-line2 { background: linear-gradient(100deg, var(--aqua), var(--emerald) 50%, #e8d5a8); -webkit-background-clip: text; background-clip: text; }
+
+/* Cursor ring breathes with the page. */
+.cursor-ring:not(.is-hot) { animation: ringSoft var(--breath) ease-in-out infinite; }
+@keyframes ringSoft { 0%, 100% { border-color: rgba(168, 245, 234, 0.35); } 50% { border-color: rgba(168, 245, 234, 0.7); } }

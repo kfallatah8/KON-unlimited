@@ -36,6 +36,7 @@ export function SmoothScroll({ enabled }: { enabled: boolean }) {
       const a = (e.target as HTMLElement).closest('a[href^="#"]') as HTMLAnchorElement | null
       if (!a || a.getAttribute('href') === '#') return
       const hash = a.getAttribute('href')!
+      if (hash.startsWith('#/')) return
       if (!document.querySelector(hash)) return
       e.preventDefault()
       scrollToHash(hash)

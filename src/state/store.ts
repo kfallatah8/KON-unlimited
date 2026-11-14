@@ -84,6 +84,23 @@ export const motion = {
   readyAt: 0,
   /** Element under the pointer wants extra glow (CTA hover). */
   glow: 0,
+  /** Last tap / click on empty page: NDC position and performance.now() time (0 = none). */
+  breath: 0.5,
+  rx: 0,
+  ry: 0,
+  rt: 0,
+  /** 0..1, the gathering storm (tension). Already multiplied by (1 - calm). */
+  storm: 0,
+  /** 0..1, the release: the storm passes and everything settles. */
+  calm: 0,
+  /** 0..1, current lightning glow inside the clouds (written by the 3D layer). */
+  bolt: 0,
+  /** 0..1, the pressure: every stone is drawn into one compressed core of coal. */
+  press: 0,
+  /** performance.now() when the core broke open (0 = not yet, or scrolled back above it). */
+  burstAt: 0,
+  /** Which of the three winners is lit (0 talent, 1 company, 2 KON). */
+  trioOn: 0,
 }
 
 /** Milliseconds since both the 3D scene and the page opening were ready (0 until then). */

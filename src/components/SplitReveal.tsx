@@ -14,7 +14,11 @@ interface Props {
 
 export function SplitReveal({ as = 'h2', text, className, id, play, delay = 0 }: Props) {
   const ref = useRef<HTMLElement>(null)
-  const lines = Array.isArray(text) ? text : [text]
+  // A single string breaks into one line per sentence, so a headline never wraps mid-thought;
+  // the full stop at the end of a line is dropped (the line break already does its job).
+  const lines = Array.isArray(text)
+    ? text
+    : text.split(/(?<=[.؟?…])\s+/).map((x) => x.replace(/\.$/, '')).filter(Boolean)
 
   useEffect(() => {
     const el = ref.current
@@ -45,7 +49,7 @@ export function SplitReveal({ as = 'h2', text, className, id, play, delay = 0 }:
 
   return createElement(
     as,
-    { ref, className, id, 'aria-label': lines.join(' ') },
+    { ref, className, id, 'aria-label': Array.isArray(text) ? text.join(' ') : text },
     lines.map((line, li) => (
       <span key={li} className="line" aria-hidden="true">
         {line.split(' ').map((w, wi, all) => (

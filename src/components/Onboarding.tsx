@@ -6,7 +6,7 @@ import { contact as inbox, type Lang, type Persona, type Question } from '../con
 import { leadRead, optionLabel, recommend, serviceNames, stepsFor, type Answers } from '../content/onboarding'
 import { useContent } from '../content/useContent'
 import { motion, useStore } from '../state/store'
-import { scrollToHash } from './SmoothScroll'
+import { lenis } from './SmoothScroll'
 import { GemMark } from './Icons'
 
 interface Draft {
@@ -40,7 +40,7 @@ const CHIP_TO_PAIN: Record<string, string> = {
 }
 export const chipPain = (chip: string) => CHIP_TO_PAIN[chip]
 
-function QuestionField({ q, value, other, onChange, onOther, lang }: {
+export function QuestionField({ q, value, other, onChange, onOther, lang }: {
   q: Question; value: Answers[string]; other: string; lang: Lang
   onChange: (v: Answers[string]) => void; onOther: (v: string) => void
 }) {
@@ -73,17 +73,24 @@ function QuestionField({ q, value, other, onChange, onOther, lang }: {
   const sel = multi ? ((value as string[]) ?? []) : [value as string].filter(Boolean)
   return (
     <fieldset className="ob-q">
-      <legend className="ob-label">{q.label}{q.optional && <em> · {lang === 'ar' ? 'اختياري' : 'optional'}</em>}</legend>
+      <legend className="ob-label">
+        {q.label}
+        {q.optional && <em> · {lang === 'ar' ? 'اختياري' : 'optional'}</em>}
+        {multi && q.max && <em> · {lang === 'ar' ? `${q.max} على الأكثر` : `up to ${q.max}`}</em>}
+      </legend>
       <div className="ob-chips">
         {q.options?.map((op) => {
           const on = sel.includes(op.id)
+          const full = multi && !!q.max && !on && sel.length >= q.max
           return (
             <button
               key={op.id}
               type="button"
               aria-pressed={on}
-              className={`chip${on ? ' is-on' : ''}`}
+              aria-disabled={full || undefined}
+              className={`chip${on ? ' is-on' : ''}${full ? ' is-full' : ''}`}
               onClick={() => {
+                if (full) return
                 if (multi) onChange(on ? sel.filter((x) => x !== op.id) : [...sel, op.id])
                 else onChange(on ? undefined : op.id)
               }}
@@ -98,6 +105,17 @@ function QuestionField({ q, value, other, onChange, onOther, lang }: {
       )}
     </fieldset>
   )
+}
+
+function keepInView(force: boolean) {
+  const el = document.querySelector<HTMLElement>('.ob')
+  if (!el) return
+  const top = el.getBoundingClientRect().top
+  const head = window.innerWidth < 700 ? 72 : 96
+  if (!force && top >= head - 4 && top < window.innerHeight * 0.45) return
+  const y = window.scrollY + top - head
+  if (lenis) lenis.scrollTo(y, { duration: 0.7 })
+  else window.scrollTo({ top: y, behavior: 'smooth' })
 }
 
 export function Onboarding() {
@@ -133,7 +151,7 @@ export function Onboarding() {
     }))
     setStep(0)
     setError('')
-    requestAnimationFrame(() => scrollToHash('#start'))
+    requestAnimationFrame(() => keepInView(true))
   }, [preset])
 
   const steps = useMemo(() => (d.persona ? stepsFor(d.persona, lang) : []), [d.persona, lang])
@@ -141,10 +159,14 @@ export function Onboarding() {
   const total = n + 2
   const pos = step + 2 // 1-based for display
 
-  // Move focus to the new screen's heading for keyboard and screen-reader users.
+  // Keep the form where the visitor is: only scroll when the card's top has left the screen,
+  // and then bring just the card (not the whole section) back under the header.
+  const first = useRef(true)
   useEffect(() => {
+    if (first.current) { first.current = false; return }
     if (step === -1 && !d.persona) return
     card.current?.querySelector<HTMLElement>('h3')?.focus({ preventScroll: true })
+    requestAnimationFrame(() => keepInView(false))
   }, [step])
 
   const setAnswer = (id: string, v: Answers[string]) => setD((p) => ({ ...p, answers: { ...p.answers, [id]: v } }))
@@ -164,7 +186,6 @@ export function Onboarding() {
     }
     setError('')
     setStep((s) => Math.min(s + 1, n + 1))
-    scrollToHash('#start')
   }
   const back = () => { setError(''); setStep((s) => Math.max(-1, s - 1)) }
 
