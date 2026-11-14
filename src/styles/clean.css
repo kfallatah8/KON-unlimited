@@ -277,3 +277,37 @@ html.cta-pulse .stage-glow { animation: ctaPulse 1.8s cubic-bezier(0.16, 1, 0.3,
 .interlude { height: 380vh; height: 380svh; }
 .il-fact { opacity: min(clamp(0, (var(--ip, 0) - 0.645) * 25, 1), clamp(0, (0.80 - var(--ip, 0)) * 40, 1)); }
 .il-calm { opacity: clamp(0, (var(--ip, 0) - 0.80) * 25, 1); }
+
+/* ---------- Type floor (2026-11-14): no Arabic label under ~15px, card labels become pills ---------- */
+.eyebrow, .eyebrow-text { font-size: 0.95rem !important; font-weight: 500; letter-spacing: 0.02em; }
+:root[lang='en'] .eyebrow, :root[lang='en'] .eyebrow-text { font-size: 0.82rem !important; letter-spacing: 0.14em; }
+.more-k, .fr-tag {
+  align-self: center; display: inline-flex; align-items: center; gap: 0.45rem;
+  font-size: 1.02rem; font-weight: 600; letter-spacing: 0; line-height: 1.2;
+  padding: 0.38rem 0.95rem; border-radius: 999px;
+  border: 1px solid rgba(95, 227, 210, 0.32); background: rgba(95, 227, 210, 0.08); color: var(--teal-hi);
+}
+.more-card.is-1 .more-k, .fr-card.is-1 .fr-tag { border-color: rgba(214, 192, 143, 0.4); background: rgba(214, 192, 143, 0.09); color: var(--gold); }
+:root[lang='en'] .more-k, :root[lang='en'] .fr-tag { font-size: 0.86rem; letter-spacing: 0.06em; }
+.more-card { align-items: center; text-align: center; }
+.more-card .more-gem { position: absolute; top: 1.4rem; inset-inline-end: 1.5rem; }
+.more-card h3 { font-size: clamp(1.3rem, 2vw, 1.5rem); }
+.more-card p { font-size: 1.02rem; }
+.more-cta { font-size: 1rem; font-weight: 500; }
+.hero .proof li span { font-size: 0.92rem !important; line-height: 1.4; }
+@media (max-width: 520px) { .hero .proof li span { font-size: 0.8rem !important; } }
+.hint, .fine, .tl-label, .tl-big-label, .sol-toolsub, .tl-result dt, .sol-subtabs button, .sol-tools-tabs button { font-size: 0.95rem !important; }
+.tl-hint, .tl-field i, .ap-bar .seg em { font-size: 0.86rem !important; line-height: 1.45; }
+.ap-num, .sv-num { font-size: 0.86rem; }
+.il-elem-n { font-size: 0.78rem; }
+.il-elem-name { font-size: 0.8rem; }
+.sol-lens { font-size: 0.78rem !important; }
+.footer-slogan { font-size: 1rem !important; }
+.site-footer a { font-size: 0.95rem; }
+.case-metric span { font-size: 0.95rem; }
+.scroll-cue span { font-size: 0.85rem; }
+@media (max-width: 520px) { .hero .proof li span { font-size: 0.84rem !important; } }
+.sol-toolpick span { font-size: 0.92rem; }
+.sol-subtabs b, .sol-tabs b { font-size: 0.8rem; }
+.fr-card { text-align: center; align-items: center; }
+.fr-card > * { margin-inline: auto; }
