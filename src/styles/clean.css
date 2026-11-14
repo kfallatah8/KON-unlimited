@@ -166,3 +166,16 @@ html.cta-pulse .stage-glow { animation: ctaPulse 1.8s cubic-bezier(0.16, 1, 0.3,
   .is-burst .il-reveal::before, .is-burst .il-reveal::after { animation: none; opacity: 0; }
   .is-burst .il-reveal span { animation: none; opacity: 1; transform: none; clip-path: none; }
 }
+
+/* ---------- interlude timing: «يكشفك» holds for a full screen of scroll before the next beat ---------- */
+.interlude { height: 340vh; height: 340svh; }
+.il-reveal { opacity: clamp(0, (0.65 - var(--ip, 0)) * 20, 1); }
+.il-fact {
+  opacity: min(clamp(0, (var(--ip, 0) - 0.655) * 16, 1), clamp(0, (0.77 - var(--ip, 0)) * 16, 1));
+  transform: translateY(calc(clamp(-1, (var(--ip, 0) - 0.71) * 12, 1) * -0.9rem));
+}
+.il-calm {
+  opacity: clamp(0, (var(--ip, 0) - 0.775) * 14, 1);
+  transform: translateY(calc((1 - clamp(0, (var(--ip, 0) - 0.775) * 12, 1)) * 1.4rem));
+}
+@media (prefers-reduced-motion: reduce) { .il-fact, .il-calm { transform: none; } }
