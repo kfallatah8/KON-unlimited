@@ -58,30 +58,41 @@ function useRoute() {
  *  an empty screen, and anything the scroll skipped over (anchor jumps, flicks) is shown at once. */
 function useReveal(lang: string, route = '') {
   useEffect(() => {
-    const pending = new Set(document.querySelectorAll<HTMLElement>('[data-reveal]:not(.is-in)'))
     const show = (el: Element) => {
       el.classList.add('is-in')
-      pending.delete(el as HTMLElement)
       io.unobserve(el)
     }
     const io = new IntersectionObserver(
       (entries) => entries.forEach((e) => { if (e.isIntersecting) show(e.target) }),
       { rootMargin: '0px 0px 12% 0px' },
     )
-    pending.forEach((el) => io.observe(el))
+    const watch = () => document.querySelectorAll<HTMLElement>('[data-reveal]:not(.is-in)').forEach((el) => io.observe(el))
+    watch()
+    // Sections that mount later (forms, cards opened by a CTA) are picked up too.
+    const mo = new MutationObserver(() => watch())
+    mo.observe(document.body, { childList: true, subtree: true })
     let frame = 0
     const sweep = () => {
       frame = 0
       const limit = window.innerHeight * 1.12
-      pending.forEach((el) => { if (el.getBoundingClientRect().top < limit) show(el) })
-      if (!pending.size) window.removeEventListener('scroll', onScroll)
+      // Anything at or above the fold is shown, including what an anchor jump skipped over.
+      document.querySelectorAll<HTMLElement>('[data-reveal]:not(.is-in)').forEach((el) => { if (el.getBoundingClientRect().top < limit) show(el) })
     }
     const onScroll = () => { if (!frame) frame = requestAnimationFrame(sweep) }
     window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('scrollend', onScroll)
+    window.addEventListener('hashchange', onScroll)
+    window.addEventListener('kon:onboarding', onScroll)
+    const settle = window.setInterval(sweep, 700)
     return () => {
       io.disconnect()
+      mo.disconnect()
       cancelAnimationFrame(frame)
+      window.clearInterval(settle)
       window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('scrollend', onScroll)
+      window.removeEventListener('hashchange', onScroll)
+      window.removeEventListener('kon:onboarding', onScroll)
     }
   }, [lang, route])
 }
@@ -682,7 +693,7 @@ function Booking() {
   const L = lang === 'ar'
   const src = `${BOOKING_URL}${BOOKING_URL.includes('?') ? '&' : '?'}embed_type=Inline&hide_gdpr_banner=1&hide_landing_page_details=1&background_color=03191c&text_color=eaf4f1&primary_color=5fe3d2&locale=${L ? 'ar' : 'en'}`
   return (
-    <div className={`booking-card${open ? ' is-open' : ''}`} id="book" data-reveal>
+    <div className={`booking-card${open ? ' is-open' : ''}`} id="book">
       <p className="bk-title">{L ? 'احجز جلستك مباشرة' : 'Book your session directly'}</p>
       <p className="bk-body">{L ? 'اختر اليوم، ثم الوقت المتاح، ويصلك التأكيد والتذكير تلقائيًا' : 'Pick a day, then an open time. Confirmation and reminders arrive automatically'}</p>
       {!open && (
