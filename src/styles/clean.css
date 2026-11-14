@@ -179,3 +179,20 @@ html.cta-pulse .stage-glow { animation: ctaPulse 1.8s cubic-bezier(0.16, 1, 0.3,
   transform: translateY(calc((1 - clamp(0, (var(--ip, 0) - 0.775) * 12, 1)) * 1.4rem));
 }
 @media (prefers-reduced-motion: reduce) { .il-fact, .il-calm { transform: none; } }
+
+/* ---------- KON Pro: one path to the diagnosis ---------- */
+.offer-card .booking-card { background: none !important; border: 0; padding: 0; margin: 1.4rem auto 0.4rem; max-width: none; box-shadow: none; }
+.offer-card .booking-card .bk-body { font-size: 0.92rem; margin-bottom: 1rem; }
+.offer-card .booking-card .btn { min-width: min(100%, 20rem); }
+.offer-card .booking-card.is-open .bk-inline { margin-inline: 0; }
+.start .offer-card { margin-bottom: clamp(1.4rem, 4vw, 2.4rem); }
+.start-or { display: flex; align-items: center; gap: 1rem; max-width: 46rem; margin: 0 auto clamp(1rem, 3vw, 1.6rem); color: var(--muted); font-size: 0.95rem; text-align: center; }
+.start-or::before, .start-or::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(168, 245, 234, 0.25), transparent); }
+.start-or span { flex: none; max-width: 70%; }
+/* Hero proof: three facts, one line on desktop, compact on phones */
+.hero .proof { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; max-width: 36rem; }
+@media (max-width: 520px) { .hero .proof li span { font-size: 0.7rem; line-height: 1.35; } .hero .proof li b { font-size: 1.25rem; } }
+/* Problem paths: clean labels */
+.path-head span { letter-spacing: 0; }
+/* The finale lands sooner */
+.finale { height: 180vh; }

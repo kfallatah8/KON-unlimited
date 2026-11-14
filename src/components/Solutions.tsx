@@ -219,7 +219,7 @@ function SectorPanel({ sec, onRequest }: { sec: SolSector; onRequest: (r: Req) =
             ))}
           </div>
           <p className="sol-toolsub">{toolMeta[tool].sub[lang]}</p>
-          <details className="sol-how" key={`how-${tool}`} open>
+          <details className="sol-how" key={`how-${tool}`}>
             <summary>{lang === 'ar' ? 'كيف تعمل هذه الأداة؟' : 'How does this tool work?'}</summary>
             <ol>
               <li><b>{lang === 'ar' ? 'السؤال' : 'The question'}</b><span>{toolHelp[tool][lang].q}</span></li>

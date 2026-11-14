@@ -243,7 +243,6 @@ function Hero({ ready }: { ready: boolean }) {
           <li key={p.l}><b dir="ltr"><CountUp value={p.n} play={ready} /></b><span>{p.l}</span></li>
         ))}
       </ul>
-      <p className="hero-slogan hero-fade">{h.slogan}</p>
       <a href="#problem" className="scroll-cue"><b className="breath-ring" aria-hidden="true" /><span>{h.scroll}</span><i aria-hidden="true" /></a>
     </section>
   )
@@ -251,6 +250,7 @@ function Hero({ ready }: { ready: boolean }) {
 
 function Problem() {
   const p = useContent().problem
+  const lang = useStore((s) => s.lang)
   return (
     <section id="problem" className="band problem" aria-labelledby="problem-title">
       <div className="wrap narrow center">
@@ -262,7 +262,7 @@ function Problem() {
         {p.paths.map((path) => (
           <div key={path.persona} className="path glass" data-reveal>
             <button type="button" className="path-head" onClick={() => startOnboarding({ persona: path.persona })}>
-              <GemMark className="path-gem" /><span>[ {path.label} ]</span><i aria-hidden="true">↵</i>
+              <GemMark className="path-gem" /><span>{path.label}</span><i aria-hidden="true">{lang === 'ar' ? '←' : '→'}</i>
             </button>
             <div className="path-chips">
               {path.q.map((q) => (
@@ -417,7 +417,6 @@ function Approach() {
             </li>
           ))}
         </ol>
-        <p className="ap-foot" data-reveal>{a.foot}</p>
       </div>
     </section>
   )
@@ -694,11 +693,10 @@ function Booking() {
   const src = `${BOOKING_URL}${BOOKING_URL.includes('?') ? '&' : '?'}embed_type=Inline&hide_gdpr_banner=1&hide_landing_page_details=1&background_color=03191c&text_color=eaf4f1&primary_color=5fe3d2&locale=${L ? 'ar' : 'en'}`
   return (
     <div className={`booking-card${open ? ' is-open' : ''}`} id="book">
-      <p className="bk-title">{L ? 'احجز جلستك مباشرة' : 'Book your session directly'}</p>
       <p className="bk-body">{L ? 'اختر اليوم، ثم الوقت المتاح، ويصلك التأكيد والتذكير تلقائيًا' : 'Pick a day, then an open time. Confirmation and reminders arrive automatically'}</p>
       {!open && (
         <div className="bk-actions">
-          <button type="button" className="btn btn-primary" onClick={() => setOpen(true)}><span>{L ? 'احجز موعدك' : 'Book your time'}</span></button>
+          <button type="button" className="btn btn-primary" onClick={() => setOpen(true)}><span>{L ? 'احجز تشخيصك المجاني' : 'Book your free diagnosis'}</span></button>
         </div>
       )}
       {open && (
@@ -712,6 +710,7 @@ function Booking() {
 
 function Start() {
   const c = useContent()
+  const lang = useStore((s) => s.lang)
   const o = c.offer
   const s = c.support
   return (
@@ -726,9 +725,10 @@ function Start() {
             {o.includes.map((x) => <li key={x}><GemMark className="li-gem" />{x}</li>)}
           </ul>
           <p className="offer-guarantee"><Rich text={o.guarantee} /></p>
+          <Booking />
           <p className="fine">{o.value} · {o.note}</p>
         </div>
-        <Booking />
+        <p className="start-or"><span>{lang === 'ar' ? 'أو جهّزنا قبل الجلسة بأسئلة قصيرة' : 'Or brief us first with a few short questions'}</span></p>
         <Onboarding />
         <div className="support-strip" id="support" data-reveal>
           <p className="ss-title">{s.title}</p>

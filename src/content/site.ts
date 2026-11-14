@@ -69,7 +69,7 @@ const ar = {
     { href: '#/talent', label: 'المواهب' },
     { href: '#founder', label: 'المؤسس' },
   ],
-  headerCta: 'ابدأ التشخيص',
+  headerCta: 'احجز تشخيصك',
 
   hero: {
     eyebrow: 'استشارات · تطوير أعمال · تشغيل · ابتكار',
@@ -77,13 +77,14 @@ const ar = {
     statement: ['ما تراه في أرقامك،', 'بدأ في عقل إنسان'],
     promise: 'وعدنا بسيط: **نطوّر أي عملية تشغيلية، ونحسّنها**',
     lede: 'نقرأ الإنسان خلف الرقم: **عميلك، وفريقك، وأنت**، ثم ننزل معك الميدان حتى تتحرك الأرقام',
-    primary: 'ابدأ تشخيصك المجاني',
+    primary: 'احجز تشخيصك المجاني',
     secondary: 'شاهد النتائج',
     slogan: 'أيًّا كان التحدي، وكيفما كان، وأينما كان… سنكون هناك',
     scroll: 'مرّر',
     proof: [
       { n: '+4,200', l: 'ساعة استشارية' },
-      { n: '11', l: 'قطاعًا' },
+      { n: '14M', l: 'ريال إيرادات، Telkomsel' },
+      { n: '+161%', l: 'نمو في 30 يومًا، Games Club' },
     ],
   },
 
@@ -210,7 +211,7 @@ const ar = {
   // khalid 2026-11-10: 30 minutes (matches his Calendly event), limited number each month.
   offer: {
     eyebrow: 'العرض',
-    title: 'التشخيص الأول علينا',
+    title: 'صورة أوضح لمشروعك، في جلسة واحدة',
     lede: 'جلسة تشخيص مع ++خبير أول++ من فريقنا، تخرج منها **بصورة أوضح لوضعك**، حتى لو لم نعمل معًا بعدها',
     includes: [
       'جلسة تشخيص مركّزة، 30 دقيقة',
@@ -461,7 +462,7 @@ const ar = {
       'شغفي ++الابتكار++، وأؤمن بقدرتي على إضافة قيمة حقيقية لأي كيان تجاري ولأي رائد أعمال',
     ],
     punch: 'كلّنا لدينا مشاكل، لكن المشكلة بداية الحل',
-    cta: 'ابدأ تشخيصك',
+    cta: 'احجز تشخيصك المجاني',
   },
 
   onboarding: {
@@ -525,7 +526,7 @@ const ar = {
   finale: {
     line: 'كل القطع كانت هنا من البداية',
     line2: 'كانت تحتاج فقط من يرتّبها',
-    cta: 'ابدأ الآن',
+    cta: 'احجز تشخيصك المجاني',
   },
 
   footer: {
@@ -550,7 +551,7 @@ const en: Content = {
     { href: '#/talent', label: 'Talent' },
     { href: '#founder', label: 'Founder' },
   ],
-  headerCta: 'Start diagnosis',
+  headerCta: 'Book your diagnosis',
 
   hero: {
     eyebrow: 'Advisory · Business development · Operations · Innovation',
@@ -558,13 +559,14 @@ const en: Content = {
     statement: ['What you see in your numbers', 'began in a human mind'],
     promise: 'Our promise is simple: **we optimise and develop any operation**',
     lede: 'We read the people behind the number: **your customer, your team, and you**. Then we work on the ground with you until the numbers move',
-    primary: 'Start your free diagnosis',
+    primary: 'Book your free diagnosis',
     secondary: 'See the results',
     slogan: 'Any challenge. Any way. Anywhere… We’ll be there',
     scroll: 'Scroll',
     proof: [
       { n: '4,200+', l: 'advisory hours' },
-      { n: '11', l: 'sectors' },
+      { n: '14M', l: 'SAR revenue, Telkomsel' },
+      { n: '+161%', l: 'growth in 30 days, Games Club' },
     ],
   },
 
@@ -687,7 +689,7 @@ const en: Content = {
 
   offer: {
     eyebrow: 'The offer',
-    title: 'Your first diagnosis is on us',
+    title: 'A clearer picture of your business, in one session',
     lede: 'A diagnosis session with a ++senior advisor++. You leave with **a clearer picture of where you stand**, even if we never work together after',
     includes: [
       'A focused 30-minute diagnosis session',
@@ -931,7 +933,7 @@ const en: Content = {
       '++Innovation++ drives me, and I believe I can add real value to any business and any founder',
     ],
     punch: 'We all have problems. But a problem is where the solution begins',
-    cta: 'Start your diagnosis',
+    cta: 'Book your free diagnosis',
   },
 
   onboarding: {
@@ -995,7 +997,7 @@ const en: Content = {
   finale: {
     line: 'Every piece was here from the start',
     line2: 'It just needed someone to put it in order',
-    cta: 'Start now',
+    cta: 'Book your free diagnosis',
   },
 
   footer: {
