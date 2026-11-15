@@ -51,8 +51,10 @@ function useForm<K extends string>(init: Record<K, number>) {
   return { v, bind }
 }
 
-function Num({ label, unit, value, onChange, hint }: { label: string; unit?: string; value: string; onChange: (s: string) => void; hint?: string }) {
+function Num({ label, unit, value, onChange, hint, sec }: { label: string; unit?: string; value: string; onChange: (s: string) => void; hint?: string; sec?: string }) {
   return (
+    <>
+    {sec && <p className="tl-sec">{sec}</p>}
     <label className="tl-field">
       <span className="tl-label">{label}</span>
       <span className="tl-input">
@@ -61,6 +63,7 @@ function Num({ label, unit, value, onChange, hint }: { label: string; unit?: str
       </span>
       {hint && <small className="tl-hint">{hint}</small>}
     </label>
+    </>
   )
 }
 
@@ -247,13 +250,13 @@ const BreakHour: ToolFn = ({ lang, report }) => {
   return (
     <>
       <div className="tl-form">
-        <Num label={L ? 'المصاريف الثابتة شهريًا' : 'Fixed costs per month'} unit={u.sar} {...bind('fixed')} hint={L ? 'إيجار، رواتب، كهرباء، اشتراكات، أقساط' : 'Rent, salaries, power, subscriptions, instalments'} />
-        <Num label={L ? 'أيام العمل في الشهر' : 'Days open per month'} {...bind('days')} />
-        <Num label={L ? 'ساعة الافتتاح (0 إلى 23)' : 'Opening hour (0–23)'} {...bind('open')} />
-        <Num label={L ? 'ساعات العمل يوميًا' : 'Hours open per day'} unit={hoursOf(L)} {...bind('hours')} />
-        <Num label={L ? 'متوسط الفاتورة قبل الضريبة' : 'Average bill before VAT'} unit={u.sar} {...bind('ticket')} />
+        <Num sec={L ? 'التكاليف' : 'Costs'} label={L ? 'المصاريف الثابتة شهريًا' : 'Fixed costs per month'} unit={u.sar} {...bind('fixed')} hint={L ? 'إيجار، رواتب، كهرباء، اشتراكات، أقساط' : 'Rent, salaries, power, subscriptions, instalments'} />
         <Num label={L ? 'التكلفة المتغيرة من الفاتورة' : 'Variable cost share of the bill'} unit="%" {...bind('varc')} hint={L ? 'المكونات، التغليف، عمولات البطاقات والتطبيقات' : 'Ingredients, packaging, card and app fees'} />
-        <Num label={L ? 'عدد العملاء يوميًا' : 'Guests per day'} {...bind('guests')} />
+        <Num sec={L ? 'المبيعات' : 'Sales'} label={L ? 'متوسط الفاتورة قبل الضريبة' : 'Average bill before VAT'} unit={u.sar} {...bind('ticket')} />
+        <Num label={L ? 'عدد العملاء يوميًا' : 'Guests per day'} unit={L ? 'عميل' : 'guests'} {...bind('guests')} />
+        <Num sec={L ? 'ساعات التشغيل' : 'Opening hours'} label={L ? 'أيام العمل في الشهر' : 'Days open per month'} unit={L ? 'يوم' : 'days'} {...bind('days')} />
+        <Num label={L ? 'ساعة الافتتاح' : 'Opening hour'} unit="0–23" hint={L ? 'بنظام 24 ساعة، 12 تعني الظهر' : '24-hour clock, 12 means noon'} {...bind('open')} />
+        <Num label={L ? 'ساعات العمل يوميًا' : 'Hours open per day'} unit={hoursOf(L)} {...bind('hours')} />
       </div>
       <Result
         tone={!ok ? 'bad' : frac > 0.75 ? 'warn' : 'good'}

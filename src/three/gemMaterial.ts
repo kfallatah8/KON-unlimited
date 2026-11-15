@@ -154,10 +154,13 @@ const fragment = /* glsl */ `
     R = reflect(V, N);
     // Faceted, slightly shiny basalt: dark charcoal with a cold blue-green cast.
     float diff = 0.35 + 0.65 * max(dot(N, uKey), 0.0);
-    vec3 stone = mix(vec3(0.016, 0.02, 0.022), vec3(0.06, 0.07, 0.07), n) * diff;
+    // Deep teal obsidian, not black: the brand colour held under pressure, lit from inside.
+    vec3 stone = mix(vec3(0.006, 0.058, 0.058), vec3(0.022, 0.15, 0.142), n) * diff;
+    float rimR = pow(1.0 - clamp(abs(dot(V, N)), 0.0, 1.0), 2.6);
+    stone += vec3(0.07, 0.5, 0.45) * (0.05 + 0.35 * rimR) * (0.75 + 0.25 * sin(uTime * 1.6 + vSeed * 20.0));
     // Anthracite, not ash: glossy black faces that mirror the sky at a glance, with a clean specular.
     float Fr = 0.04 + 0.96 * pow(1.0 - clamp(dot(-V, N), 0.0, 1.0), 5.0);
-    stone += dot(env(R), vec3(0.3333)) * vec3(0.85, 0.95, 0.95) * (0.04 + 0.26 * Fr) * (0.5 + n);
+    stone += dot(env(R), vec3(0.3333)) * vec3(0.7, 1.0, 0.96) * (0.04 + 0.26 * Fr) * (0.5 + n);
     stone += vec3(1.0, 0.96, 0.95) * pow(max(dot(R, uKey), 0.0), 160.0) * 0.3;
     // Veins of light: thin where the rock is whole, wide as it gives way.
     float vein = abs(fbm(lp * 1.05 + 4.0) - 0.5);

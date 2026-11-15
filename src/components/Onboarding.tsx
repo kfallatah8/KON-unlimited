@@ -2,7 +2,7 @@
 // situation overview with recommended services. Runs fully client-side; where the brief goes is
 // set in content/site.ts → contact, and the UI says plainly when nothing is connected yet.
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { contact as inbox, type Lang, type Persona, type Question } from '../content/site'
+import { BOOKING_URL, contact as inbox, type Lang, type Persona, type Question } from '../content/site'
 import { leadRead, optionLabel, recommend, serviceNames, stepsFor, type Answers } from '../content/onboarding'
 import { useContent } from '../content/useContent'
 import { motion, useStore } from '../state/store'
@@ -229,6 +229,25 @@ export function Onboarding() {
     return lines.join('\n')
   }
 
+  // Calendly: dark theme where the plan allows it, plus name, email and a short brief prefilled
+  // into the booking's first question, so the answers travel with the appointment.
+  const calSrc = () => {
+    const short = [
+      d.persona ? ob.personas[d.persona].label : '',
+      d.who.company,
+      list('pains').join('، '),
+      rec ? `${ob.summary.primary} ${serviceNames[rec.primary][lang]}` : '',
+      d.who.phone,
+      d.support ? ob.summary.supportBadge : '',
+    ].filter(Boolean).join(' · ').slice(0, 600)
+    const q = new URLSearchParams({
+      embed_type: 'Inline', embed_domain: location.hostname || 'kon', hide_gdpr_banner: '1', hide_landing_page_details: '1', hide_event_type_details: '1',
+      background_color: '03191c', text_color: 'eaf4f1', primary_color: '5fe3d2', locale: lang,
+      name: d.who.name, email: d.who.email, a1: short,
+    })
+    return `${BOOKING_URL}${BOOKING_URL.includes('?') ? '&' : '?'}${q.toString()}`
+  }
+
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(brief())
@@ -254,11 +273,17 @@ export function Onboarding() {
       <div className="ob-progress" aria-hidden="true">
         <i style={{ transform: `scaleX(${step < 0 ? 0.04 : Math.min(1, pos / total)})` }} />
       </div>
-      {step >= 0 && step <= n && <p className="ob-step" aria-live="polite">{ob.stepOf(pos, total)}</p>}
+      <ol className="ob-rail" aria-label={ob.stepOf(pos, total)}>
+        {ob.stages.map((label, i) => {
+          const at = step < 0 ? 0 : step < n ? 1 : step === n ? 2 : 3
+          return <li key={label} className={i < at ? 'is-done' : i === at ? 'is-now' : ''} aria-current={i === at ? 'step' : undefined}><i dir="ltr">{i + 1}</i><span>{label}</span></li>
+        })}
+      </ol>
 
       {step === -1 && (
         <div className="ob-screen" key="persona">
           <h3 tabIndex={-1}>{ob.personaQ}</h3>
+          <p className="ob-lede">{ob.intro}</p>
           <div className="ob-personas">
             {(['founder', 'business', 'investor'] as Persona[]).map((p) => (
               <button
@@ -331,46 +356,37 @@ export function Onboarding() {
       )}
 
       {step === n + 1 && d.persona && rec && (
-        <div className="ob-screen ob-summary" key="summary">
-          <h3 tabIndex={-1}>{ob.summary.title}</h3>
-          <p className="ob-lede">{ob.summary.lede}</p>
-          {d.support && <p className="ob-badge">{ob.summary.supportBadge}</p>}
-          <dl className="ob-overview">
-            <div><dt>{ob.summary.persona}</dt><dd>{ob.personas[d.persona].label}</dd></div>
-            {d.answers.stage && <div><dt>{ob.summary.stage}</dt><dd>{L('stage', d.answers.stage)}</dd></div>}
-            {list('pains').length > 0 && <div className="wide"><dt>{ob.summary.pains}</dt><dd className="tags">{list('pains').map((x) => <span key={x}>{x}</span>)}</dd></div>}
-            {list('goals').length > 0 && <div className="wide"><dt>{ob.summary.goals}</dt><dd className="tags">{list('goals').map((x) => <span key={x}>{x}</span>)}</dd></div>}
-            <div className="wide"><dt>{ob.summary.urgency}</dt><dd><span className="urg" aria-hidden="true">{[1, 2, 3, 4, 5].map((i) => <i key={i} className={i <= urg ? 'on' : ''} />)}</span>{urgLabel}</dd></div>
-          </dl>
-          <div className="ob-rec">
-            <p className="ob-rec-k">{ob.summary.primary}</p>
-            <p className="ob-rec-v">{serviceNames[rec.primary][lang]}</p>
-            {rec.also.length > 0 && (
-              <>
-                <p className="ob-rec-k">{ob.summary.also}</p>
-                <p className="tags">{rec.also.map((s) => <span key={s}>{serviceNames[s][lang]}</span>)}</p>
-              </>
-            )}
+        <div className="ob-screen ob-final" key="book">
+          <h3 tabIndex={-1}>{BOOKING_URL ? ob.book.title : ob.summary.title}</h3>
+          <p className="ob-lede">{ob.book.lede}</p>
+          <div className="ob-rec-line">
+            <span className="ob-rec-k">{ob.summary.primary}</span>
+            <b>{serviceNames[rec.primary][lang]}</b>
+            {d.support && <em className="ob-badge">{ob.summary.supportBadge}</em>}
           </div>
-          <div className="ob-next">
-            <p className="ob-rec-k">{ob.summary.next}</p>
-            <p>{ob.summary.nextBody}</p>
+          {BOOKING_URL && <CalFrame src={calSrc()} lang={lang} copy={ob.book} />}
+          <details className="ob-more">
+            <summary>{ob.book.details}</summary>
+            <dl className="ob-overview">
+              <div><dt>{ob.summary.persona}</dt><dd>{ob.personas[d.persona].label}</dd></div>
+              {d.answers.stage && <div><dt>{ob.summary.stage}</dt><dd>{L('stage', d.answers.stage)}</dd></div>}
+              {list('pains').length > 0 && <div className="wide"><dt>{ob.summary.pains}</dt><dd className="tags">{list('pains').map((x) => <span key={x}>{x}</span>)}</dd></div>}
+              {list('goals').length > 0 && <div className="wide"><dt>{ob.summary.goals}</dt><dd className="tags">{list('goals').map((x) => <span key={x}>{x}</span>)}</dd></div>}
+              <div className="wide"><dt>{ob.summary.urgency}</dt><dd><span className="urg" aria-hidden="true">{[1, 2, 3, 4, 5].map((i) => <i key={i} className={i <= urg ? 'on' : ''} />)}</span>{urgLabel}</dd></div>
+              {rec.also.length > 0 && <div className="wide"><dt>{ob.summary.also}</dt><dd className="tags">{rec.also.map((x) => <span key={x}>{serviceNames[x][lang]}</span>)}</dd></div>}
+            </dl>
+          </details>
+          <div className="ob-alt">
+            <span>{ob.book.alt}</span>
+            {inbox.whatsapp && <a className="ob-link" target="_blank" rel="noreferrer" href={`https://wa.me/${inbox.whatsapp}?text=${encodeURIComponent(brief())}`}>{ob.summary.sendWhatsapp}</a>}
+            {inbox.email && <a className="ob-link" href={`mailto:${inbox.email}?subject=${encodeURIComponent('KON · ' + d.who.name)}&body=${encodeURIComponent(brief())}`}>{ob.summary.sendEmail}</a>}
+            <button type="button" className="ob-link" onClick={copy}>{copied ? ob.summary.copied : ob.summary.copy}</button>
+            <button type="button" className="ob-link" onClick={() => setStep(0)}>{ob.summary.edit}</button>
           </div>
-          <div className="ob-actions">
-            {inbox.whatsapp && (
-              <a className="btn btn-primary" target="_blank" rel="noreferrer" href={`https://wa.me/${inbox.whatsapp}?text=${encodeURIComponent(brief())}`}><span>{ob.summary.sendWhatsapp}</span></a>
-            )}
-            {inbox.email && (
-              <a className="btn btn-primary" href={`mailto:${inbox.email}?subject=${encodeURIComponent('KON · ' + d.who.name)}&body=${encodeURIComponent(brief())}`}><span>{ob.summary.sendEmail}</span></a>
-            )}
-            <button type="button" className={`btn ${inbox.whatsapp || inbox.email ? 'btn-ghost' : 'btn-primary'}`} onClick={copy}><span>{copied ? ob.summary.copied : ob.summary.copy}</span></button>
-          </div>
-          {!inbox.whatsapp && !inbox.email && <p className="ob-note" role="note">{ob.summary.notConnected}</p>}
           <details className="ob-raw">
             <summary>{ob.summary.raw}</summary>
             <textarea readOnly rows={10} value={brief()} onFocus={(e) => e.currentTarget.select()} />
           </details>
-          <button type="button" className="ob-link" onClick={() => setStep(0)}>{ob.summary.edit}</button>
         </div>
       )}
 
@@ -382,6 +398,28 @@ export function Onboarding() {
           <button type="button" className="btn btn-primary" onClick={next}><span>{step === n ? ob.finish : ob.next}</span></button>
         </div>
       )}
+    </div>
+  )
+}
+
+function CalFrame({ src, lang, copy }: { src: string; lang: Lang; copy: { loading: string; open: string } }) {
+  const [ready, setReady] = useState(false)
+  const [slow, setSlow] = useState(false)
+  useEffect(() => {
+    const t = setTimeout(() => setSlow(true), 7000)
+    return () => clearTimeout(t)
+  }, [])
+  return (
+    <div className="cal">
+      <div className={`cal-frame${ready ? ' is-ready' : ''}`} data-lenis-prevent>
+        <div className="cal-skel" aria-hidden={ready}>
+          <span className="cal-spin" />
+          <p>{copy.loading}</p>
+          <div className="cal-ghost">{Array.from({ length: 35 }, (_, i) => <i key={i} />)}</div>
+        </div>
+        <iframe src={src} title={lang === 'ar' ? 'اختر موعد الجلسة' : 'Pick your session time'} onLoad={() => setReady(true)} />
+      </div>
+      <a className={`ob-link cal-open${slow && !ready ? ' is-loud' : ''}`} href={src.replace('embed_type=Inline&', '')} target="_blank" rel="noreferrer">{copy.open} ↗</a>
     </div>
   )
 }

@@ -222,6 +222,26 @@ function Rotator({ lines, ready }: { lines: string[]; ready: boolean }) {
   )
 }
 
+// One provocation per ICP, cycling slowly: a question the visitor already asks themselves.
+function HeroAsk({ asks }: { asks: { who: string; q: string }[] }) {
+  const [i, setI] = useState(0)
+  useEffect(() => {
+    const t = setInterval(() => { if (!document.hidden) setI((x) => (x + 1) % asks.length) }, 4200)
+    return () => clearInterval(t)
+  }, [asks.length])
+  const a = asks[i % asks.length]
+  return (
+    <div className="hero-ask hero-fade">
+      <p className="ha-stage" key={i} aria-hidden="true">
+        <span className="ha-who">{a.who}</span>
+        <span className="ha-q">{a.q}</span>
+      </p>
+      <ol className="ha-dots" aria-hidden="true">{asks.map((x, j) => <li key={x.who} className={j === i ? 'is-on' : ''} />)}</ol>
+      <ul className="sr-only">{asks.map((x) => <li key={x.who}>{x.who}: {x.q}</li>)}</ul>
+    </div>
+  )
+}
+
 function Hero({ ready }: { ready: boolean }) {
   const c = useContent()
   const h = c.hero
@@ -232,6 +252,7 @@ function Hero({ ready }: { ready: boolean }) {
         <h1 id="hero-title" className="hero-title hero-statement">
           {h.statement.map((l, i) => <span key={l} className="hs-line" style={{ transitionDelay: `${0.15 + i * 0.22}s` }}>{l}</span>)}
         </h1>
+        <HeroAsk asks={h.asks} />
         <p className="hero-lede hero-fade"><Rich text={h.lede} /></p>
         <div className="hero-ctas hero-fade">
           <MagneticButton href="#start">{h.primary}</MagneticButton>
@@ -337,14 +358,14 @@ const INTERLUDE = {
   ar: {
     press: 'الضغط لا يكسرك…',
     reveal: 'يكشفك',
-    fact: { kick: 'الألماس والفحم', lead: 'من عنصرٍ', key: 'واحد', el: 'الكربون', q: 'الفرق؟', a1: 'ضغطٌ هائل', mid: '، و', a2: 'وقتٌ طويل' },
+    fact: { kick: 'الألماس والفحم من', key: 'عنصر واحد', q: 'الفرق؟', a1: 'ضغطٌ هائل', a2: 'ووقتٌ طويل' },
     value: { kick: 'منحنا الحجرَ قيمةً عالية…', lead: 'ونسينا أن نمنحها', key: 'لأنفسنا' },
     within: { lead: 'التغيير يبدأ', key: 'من الداخل', label: 'التغيير يبدأ من الداخل' },
   },
   en: {
     press: "Pressure doesn't break you…",
     reveal: 'It reveals you',
-    fact: { kick: 'Diamond and coal', lead: 'are one', key: 'element', el: 'Carbon', q: 'The difference?', a1: 'Immense pressure', mid: ', and ', a2: 'time' },
+    fact: { kick: 'Diamond and coal are', key: 'one element', q: 'The difference?', a1: 'Immense pressure', a2: 'and time' },
     value: { kick: 'We gave a stone priceless value…', lead: 'and forgot to give it to', key: 'ourselves' },
     within: { lead: 'Change begins', key: 'within', label: 'Change begins within' },
   },
@@ -360,13 +381,15 @@ function Interlude() {
         <p className="il-reveal"><span>{t.reveal}</span></p>
         <div className="il-fact">
           <p className="il-kick" style={{ ['--d' as string]: 0 }}>{t.fact.kick}</p>
-          <p className="il-hero" style={{ ['--d' as string]: 0.008 }}>{t.fact.lead} <em>{t.fact.key}</em></p>
-          <p className="il-diff" style={{ ['--d' as string]: 0.016 }}><span className="il-q">{t.fact.q}</span> <strong>{t.fact.a1}</strong>{t.fact.mid}<strong>{t.fact.a2}</strong></p>
+          <p className="il-key" style={{ ['--d' as string]: 0.01 }}><span>{t.fact.key}</span></p>
+          <p className="il-q" style={{ ['--d' as string]: 0.022 }}>{t.fact.q}</p>
+          <p className="il-pair" style={{ ['--d' as string]: 0.03 }}><strong>{t.fact.a1}</strong><i aria-hidden="true" /><strong>{t.fact.a2}</strong></p>
         </div>
         <div className="il-calm">
           <p className="il-kick" style={{ ['--d' as string]: 0 }}>{t.value.kick}</p>
-          <p className="il-hero" style={{ ['--d' as string]: 0.01 }}>{t.value.lead} <em>{t.value.key}</em></p>
-          <p className="il-within" style={{ ['--d' as string]: 0.02 }}>{t.within.lead} <em>{t.within.key}</em></p>
+          <p className="il-lead" style={{ ['--d' as string]: 0.008 }}>{t.value.lead}</p>
+          <p className="il-key" style={{ ['--d' as string]: 0.016 }}><span>{t.value.key}</span></p>
+          <p className="il-within" style={{ ['--d' as string]: 0.03 }}>{t.within.lead} <em>{t.within.key}</em></p>
         </div>
       </div>
     </section>
@@ -410,12 +433,6 @@ function Approach() {
               <Icon id={p.icon} className="icon icon-lg" />
               <h3>{p.title}</h3>
               <p><Rich text={p.body} /></p>
-              {i === 1 && (
-                <div className="split-bar ap-bar" aria-hidden="true">
-                  <span className="seg seg-80"><b dir="ltr">{m.work.n}</b><em>{m.work.label}</em></span>
-                  <span className="seg seg-20"><b dir="ltr">{m.you.n}</b><em>{m.you.label}</em></span>
-                </div>
-              )}
             </li>
           ))}
         </ol>
@@ -693,55 +710,33 @@ function Founder() {
   )
 }
 
-function Booking() {
-  const lang = useStore((s) => s.lang)
-  const [open, setOpen] = useState(false)
-  if (!BOOKING_URL) return null
-  const L = lang === 'ar'
-  const src = `${BOOKING_URL}${BOOKING_URL.includes('?') ? '&' : '?'}embed_type=Inline&hide_gdpr_banner=1&hide_landing_page_details=1&background_color=03191c&text_color=eaf4f1&primary_color=5fe3d2&locale=${L ? 'ar' : 'en'}`
-  return (
-    <div className={`booking-card${open ? ' is-open' : ''}`} id="book">
-      <p className="bk-body">{L ? 'اختر اليوم، ثم الوقت المتاح، ويصلك التأكيد والتذكير تلقائيًا' : 'Pick a day, then an open time. Confirmation and reminders arrive automatically'}</p>
-      {!open && (
-        <div className="bk-actions">
-          <button type="button" className="btn btn-primary" onClick={() => setOpen(true)}><span>{L ? 'احجز تشخيصك المجاني' : 'Book your free diagnosis'}</span></button>
-        </div>
-      )}
-      {open && (
-        <div className="bk-inline">
-          <iframe src={src} title={L ? 'حجز موعد' : 'Book a time'} />
-        </div>
-      )}
-    </div>
-  )
-}
-
 function Start() {
   const c = useContent()
-  const lang = useStore((s) => s.lang)
   const o = c.offer
   const s = c.support
   return (
     <section id="start" className="band start" aria-labelledby="offer-title">
       <div className="wrap start-stack">
-        <div className="offer-card" data-reveal>
+        <div className="start-card" data-reveal>
           <div className="offer-shine" aria-hidden="true" />
-          <p className="eyebrow">{o.eyebrow}</p>
-          <SplitReveal as="h2" id="offer-title" className="display" text={o.title} />
-          <p className="body-lg"><Rich text={o.lede} /></p>
-          <ul className="offer-list">
-            {o.includes.map((x) => <li key={x}><GemMark className="li-gem" />{x}</li>)}
-          </ul>
-          <p className="offer-guarantee"><Rich text={o.guarantee} /></p>
-          <Booking />
-          <p className="fine">{o.value} · {o.note}</p>
+          <div className="start-offer">
+            <p className="eyebrow">{o.eyebrow}</p>
+            <SplitReveal as="h2" id="offer-title" className="display" text={o.title} />
+            <p className="body-lg"><Rich text={o.lede} /></p>
+            <ul className="offer-list">
+              {o.includes.map((x) => <li key={x}><GemMark className="li-gem" />{x}</li>)}
+            </ul>
+            <p className="offer-guarantee"><Rich text={o.guarantee} /></p>
+            <p className="fine">{o.value} · {o.note}</p>
+          </div>
+          <div className="start-flow" id="book">
+            <Onboarding />
+          </div>
         </div>
-        <p className="start-or"><span>{lang === 'ar' ? 'أو جهّزنا قبل الجلسة بأسئلة قصيرة' : 'Or brief us first with a few short questions'}</span></p>
-        <Onboarding />
         <div className="support-strip" id="support" data-reveal>
           <p className="ss-title">{s.title}</p>
           <p className="ss-body"><Rich text={s.body} /></p>
-          <p className="dedication">{s.dedication}</p>
+          <p className="dedication">{s.dedication.split(/(?<=،)\s|(?<=,)\s(?=and )/).map((part, i) => <span key={i} className="ded-line">{part}</span>)}</p>
           <button type="button" className="btn btn-ghost" onClick={() => startOnboarding({ persona: 'business', support: true })}><span>{s.cta}</span></button>
         </div>
       </div>
