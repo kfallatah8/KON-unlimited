@@ -415,7 +415,8 @@ h1 .lux { -webkit-text-fill-color: var(--champagne); color: var(--champagne); te
   .lead .eyebrow { display: none; }
   h1 { margin: 0 0 4px; }
   .lede { font-size: 0.9rem; line-height: 1.65; color: var(--text-2); }
-  .stage { height: clamp(330px, 56svh, 540px); min-height: 0; margin-top: 2px; }
+  .stage { height: clamp(340px, 62svh, 560px); min-height: 0; margin-block: 2px; }
+  .lead { padding-bottom: 4px; }
   .rest { gap: 22px; padding-top: 14px; }
   .rest > .clock { margin-top: 2px; }
   .gesture { font-size: 0.78rem; padding: 7px 14px; }
@@ -429,7 +430,7 @@ h1 .lux { -webkit-text-fill-color: var(--champagne); color: var(--champagne); te
   .signs, .traces, .seals, .alt, .foot { content-visibility: auto; contain-intrinsic-size: auto 320px; }
   .top { background: linear-gradient(180deg, #010d0f, rgba(1,13,15,0.92) 70%, rgba(1,13,15,0)); }
 }
-@media (max-width: 900px) and (max-height: 700px) { .stage { height: clamp(300px, 52svh, 420px); } .lede { display: none; } }
+@media (max-width: 900px) and (max-height: 700px) { .stage { height: clamp(300px, 52svh, 420px); } }
 
 @media (max-width: 900px) {
   .mini { white-space: nowrap; font-size: 0.8rem; padding: 0 10px; gap: 6px; height: 32px; }
@@ -568,8 +569,8 @@ html, body { overflow-x: clip; }
       <p class="alt"><span data-i18n="altQ">تفضّل الطريق المختصر؟</span><a class="link home-href" href="#" data-i18n="altHome">ادخل الموقع مباشرة</a><span class="sep">·</span><button class="link" id="joinBtn" type="button" data-i18n="altBtn">احجز مكانك دون حلّ</button></p>
 
       <footer class="foot">
-        <span data-i18n="values">نرفع الوعي · علاقات حقيقية مع أناس حقيقيين · نطلق الإمكانات</span>
-        <span class="slogan" data-i18n="slogan">أيًّا كان التحدي، وكيفما كان، وأينما كان… سنكون هناك</span>
+        <span data-i18n="values">نرفع الوعي · علاقات حقيقية مع أناس حقيقيين · نُطلق الطاقات الكامنة</span>
+        <span class="slogan" data-i18n="slogan" dir="ltr">Any challenge...Any way...Anywhere… We’ll be there</span>
       </footer>
     </div>
   </div>
@@ -583,7 +584,7 @@ html, body { overflow-x: clip; }
     <div class="wglass"><div class="glass" id="vesselB"></div><small>KON · كُن</small></div>
     <p class="reveal" data-i18n-html="reveal"></p>
     <p class="kicker" data-i18n="welKicker">فيكون</p>
-    <h2 id="welTitle" data-i18n="welTitle">أهلًا بك في العائلة</h2>
+    <h2 id="welTitle" data-i18n="welTitle">أهلًا بك في الدائرة</h2>
     <p id="stats"></p>
     <div class="seat"><span data-i18n="seatLbl">مفتاحك إلى الدائرة المؤسِّسة</span><b id="seatNo"></b></div>
     <p class="note" data-i18n="welThought">الكلمة كانت فيك قبل أن تقرأ اللغز، وهكذا كل قيمة نكشفها معك</p>
@@ -635,49 +636,49 @@ html, body { overflow-x: clip; }
 
   const T = {
     ar: {
-      intro1: 'قبل أن يُفتح الباب', intro2: 'كلمةٌ واحدة', enter: 'ادخل',
+      intro1: 'بابٌ لا يُفتح', intro2: 'إلا بكلمة', enter: 'ادخل',
       joinTop: 'احجز مكانك', sound: 'الصوت', close: 'إغلاق',
       eyebrow: 'KON Unlimited · الدعوة الأولى',
       title: 'شيءٌ <span class="lux">يتكوّن</span> خلف الغيم',
-      lede: 'والباب الأول لا يُفتح إلا بكلمة واحدة، ومن يجدها يأخذ مقعده في <span class="kw">الدائرة المؤسِّسة</span>',
-      vTitle: 'الإناء', vHint: 'كلما اقتربتَ من الكلمة امتلأ الإناء', vStates: ['ينتظر كلمتك', 'بعيد', 'تقترب', 'دافئ', 'على الحافة', 'امتلأ'],
-      shTitle: 'شظايا الضوء', shEmpty: 'ثلاث شظايا ذهبية تعبر قرب الأثر بين حين وآخر، التقطها', shHint: 'شيءٌ يلمع قرب الأثر، التقطه',
+      lede: 'ثلاثة أبيات تخفي كلمة واحدة، اقرأها وقلّب الأثر، ومن يجد الكلمة يفتح الباب ويحجز مقعده في <span class="kw">الدائرة المؤسِّسة</span>',
+      vTitle: 'الإناء', vHint: 'كلما اقتربتَ من الكلمة امتلأ الإناء', vStates: ['بانتظار كلمتك', 'بعيد', 'بدأت تقترب', 'دافئ', 'على الحافة', 'امتلأ'],
+      shTitle: 'شظايا الضوء', shEmpty: 'بين حينٍ وآخر تعبر شظيةٌ ذهبية قرب الأثر، المسها قبل أن تختفي', shHint: 'شيءٌ يلمع قرب الأثر، المسه',
       frags: ['للكون تاجٌ وقلب', 'إذا سقط التاج وانتُزع القلب', 'بقي الأمرُ الذي به كان كلّ شيء'],
       reveal: 'اسمنا كان الجواب منذ البداية: <span class="lux">KON</span> تُقرأ <span class="kw">كُن</span>',
       doorIn: 'يُفتح الباب بعد', when: 'الأحد 22 نوفمبر · 8 مساءً بتوقيت الرياض', doorOpen: 'الباب مفتوح',
       uD: 'أيام', uH: 'ساعات', uM: 'دقائق', uS: 'ثوانٍ', miniD: 'ي',
-      gesture: 'اسحب على الأثر لتدير طبقة · واسحب حوله لتقلّبه', opened: 'الأثر مفتوح · قلبه فارغ، ينتظر كلمة',
+      gesture: 'اسحب على المكعّب لتدير صفًّا · واسحب خارجه لتقلّبه', opened: 'انفتح الأثر · قلبه فارغ ينتظر كلمة',
       moves: n => `${num(n)} حركة`, tools: 'أدوات الأثر', heart: 'افتح الأثر', undo: 'تراجع', view: 'أعد الأثر إلى مكانه',
       stageLbl: 'الأثر: مكعّب من الحروف القديمة، اسحب لتديره', lite: 'وضع خفيف لسرعة أفضل',
       nogl: 'هذا الجهاز لا يعرض الأثر ثلاثي الأبعاد، لكن اللغز يعمل: اكتب ما وجدت',
-      riddleLbl: 'اللغز', riddleSub: 'ثلاثة أبيات، وكلمة واحدة',
+      riddleLbl: 'اللغز', riddleSub: 'ثلاثة أبيات تخفي كلمة',
       poem: [['مِنَ «الكونِ» أصلي، ولكنْ تراني', 'بلا تاجِهِ، دونَ قلبٍ، أكونْ'], ['صغيرٌ، وحرفانِ كلّي، وإنّي', 'لَبدءُ الذي كانَ قبلَ القرونْ'], ['فقُلني إذا ضاقَ صدرٌ تجدْني', 'كماسٍ أبى بعدَ ضغطٍ يهونْ']],
-      keyLbl: 'اكتب الكلمة التي تفتح الباب', keyNote: 'لا عقوبة على الخطأ', keyPh: 'اكتب الكلمة هنا', open: 'افتح',
-      empty: 'اكتب ما وجدته أولًا',
-      wrong: ['الباب لا يعرف هذه الكلمة، بعد', 'اقرأ البيت الأول مرة أخرى، ببطء', 'الجواب أصغر مما تظن', 'ما تبحث عنه مكتوبٌ أمامك'],
-      near: { 'الكون': 'أنت عند الباب، الآن انزع التاج والقلب', 'كون': 'بقي القلب، انزعه', 'الكن': 'بقي التاج، أسقطه', 'لكن': 'قريبٌ جدًا، في أولها حرفٌ زائد', 'الوجود': 'قريبٌ في المعنى، لكن ابحث في الكلمة المكتوبة', 'ماس': 'الماس صورة، لا جواب، ماذا قال لنفسه؟', 'الماس': 'الماس صورة، لا جواب، ماذا قال لنفسه؟', 'فحم': 'الفحم بداية، لا جواب', 'قلب': 'القلب يُنزع، لا يُكتب', 'تاج': 'التاج يسقط، لا يُكتب' },
-      right: 'فيكون', traceReady: 'أثرٌ جديد بانتظارك في الأسفل',
-      traces: 'الآثار', traceCount: n => ` ${num(n)} من ${num(3)}`, traceBtn: 'اكشف أثرًا', traceWait: s => `الأثر التالي بعد ${clockStr(s)}`, traceDone: 'كُشفت الآثار كلها',
+      keyLbl: 'اكتب الكلمة التي تفتح الباب', keyNote: 'جرّب بلا حساب', keyPh: 'اكتب الكلمة هنا', open: 'افتح',
+      empty: 'اكتب الكلمة أولًا',
+      wrong: ['لم يتعرّف الباب على هذه الكلمة', 'أعد قراءة البيت الأول على مهل', 'الجواب أصغر مما تظن', 'ما تبحث عنه مكتوبٌ أمامك'],
+      near: { 'الكون': 'وقفتَ على الباب، بقي أن تنزع التاج والقلب', 'كون': 'بقي القلب، انزعه', 'الكن': 'بقي التاج، أسقطه', 'لكن': 'قريبٌ جدًا، في أولها حرفٌ زائد', 'الوجود': 'المعنى قريب، لكن الجواب في الكلمة نفسها', 'ماس': 'الماس تشبيه، والجواب كلمةٌ قالها لنفسه', 'الماس': 'الماس تشبيه، والجواب كلمةٌ قالها لنفسه', 'فحم': 'الفحم بداية الحكاية، لا جوابها', 'قلب': 'القلب يُنزع، لا يُكتب', 'تاج': 'التاج يسقط، لا يُكتب' },
+      right: 'فيكون', traceReady: 'إشارةٌ جديدة بانتظارك في الأسفل',
+      traces: 'الإشارات', traceCount: n => ` ${num(n)} من ${num(3)}`, traceBtn: 'اكشف إشارة', traceWait: s => `الإشارة التالية بعد ${clockStr(s)}`, traceDone: 'كُشفت الإشارات كلها',
       traceNames: ['الأول', 'الثاني', 'الثالث'],
-      traceLines: ['ابحث داخل الكلمة، لا في السماء', 'لِـ«الكون» تاجٌ من حرفين، وقلبٌ من حرفٍ واحد، انزعهما', 'فعلُ أمرٍ من حرفين، تقوله لنفسك فتبدأ'],
+      traceLines: ['ابحث داخل الكلمة، لا في السماء', 'في «الكون» تاجٌ من حرفين وقلبٌ من حرف، انزعهما', 'فعلُ أمرٍ من حرفين، تقوله لنفسك فتبدأ'],
       sealsTitle: 'للمثابرين: الأختام الثمانية', sealCount: n => `${num(n)} من ${num(8)}`, sealLocked: 'مختوم', sealOpened: 'انفكّ ختم',
-      sealHint: 'أدِر الأثر حتى تستقيم وجوهه. كل ختمٍ يُفكّ يكشف حكمة، والثمانية معًا تفتح الباب أيضًا',
+      sealHint: 'رتّب وجوه المكعّب، وكل ختمٍ ينفكّ يكشف حكمة، والأختام الثمانية تفتح الباب أيضًا',
       sealLines: ['ما تراه خارجك صورةُ ما في داخلك', 'البذرة لا ترى الشجرة، لكنها تحملها', 'الحجر يلين للماء، لا للقوة', 'حرفان قد يحملان كونًا كاملًا', 'كل وجهٍ يكتمل بمن يصبر عليه', 'ما يبقى منك هو ما بدأ فيك', 'الأركان تحمل البيت قبل أن تُرى جدرانه', 'الوسط ميزانٌ بين العاطفة والعقل'],
-      altQ: 'تفضّل الطريق المختصر؟', altBtn: 'احجز مكانك دون حلّ',
-      values: 'نرفع الوعي · علاقات حقيقية مع أناس حقيقيين · نطلق الإمكانات', slogan: 'أيًّا كان التحدي، وكيفما كان، وأينما كان… سنكون هناك',
+      altQ: 'ما عندك وقت للغز؟', altBtn: 'احجز مكانك بدون حل',
+      values: 'نرفع الوعي · علاقات حقيقية مع أناس حقيقيين · نُطلق الطاقات الكامنة', slogan: 'Any challenge...Any way...Anywhere… We’ll be there',
       goldenTitle: n => `مفتاحٌ ذهبي باسم ${n}`, goldenSub: 'دعوة خاصة: الباب مفتوح لك دون لغز', goldenBtn: 'ادخل بمفتاحك',
-      welKicker: 'فيكون', welTitle: 'أهلًا بك في العائلة',
-      stats: (tm, n) => `وجدتَ الكلمة في ${tm}${n ? ` وبعد ${num(n)} حركة` : ''}، وأغلب الناس يبحثون عنها خارجهم`,
-      statsCube: (tm, n) => `فككتَ الأختام الثمانية في ${tm} وبعد ${num(n)} حركة. قلّة يصلون إلى هنا`,
-      statsGolden: 'دخلتَ بمفتاحٍ ذهبي، فمكانك محفوظ قبل أن تطرق الباب',
-      seatLbl: 'مفتاحك إلى الدائرة المؤسِّسة', welThought: 'الكلمة كانت فيك قبل أن تقرأ اللغز، وهكذا كل قيمة نكشفها معك',
+      welKicker: 'فيكون', welTitle: 'أهلًا بك في الدائرة',
+      stats: (tm, n) => `وصلتَ إلى الكلمة خلال ${tm}${n ? ` وبـ${num(n)} حركة` : ''}، وأكثر الناس يبحثون عنها خارج أنفسهم`,
+      statsCube: (tm, n) => `فككتَ الأختام الثمانية خلال ${tm} وبـ${num(n)} حركة، وقليلون من يصلون إلى هنا`,
+      statsGolden: 'دخلتَ بمفتاحٍ ذهبي، ومقعدك محفوظ قبل أن تطرق الباب',
+      seatLbl: 'مفتاحك إلى الدائرة المؤسِّسة', welThought: 'كانت الكلمة فيك قبل أن تقرأ اللغز، وهكذا نعمل: نكشف القيمة الموجودة فيك أصلًا',
       fName: 'الاسم', chLbl: 'طريقة التواصل', chWa: 'واتساب', chEm: 'بريد', fWa: 'رقم الواتساب', fEm: 'البريد الإلكتروني',
-      welSave: 'ثبّت مقعدي', waitSave: 'احجز مكاني', oneMsg: 'رسالة واحدة حين يُفتح الباب، بلا إزعاج',
-      need: 'اكتب اسمك وطريقة تواصل صحيحة', saved: 'حُفظ مقعدك، وستصلك رسالة واحدة حين يُفتح الباب', sending: 'لحظة…', failed: 'تعذّر الحفظ الآن، جرّب مرة أخرى بعد قليل', already: 'مقعدك محفوظ مسبقًا',
+      welSave: 'ثبّت مقعدي', waitSave: 'احجز مكاني', oneMsg: 'رسالة واحدة يوم يُفتح الباب، بلا إزعاج',
+      need: 'اكتب اسمك وطريقة تواصل صحيحة', saved: 'تم، مقعدك محفوظ وستصلك رسالة واحدة يوم يُفتح الباب', sending: 'لحظة…', failed: 'تعذّر الحفظ الآن، جرّب مرة أخرى بعد قليل', already: 'مقعدك محفوظ مسبقًا',
       skip: 'أو ادخل موقع KON مباشرة', homeTop: 'ادخل الموقع', altHome: 'ادخل الموقع مباشرة', welHome: 'ادخل موقع KON Unlimited',
       shareLbl: 'شارك اللغز، لا الجواب', shareWa: 'أرسله عبر واتساب', shareCopy: 'انسخ الرابط', copied: 'نُسخ الرابط', copyFail: 'انسخ الرابط يدويًا:',
-      shareText: 'لغزٌ من KON Unlimited: ثلاثة أبيات وكلمة واحدة تفتح الباب، هل تجدها؟',
-      waitTitle: 'احجز مكانك', waitText: 'ستصلك رسالة واحدة حين يُفتح الباب. ومن يجد الكلمة قبل الإطلاق يأخذ مقعدًا في الدائرة المؤسِّسة',
+      shareText: 'ثلاثة أبيات تخفي كلمة واحدة تفتح الباب، تقدر تلقاها؟',
+      waitTitle: 'احجز مكانك', waitText: 'نرسل لك رسالة واحدة يوم يُفتح الباب، ومن يحلّ اللغز قبل الإطلاق يأخذ مقعدًا في الدائرة المؤسِّسة',
       waitTry: 'أو جرّب حظك مع اللغز أولًا', backToRiddle: 'عُد إلى اللغز',
       pv: 'معاينة', pvNote: 'أدوات المعاينة فقط، تُزال عند الإطلاق. التاريخ ورقم المقعد والأختام تجريبية، ولا يُرسل شيء من هنا',
       pvAnswer: 'اكتب الجواب وافتح', pvTrace: 'اكشف الأثر التالي الآن', pvScramble: 'أعد خلط الأثر', pvShard: 'أطلق شظية ضوء الآن', pvWelcome: 'اعرض شاشة الترحيب', pvGolden: 'جرّب المفتاح الذهبي', langBtn: 'English'
@@ -687,7 +688,7 @@ html, body { overflow-x: clip; }
       joinTop: 'Save your place', sound: 'Sound', close: 'Close',
       eyebrow: 'KON Unlimited · The first invitation',
       title: 'Something is <span class="lux">taking form</span> behind the clouds',
-      lede: 'The first door opens with one word only. Whoever finds it takes a seat in the <span class="kw">founding circle</span>',
+      lede: 'Three lines hide one word. Read them, turn the relic, and whoever finds the word opens the door and takes a seat in the <span class="kw">founding circle</span>',
       vTitle: 'The vessel', vHint: 'The closer you get to the word, the fuller it grows', vStates: ['Waiting for your word', 'Far', 'Closer', 'Warm', 'At the brim', 'Full'],
       shTitle: 'Shards of light', shEmpty: 'Three gold shards drift past the relic now and then. Catch them', shHint: 'Something glints near the relic. Catch it',
       frags: ['The universe has a crown and a heart', 'Let the crown fall, take the heart out', 'What remains is the command by which all things came to be'],
@@ -712,7 +713,7 @@ html, body { overflow-x: clip; }
       sealHint: 'Turn the relic until its faces align. Each seal you break reveals a line of wisdom, and all eight together also open the door',
       sealLines: ['What you see outside is the image of what is within', 'The seed never sees the tree, yet it carries it', 'Stone yields to water, not to force', 'Two letters can carry a whole universe', 'Every face is completed by whoever stays with it', 'What remains of you is what began in you', 'Corners carry the house before its walls are seen', 'The middle is a balance between emotion and reason'],
       altQ: 'Prefer the short way?', altBtn: 'Save your place without solving',
-      values: 'Raising awareness · Real connections with real people · Unlocking potential', slogan: 'Any challenge. Any way. Anywhere… We’ll be there',
+      values: 'Raising awareness · Real connections with real people · Unlocking potential', slogan: 'Any challenge...Any way...Anywhere… We’ll be there',
       goldenTitle: n => `A golden key for ${n}`, goldenSub: 'A private invitation: the door is open to you, no riddle needed', goldenBtn: 'Enter with your key',
       welKicker: 'فيكون', welTitle: 'Welcome to the family',
       stats: (tm, n) => `You found the word in ${tm}${n ? ` after ${num(n)} moves` : ''}, while most people look for it outside themselves`,
@@ -1095,9 +1096,11 @@ html, body { overflow-x: clip; }
     const st = $('stage'), wide = innerWidth > 900;
     // wide: the relic is a fixed backdrop outside the column; narrow: it sits in the flow between the clock and the riddle
     // narrow: the relic comes straight after the title (the puzzle is the first thing you see), and the clock moves below the riddle
-    const lead = document.querySelector('.lead'), title = lead.firstElementChild, clock = $('clock'), riddle = document.querySelector('.riddle');
-    if (wide) { if (st.parentNode !== document.body) document.body.insertBefore(st, $('hall')); if (clock.parentNode !== lead) lead.appendChild(clock); }
-    else { if (st.previousElementSibling !== title) title.after(st); if (clock.previousElementSibling !== riddle) riddle.after(clock); }
+    // order (khalid, 2026-11-16): hero tagline, then the poem, then the relic, then the key, the clock and everything else
+    const clock = $('clock'), riddle = document.querySelector('.riddle'), key = $('keyForm');
+    if (clock.previousElementSibling !== key) key.after(clock);
+    if (wide) { if (st.parentNode !== document.body) document.body.insertBefore(st, $('hall')); }
+    else if (st.previousElementSibling !== riddle) riddle.after(st);
     if (wide) {
       const cw = $('col').getBoundingClientRect().width, shift = Math.min(0.3, cw / 2 / innerWidth);
       st.dataset.shift = shift.toFixed(4);
