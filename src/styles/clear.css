@@ -1,0 +1,65 @@
+/* ==========================================================================
+   KON Clear: the reading layer.
+   Someone was seen squinting at the page. Causes: 14–15px body text in a muted grey, weight 400
+   on a thin Arabic face, and see-through cards with gems drifting behind the words.
+   Fixes: larger body text, near-white ink, a medium weight, longer line height, and calm,
+   almost-opaque reading surfaces. Nothing here changes the layout grid.
+   ========================================================================== */
+:root { --ink: #eef6f4; --ink-2: #d3e3df; --ink-3: #b9cfca; }
+html { -webkit-text-size-adjust: 100%; }
+
+/* body copy */
+main p, main li, main dd, main dt, main summary { font-weight: 500; }
+.hero-lede, main .body-lg { font-size: clamp(1.14rem, 1.02rem + 0.5vw, 1.32rem); line-height: 1.9; color: var(--ink); }
+.sv-card p, .ap-card p, .case p, .fd-body, .fd-body p, .offer-list li, .ss-body, .more-card p,
+.sol-lede, .sol-toolsub, .ti-body, .persona span, .tl-result p {
+  font-size: clamp(1.05rem, 1rem + 0.25vw, 1.14rem); line-height: 1.9; color: var(--ink-2);
+}
+main p { text-shadow: none; }
+.sv-card p, .ap-card p, .case p { max-width: 34ch; margin-inline: auto; }
+
+/* nothing readable below 14px */
+main small, .tl-hint, .case-meta span, .fd-roles li, .proof small, .proof span, .scroll-cue span,
+.chip, .tl-day span, .hint, .sol-toolpick span, .tl-input i { font-size: max(0.9rem, 14px) !important; }
+.tl-hint, .proof small, .hint, .persona span { color: var(--ink-3) !important; }
+.eyebrow, .eyebrow-text, .ha-who { font-size: 1rem; letter-spacing: 0.02em; }
+.tl-label { font-size: 1.02rem; font-weight: 600; color: var(--ink); }
+.tl-sec { font-size: 0.98rem; }
+.case-metric span, .tl-big-label { font-size: 1rem; color: var(--ink-2); }
+dd, dt { font-size: 1rem; }
+
+/* headings: a touch heavier so they hold over the gems */
+main h2.display { font-weight: 500; }
+main h3 { font-weight: 600; color: var(--ink); }
+
+/* reading surfaces: calm and nearly opaque, no blur (also cheaper to paint) */
+.glass, .ap-card, .case, .sv-card, .more-card, .fd-card, .start-card, .sol-panel, .qt-panel {
+  background: linear-gradient(180deg, rgba(6, 34, 36, 0.92), rgba(2, 18, 20, 0.94)) !important;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+}
+
+/* hero: the reassurance line under the buttons */
+.hero-micro { margin-top: 0.9rem; font-size: 0.98rem; color: var(--ink-3); letter-spacing: 0.01em; }
+
+/* quick tools: three questions, one panel */
+.quick .qt-picks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; max-width: 62rem; margin: 0 auto 1rem; }
+.qt-pick {
+  display: grid; gap: 0.35rem; text-align: start; padding: 1rem 1.1rem; border-radius: 16px; cursor: pointer;
+  background: rgba(4, 28, 30, 0.9); border: 1px solid rgba(168, 245, 234, 0.14); color: var(--ink);
+  font: inherit; transition: border-color 0.3s, background 0.3s, transform 0.3s;
+}
+.qt-pick b { font-size: 1.08rem; font-weight: 600; line-height: 1.6; }
+.qt-k { font-size: 0.9rem; color: #e3c27f; }
+.qt-pick:hover { border-color: rgba(168, 245, 234, 0.35); }
+.qt-pick.is-on { border-color: #5fe3d2; background: rgba(10, 60, 60, 0.92); box-shadow: 0 0 0 1px rgba(95, 227, 210, 0.35) inset; }
+.qt-pick:focus-visible { outline: 2px solid #5fe3d2; outline-offset: 2px; }
+.qt-panel { max-width: 62rem; margin: 0 auto; padding: clamp(1.1rem, 3vw, 2rem); border-radius: 22px; }
+.qt-foot { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; align-items: center; justify-content: center; margin-top: 1.6rem; }
+@media (max-width: 760px) {
+  .quick .qt-picks { grid-template-columns: 1fr; }
+  .qt-pick { padding: 0.85rem 1rem; }
+  .qt-foot .btn { width: 100%; justify-content: center; }
+}
+
+/* small labels that sit inside more specific rules */
+#main .hero .proof li span, #main .hero .proof li small, #main .ob-personas .persona span, #main .ob-toggle span, #main .ob-rail li span { font-size: max(0.9rem, 14px) !important; }

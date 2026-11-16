@@ -64,9 +64,9 @@ const ar = {
     home: 'الرئيسية',
   },
   nav: [
-    { href: '#services', label: 'خدماتنا' },
-    { href: '#solutions', label: 'القطاعات' },
     { href: '#work', label: 'أعمالنا' },
+    { href: '#services', label: 'خدماتنا' },
+    { href: '#tools', label: 'أدوات مجانية' },
     { href: '#/talent', label: 'المواهب' },
     { href: '#founder', label: 'المؤسس' },
   ],
@@ -75,7 +75,7 @@ const ar = {
   hero: {
     eyebrow: 'تشغيل · تطوير أعمال · ابتكار',
     rotating: ['نرفع كفاءة مشروعك', 'نبتكر حلولًا تسبق التحدي', 'نضبط تشغيلك اليومي', 'نحوّل فكرتك إلى مشروع يعمل', 'نجعل استثمارك أذكى'],
-    statement: ['ما تراه في أرقامك', 'بدأ في عقل إنسان'],
+    statement: ['ربحٌ أعلى', 'من حيث لا تنظر'],
     asks: [
       { who: 'لصاحب المشروع', q: 'مبيعاتك تكبر، فلماذا لا يكبر ربحك معها؟' },
       { who: 'لرائد الأعمال', q: 'فكرتك جميلة، لكن هل سيدفع أحد ثمنها؟' },
@@ -84,7 +84,8 @@ const ar = {
       { who: 'للمستثمر', q: 'هل هذا أفضل عائد لاستثمارك، أم أفضل استخدام له؟' },
     ],
     promise: 'وعدنا بسيط: **نطوّر أي عملية تشغيلية، ونحسّنها**',
-    lede: 'نقرأ الإنسان خلف الرقم: **عميلك، وفريقك، وأنت**، ثم ننزل معك الميدان حتى تتحرك الأرقام',
+    lede: 'أرقامك تخبرك **ماذا حدث**، ونحن نكشف **لماذا**: نقرأ عميلك وفريقك وقراراتك بعين أخصائي نفسي، ثم ننزل معك الميدان حتى يتحرك الربح',
+    micro: 'جلسة 30 دقيقة · بلا تكلفة · بلا التزام',
     primary: 'احجز تشخيصك المجاني',
     secondary: 'شاهد النتائج',
     slogan: 'Any challenge…Any way…Anywhere…We’ll be there',
@@ -150,8 +151,8 @@ const ar = {
     eyebrow: 'طريقتنا',
     title: 'لماذا تتحرك الأرقام معنا',
     pillars: [
-      { icon: 'mind' as IconId, title: 'نبدأ من الإنسان', body: 'كل رقم في شركتك قرارُ إنسان: عميل تردّد، أو موظف تعب، أو مدير استعجل، نقرأ **سلوك عميلك وعقلية فريقك** بعين أخصائي نفسي، فنصل إلى السبب الذي تخفيه الأرقام' },
-      { icon: 'field' as IconId, title: 'ننزل الميدان حتى يعمل', body: 'نبني، وندرّب، ونكتب إجراءات التشغيل، ونتابع فريقك حتى يصير الجديد **عادة يومية** تعيش بعدنا' },
+      { icon: 'mind' as IconId, title: 'نبدأ من الإنسان', body: 'خلف كل رقم قرار إنسان: عميل تردّد، أو موظف تعب، أو مدير استعجل، نقرأ هذا القرار **بعين أخصائي نفسي**، فنعالج السبب لا العَرَض' },
+      { icon: 'field' as IconId, title: 'ننزل الميدان حتى يعمل', body: 'لا نسلّمك تقريرًا وننصرف، نبني معك، وندرّب فريقك، ونتابع حتى يصير الجديد **عادة يومية** تعيش بعدنا' },
       { icon: 'aligned' as IconId, title: 'نربح حين تربح', body: 'أتعابنا **مرتبطة بالنتائج** التي نصنعها لك، ونتفق على طريقة الربط كتابيًا، قبل أن نبدأ' },
     ],
     foot: 'خبرة في 11 قطاعًا، من الاتصالات إلى الضيافة، والذكاء الاصطناعي يقوم عندنا بعمل فرق كاملة، والقرار يبقى بشريًا',
@@ -199,12 +200,12 @@ const ar = {
     eyebrow: 'خدماتنا',
     title: 'ست خدمات، هدف واحد: تشغيل أفضل',
     items: [
-      { title: 'التشخيص', body: 'نرى شركتك من ثمانية أبعاد' },
-      { title: 'الاستراتيجية', body: 'نحدد وجهتك، وما يجب أن تتركه خلفك' },
-      { title: 'العمليات', body: 'نزيل ما يُبطئك' },
+      { title: 'التشخيص', body: 'نقرأ شركتك من ثمانية أبعاد، فتعرف أين يضيع ربحك بالضبط' },
+      { title: 'الاستراتيجية', body: 'نحدد وجهتك، وما يجب أن تتوقف عنه لتصل أسرع' },
+      { title: 'العمليات', body: 'نزيل ما يُبطئ فريقك، فتنجز أكثر بتكلفة أقل' },
       { title: 'المتسوق الخفي', body: 'نزورك كعميل عادي، ونرى ما يراه عملاؤك فعلًا' },
-      { title: 'الحلول الرقمية', body: 'أداة على مقاس شغلك، تملكها أنت' },
-      { title: 'الذكاء الاصطناعي', body: 'يُسرّع التحليل، ويبقى القرار بشريًا' },
+      { title: 'الحلول الرقمية', body: 'أداة مصمّمة على مقاس عملك، وتملكها أنت' },
+      { title: 'الذكاء الاصطناعي', body: 'يُسرّع التحليل والمتابعة، ويبقى القرار بشريًا' },
     ],
   },
 
@@ -216,6 +217,19 @@ const ar = {
       { k: 'تشخيص مجاني', title: 'التشخيص الأول علينا', body: 'جلسة 30 دقيقة مع خبير أول، وخريطة طريق مبدئية مكتوبة', cta: 'احجز تشخيصك', href: '#start', points: ['30 دقيقة مع خبير أول', 'قراءة من ثمانية أبعاد', 'خريطة طريق مبدئية مكتوبة'] },
       { k: 'دعم مجاني', title: 'للمشاريع المتعثّرة', body: 'استشارة متقدّمة ودعم تشغيلي كامل بلا مقابل، لمن لا يستطيع تحمّل التكلفة', cta: 'قدّم طلب الدعم', href: '#support', points: ['استشارة متقدّمة', 'دعم تشغيلي كامل', 'بلا مقابل وبلا شروط خفية'] },
     ],
+  },
+
+  quick: {
+    eyebrow: 'أدوات مجانية',
+    title: 'احسبها بنفسك، في دقيقة',
+    lede: 'ثلاثة أسئلة يتجاهلها كثير من أصحاب الأعمال، وأرقامك **لا تغادر جهازك**',
+    items: [
+      { id: 'price', q: 'لو رفعت سعرك، كم عميلًا تتحمّل أن تخسر؟', k: '3 أرقام فقط' },
+      { id: 'lever', q: 'ما أسرع طريق لرفع ربحك؟', k: 'لكل الأعمال' },
+      { id: 'breakhour', q: 'في أي ساعة يبدأ ربحك اليوم؟', k: 'للمطاعم والمتاجر' },
+    ],
+    cta: 'ناقش نتيجتك مع خبير، مجانًا',
+    all: 'كل الأدوات حسب قطاعك',
   },
 
   // khalid 2026-11-10: 30 minutes (matches his Calendly event), limited number each month.
@@ -565,9 +579,9 @@ const en: Content = {
     home: 'Home',
   },
   nav: [
-    { href: '#services', label: 'Services' },
-    { href: '#solutions', label: 'Sectors' },
     { href: '#work', label: 'Work' },
+    { href: '#services', label: 'Services' },
+    { href: '#tools', label: 'Free tools' },
     { href: '#/talent', label: 'Talent' },
     { href: '#founder', label: 'Founder' },
   ],
@@ -576,7 +590,7 @@ const en: Content = {
   hero: {
     eyebrow: 'Operations · Business development · Innovation',
     rotating: ['We make your business run better', 'We innovate ahead of every challenge', 'We sharpen how you operate', 'We turn ideas into working businesses', 'We make your capital work smarter'],
-    statement: ['What you see in your numbers', 'began in a human mind'],
+    statement: ['Higher profit', 'from where you’re not looking'],
     asks: [
       { who: 'For business owners', q: 'Sales keep growing. So why doesn’t profit?' },
       { who: 'For founders', q: 'It’s a beautiful idea. But will anyone pay for it?' },
@@ -585,7 +599,8 @@ const en: Content = {
       { who: 'For investors', q: 'Is this the best return on your capital, or the best use of it?' },
     ],
     promise: 'Our promise is simple: **we optimise and develop any operation**',
-    lede: 'We read the people behind the number: **your customer, your team, and you**. Then we work on the ground with you until the numbers move',
+    lede: 'Your numbers tell you **what** happened. We find out **why**: we read your customers, your team and your decisions with a psychologist’s eye, then work on the ground with you until profit moves',
+    micro: '30 minutes · Free · No commitment',
     primary: 'Book your free diagnosis',
     secondary: 'See the results',
     slogan: 'Any challenge…Any way…Anywhere…We’ll be there',
@@ -649,8 +664,8 @@ const en: Content = {
     eyebrow: 'How we work',
     title: 'Why the numbers move with us',
     pillars: [
-      { icon: 'mind' as IconId, title: 'We start with people', body: 'Every number in your company is a human decision: a customer who hesitated, an employee who got tired, a manager who rushed. We read **your customers’ behaviour and your team’s mindset** through a psychologist’s eyes, and find the cause the numbers hide' },
-      { icon: 'field' as IconId, title: 'We stay on the ground until it works', body: 'We build, train, write the operating procedures, and stay with your team until the new way becomes **a daily habit** that outlives us' },
+      { icon: 'mind' as IconId, title: 'We start with people', body: 'Behind every number is a human decision: a customer who hesitated, an employee who got tired, a manager who rushed. We read that decision **through a psychologist’s eyes**, and fix the cause, not the symptom' },
+      { icon: 'field' as IconId, title: 'We stay on the ground until it works', body: 'No report-and-leave. We build with you, train your team, and stay until the new way becomes **a daily habit** that outlives us' },
       { icon: 'aligned' as IconId, title: 'We win when you win', body: 'Our fees are **tied to the results** we create for you. We agree how, in writing, before we start' },
     ],
     foot: 'Experience across 11 sectors, from telecom to hospitality. AI does the work of whole teams for us, and the decisions stay human',
@@ -697,12 +712,12 @@ const en: Content = {
     eyebrow: 'Services',
     title: 'Six services. One goal: a better-run business',
     items: [
-      { title: 'Diagnosis', body: 'We see your company from eight angles' },
-      { title: 'Strategy', body: 'Where you’re going, and what to leave behind' },
-      { title: 'Operations', body: 'We remove what slows you down' },
+      { title: 'Diagnosis', body: 'We read your company from eight angles, so you know exactly where profit leaks' },
+      { title: 'Strategy', body: 'Where you’re going, and what to stop doing to get there faster' },
+      { title: 'Operations', body: 'We remove what slows your team down, so you do more for less' },
       { title: 'Mystery Shopper', body: 'We visit as an ordinary customer and see what your customers really see' },
       { title: 'Digital', body: 'A tool cut to your work, and yours to own' },
-      { title: 'AI', body: 'Faster analysis, human decisions' },
+      { title: 'AI', body: 'Faster analysis and follow-up, human decisions' },
     ],
   },
 
@@ -714,6 +729,19 @@ const en: Content = {
       { k: 'Free diagnosis', title: 'Your first diagnosis is on us', body: 'A 30-minute session with a senior advisor, plus a written first-draft roadmap', cta: 'Book your diagnosis', href: '#start', points: ['30 minutes with a senior advisor', 'A read across eight dimensions', 'A written first-draft roadmap'] },
       { k: 'Free support', title: 'For struggling businesses', body: 'Advanced advisory and full operational support at no cost, for those who can’t afford it', cta: 'Apply for support', href: '#support', points: ['Advanced advisory', 'Full operational support', 'No fee, no hidden conditions'] },
     ],
+  },
+
+  quick: {
+    eyebrow: 'Free tools',
+    title: 'Work it out yourself, in a minute',
+    lede: 'Three questions many owners never ask, and your numbers **never leave your device**',
+    items: [
+      { id: 'price', q: 'If you raised your price, how many customers could you afford to lose?', k: 'Just 3 numbers' },
+      { id: 'lever', q: 'What is the fastest way to lift your profit?', k: 'Any business' },
+      { id: 'breakhour', q: 'What time does your profit start today?', k: 'Restaurants and shops' },
+    ],
+    cta: 'Talk your result through with an expert, free',
+    all: 'All tools by sector',
   },
 
   offer: {

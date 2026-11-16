@@ -15,6 +15,8 @@ import { MagneticButton } from './components/MagneticButton'
 import { chipPain, Onboarding } from './components/Onboarding'
 import { lenis, SmoothScroll } from './components/SmoothScroll'
 import { SplitReveal, Hl } from './components/SplitReveal'
+import { Tool } from './components/Tools'
+import type { ToolId } from './content/solutions'
 import { Rich } from './components/Rich'
 import { KonMark } from './components/KonMark'
 import { SafeBoundary } from './components/SafeBoundary'
@@ -259,6 +261,7 @@ function Hero({ ready }: { ready: boolean }) {
           <MagneticButton href="#start">{h.primary}</MagneticButton>
           <MagneticButton href="#work" variant="ghost">{h.secondary}</MagneticButton>
         </div>
+        <p className="hero-micro hero-fade">{h.micro}</p>
       </div>
       <ul className="proof hero-fade" aria-label="KON">
         {h.proof.map((p) => (
@@ -469,7 +472,43 @@ function Services() {
   )
 }
 
-function Freebies() {
+/** Three calculators that answer one question each, instead of a wall of sectors and tabs.
+ *  The full sector library lives on its own page (#/solutions). */
+function QuickTools() {
+  const q = useContent().quick
+  const lang = useStore((s) => s.lang)
+  const [id, setId] = useState<ToolId>(q.items[0].id as ToolId)
+  const summary = useRef('')
+  return (
+    <section id="tools" className="band quick" aria-labelledby="quick-title">
+      <div className="wrap">
+        <div className="narrow center sec-head">
+          <p className="eyebrow centered" data-reveal>{q.eyebrow}</p>
+          <SplitReveal as="h2" id="quick-title" className="display" text={q.title} />
+          <p className="body-lg" data-reveal><Rich text={q.lede} /></p>
+        </div>
+        <div className="qt-picks" role="tablist" aria-label={q.eyebrow} data-reveal>
+          {q.items.map((it) => (
+            <button key={it.id} type="button" role="tab" aria-selected={id === it.id} className={`qt-pick${id === it.id ? ' is-on' : ''}`} onClick={() => setId(it.id as ToolId)}>
+              <span className="qt-k">{it.k}</span>
+              <b>{it.q}</b>
+            </button>
+          ))}
+        </div>
+        <div className="qt-panel glass" role="tabpanel">
+          <Tool key={id} id={id} lang={lang} report={(x) => { summary.current = x }} />
+          <div className="qt-foot">
+            <button type="button" className="btn btn-primary" onClick={() => startOnboarding({ persona: 'business' })}><span>{q.cta}</span></button>
+            <a href="#/solutions" className="link-btn">{q.all} <span aria-hidden="true">{lang === 'ar' ? '←' : '→'}</span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function Freebies() {
   const f = useContent().freebies
   const lang = useStore((s) => s.lang)
   const go = (href: string) => (e: { preventDefault(): void }) => {
@@ -833,7 +872,7 @@ function DockCta() {
       const tal = document.getElementById('talent')?.getBoundingClientRect()
       const atTalent = tal ? tal.top < window.innerHeight * 0.6 && tal.bottom > window.innerHeight * 0.4 : false
       // Same over the solutions tools: the visitor is already busy with a calculator there.
-      const sol = document.getElementById('solutions')?.getBoundingClientRect()
+      const sol = (document.getElementById('solutions') ?? document.getElementById('tools'))?.getBoundingClientRect()
       const atSol = sol ? sol.top < window.innerHeight * 0.6 && sol.bottom > window.innerHeight * 0.4 : false
       setShow(window.scrollY > window.innerHeight * 0.9 && !atForm && !atFinale && !atTalent && !atSol)
     }
@@ -1049,16 +1088,15 @@ export default function App() {
           <>
             <Hero ready={ready} />
             <Problem />
-            <Interlude />
+            <Work />
             <Approach />
             <Services />
-            <Freebies />
-            <Solutions />
-            <Work />
-            <More />
+            <Interlude />
+            <QuickTools />
             <Founder />
             <Finale fallback={!webgl} />
             <Start />
+            <More />
           </>
         )}
       </main>

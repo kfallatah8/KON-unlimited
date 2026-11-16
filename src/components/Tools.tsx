@@ -226,7 +226,7 @@ const Recipe: ToolFn = ({ lang, report }) => {
         <Num label={L ? 'عدد الحصص من هذه الكميات' : 'Portions from these amounts'} {...bind('yield')} />
         <Num label={L ? 'إضافات لكل حصة (تغليف، تزيين)' : 'Extras per portion (packaging, garnish)'} unit={u.sar} {...bind('extra')} />
         <Num label={L ? 'نسبة التكلفة المستهدفة' : 'Target food cost'} unit="%" {...bind('target')} hint={L ? 'المطاعم الناجحة غالبًا بين 28% و35%' : 'Healthy restaurants usually sit between 28% and 35%'} />
-        <Num label={L ? 'سعرك الحالي (اختياري)' : 'Your current price (optional)'} unit={u.sar} {...bind('current')} />
+        <Num label={L ? 'سعرك الحالي شامل الضريبة (اختياري)' : 'Your current price incl. VAT (optional)'} unit={u.sar} {...bind('current')} />
       </div>
       <Result
         tone={tone}
@@ -404,16 +404,19 @@ const Ceiling: ToolFn = ({ lang, report }) => {
   const c = Math.max(0, v.churn) / 100
   const cap = c > 0 ? v.add / c : Infinity
   const capRev = cap * v.rev
-  const less = Math.max(0.0001, c - 0.02)
-  const capLess = v.add / less
+  // Two points less churn, or half of it when churn is already 4% or lower.
+  const cut = c > 0.04 ? 0.02 : c / 2
+  const pts = cut * 100
+  const capLess = c > 0 ? v.add / (c - cut) : Infinity
+  const churnWins = capLess / cap - 1 > 0.2
   const capMore = (v.add * 1.2) / Math.max(c, 1e-9)
   const life = c > 0 ? 1 / c : Infinity
   const ltv = life * v.rev * v.margin / 100
   const lost = v.now * c
   const grow = Number.isFinite(cap) && cap > v.now
   report(L
-    ? `بخسارة ${fmt(v.churn)}% شهريًا و${fmt(v.add, 0)} عميل جديد: السقف ${fmt(cap, 0)} عميل مهما زاد التسويق، خفض الفقد نقطتين يرفعه إلى ${fmt(capLess, 0)}`
-    : `Losing ${fmt(v.churn)}% a month with ${fmt(v.add, 0)} new customers: the ceiling is ${fmt(cap, 0)} customers, however much you market. Two points less churn lifts it to ${fmt(capLess, 0)}`)
+    ? `بخسارة ${fmt(v.churn)}% شهريًا و${fmt(v.add, 0)} عميل جديد: السقف ${fmt(cap, 0)} عميل مهما زاد التسويق، خفض الفقد ${fmt(pts, 1)} نقطة يرفعه إلى ${fmt(capLess, 0)}`
+    : `Losing ${fmt(v.churn)}% a month with ${fmt(v.add, 0)} new customers: the ceiling is ${fmt(cap, 0)} customers, however much you market. ${fmt(pts, 1)} points less churn lifts it to ${fmt(capLess, 0)}`)
   return (
     <>
       <div className="tl-form">
@@ -430,16 +433,16 @@ const Ceiling: ToolFn = ({ lang, report }) => {
         rows={[
           [L ? 'إيراد شهري عند السقف' : 'Monthly revenue at the ceiling', Number.isFinite(capRev) ? `${fmt(capRev, 0)} ${u.sar}` : '—'],
           [L ? 'تخسرهم الآن كل شهر' : 'You lose now, every month', `${fmt(lost, 0)} ${L ? 'عميل' : 'customers'}`],
-          [L ? 'لو خفّضت الفقد نقطتين' : 'With two points less churn', `${fmt(capLess, 0)} · +${fmt((capLess / cap - 1) * 100, 0)}%`],
+          [L ? `لو خفّضت الفقد ${fmt(pts, 1)} نقطة` : `With ${fmt(pts, 1)} points less churn`, `${fmt(capLess, 0)} · +${fmt((capLess / cap - 1) * 100, 0)}%`],
           [L ? 'لو زدت العملاء الجدد 20%' : 'With 20% more new customers', `${fmt(capMore, 0)} · +20%`],
           [L ? 'ربح العميل طوال علاقته بك' : 'Profit from one customer over their life', Number.isFinite(ltv) ? `${fmt(ltv, 0)} ${u.sar}` : '—'],
         ]}
         insight={L
           ? (grow
-            ? `مهما صرفت على الإعلان، ستتوقف عند ${fmt(cap, 0)} عميل تقريبًا، لأن الدلو يتسرّب من الأسفل، سدّ نقطتين من التسرّب يرفع سقفك ${fmt((capLess / cap - 1) * 100, 0)}%، أكثر مما تفعله زيادة الإعلان 20%`
+            ? `مهما صرفت على الإعلان، ستتوقف عند ${fmt(cap, 0)} عميل تقريبًا، لأن الدلو يتسرّب من الأسفل، سدّ ${fmt(pts, 1)} نقطة من التسرّب يرفع سقفك ${fmt((capLess / cap - 1) * 100, 0)}%${churnWins ? '، أكثر مما تفعله زيادة العملاء الجدد 20%' : ''}`
             : `أنت فوق سقفك: كل شهر تخسر أكثر مما تكسب، وستنزل نحو ${fmt(cap, 0)} عميل، المشكلة ليست في التسويق، بل في سبب رحيلهم`)
           : (grow
-            ? `However much you spend on ads, you'll level off around ${fmt(cap, 0)} customers, because the bucket leaks from the bottom. Plugging two points of the leak lifts your ceiling ${fmt((capLess / cap - 1) * 100, 0)}%, more than 20% more advertising does`
+            ? `However much you spend on ads, you'll level off around ${fmt(cap, 0)} customers, because the bucket leaks from the bottom. Plugging ${fmt(pts, 1)} points of the leak lifts your ceiling ${fmt((capLess / cap - 1) * 100, 0)}%${churnWins ? ', more than 20% more new customers would' : ''}`
             : `You're above your ceiling: each month you lose more than you win, and you'll slide toward ${fmt(cap, 0)}. The problem isn't marketing. It's why they leave`)}
       />
     </>
@@ -459,8 +462,7 @@ const Lever: ToolFn = ({ lang, report }) => {
   const opts: [string, number][] = [
     [L ? `رفع السعر ${fmt(v.step)}%` : `Raise price ${fmt(v.step)}%`, rev * (m + i) - v.fixed],
     [L ? `خفض تكلفة البضاعة ${fmt(v.step)}%` : `Cut cost of goods ${fmt(v.step)}%`, rev - rev * (1 - m) * (1 - i) - v.fixed],
-    [L ? `عملاء أكثر ${fmt(v.step)}%` : `${fmt(v.step)}% more customers`, gp * (1 + i) - v.fixed],
-    [L ? `تكرار شراء أعلى ${fmt(v.step)}%` : `${fmt(v.step)}% more repeat buying`, gp * (1 + i) - v.fixed],
+    [L ? `مبيعات أكثر ${fmt(v.step)}% (عملاء أو تكرار)` : `${fmt(v.step)}% more sales (customers or repeat)`, gp * (1 + i) - v.fixed],
   ]
   const ranked = opts.map(([k, p]) => [k, p, base !== 0 ? (p - base) / Math.abs(base) : NaN] as [string, number, number]).sort((a, b) => b[1] - a[1])
   const equiv = m > 0 ? i / m : NaN
@@ -482,7 +484,8 @@ const Lever: ToolFn = ({ lang, report }) => {
       <Result
         tone={base <= 0 ? 'bad' : undefined}
         label={L ? 'أقوى رافعة لربحك' : 'Your strongest profit lever'}
-        big={Number.isFinite(top[2]) ? `+${fmt(top[2] * 100, 0)}%` : '—'}
+        big={base > 0 && Number.isFinite(top[2]) ? `+${fmt(top[2] * 100, 0)}%` : `+${fmt(top[1] - base, 0)}`}
+        unit={base > 0 ? undefined : u.sar}
         rows={[
           [L ? 'ربحك الشهري الآن' : 'Monthly profit now', `${fmt(base, 0)} ${u.sar}`],
           ...ranked.map(([k, p]) => [k, `+${fmt(p - base, 0)} ${u.sar}`] as [string, string]),
@@ -530,8 +533,8 @@ const Price: ToolFn = ({ lang, report }) => {
             [L ? 'وتبقى بنفس الربح' : 'And still earn the same', '✓'],
           ]}
           insight={L
-            ? `أغلب أصحاب الأعمال يؤجلون رفع السعر خوفًا من خسارة 5% من العملاء، والحساب يقول إنك تتحمّل خسارة ${pct(canLose, 0)}. ومن يرحل بسبب زيادة صغيرة غالبًا هو الأقل ربحًا لك أصلًا، الخوف هنا أغلى من القرار`
-            : `Most owners put off a price rise for fear of losing 5% of customers; the maths says you can lose ${pct(canLose, 0)}. Those who leave over a small rise are usually your least profitable anyway. Here the fear costs more than the decision`}
+            ? `كثيرون يؤجلون رفع السعر خوفًا من خسارة بعض العملاء، والحساب يقول إنك تتحمّل خسارة ${pct(canLose, 0)} منهم وتبقى بنفس الربح، ومن يرحل بسبب زيادة صغيرة غالبًا هو الأقل ربحًا لك أصلًا`
+            : `Many owners put off a price rise for fear of losing some customers; the maths says you can lose ${pct(canLose, 0)} and earn the same. Those who leave over a small rise are usually your least profitable anyway`}
         />
       ) : (
         <Result
@@ -692,7 +695,7 @@ const Founder: ToolFn = ({ lang, report }) => {
       </div>
       <Result
         tone={!worth ? 'warn' : leak > v.income * 0.2 ? 'bad' : 'warn'}
-        label={L ? 'قيمة ساعتك الحقيقية' : 'What your hour is really worth'}
+        label={L ? 'قيمة ساعتك المستهدفة' : 'What your hour should be worth'}
         big={fmt(hour, 0)} unit={u.sar}
         rows={[
           [L ? 'تهدر سنويًا في مهام غيرك' : 'Leaked yearly on others’ tasks', `${fmt(leak, 0)} ${u.sar}`],
@@ -778,7 +781,7 @@ const Oee: ToolFn = ({ lang, report }) => {
           [L ? 'فاقد هذه الوردية' : 'Lost this shift', `${fmt(lost, 0)} ${L ? 'وحدة' : 'units'} · ${fmt(lost * v.cm, 0)} ${u.sar}`],
           [L ? 'شهريًا بوردية واحدة يوميًا' : 'Per month, one shift a day', `${fmt(lost * v.cm * 26, 0)} ${u.sar}`],
         ]}
-        insight={L ? 'المرجع العالمي للمصانع المتميزة نحو 85%، الفرق بينك وبينه ربح موجود عندك، لكنه لا يصل' : 'World-class plants sit around 85%، The gap is profit you already have, but never collect'}
+        insight={L ? 'المرجع العالمي للمصانع المتميزة نحو 85%، الفرق بينك وبينه ربح موجود عندك، لكنه لا يصل' : 'World-class plants sit around 85%. The gap is profit you already have, but never collect'}
       >
         <div className="tl-bars" aria-hidden="true">
           {[A, P, Q].map((x, i) => <span key={i} style={{ ['--w' as string]: `${Math.round(x * 100)}%` }} />)}

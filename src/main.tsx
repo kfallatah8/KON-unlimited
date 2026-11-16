@@ -10,6 +10,7 @@ import './styles/solutions.css'
 import './styles/codex.css'
 import './styles/director.css'
 import './styles/clean.css'
+import './styles/clear.css'
 
 // Every visit and every refresh opens at the very top: no restored scroll position and no jump
 // to a #section left over in the address bar (#en / #ar and #/pages are kept).
