@@ -60,7 +60,7 @@ export const contact = {
 const ar = {
   meta: {
     switchTo: 'EN', switchLabel: 'Switch to English', menu: 'القائمة', close: 'إغلاق', skip: 'تخطَّ إلى المحتوى',
-    title: 'KON Unlimited · نرفع كفاءة مشروعك',
+    title: 'KON Unlimited · استشارات أعمال وتشغيل في السعودية',
     home: 'الرئيسية',
   },
   nav: [
@@ -576,7 +576,7 @@ export type Content = typeof ar
 const en: Content = {
   meta: {
     switchTo: 'ع', switchLabel: 'التبديل إلى العربية', menu: 'Menu', close: 'Close', skip: 'Skip to content',
-    title: 'KON Unlimited · We make your business run better',
+    title: 'KON Unlimited · Business Consulting in Saudi Arabia',
     home: 'Home',
   },
   nav: [

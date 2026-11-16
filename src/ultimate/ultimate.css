@@ -79,7 +79,7 @@ h1, h2, h3, p { margin: 0; }
 .u-nav a { text-decoration: none; color: var(--text-2); font-size: 0.95rem; transition: color 0.25s; }
 .u-nav a:hover { color: var(--text); }
 .u-head-act { display: flex; align-items: center; gap: 0.6rem; margin-inline-start: auto; }
-.u-lang { min-width: 44px; min-height: 44px; border-radius: 999px; border: 1px solid var(--line-strong); background: transparent; cursor: pointer; font-size: 0.9rem; }
+.u-lang { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; min-width: 44px; min-height: 44px; border-radius: 999px; border: 1px solid var(--line-strong); background: transparent; cursor: pointer; font-size: 0.9rem; }
 .u-head-cta { display: none; min-height: 44px; align-items: center; padding: 0 1.2rem; border-radius: 999px; text-decoration: none; font-family: var(--display); font-weight: 600; font-size: 0.92rem; background: var(--teal-hi); color: #022321; }
 .u-burger { width: 44px; height: 44px; border: 0; background: transparent; display: grid; place-content: center; gap: 6px; cursor: pointer; }
 .u-burger i { display: block; width: 22px; height: 1.5px; background: var(--text); transition: transform 0.3s var(--ease); }

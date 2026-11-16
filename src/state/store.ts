@@ -18,6 +18,8 @@ export interface ExperienceState {
 type Listener = () => void
 
 function initialLang(): Lang {
+  // Each language has its own crawlable address: / (Arabic) and /en/ (English).
+  if (/^\/en(\/|$)/.test(location.pathname)) return 'en'
   if (location.hash === '#en') return 'en'
   if (location.hash === '#ar') return 'ar'
   try {
@@ -48,6 +50,11 @@ export function setLang(lang: Lang) {
   store.set({ lang })
   document.documentElement.lang = lang
   document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr'
+  // keep the address in step with the language, so a shared link opens the same language
+  const want = lang === 'en' ? '/en/' : '/'
+  if (/^\/(en\/?)?$/.test(location.pathname) && location.pathname !== want) {
+    history.replaceState(history.state, '', want + location.search + location.hash)
+  }
   try {
     localStorage.setItem('kon-lang', lang)
   } catch {
@@ -62,7 +69,8 @@ export function startOnboarding(p: Omit<Preset, 'n'>) {
 }
 
 export function useStore<T>(select: (s: ExperienceState) => T): T {
-  return useSyncExternalStore(store.subscribe, () => select(store.get()))
+  const get = () => select(store.get())
+  return useSyncExternalStore(store.subscribe, get, get)
 }
 
 /** Per-frame values shared with the 3D layer without React. */

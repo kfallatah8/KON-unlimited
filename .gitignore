@@ -3,3 +3,4 @@ dist
 dist-single
 *.tsbuildinfo
 .vercel
+dist-ssr

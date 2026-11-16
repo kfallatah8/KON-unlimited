@@ -44,8 +44,9 @@ function LangSwitch() {
   const c = useContent()
   const lang = useStore((s) => s.lang)
   return (
-    <button type="button" className="u-lang" lang={lang === 'ar' ? 'en' : 'ar'} aria-label={c.meta.switchLabel}
-      onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}>{c.meta.switchTo}</button>
+    // a real link to the other language's address, so search engines can find /en/ (and / from it)
+    <a href={lang === 'ar' ? '/en/' : '/'} hrefLang={lang === 'ar' ? 'en' : 'ar'} className="u-lang" lang={lang === 'ar' ? 'en' : 'ar'} aria-label={c.meta.switchLabel}
+      onClick={(e) => { e.preventDefault(); setLang(lang === 'ar' ? 'en' : 'ar') }}>{c.meta.switchTo}</a>
   )
 }
 
@@ -380,7 +381,7 @@ function Founder() {
   return (
     <section id="founder" className="u-sec u-founder" aria-labelledby="u-founder-title">
       <div className="u-wrap u-founder-in" data-r>
-        <p className="u-eyebrow" id="u-founder-title">{f.eyebrow}</p>
+        <h2 className="u-eyebrow" id="u-founder-title">{f.eyebrow}</h2>
         {name && <p className="u-fd-name fd-name">{name}</p>}
         <p className="u-fd-intro"><Rich text={since} /></p>
         <p className="u-fd-roles">{roles}</p>
