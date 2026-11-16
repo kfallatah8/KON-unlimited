@@ -73,7 +73,7 @@ const ar = {
   headerCta: 'احجز تشخيصك',
 
   hero: {
-    eyebrow: 'تطوير أعمال · تشغيل · ابتكار',
+    eyebrow: 'تشغيل · تطوير أعمال · ابتكار',
     rotating: ['نرفع كفاءة مشروعك', 'نبتكر حلولًا تسبق التحدي', 'نضبط تشغيلك اليومي', 'نحوّل فكرتك إلى مشروع يعمل', 'نجعل استثمارك أذكى'],
     statement: ['ما تراه في أرقامك،', 'بدأ في عقل إنسان'],
     asks: [
@@ -574,7 +574,7 @@ const en: Content = {
   headerCta: 'Book your diagnosis',
 
   hero: {
-    eyebrow: 'Business development · Operations · Innovation',
+    eyebrow: 'Operations · Business development · Innovation',
     rotating: ['We make your business run better', 'We innovate ahead of every challenge', 'We sharpen how you operate', 'We turn ideas into working businesses', 'We make your capital work smarter'],
     statement: ['What you see in your numbers', 'began in a human mind'],
     asks: [
