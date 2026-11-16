@@ -445,6 +445,38 @@ html, body { overflow-x: clip; }
 
 .ask { margin: 0 0 6px; font-family: var(--display); font-size: 1.02rem; font-weight: 500; color: var(--aqua); }
 @media (max-width: 900px) { .ask { font-size: 1.12rem; } }
+
+/* ---------- v10: UI/UX pass, section by section ---------- */
+.stage-h { display: none; }
+@media (max-width: 900px) {
+  .rest { gap: 26px; }
+  .riddle-h, .stage-h { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .stage-h { padding: 4px 0 0; margin-bottom: -12px; }
+  .riddle-h h2, .stage-h h2 { margin: 0; font-size: 1.05rem; font-weight: 600; color: var(--text); letter-spacing: 0; }
+  .riddle-h small, .stage-h small { font-size: 0.86rem; color: var(--text-2); }
+  [data-n]::before { font-size: 0.74rem; }
+  .ask { margin-bottom: 4px; }
+  .lede { font-size: 0.98rem; }
+  .gesture { font-size: 0.8rem; }
+  /* the vessel: the glass word centred and whole, its state beneath */
+  .vessel { grid-template-columns: minmax(0, 1fr) !important; justify-items: center; text-align: center; }
+  .vessel h2 { justify-self: stretch; text-align: start; }
+  .vessel .glass { width: min(260px, 82%); max-width: none; }
+  .vstate { justify-items: center; }
+  .sign { padding: 18px 18px 18px; }
+  .sign h2 { font-size: 0.9rem; }
+  .frag, .vstate small { font-size: 0.9rem; line-height: 1.7; }
+  /* the shortcut: two real buttons, one thumb away */
+  .alt { display: grid; gap: 10px; justify-items: stretch; text-align: center; padding: 20px 18px; border-radius: 20px; border: 1px solid var(--line-2); background: linear-gradient(180deg, rgba(18,165,150,0.08), rgba(2,16,18,0.6)); font-size: 1rem; color: var(--text); }
+  .alt .sep { display: none; }
+  .alt .link { display: flex; align-items: center; justify-content: center; height: 52px; border-radius: 16px; text-decoration: none; font-size: 1rem; font-weight: 500; }
+  .alt a.link { background: linear-gradient(135deg, #5fe3d2, #19b3a2); color: #01201d; }
+  .alt button.link { border: 1px solid var(--line-2); color: var(--aqua); }
+  .foot { justify-items: center; text-align: center; gap: 10px; padding-top: 26px; }
+  .foot .slogan { direction: ltr; font-size: 1rem; }
+  .intro .skip { font-size: 0.95rem; color: var(--text-2); padding: 10px 6px; }
+  .intro .chip.enter { height: 48px; padding: 0 28px; font-size: 1rem; }
+}
 </style></head><body>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -500,6 +532,7 @@ html, body { overflow-x: clip; }
       </section>
     </div>
 
+    <div class="stage-h" id="stageH"><h2 data-n="02" data-i18n="stageH">الأثر</h2><small data-i18n="stageSub">قلّبه، ففي وجوهه إشارات</small></div>
     <section class="stage" id="stage" tabindex="0" aria-label="الأثر: مكعّب من الحروف القديمة">
       <canvas id="gl"></canvas>
       <div class="poster" aria-hidden="true"></div>
@@ -570,7 +603,7 @@ html, body { overflow-x: clip; }
         </div>
       </details>
 
-      <p class="alt"><span data-i18n="altQ">تفضّل الطريق المختصر؟</span><a class="link home-href" href="#" data-i18n="altHome">ادخل الموقع مباشرة</a><span class="sep">·</span><button class="link" id="joinBtn" type="button" data-i18n="altBtn">احجز مكانك دون حلّ</button></p>
+      <p class="alt" id="alt"><span data-i18n="altQ">تفضّل الطريق المختصر؟</span><a class="link home-href" href="#" data-i18n="altHome">ادخل الموقع مباشرة</a><span class="sep">·</span><button class="link" id="joinBtn" type="button" data-i18n="altBtn">احجز مكانك دون حلّ</button></p>
 
       <footer class="foot">
         <span data-i18n="values">نرفع الوعي · علاقات حقيقية مع أناس حقيقيين · نُطلق الطاقات الكامنة</span>
@@ -656,6 +689,7 @@ html, body { overflow-x: clip; }
       moves: n => `${num(n)} حركة`, tools: 'أدوات الأثر', heart: 'افتح الأثر', undo: 'تراجع', view: 'أعد الأثر إلى مكانه',
       stageLbl: 'الأثر: مكعّب من الحروف القديمة، اسحب لتديره', lite: 'وضع خفيف لسرعة أفضل',
       nogl: 'هذا الجهاز لا يعرض الأثر ثلاثي الأبعاد، لكن اللغز يعمل: اكتب ما وجدت',
+      stageH: 'الأثر', stageSub: 'قلّبه، ففي وجوهه إشارات',
       riddleLbl: 'اللغز', riddleSub: 'ثلاثة أبيات تخفي كلمة',
       poem: [['مِنَ «الكونِ» أصلي، ولكنْ تراني', 'بلا تاجِهِ، دونَ قلبٍ، أكونْ'], ['صغيرٌ، وحرفانِ كلّي، وإنّي', 'لَبدءُ الذي كانَ قبلَ القرونْ'], ['فقُلني إذا ضاقَ صدرٌ تجدْني', 'كماسٍ أبى بعدَ ضغطٍ يهونْ']],
       keyLbl: 'اكتب الكلمة التي تفتح الباب', keyNote: 'جرّب بلا حساب', keyPh: 'اكتب الكلمة هنا', open: 'افتح',
@@ -705,7 +739,7 @@ html, body { overflow-x: clip; }
       moves: n => `${num(n)} moves`, tools: 'Relic tools', heart: 'Open the relic', undo: 'Undo', view: 'Return the relic to its place',
       stageLbl: 'The relic: a cube of ancient letters, drag to turn it', lite: 'Light mode for speed',
       nogl: 'This device cannot show the 3D relic, but the riddle still works: write what you found',
-      riddleLbl: 'The riddle', riddleSub: 'Three lines, one word (in Arabic)',
+      stageH: 'The relic', stageSub: 'Turn it, its faces hold signs', riddleLbl: 'The riddle', riddleSub: 'Three lines, one word (in Arabic)',
       poem: [['My root is in “the cosmos”, yet you will see', 'me come to be once crown and heart are gone'], ['Small, two letters are all of me, and yet', 'I am the start of all before the ages'], ['Say me when your chest grows tight; you’ll find', 'a diamond that, pressed hard, refused to break']],
       keyLbl: 'Type the word that opens the door', keyNote: 'Arabic or Latin letters', keyPh: 'Type the word here', open: 'Open',
       empty: 'Write what you found first',
@@ -1106,7 +1140,7 @@ html, body { overflow-x: clip; }
     const clock = $('clock'), riddle = document.querySelector('.riddle'), key = $('keyForm');
     if (clock.previousElementSibling !== key) key.after(clock);
     if (wide) { if (st.parentNode !== document.body) document.body.insertBefore(st, $('hall')); }
-    else if (st.previousElementSibling !== riddle) riddle.after(st);
+    else if (riddle.nextElementSibling !== $('stageH') || $('stageH').nextElementSibling !== st) { riddle.after($('stageH')); $('stageH').after(st); }
     if (wide) {
       const cw = $('col').getBoundingClientRect().width, shift = Math.min(0.3, cw / 2 / innerWidth);
       st.dataset.shift = shift.toFixed(4);
