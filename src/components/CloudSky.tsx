@@ -99,7 +99,7 @@ export function CloudSky({ tier, reduced, front = false }: { tier: string; reduc
     const frame = (now: number) => { gl.uniform1f(uT, now / 1000 - t0); gl.drawArrays(gl.TRIANGLES, 0, 3) }
 
     let raf = 0, last = 0
-    const step = 1000 / (low ? 18 : 24)
+    const step = 1000 / (low ? 18 : front ? 20 : 24)
     const loop = (now: number) => {
       raf = requestAnimationFrame(loop)
       if (now - last < step) return
