@@ -11,7 +11,7 @@
 // same lit-glass filter as before. Nothing runs while the mark is off screen.
 import React, { useEffect, useRef, useState } from 'react'
 
-const COLS = 26
+const COLS = 40
 const FILL = 0.56 // how full each letter is
 const MAX_TILT = 0.62 // radians
 
@@ -53,21 +53,34 @@ export function KonFooterMark() {
     build()
     document.fonts?.ready.then(() => { build(); draw(0) })
 
+    // the surface: tilt + the spring sim + two slow travelling waves (a thick liquid never sits flat)
+    const surf = (w: Vessel, k: number, t: number, i: number, x: number, back: boolean) => {
+      const cx = (w.x0 + w.x1) / 2, level = w.y1 - (w.y1 - w.y0) * FILL, slope = Math.tan(ang)
+      const s = t * 0.001, energy = 1 + Math.min(2.2, Math.abs(angV) * 2.4)
+      const wave = (Math.sin(x * 0.034 - s * 1.35 + k * 1.7) * 3.2 + Math.sin(x * 0.071 + s * 0.9 + k) * 1.5) * energy
+      if (back) return level + slope * (x - cx) * 0.86 - w.h[COLS - 1 - i] * 0.7 - 6 + Math.sin(x * 0.05 + s * 1.1 + k * 2.3) * 2.6 * energy
+      return level + slope * (x - cx) + w.h[i] + wave
+    }
+    const curve = (pts: [number, number][]) => {
+      let d = `M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`
+      for (let i = 1; i < pts.length - 1; i++) {
+        const mx = (pts[i][0] + pts[i + 1][0]) / 2, my = (pts[i][1] + pts[i + 1][1]) / 2
+        d += `Q${pts[i][0].toFixed(1)} ${pts[i][1].toFixed(1)} ${mx.toFixed(1)} ${my.toFixed(1)}`
+      }
+      const l = pts[pts.length - 1]
+      return d + `L${l[0].toFixed(1)} ${l[1].toFixed(1)}`
+    }
     const draw = (t: number) => {
       vessels.forEach((w, k) => {
-        const cx = (w.x0 + w.x1) / 2, level = w.y1 - (w.y1 - w.y0) * FILL, slope = Math.tan(ang)
-        let d = '', d2 = '', top = ''
+        const f: [number, number][] = [], g: [number, number][] = []
         for (let i = 0; i < COLS; i++) {
           const x = w.x0 + ((w.x1 - w.x0) * i) / (COLS - 1)
-          const y = level + slope * (x - cx) + w.h[i]
-          const yb = level + slope * (x - cx) * 0.86 - w.h[COLS - 1 - i] * 0.7 - 5 + Math.sin(t * 0.0011 + i * 0.5 + k) * 1.6
-          d += `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`
-          d2 += `${i ? 'L' : 'M'}${x.toFixed(1)} ${yb.toFixed(1)}`
-          top += `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`
+          f.push([x, surf(w, k, t, i, x, false)]); g.push([x, surf(w, k, t, i, x, true)])
         }
         const close = `L${w.x1} ${w.y1 + 30}L${w.x0} ${w.y1 + 30}Z`
-        body.current[k]?.setAttribute('d', d + close)
-        back.current[k]?.setAttribute('d', d2 + close)
+        const top = curve(f)
+        body.current[k]?.setAttribute('d', top + close)
+        back.current[k]?.setAttribute('d', curve(g) + close)
         line.current[k]?.setAttribute('d', top)
       })
     }
@@ -80,7 +93,7 @@ export function KonFooterMark() {
       // a slow breath when nothing is tilting it, so the liquid never looks frozen
       idle = live.current ? 0 : Math.sin(t * 0.00055) * 0.045
       const goal = Math.max(-MAX_TILT, Math.min(MAX_TILT, target.current + idle))
-      const acc = (goal - ang) * 38 - angV * 5.2
+      const acc = (goal - ang) * 26 - angV * 6.4
       angV += acc * dt
       ang += angV * dt
       for (const w of vessels) {
@@ -89,10 +102,10 @@ export function KonFooterMark() {
         for (let i = 0; i < COLS; i++) {
           const l = h[i ? i - 1 : 0], r = h[i < COLS - 1 ? i + 1 : COLS - 1]
           const edge = (i / (COLS - 1) - 0.5) * 2
-          const a = (l + r - 2 * h[i]) * 320 - h[i] * 26 - v[i] * 2.6 + push * edge * 9
+          const a = (l + r - 2 * h[i]) * 520 - h[i] * 18 - v[i] * 3.4 + push * edge * 15
           v[i] += a * dt
         }
-        for (let i = 0; i < COLS; i++) h[i] = Math.max(-34, Math.min(34, h[i] + v[i] * dt))
+        for (let i = 0; i < COLS; i++) h[i] = Math.max(-38, Math.min(38, h[i] + v[i] * dt))
       }
       draw(t)
       raf = requestAnimationFrame(step)
@@ -147,7 +160,7 @@ export function KonFooterMark() {
   const lang = typeof document !== 'undefined' ? document.documentElement.lang : 'ar'
   return (
     <div className="kon-foot kon-glass" dir="ltr">
-      <svg ref={svg} viewBox="0 0 1000 380" role="img" aria-label="KON Unlimited">
+      <svg ref={svg} viewBox="0 20 1000 270" role="img" aria-label="KON Unlimited">
         <defs>
           <linearGradient id="kl-liquid" gradientUnits="userSpaceOnUse" x1="0" y1="110" x2="0" y2="250">
             <stop offset="0" stopColor="#1fb8a6" />
@@ -167,7 +180,6 @@ export function KonFooterMark() {
             <stop offset="0" stopColor="#fff" stopOpacity="0.4" />
             <stop offset="1" stopColor="#fff" stopOpacity="0" />
           </linearGradient>
-          <linearGradient id="kl-fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#fff" stopOpacity="0.3" /><stop offset="0.7" stopColor="#fff" stopOpacity="0" /></linearGradient>
           {/* thick cast glass, lit from the letters' own shape: no strokes anywhere */}
           <filter id="kl-lit" x="-6%" y="-12%" width="112%" height="130%" colorInterpolationFilters="sRGB">
             <feGaussianBlur in="SourceAlpha" stdDeviation="6" result="h" />
@@ -187,20 +199,26 @@ export function KonFooterMark() {
             <feComposite in2="bandIn" operator="in" result="rim" />
             <feMerge><feMergeNode in="rim" /><feMergeNode in="backl" /><feMergeNode in="spec" /></feMerge>
           </filter>
-          <filter id="kl-glow" x="-30%" y="-80%" width="160%" height="260%"><feGaussianBlur stdDeviation="20" /></filter>
+          <filter id="kl-thick" x="-4%" y="-8%" width="108%" height="116%" colorInterpolationFilters="sRGB">
+            <feMorphology in="SourceAlpha" operator="erode" radius="9" result="core" />
+            <feGaussianBlur in="core" stdDeviation="5" result="coreB" />
+            <feComposite in="SourceAlpha" in2="coreB" operator="out" result="wall" />
+            <feFlood floodColor="#001c1b" floodOpacity="0.55" />
+            <feComposite in2="wall" operator="in" result="wallDark" />
+            <feMorphology in="SourceAlpha" operator="erode" radius="1.6" result="in1" />
+            <feComposite in="SourceAlpha" in2="in1" operator="out" result="hair" />
+            <feFlood floodColor="#eafffb" floodOpacity="0.7" />
+            <feComposite in2="hair" operator="in" result="hairL" />
+            <feMerge><feMergeNode in="wallDark" /><feMergeNode in="hairL" /></feMerge>
+          </filter>
           <filter id="kl-shadow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="9" /></filter>
           <filter id="kl-line" x="-10%" y="-200%" width="120%" height="500%"><feGaussianBlur stdDeviation="2.2" /></filter>
           <clipPath id="kl-clip"><T /></clipPath>
-          <mask id="kl-refl" maskUnits="userSpaceOnUse" x="0" y="262" width="1000" height="118">
-            <rect x="0" y="262" width="1000" height="118" fill="url(#kl-fade)" />
-          </mask>
         </defs>
 
         <T ref={measure} fill="none" aria-hidden="true" />
 
-        {/* the teal light the liquid throws on the floor */}
-        <ellipse cx="500" cy="276" rx="350" ry="10" fill="#000" opacity="0.6" filter="url(#kl-shadow)" />
-        <g transform="translate(0 524) scale(1 -0.34) translate(0 -240)" opacity="0.55" filter="url(#kl-glow)"><T fill="#1fc4ae" /></g>
+        <ellipse cx="500" cy="262" rx="330" ry="7" fill="#000" opacity="0.55" filter="url(#kl-shadow)" />
 
         <g id="kl-vessel">
           <T fill="#021a19" opacity="0.55" />
@@ -211,12 +229,10 @@ export function KonFooterMark() {
             {[0, 1, 2].map((k) => <path key={`g${k}`} ref={(n) => { line.current[k] = n }} fill="none" stroke="#b9fff4" strokeWidth="5" opacity="0.75" filter="url(#kl-line)" />)}
             <rect x="0" y="56" width="1000" height="74" fill="url(#kl-gloss)" transform="skewY(-3)" opacity="0.45" />
           </g>
+          <g filter="url(#kl-thick)"><T fill="#fff" /></g>
           <g filter="url(#kl-lit)"><T fill="#fff" /></g>
         </g>
 
-        <g mask="url(#kl-refl)" opacity="0.45">
-          <use href="#kl-vessel" transform="translate(0 532) scale(1 -1)" />
-        </g>
       </svg>
       <p className="kf-sub"><span>Unlimited</span></p>
       {needAsk && (

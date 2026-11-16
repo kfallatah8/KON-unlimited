@@ -7,6 +7,7 @@ const paths: Record<IconId, ReactElement> = {
   flex: (<><circle cx="12" cy="12" r="2.6" /><path d="M3 18c4 0 5-3 6-6s2-6 6-6h6" /><path d="M18 3l3 3-3 3" /></>),
   // two lines rising together
   aligned: (<><path d="M3 20l6-6 4 3 8-9" /><path d="M3 16l6-6 4 3 8-9" opacity=".55" /><path d="M17 4h4v4" /></>),
+  check: (<><path d="M5 12.5l4.2 4.2L19 7" /></>),
   // a faceted spark
   spark: (<><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z" /></>),
   // stacked planes = many sectors

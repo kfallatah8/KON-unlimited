@@ -697,22 +697,25 @@ function Support() {
 function Founder() {
   const f = useContent().founder
   const [intro, roles, ...rest] = f.paragraphs
+  // "أنا خالد، منذ…" / "I’m Khalid. Since…": the name stands alone on the first line, no comma
+  const cut = intro.search(/[،,.]\s/)
+  const name = cut > 0 ? intro.slice(0, cut) : ''
+  const since = cut > 0 ? intro.slice(cut + 2) : intro
+  const roleList = roles.split(/،\s*و?|,\s*(?:and\s+)?|\s+and\s+/).map((x) => x.trim()).filter(Boolean)
   return (
     <section id="founder" className="band founder" aria-labelledby="founder-title">
       <div className="wrap">
         <div className="fd-card" data-reveal>
-          <div className="fd-lead">
-            <p className="eyebrow" id="founder-title">{f.eyebrow}</p>
-            <p className="fd-intro"><Rich text={intro} /></p>
-            <p className="fd-roles"><Rich text={roles} /></p>
-          </div>
+          <p className="eyebrow centered" id="founder-title">{f.eyebrow}</p>
+          {name && <p className="fd-name">{name}</p>}
+          <p className="fd-intro"><Rich text={since} /></p>
+          <ul className="fd-roles">{roleList.map((r) => <li key={r}>{r}</li>)}</ul>
           <div className="fd-body">
             {rest.map((p) => <p key={p}><Rich text={p} /></p>)}
           </div>
-          <div className="fd-close">
-            <p className="founder-punch"><Hl text={f.punch} /></p>
-            <MagneticButton href="#start">{f.cta}</MagneticButton>
-          </div>
+          <span className="fd-rule" aria-hidden="true" />
+          <p className="founder-punch"><Hl text={f.punch} /></p>
+          <MagneticButton href="#start">{f.cta}</MagneticButton>
         </div>
       </div>
     </section>
@@ -730,12 +733,10 @@ function Start() {
           <div className="start-offer">
             <p className="eyebrow">{o.eyebrow}</p>
             <SplitReveal as="h2" id="offer-title" className="display" text={o.title} />
-            <p className="body-lg"><Rich text={o.lede} /></p>
             <ul className="offer-list">
-              {o.includes.map((x) => <li key={x}><GemMark className="li-gem" />{x}</li>)}
+              {o.includes.map((x) => <li key={x}><Icon id="check" className="icon li-check" />{x.replace(/،\s*/g, ' · ')}</li>)}
             </ul>
-            <p className="offer-guarantee"><Rich text={o.guarantee} /></p>
-            <p className="fine">{o.value} · {o.note}</p>
+            <p className="offer-meta">{o.value.replace(/[،.]\s*/g, ' · ')}</p>
           </div>
           <div className="start-flow" id="book">
             <Onboarding />
