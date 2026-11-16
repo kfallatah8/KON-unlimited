@@ -475,8 +475,6 @@ export function Talent() {
           <p className="talent-proof" data-reveal><GemMark className="li-gem" />{t.proof}</p>
         </div>
 
-        <Lanes onTalent={() => open('talent')} onCompany={() => open('company')} />
-
         <div className="talent-mirror">
           <p className="talent-sub center" data-reveal>{t.mirror.title}</p>
           <div className="talent-mirror-grid">
@@ -492,6 +490,8 @@ export function Talent() {
             })}
           </div>
         </div>
+
+        <Lanes onTalent={() => open('talent')} onCompany={() => open('company')} />
 
         <div className="talent-journey">
           <p className="talent-sub center" data-reveal>{t.journey.title}</p>

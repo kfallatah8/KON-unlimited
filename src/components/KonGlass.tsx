@@ -59,10 +59,9 @@ float level(float k, float x){
   float u = clamp((x - x0) / (x1 - x0), 0.0, 1.0);
   float sim = (texture2D(hf, vec2(u * ${((COLS - 1) / COLS).toFixed(5)} + ${(0.5 / COLS).toFixed(5)}, (k + 0.5) / 4.0)).r - 0.5) * 0.16;
   // heavy ocean swell: exponential-sine waves (sharp crests, broad troughs), slow because the liquid is thick
-  float idle = 0.03 * (exp(sin(x * 3.1 - t * 0.62 + k * 1.7)) - 1.2) / 1.7
-             + 0.016 * (exp(sin(x * 6.3 + t * 0.95 + k * 0.6)) - 1.2) / 1.7
-             + 0.007 * (exp(sin(x * 12.7 - t * 1.45 + k * 2.3)) - 1.2) / 1.7
-             + 0.0025 * sin(x * 29.0 + t * 2.1 + k);
+  float idle = 0.024 * (exp(sin(x * 2.4 - t * 0.42 + k * 1.7)) - 1.2) / 1.7
+             + 0.011 * (exp(sin(x * 4.9 + t * 0.6 + k * 0.6)) - 1.2) / 1.7
+             + 0.004 * sin(x * 9.5 - t * 0.85 + k * 2.3);
   idle *= agit;
   return lv + slope * (x - (x0 + x1) * 0.5) + sim + idle;
 }
@@ -87,8 +86,10 @@ void main(){
   // ---------- what sits inside the glass ----------
   // seen through the thick wall, the inside is bent inward (refraction)
   float inWall = 1.0 - smoothstep(W + W2 - px, W + W2 + px, e);
+  float cav0 = smoothstep(W - px, W + px, e);
   vec2 q = p - n2 * (W + W2 - e) * 0.55 * inWall;
-  float ys = level(k, q.x);
+  float wd0 = max(e - W, 0.0);
+  float ys = level(k, q.x) + 0.006 * exp(-wd0 / 0.022) * smoothstep(0.0, W, e);
   float ysR = level(k, q.x + 0.01);
   float sl = (ysR - ys) / 0.01;                                     // local surface slope
   float crest = clamp((ys - level(k, q.x - 0.12) * 0.5 - level(k, q.x + 0.12) * 0.5) * 18.0, -1.0, 1.0);
@@ -123,21 +124,24 @@ void main(){
   float bub = step(0.965, bh) * smoothstep(0.11, 0.0, length(bf - bo)) * (1.0 - depth * 0.7);
   liq += vec3(0.5, 0.95, 0.9) * bub * 0.22;
 
-  // the far side of the surface, seen from slightly above; widens on steep slopes
-  float band = 0.022 + 0.06 * abs(sl) * 0.25;
-  float ysb = ys + band + 0.006 * sin(q.x * 9.0 - t * 0.9 + k);
+  // the top of the liquid, seen slightly from above: a heavy, glossy plane
+  float band = 0.03 + 0.02 * clamp(abs(sl), 0.0, 1.0);
+  float ysb = ys + band;
   float onTop = smoothstep(ys - px, ys + px, q.y) * smoothstep(ysb + px, ysb - px, q.y);
-  float sheen = pow(noise(vec2(q.x * 26.0 - t * 0.35, q.y * 70.0 + t * 0.2)), 3.0);
-  vec3 surf = mix(c1, c0, 0.55) * 0.85 + vec3(0.55, 0.9, 0.85) * sheen * 0.5 + vec3(0.6, 0.9, 0.85) * max(-sl, 0.0) * 0.12;
+  float sv = clamp((q.y - ys) / band, 0.0, 1.0);               // 0 front lip -> 1 far edge
+  // the plane reflects the overhead softbox more as it recedes (fresnel), bent by the swell
+  float refl = smoothstep(0.15, 1.0, sv) * (0.55 + 0.45 * smoothstep(-0.6, 0.6, -sl));
+  float streak = smoothstep(0.55, 1.0, noise(vec2(q.x * 5.0 - sl * 3.0 - t * 0.12, sv * 2.0 + k)));
+  vec3 surf = mix(c1 * 1.05, c0 * 1.15, sv) + vec3(0.62, 0.95, 0.9) * refl * 0.32 + vec3(0.9, 1.0, 0.98) * streak * refl * 0.35;
+  // a soft glow lives just under the surface where light enters the thick liquid
+  liq += vec3(0.04, 0.36, 0.33) * exp(-dz / 0.035) * 0.55;
+  // and a darker meniscus shadow a hair below the lip gives it weight
+  liq *= 1.0 - 0.35 * exp(-abs(dz - 0.006) / 0.004);
   vec3 empty = vec3(0.003, 0.012, 0.014) + vec3(0.01, 0.035, 0.035) * exp(-wd / 0.035);
   vec3 inside = mix(empty, liq, below);
-  inside = mix(inside, surf, onTop * 0.9);
-  inside += vec3(0.6, 0.96, 0.9) * exp(-abs(q.y - ys) / (px * 1.3 + 0.0011)) * (0.42 + 0.3 * max(crest, 0.0));   // lit meniscus
-  inside += vec3(0.45, 0.85, 0.8) * exp(-abs(q.y - ysb) / (px * 1.2 + 0.0009)) * 0.2 * (1.0 - below);
-  // white water only on the sharpest crests
-  float fx = floor(q.x / (px * 2.0 + 0.0014));
-  float fz = step(0.86 - 0.25 * max(crest, 0.0), hash(vec2(fx, floor(t * 1.6 + hash(vec2(fx, k)) * 9.0))));
-  inside += vec3(0.92, 1.0, 0.98) * fz * max(crest, 0.15) * exp(-abs(q.y - ys - 0.003) / 0.0035) * 0.7;
+  inside = mix(inside, surf, onTop);
+  inside += vec3(0.7, 1.0, 0.95) * exp(-abs(q.y - ys) / (px * 1.0 + 0.0008)) * (0.5 + 0.25 * max(crest, 0.0));   // bright front lip
+  inside += vec3(0.75, 1.0, 0.96) * exp(-abs(q.y - ysb) / (px * 1.2 + 0.0012)) * 0.45 * (1.0 - below);         // far edge catching light
 
   float cav = smoothstep(W - px, W + px, e);
   vec3 col = mix(inside * 0.97 + vec3(0.004, 0.009, 0.01) * (1.0 - below), inside, cav);
@@ -272,14 +276,14 @@ export function KonGlass() {
       last = now
       const sub = 2, h = dt / sub
       for (let s = 0; s < sub; s++) {
-        const acc = (target - ang) * 26 - angV * 6.5
+        const acc = (target - ang) * 15 - angV * 4.2
         angV += acc * h; ang += angV * h
         for (let k = 0; k < 3; k++) {
           const o = k * COLS
           for (let i = 0; i < COLS; i++) {
             const l = H[o + (i ? i - 1 : 0)], r = H[o + (i < COLS - 1 ? i + 1 : COLS - 1)]
             const edge = (i / (COLS - 1) - 0.5) * 2
-            const a = (l + r - 2 * H[o + i]) * 1500 - H[o + i] * 5 - Vv[o + i] * 2.4 - angV * edge * 0.09
+            const a = (l + r - 2 * H[o + i]) * 760 - H[o + i] * 4 - Vv[o + i] * 2.9 - angV * edge * 0.11
             Vv[o + i] += a * h
           }
           for (let i = 0; i < COLS; i++) H[o + i] = Math.max(-0.075, Math.min(0.075, H[o + i] + Vv[o + i] * h))
@@ -305,7 +309,7 @@ export function KonGlass() {
     }
     let lastX = 0, lastT = 0
     const onMove = (e: PointerEvent) => {
-      if (e.pointerType === 'touch') return
+      if (e.pointerType === 'touch') { if (dragging) push(e); return }
       ptr.tx = Math.max(-1, Math.min(1, (e.clientX / window.innerWidth) * 2 - 1))
       ptr.ty = Math.max(-1, Math.min(1, (e.clientY / window.innerHeight) * 2 - 1))
       target = -ptr.tx * 0.32
@@ -313,11 +317,24 @@ export function KonGlass() {
       if (e.clientY > r.top && e.clientY < r.bottom && e.clientX > r.left && e.clientX < r.right) {
         const now = performance.now(), x = toWorldX(e.clientX)
         const v = lastT ? Math.max(-3, Math.min(3, (x - lastX) / Math.max(0.008, (now - lastT) / 1000))) : 0
-        kick(x, -Math.abs(v) * 0.05)
+        kick(x, -Math.abs(v) * 0.035); kick(x + Math.sign(v) * 0.05, Math.abs(v) * 0.02)
         lastX = x; lastT = now
       }
     }
-    const onTap = (e: PointerEvent) => { kick(toWorldX(e.clientX), -0.55); energy += 0.8; wake() }
+    // a drop: press pushes the liquid down, it rebounds as rings; dragging sideways pushes a wave
+    let dragging = false, dx = 0
+    const push = (e: PointerEvent) => {
+      const x = toWorldX(e.clientX), v = x - dx; dx = x
+      kick(x, -Math.abs(v) * 1.2); kick(x + Math.sign(v) * 0.06, Math.abs(v) * 0.7); energy += Math.abs(v) * 2; wake()
+    }
+    const onTap = (e: PointerEvent) => {
+      dragging = true; dx = toWorldX(e.clientX)
+      kick(dx, -0.5); energy += 0.7; wake()
+      if (e.pointerType === 'touch') navigator.vibrate?.(6)
+    }
+    const onUp = () => { dragging = false }
+    window.addEventListener('pointerup', onUp, { passive: true })
+    window.addEventListener('pointercancel', onUp, { passive: true })
     let sy = window.scrollY
     const onScroll = () => {
       const dy = window.scrollY - sy; sy = window.scrollY
@@ -343,6 +360,7 @@ export function KonGlass() {
       window.removeEventListener('deviceorientation', onTilt)
       window.removeEventListener('pointermove', onMove)
       c.removeEventListener('pointerdown', onTap)
+      window.removeEventListener('pointerup', onUp); window.removeEventListener('pointercancel', onUp)
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onResize)
       gl.getExtension('WEBGL_lose_context')?.loseContext()

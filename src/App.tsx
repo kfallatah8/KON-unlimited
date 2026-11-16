@@ -360,10 +360,10 @@ function Who() {
  *  (Draft copy, awaiting khalid's approval.) */
 const INTERLUDE = {
   ar: {
-    press: 'الضغط لا يكسرك…',
+    press: 'الضغط ما يكسرك…',
     reveal: 'يكشفك',
-    fact: { kick: 'الألماس والفحم من', key: 'عنصر واحد', q: 'الفرق؟', a1: 'ضغطٌ هائل', a2: 'ووقتٌ طويل' },
-    value: { kick: 'منحنا الحجرَ قيمةً عالية…', lead: 'ونسينا أن نمنحها', key: 'لأنفسنا' },
+    fact: { kick: 'الألماس والفحم من', key: 'عنصر واحد', q: 'وش الفرق؟', a1: 'ضغطٌ هائل', a2: 'ووقتٌ طويل' },
+    value: { kick: 'عطينا الحجر قيمة عالية…', lead: 'ونسينا نعطيها', key: 'لأنفسنا' },
     within: { lead: 'التغيير يبدأ', key: 'من الداخل', label: 'التغيير يبدأ من الداخل' },
   },
   en: {
@@ -437,6 +437,7 @@ function Approach() {
               <Icon id={p.icon} className="icon icon-lg" />
               <h3><Hl text={p.title} /></h3>
               <p><Rich text={p.body} /></p>
+              {'idea' in p && p.idea && <p className="ap-idea"><span aria-hidden="true">“</span>{p.idea}</p>}
             </li>
           ))}
         </ol>
@@ -1093,15 +1094,15 @@ export default function App() {
           <>
             <Hero ready={ready} />
             <Problem />
-            <Work />
             <Approach />
-            <Services />
             <Interlude />
+            <Work />
+            <Services />
             <QuickTools />
             <Founder />
+            <More />
             <Finale fallback={!webgl} />
             <Start />
-            <More />
           </>
         )}
       </main>

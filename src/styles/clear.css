@@ -65,9 +65,40 @@ main h3 { font-weight: 600; color: var(--ink); }
 #main .hero .proof li span, #main .hero .proof li small, #main .ob-personas .persona span, #main .ob-toggle span, #main .ob-rail li span { font-size: max(0.9rem, 14px) !important; }
 
 /* glass KON in the footer */
-.kon-foot.kon-glass3d { width: min(100%, 60rem); }
+.kon-foot.kon-glass3d { width: min(100%, 40rem); }
 .kon-glass3d canvas { display: block; width: 100%; aspect-ratio: 2.45; height: auto; touch-action: pan-y; cursor: pointer; }
 .kon-glass3d .kf-sub { margin-top: 0.4rem !important; }
 /* slogan: "We’ll be there" sits on its own line above the email */
 .footer-slogan .fs-line { display: block; white-space: nowrap; }
 .footer-slogan .fs-line + .fs-line { margin-top: 0.35em; }
+
+/* ---------- highlights v3: guided emphasis, no yellow ----------
+   ** ** = the idea to remember: bright white, and a thin teal line draws itself under it
+          as the line scrolls in, one keyword after another in reading order
+   ++ ++ = the signature: "liquid light" text (white to aqua) with one slow sweep of light */
+.kw { color: #fff !important; font-weight: 600; text-shadow: none !important; padding: 0 0.04em 0.1em;
+  background: linear-gradient(90deg, #12A596, #5FE3D2) no-repeat !important;
+  background-size: 100% 2px !important; background-position: 100% 100% !important;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+  transition: background-size 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) var(--kd, 0.35s); }
+[dir="ltr"] .kw { background-position: 0 100% !important; }
+.kw:nth-of-type(2) { --kd: 0.7s; } .kw:nth-of-type(3) { --kd: 1.05s; } .kw:nth-of-type(4) { --kd: 1.4s; }
+[data-reveal]:not(.is-in) .kw, [data-reveal]:not(.is-in).kw, html:not(.is-ready) .hero .kw { background-size: 0% 2px !important; }
+.hero .kw { --kd: 1.7s; } .hero .kw:nth-of-type(2) { --kd: 2.2s; }
+.hero-promise .kw { color: #fff !important; }
+.lux { color: #bff7ee !important; -webkit-text-fill-color: transparent !important; font-weight: 600; text-shadow: none !important;
+  background: linear-gradient(100deg, #ffffff 0%, #a8f5ea 30%, #3fd0bd 48%, #a8f5ea 66%, #ffffff 100%) !important;
+  background-size: 260% 100% !important; background-position: 0 0 !important;
+  -webkit-background-clip: text !important; background-clip: text !important; animation: none !important; }
+.is-in .lux, [data-reveal].is-in .lux, .is-ready .hero .lux { animation: luxSweep 3s cubic-bezier(0.3, 0.6, 0.2, 1) 0.6s both !important; }
+@keyframes luxSweep { from { background-position: 100% 0; } to { background-position: 0 0; } }
+.ti-row.ti-move .ti-k { color: #a8f5ea !important; background: rgba(95, 227, 210, 0.12) !important; border-color: rgba(95, 227, 210, 0.4) !important; }
+@media (prefers-reduced-motion: reduce) { .kw { transition: none; } .lux { animation: none !important; } }
+
+/* approach: one memorable idea per card */
+.ap-idea { margin-top: 0.9rem !important; padding-top: 0.8rem; border-top: 1px solid rgba(95, 227, 210, 0.16); color: #a8f5ea !important; font-size: 0.98rem !important; font-weight: 500; line-height: 1.6; }
+.ap-idea span { font-size: 1.3em; line-height: 0; margin-inline-end: 0.2em; color: #3fd0bd; vertical-align: -0.25em; }
+/* accents: the champagne/yellow accent becomes a pale aqua, so every highlight sits in one teal family */
+:root { --gold: #9fe9dc !important; }
+.hero-slogan { color: rgba(168, 245, 234, 0.8) !important; }
+@media (max-width: 600px) { .kon-foot.kon-glass3d { width: 86%; } }
