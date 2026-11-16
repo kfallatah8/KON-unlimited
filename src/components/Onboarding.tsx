@@ -2,12 +2,11 @@
 // situation overview with recommended services. Runs fully client-side; where the brief goes is
 // set in content/site.ts → contact, and the UI says plainly when nothing is connected yet.
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Hl } from './SplitReveal'
+import { Hl } from './Hl'
 import { BOOKING_URL, contact as inbox, type Lang, type Persona, type Question } from '../content/site'
 import { leadRead, optionLabel, recommend, serviceNames, stepsFor, type Answers } from '../content/onboarding'
 import { useContent } from '../content/useContent'
 import { motion, useStore } from '../state/store'
-import { lenis } from './SmoothScroll'
 import { GemMark, Icon } from './Icons'
 
 interface Draft {
@@ -117,6 +116,7 @@ function keepInView(force: boolean) {
   // scrolled out above the header (a long step, then Next).
   if (!force && top >= head - 4) return
   const y = window.scrollY + top - head
+  const lenis = (window as unknown as { __lenis?: { scrollTo: (y: number, o: object) => void } }).__lenis
   if (lenis) lenis.scrollTo(y, { duration: 0.7 })
   else window.scrollTo({ top: y, behavior: 'smooth' })
 }

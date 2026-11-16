@@ -18,6 +18,7 @@ export function SmoothScroll({ enabled }: { enabled: boolean }) {
   useEffect(() => {
     if (enabled) {
       lenis = new Lenis({ lerp: 0.1, wheelMultiplier: 1, smoothWheel: true })
+      ;(window as unknown as { __lenis?: Lenis | null }).__lenis = lenis
       if (!/^#\//.test(location.hash)) lenis.scrollTo(0, { immediate: true, force: true })
       lenis.on('scroll', ScrollTrigger.update)
       const tick = (t: number) => lenis?.raf(t * 1000)
@@ -27,6 +28,7 @@ export function SmoothScroll({ enabled }: { enabled: boolean }) {
         gsap.ticker.remove(tick)
         lenis?.destroy()
         lenis = null
+        ;(window as unknown as { __lenis?: Lenis | null }).__lenis = null
       }
     }
   }, [enabled])

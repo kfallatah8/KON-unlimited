@@ -1,35 +1,52 @@
-import { StrictMode } from 'react'
+import { StrictMode, Suspense, lazy, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import App from './App'
+import Home from './ultimate/Home'
 import { setLang, store } from './state/store'
-import './styles/global.css'
-import './styles/elevate.css'
-import './styles/prism.css'
-import './styles/storm.css'
-import './styles/solutions.css'
-import './styles/codex.css'
-import './styles/director.css'
-import './styles/clean.css'
-import './styles/clear.css'
+import './ultimate/kit.css'
+import './ultimate/ultimate.css'
 import './styles/hl.css'
 import { initHighlights } from './lib/highlights'
 
-// Every visit and every refresh opens at the very top: no restored scroll position and no jump
-// to a #section left over in the address bar (#en / #ar and #/pages are kept).
+// The inner pages still run on the previous shell, loaded only when one is opened.
+const Legacy = lazy(() => import('./App'))
+const INNER = ['solutions', 'talent', 'work']
+const readRoute = () => (location.hash.startsWith('#/') ? location.hash.slice(2) : '')
+
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual'
-if (location.hash && !/^#(en|ar|\/)/.test(location.hash)) history.replaceState(null, '', location.pathname + location.search)
-const toTop = () => window.scrollTo(0, 0)
-toTop()
-window.addEventListener('load', toTop, { once: true })
-window.addEventListener('pageshow', (e) => { if ((e as PageTransitionEvent).persisted) toTop() })
 
-// Arabic-first; English via the header switch or a link ending in #en.
+// A link like /#start lands on its section (it used to be stripped and sent to the top).
+function landOnHash() {
+  const h = location.hash
+  if (!h || h.length < 2 || h.startsWith('#/') || /^#(en|ar)$/.test(h)) { window.scrollTo(0, 0); return }
+  const go = () => document.getElementById(decodeURIComponent(h.slice(1)))?.scrollIntoView({ block: 'start' })
+  requestAnimationFrame(() => requestAnimationFrame(go))
+  // fonts and the form can shift the layout a little after first paint
+  document.fonts?.ready.then(() => setTimeout(go, 60))
+}
+
+function Root() {
+  const [route, setRoute] = useState(readRoute)
+  useEffect(() => {
+    const on = () => {
+      const r = readRoute()
+      if (INNER.includes(route) && !INNER.includes(r)) { location.reload(); return }
+      setRoute(r)
+      if (INNER.includes(r)) window.scrollTo(0, 0)
+    }
+    window.addEventListener('hashchange', on)
+    return () => window.removeEventListener('hashchange', on)
+  }, [route])
+  useEffect(() => { if (!INNER.includes(route)) landOnHash() }, [])
+  if (INNER.includes(route)) return <Suspense fallback={<div className="u-loading" />}><Legacy /></Suspense>
+  return <Home />
+}
+
+// Arabic first; English via the header switch or a link ending in #en.
 setLang(store.get().lang)
-
 requestAnimationFrame(() => initHighlights())
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <Root />
   </StrictMode>,
 )

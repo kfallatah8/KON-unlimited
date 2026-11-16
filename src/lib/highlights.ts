@@ -28,7 +28,7 @@ export function initHighlights() {
     el.style.setProperty('--ink', getComputedStyle(host).color)
     el.classList.add('hlx')
     const n = (el.textContent ?? '').trim().length
-    el.style.setProperty('--hl-dur', `${Math.min(2600, Math.max(750, n * 55))}ms`)
+    el.style.setProperty('--hl-dur', `${Math.min(1800, Math.max(700, n * 45))}ms`)
     if (still) { el.classList.add('is-hl'); return }
     io.observe(el)
   }

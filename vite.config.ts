@@ -6,7 +6,8 @@ import { viteSingleFile } from 'vite-plugin-singlefile'
 // `vite build --mode single` → one self-contained HTML file for previews.
 // Starts downloading the 3D chunk alongside the main bundle instead of after it has run,
 // so the gems are ready sooner after the page opens.
-const preload3d: Plugin = {
+// (the 3D preload is no longer used: the homepage has no GemField)
+export const preload3d: Plugin = {
   name: 'preload-3d',
   apply: 'build',
   transformIndexHtml: {
@@ -19,7 +20,7 @@ const preload3d: Plugin = {
 }
 
 export default defineConfig(({ mode }) => ({
-  plugins: [react(), ...(mode === 'single' ? [viteSingleFile()] : [preload3d])],
+  plugins: [react(), ...(mode === 'single' ? [viteSingleFile()] : [])],
   base: './',
   build: {
     outDir: mode === 'single' ? 'dist-single' : 'dist',

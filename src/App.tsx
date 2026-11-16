@@ -1,3 +1,14 @@
+// Legacy shell: now used only for the inner pages (#/solutions, #/talent, #/work). Its stylesheets
+// load with it, so the KON Ultimate homepage ships one sheet.
+import './styles/global.css'
+import './styles/elevate.css'
+import './styles/prism.css'
+import './styles/storm.css'
+import './styles/solutions.css'
+import './styles/codex.css'
+import './styles/director.css'
+import './styles/clean.css'
+import './styles/clear.css'
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
