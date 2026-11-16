@@ -68,3 +68,6 @@ main h3 { font-weight: 600; color: var(--ink); }
 .kon-foot.kon-glass3d { width: min(100%, 60rem); }
 .kon-glass3d canvas { display: block; width: 100%; aspect-ratio: 2.45; height: auto; touch-action: pan-y; cursor: pointer; }
 .kon-glass3d .kf-sub { margin-top: 0.4rem !important; }
+/* slogan: "We’ll be there" sits on its own line above the email */
+.footer-slogan .fs-line { display: block; white-space: nowrap; }
+.footer-slogan .fs-line + .fs-line { margin-top: 0.35em; }

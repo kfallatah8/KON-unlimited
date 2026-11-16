@@ -58,7 +58,12 @@ float level(float k, float x){
   float lv = k < 0.5 ? 0.07 : 0.15;
   float u = clamp((x - x0) / (x1 - x0), 0.0, 1.0);
   float sim = (texture2D(hf, vec2(u * ${((COLS - 1) / COLS).toFixed(5)} + ${(0.5 / COLS).toFixed(5)}, (k + 0.5) / 4.0)).r - 0.5) * 0.16;
-  float idle = (0.022 * sin(x * 4.2 - t * 0.8 + k * 1.7) + 0.012 * sin(x * 9.0 + t * 1.3 + k) + 0.005 * sin(x * 19.0 - t * 2.2 + k * 3.1) + 0.002 * sin(x * 37.0 + t * 3.1)) * agit;
+  // heavy ocean swell: exponential-sine waves (sharp crests, broad troughs), slow because the liquid is thick
+  float idle = 0.03 * (exp(sin(x * 3.1 - t * 0.62 + k * 1.7)) - 1.2) / 1.7
+             + 0.016 * (exp(sin(x * 6.3 + t * 0.95 + k * 0.6)) - 1.2) / 1.7
+             + 0.007 * (exp(sin(x * 12.7 - t * 1.45 + k * 2.3)) - 1.2) / 1.7
+             + 0.0025 * sin(x * 29.0 + t * 2.1 + k);
+  idle *= agit;
   return lv + slope * (x - (x0 + x1) * 0.5) + sim + idle;
 }
 
@@ -67,7 +72,11 @@ void main(){
   vec2 p = (uv * 2.0 - 1.0) * vec2(VW, VW * res.y / res.x) + vec2(0.08, 0.0);
   float dK = sdK(p + vec2(0.08, 0.0)), dO = sdO(p), dN = sdN(p - vec2(0.08, 0.0));
   float d = min(dK, min(dO, dN));
-  if (d > 3.0 * px) { gl_FragColor = vec4(0.0); return; }
+  if (d > 3.0 * px) {
+    float g = exp(-d / 0.07) * 0.05 * smoothstep(0.25, -0.5, p.y);
+    gl_FragColor = vec4(vec3(0.03, 0.42, 0.39) * g, g);
+    return;
+  }
   float k = dK <= min(dO, dN) ? 0.0 : (dO <= dN ? 1.0 : 2.0);
   float cov = smoothstep(px, -px, d);
 
@@ -76,37 +85,67 @@ void main(){
   float e = -d;
 
   // ---------- what sits inside the glass ----------
-  float ys = level(k, p.x);
-  float below = smoothstep(px, -px, p.y - ys);
-  float depth = clamp((ys - p.y) / 0.7, 0.0, 1.0);
-  vec3 top = vec3(0.02, 0.33, 0.39), mid = vec3(0.008, 0.19, 0.24), deep = vec3(0.002, 0.035, 0.055);
-  vec3 liq = mix(top, mid, smoothstep(0.0, 0.16, depth));
-  liq = mix(liq, deep, smoothstep(0.08, 0.75, depth));
+  // seen through the thick wall, the inside is bent inward (refraction)
+  float inWall = 1.0 - smoothstep(W + W2 - px, W + W2 + px, e);
+  vec2 q = p - n2 * (W + W2 - e) * 0.55 * inWall;
+  float ys = level(k, q.x);
+  float ysR = level(k, q.x + 0.01);
+  float sl = (ysR - ys) / 0.01;                                     // local surface slope
+  float crest = clamp((ys - level(k, q.x - 0.12) * 0.5 - level(k, q.x + 0.12) * 0.5) * 18.0, -1.0, 1.0);
+  float below = smoothstep(px, -px, q.y - ys);
+  float dz = max(ys - q.y, 0.0);
+  float depth = clamp(dz / 0.62, 0.0, 1.0);
+  // KON royal deep teal: #3FD0BD, #14AB9A, #087A72, #04524D, #012F2E
+  // KON royal deep teal: #14AB9A -> #087A72 -> #04524D -> #012F2E -> abyss
+  vec3 c0 = vec3(0.078, 0.62, 0.56), c1 = vec3(0.022, 0.43, 0.40), c2 = vec3(0.010, 0.28, 0.265), c3 = vec3(0.002, 0.15, 0.148), c4 = vec3(0.0, 0.05, 0.055);
+  vec3 liq = mix(c0, c1, smoothstep(0.0, 0.07, depth));
+  liq = mix(liq, c2, smoothstep(0.05, 0.3, depth));
+  liq = mix(liq, c3, smoothstep(0.25, 0.6, depth));
+  liq = mix(liq, c4, smoothstep(0.55, 1.0, depth));
   float wd = max(e - W, 0.0);
-  liq += vec3(0.02, 0.17, 0.2) * exp(-wd / 0.02) * (1.0 - 0.5 * depth);
-  liq += vec3(0.01, 0.08, 0.1) * exp(-pow((p.y - ys + 0.12) / 0.1, 2.0));          // light scattering at the walls
-  liq *= 0.93 + 0.14 * noise(p * vec2(4.0, 8.0) + vec2(t * 0.05, -t * 0.035));       // slow inner currents
-  liq += vec3(0.015, 0.09, 0.11) * pow(noise(p * 16.0 + vec2(t * 0.22, t * 0.1)), 3.0) * (1.0 - depth); // caustic flecks
+  // light passing through the thin crests (subsurface glow)
+  liq += vec3(0.05, 0.42, 0.38) * max(crest, 0.0) * exp(-dz / 0.05) * 0.55;
+  // soft light shafts falling from the surface, drifting with the swell
+  float shaft = noise(vec2(q.x * 7.0 + dz * 2.2 - t * 0.12, t * 0.05)) * noise(vec2(q.x * 13.0 - dz * 1.4 + t * 0.09, 3.0));
+  liq += vec3(0.03, 0.26, 0.24) * pow(shaft, 1.6) * exp(-dz / 0.32) * 0.75;
+  // caustic web dancing on the back wall
+  float c1n = 1.0 - abs(noise(q * vec2(11.0, 15.0) + vec2(t * 0.16, -t * 0.08)) * 2.0 - 1.0);
+  float c2n = 1.0 - abs(noise(q * vec2(17.0, 9.0) - vec2(t * 0.11, t * 0.13) + 4.0) * 2.0 - 1.0);
+  liq += vec3(0.08, 0.5, 0.46) * pow(c1n * c2n, 7.0) * exp(-dz / 0.28) * 0.7;
+  // the walls catch light (scattering)
+  liq += vec3(0.02, 0.2, 0.19) * exp(-wd / 0.018) * (1.0 - 0.55 * depth);
+  // slow currents and tiny suspended bubbles rising
+  liq *= 0.94 + 0.12 * noise(q * vec2(3.0, 6.0) + vec2(t * 0.03, -t * 0.025));
+  vec2 bc = vec2(q.x * 46.0, q.y * 46.0 - t * 0.9);
+  vec2 bi = floor(bc), bf = fract(bc) - 0.5;
+  float bh = hash(bi + k * 13.0);
+  vec2 bo = vec2(hash(bi + 1.7) - 0.5, hash(bi + 3.1) - 0.5) * 0.6 + vec2(0.06 * sin(t + bh * 6.3), 0.0);
+  float bub = step(0.965, bh) * smoothstep(0.11, 0.0, length(bf - bo)) * (1.0 - depth * 0.7);
+  liq += vec3(0.5, 0.95, 0.9) * bub * 0.22;
 
-  // the far side of the surface, seen from slightly above
-  float band = 0.024 + 0.008 * sin(p.x * 5.0 + t * 0.7);
-  float ysb = ys + band + 0.004 * sin(p.x * 17.0 - t * 1.4 + k);
-  float onTop = smoothstep(ys - px, ys + px, p.y) * smoothstep(ysb + px, ysb - px, p.y);
-  vec3 surf = vec3(0.05, 0.33, 0.40) + vec3(0.3, 0.45, 0.5) * pow(noise(vec2(p.x * 40.0 - t * 0.6, p.y * 90.0)), 4.0);
-  vec3 empty = vec3(0.004, 0.012, 0.018) + vec3(0.012, 0.03, 0.04) * exp(-wd / 0.04);
+  // the far side of the surface, seen from slightly above; widens on steep slopes
+  float band = 0.022 + 0.06 * abs(sl) * 0.25;
+  float ysb = ys + band + 0.006 * sin(q.x * 9.0 - t * 0.9 + k);
+  float onTop = smoothstep(ys - px, ys + px, q.y) * smoothstep(ysb + px, ysb - px, q.y);
+  float sheen = pow(noise(vec2(q.x * 26.0 - t * 0.35, q.y * 70.0 + t * 0.2)), 3.0);
+  vec3 surf = mix(c1, c0, 0.55) * 0.85 + vec3(0.55, 0.9, 0.85) * sheen * 0.5 + vec3(0.6, 0.9, 0.85) * max(-sl, 0.0) * 0.12;
+  vec3 empty = vec3(0.003, 0.012, 0.014) + vec3(0.01, 0.035, 0.035) * exp(-wd / 0.035);
   vec3 inside = mix(empty, liq, below);
-  inside = mix(inside, surf, onTop * 0.85);
-  inside += vec3(0.55, 0.92, 0.95) * exp(-abs(p.y - ys) / (px * 1.4 + 0.0012)) * 0.55;    // meniscus
-  inside += vec3(0.4, 0.75, 0.78) * exp(-abs(p.y - ysb) / (px * 1.2 + 0.001)) * 0.22 * (1.0 - below);
-  // foam specks riding the front edge
-  float fx = floor(p.x / (px * 2.2 + 0.0016));
-  float fz = step(0.9, hash(vec2(fx, floor(t * 2.0 + hash(vec2(fx, k)) * 9.0))));
-  inside += vec3(0.9, 1.0, 1.0) * fz * exp(-abs(p.y - ys - 0.004) / 0.004) * 0.5;
+  inside = mix(inside, surf, onTop * 0.9);
+  inside += vec3(0.6, 0.96, 0.9) * exp(-abs(q.y - ys) / (px * 1.3 + 0.0011)) * (0.42 + 0.3 * max(crest, 0.0));   // lit meniscus
+  inside += vec3(0.45, 0.85, 0.8) * exp(-abs(q.y - ysb) / (px * 1.2 + 0.0009)) * 0.2 * (1.0 - below);
+  // white water only on the sharpest crests
+  float fx = floor(q.x / (px * 2.0 + 0.0014));
+  float fz = step(0.86 - 0.25 * max(crest, 0.0), hash(vec2(fx, floor(t * 1.6 + hash(vec2(fx, k)) * 9.0))));
+  inside += vec3(0.92, 1.0, 0.98) * fz * max(crest, 0.15) * exp(-abs(q.y - ys - 0.003) / 0.0035) * 0.7;
 
   float cav = smoothstep(W - px, W + px, e);
-  vec3 col = mix(inside * 0.9 + vec3(0.008, 0.014, 0.02), inside, cav);
+  vec3 col = mix(inside * 0.97 + vec3(0.004, 0.009, 0.01) * (1.0 - below), inside, cav);
   float lw = px * 1.1 + 0.0007;
-  col += vec3(0.62, 0.8, 0.95) * (exp(-abs(e) / lw) * 0.6 + exp(-abs(e - W - W2) / lw) * 0.28);
+  // crisp edge lines with a whisper of dispersion (red, green, blue split by a hair)
+  vec3 edge = vec3(exp(-abs(e - 0.0009) / lw), exp(-abs(e) / lw), exp(-abs(e + 0.0009) / lw)) * 0.6
+            + vec3(exp(-abs(e - W - W2 - 0.0008) / lw), exp(-abs(e - W - W2) / lw), exp(-abs(e - W - W2 + 0.0008) / lw)) * 0.26;
+  col += edge * vec3(0.8, 0.95, 1.0);
 
   // ---------- the glass ----------
   vec3 N = vec3(0.0, 0.0, 1.0);
@@ -124,7 +163,7 @@ void main(){
   col += vec3(0.78, 0.9, 1.0) * (env * fres * 2.2 + rim * 0.42) + vec3(1.0, 0.99, 0.97) * spec;
   // the thick wall itself: pale, silvery glass that brightens toward its curved edges
   float wall = (1.0 - smoothstep(W + W2 - px, W + W2 + px, e));
-  col += vec3(0.42, 0.55, 0.66) * wall * (0.06 + 0.32 * pow(1.0 - N.z, 1.4)) * (0.75 + 0.25 * n2.y);
+  col += vec3(0.42, 0.55, 0.66) * wall * (0.06 + 0.32 * pow(1.0 - N.z, 1.4)) * (0.75 + 0.25 * n2.y) * (1.0 - 0.55 * below);
   // a broad, faint sheen across the front face
   col += vec3(0.6, 0.85, 0.9) * 0.035 * (1.0 - below) * smoothstep(0.35, 0.0, abs(p.y * 0.8 - p.x * 0.25 - 0.18 - ptr.x * 0.15));
 

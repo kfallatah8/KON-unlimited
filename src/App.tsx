@@ -838,7 +838,12 @@ function Footer() {
       <div className="wrap footer-grid">
         <div className="footer-brand">
           <KonGlass />
-          <p className="footer-slogan">{f.slogan}</p>
+          <p className="footer-slogan">
+            {(() => { const i = f.slogan.lastIndexOf('…'); return i < 0 ? f.slogan : (<>
+              <span className="fs-line">{f.slogan.slice(0, i)}</span>
+              <span className="fs-line">{f.slogan.slice(i + 1)}</span>
+            </>) })()}
+          </p>
           <p className="footer-contact" dir="ltr">
             <a href={`mailto:${contact.email}`}>{contact.email}</a>
           </p>
