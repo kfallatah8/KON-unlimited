@@ -767,3 +767,36 @@ main h3 { font-size: var(--fs-h3) !important; line-height: 1.45 !important; font
 /* With bloom the gem canvas is opaque black: screen-blend it so the clouds behind still show */
 .gem-canvas.is-rich { mix-blend-mode: screen; }
 .cloud-sky.is-front { z-index: 1; }
+
+/* ---------- Keywords: brushed champagne gold, alive but quiet ----------
+   ** ** keywords: pale white-gold metal with a soft ink line under it
+   ++ ++ signature: deeper polished gold
+   A slow sheen crosses each one now and then (12s, staggered by position), so the page breathes
+   without anything blinking. Reduced-motion visitors get the still metal. */
+.kw, .lux {
+  -webkit-text-fill-color: transparent !important; color: transparent !important; text-shadow: none !important; font-weight: 500;
+  background-repeat: no-repeat !important; -webkit-background-clip: text, border-box !important; background-clip: text, border-box !important;
+  background-size: 250% 100%, 100% 100% !important; background-position: 100% 0, 0 0 !important;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone; padding-inline: 0.04em;
+  animation: metalSheen 12s cubic-bezier(0.45, 0, 0.2, 1) infinite !important;
+}
+.kw {
+  background-image:
+    linear-gradient(100deg, #f4ead2 0%, #f4ead2 38%, #fffaf0 46%, #e7cf98 50%, #f4ead2 58%, #f4ead2 100%),
+    linear-gradient(transparent 82%, rgba(214, 192, 143, 0.32) 82%, rgba(214, 192, 143, 0.32) 90%, transparent 90%) !important;
+}
+.lux {
+  background-image:
+    linear-gradient(100deg, #e0bf7a 0%, #e9cd8f 36%, #fff3d6 46%, #c99d52 52%, #e5c684 60%, #e0bf7a 100%),
+    linear-gradient(transparent, transparent) !important;
+}
+.kw:nth-of-type(2n) { animation-delay: -4s !important; }
+.lux:nth-of-type(2n) { animation-delay: -7s !important; }
+@keyframes metalSheen { 0%, 62% { background-position: 100% 0, 0 0; } 82%, 100% { background-position: 0% 0, 0 0; } }
+.hero-promise .kw { background-image: linear-gradient(100deg, #e0bf7a, #f3dfae 46%, #c99d52 52%, #e0bf7a), linear-gradient(transparent, transparent) !important; }
+@media (prefers-reduced-motion: reduce) { .kw, .lux { animation: none !important; } }
+
+/* the scene breathes: the ambient glow swells and settles on a slow 14s cycle */
+html.is-ready .stage-glow { animation: stageBreath 14s ease-in-out infinite !important; }
+@keyframes stageBreath { 0%, 100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 0.68; transform: scale(1.035); } }
+@media (prefers-reduced-motion: reduce) { html.is-ready .stage-glow { animation: none !important; } }
