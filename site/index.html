@@ -1,0 +1,2132 @@
+<title>كُن · KON Unlimited</title>
+<meta name="description" content="شيءٌ يتكوّن خلف الغيم، والباب الأول يُفتح بكلمة واحدة">
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#010d0f">
+<meta property="og:type" content="website">
+<meta property="og:title" content="كُن · KON Unlimited">
+<meta property="og:description" content="لغزٌ من ثلاثة أبيات، وكلمةٌ واحدة تفتح الباب. هل تجدها؟">
+<meta property="og:image" content="/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23021417'/%3E%3Cpath d='M32 10 52 32 32 54 12 32z' fill='none' stroke='%235fe3d2' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&family=Instrument+Serif:ital@0;1&family=Noto+Kufi+Arabic:wght@600;700&family=Readex+Pro:wght@200;300;400;500;600;700&display=swap">
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js">
+<style>
+/* KON gate v4: one relic, one countdown, one word.
+   Single dark world by design (the relic lives in night teal), so there is no light theme to switch to.
+   Hierarchy: what this is → when the door opens → the riddle → the key. Everything else is secondary. */
+:root {
+  color-scheme: dark;
+  --abyss: #010d0f; --ink: #021417; --ink-2: #04201f;
+  --glass: rgba(3, 24, 26, 0.72); --glass-hi: rgba(4, 30, 32, 0.86);
+  --line: rgba(143, 240, 226, 0.13); --line-2: rgba(143, 240, 226, 0.28);
+  --text: #eef7f4; --text-2: #d3e4e0; --muted: #a8c2bd; --faint: rgba(168, 194, 189, 0.7);
+  --teal-deep: #065a57; --teal: #12a596; --teal-hi: #5fe3d2; --aqua: #a8f5ea;
+  --gold: #e7d3a4; --gold-hi: #f3e6c4; --gold-lo: #b9a374; --champagne: #e7d3a4;
+  --hair: linear-gradient(135deg, rgba(168,245,234,0.42), rgba(168,245,234,0.06) 38%, rgba(95,227,210,0.06) 62%, rgba(95,227,210,0.38));
+  --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace; --ember: #e8b07a;
+  --display: 'Readex Pro', 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+  --body: 'IBM Plex Sans Arabic', 'IBM Plex Sans', 'Segoe UI', Tahoma, sans-serif;
+  --verse: 'Amiri', 'Noto Naskh Arabic', serif;
+  --kufi: 'Noto Kufi Arabic', 'Readex Pro', sans-serif;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --col: min(540px, 42vw);
+  --cx: 29%;
+  --pad: max(16px, env(safe-area-inset-left, 0px));
+}
+:root[lang='en'] { --display: 'Instrument Serif', Georgia, serif; --body: 'IBM Plex Sans', 'Segoe UI', Helvetica, Arial, sans-serif; --verse: 'Instrument Serif', Georgia, serif; }
+* { box-sizing: border-box; }
+html { background: var(--abyss); overflow-x: clip; -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--abyss); color: var(--text); font-family: var(--body); font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; min-height: 100svh; }
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--aqua); outline-offset: 3px; border-radius: 10px; }
+[hidden] { display: none !important; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* ---------- stage: the relic, full-bleed behind the reading column on wide screens ---------- */
+.stage { position: fixed; inset: 0; z-index: 0; outline: none; touch-action: none; user-select: none; -webkit-user-select: none;
+  background: radial-gradient(42% 50% at var(--cx) 48%, rgba(18,165,150,0.22), rgba(6,90,87,0.08) 52%, transparent 76%), var(--abyss); }
+.stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity 1.6s var(--ease); cursor: grab; }
+.stage.lit canvas { opacity: 1; }
+.stage.dragging canvas { cursor: grabbing; }
+.poster { position: absolute; left: var(--cx); top: 46%; width: 140px; height: 140px; transform: translate(-50%, -50%) rotate(45deg); border-radius: 24px; pointer-events: none;
+  background: linear-gradient(145deg, rgba(95,227,210,0.16), rgba(6,90,87,0.08)); box-shadow: 0 0 120px 30px rgba(18,165,150,0.16), inset 0 0 0 1px rgba(143,240,226,0.18); transition: opacity 1.2s var(--ease); animation: breathe 3.2s ease-in-out infinite; }
+.stage.lit .poster { opacity: 0; }
+@keyframes breathe { 50% { opacity: 0.55; } }
+.nogl { position: absolute; left: var(--cx); top: 64%; transform: translateX(-50%); width: min(340px, 82%); text-align: center; color: var(--muted); font-size: 0.9rem; }
+.ov { position: absolute; left: var(--cx); transform: translateX(-50%); pointer-events: none; text-align: center; white-space: nowrap; }
+.gesture { bottom: calc(22px + env(safe-area-inset-bottom, 0px)); font-size: 0.86rem; color: var(--text-2); padding: 8px 16px; border-radius: 999px; background: rgba(1,13,15,0.62); border: 1px solid var(--line); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: opacity .8s var(--ease); }
+.stage.played .gesture { opacity: 0; }
+.moves { top: 88px; font-size: 0.8rem; color: var(--faint); letter-spacing: 0.02em; }
+.word { top: 22%; font-family: var(--kufi); font-weight: 700; font-size: clamp(3rem, 8vw, 6.5rem); color: var(--gold-hi); opacity: 0; text-shadow: 0 0 40px rgba(236,220,180,0.45); }
+.word.show { animation: word 3.2s var(--ease) forwards; }
+@keyframes word { 0% { opacity: 0; letter-spacing: .5em; filter: blur(12px); } 28% { opacity: 1; letter-spacing: .04em; filter: blur(0); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -14%); } }
+.tools { position: absolute; z-index: 3; display: flex; flex-direction: column; gap: 10px; top: 50%; inset-inline-end: 24px; transform: translateY(-50%); }
+.tool { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--line-2); background: rgba(1,11,13,0.6); color: var(--text-2); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); transition: border-color .3s, color .3s, transform .2s var(--ease); position: relative; }
+.tool:hover { border-color: var(--teal-hi); color: var(--text); }
+.tool:active { transform: scale(0.94); }
+.tool[aria-pressed='true'] { color: var(--aqua); border-color: var(--teal-hi); box-shadow: 0 0 18px rgba(95,227,210,0.3); }
+.tool svg { width: 20px; height: 20px; }
+.tool .tip { position: absolute; inset-inline-start: calc(100% + 10px); top: 50%; transform: translateY(-50%); white-space: nowrap; font-size: 0.78rem; padding: 4px 10px; border-radius: 8px; background: rgba(1,13,15,0.9); border: 1px solid var(--line); opacity: 0; pointer-events: none; transition: opacity .2s; }
+.tool:hover .tip, .tool:focus-visible .tip { opacity: 1; }
+.lite { position: absolute; bottom: 10px; inset-inline-end: 16px; font-size: 0.7rem; color: rgba(168,194,189,0.5); pointer-events: none; }
+.scrim { position: fixed; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(270deg, rgba(1,13,15,0.94) 0%, rgba(1,13,15,0.86) calc(var(--col) - 40px), rgba(1,13,15,0) calc(var(--col) + 140px)); }
+:root[dir='ltr'] .scrim { background: linear-gradient(90deg, rgba(1,13,15,0.94) 0%, rgba(1,13,15,0.86) calc(var(--col) - 40px), rgba(1,13,15,0) calc(var(--col) + 140px)); }
+
+/* ---------- header ---------- */
+.top { position: fixed; z-index: 20; inset-inline: 0; top: 0; height: 72px; padding: env(safe-area-inset-top, 0px) max(28px, var(--pad)) 0; display: flex; align-items: center; gap: 12px; pointer-events: none; }
+.top > * { pointer-events: auto; }
+.top::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(1,13,15,0.96), rgba(1,13,15,0.82) 70%, rgba(1,13,15,0)); opacity: 0; transition: opacity .4s; pointer-events: none; }
+body.scrolled .top::before { opacity: 1; }
+.brand { font-family: 'IBM Plex Sans', sans-serif; font-size: 1.02rem; letter-spacing: 0.02em; color: var(--text); text-decoration: none; display: inline-flex; gap: 0.4em; align-items: baseline; direction: ltr; }
+.brand b { font-weight: 500; letter-spacing: 0.22em; }
+.brand span { font-weight: 300; color: var(--text-2); }
+.top .grow { flex: 1; }
+.mini { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line-2); background: rgba(2,20,22,0.82); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); font-family: var(--display); font-size: 0.92rem; color: var(--text); opacity: 0; transform: translateY(-6px); transition: opacity .4s var(--ease), transform .4s var(--ease); pointer-events: none; }
+.mini.on { opacity: 1; transform: none; pointer-events: auto; }
+.mini b { font-weight: 400; font-variant-numeric: tabular-nums; }
+.mini i { width: 7px; height: 7px; border-radius: 50%; background: var(--teal-hi); box-shadow: 0 0 10px var(--teal-hi); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: 0.35; } }
+.chip { height: 40px; min-width: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line-2); background: rgba(2,20,22,0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color: var(--text-2); font-size: 0.88rem; display: inline-grid; place-items: center; transition: border-color .3s, color .3s, background .3s; }
+.chip:hover { border-color: var(--teal-hi); color: var(--text); }
+.chip.icon { padding: 0; width: 40px; }
+.chip svg { width: 18px; height: 18px; }
+.chip[aria-pressed='true'] { color: var(--aqua); border-color: var(--teal-hi); }
+.chip.solid { background: linear-gradient(135deg, var(--teal-hi), var(--teal)); color: #02211f; border-color: transparent; font-weight: 500; }
+.chip.solid:hover { filter: brightness(1.08); color: #02211f; }
+
+/* ---------- reading column ---------- */
+.hall { position: relative; z-index: 2; display: grid; grid-template-columns: var(--col) minmax(0, 1fr); pointer-events: none; }
+.col { grid-column: 1; pointer-events: auto; padding: 88px max(32px, var(--pad)) 48px; display: grid; gap: 26px; align-content: start; min-height: 100svh; }
+.eyebrow { margin: 0; font-size: 0.8rem; letter-spacing: 0.08em; color: var(--gold); display: flex; align-items: center; gap: 10px; }
+.eyebrow::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to left, rgba(214,192,143,0.4), transparent); }
+:root[dir='ltr'] .eyebrow::after { background: linear-gradient(to right, rgba(214,192,143,0.4), transparent); }
+h1 { margin: 10px 0 8px; font-family: var(--display); font-weight: 400; font-size: clamp(1.7rem, 2.3vw, 2.25rem); line-height: 1.3; letter-spacing: -0.005em; text-wrap: balance; }
+:root[lang='en'] h1 { font-weight: 400; font-size: clamp(1.85rem, 2.35vw, 2.3rem); line-height: 1.1; }
+h1 em { font-style: normal; color: var(--aqua); }
+.lede { margin: 0; color: var(--text-2); font-size: 1rem; font-weight: 500; max-width: 36em; }
+
+/* countdown: the loudest thing after the title */
+.clock { padding: 16px 16px 12px; border-radius: 22px; border: 1px solid var(--line-2); background: linear-gradient(180deg, rgba(18,165,150,0.14), rgba(2,20,22,0.82) 70%); box-shadow: 0 24px 60px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05); }
+.clock-h { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.clock-h p { margin: 0; font-size: 0.92rem; color: var(--text); display: inline-flex; align-items: center; gap: 8px; }
+.clock-h p i { width: 8px; height: 8px; border-radius: 50%; background: var(--teal-hi); box-shadow: 0 0 12px var(--teal-hi); animation: pulse 2s ease-in-out infinite; }
+.clock-h small { font-size: 0.78rem; color: var(--muted); text-align: end; }
+.digits { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.cell { text-align: center; padding: 12px 4px 9px; border-radius: 16px; background: rgba(1,13,15,0.6); border: 1px solid var(--line); position: relative; overflow: hidden; }
+.cell::before { content: ''; position: absolute; inset-inline: 14%; top: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(168,245,234,0.55), transparent); }
+.cell b { display: block; font-family: 'Readex Pro', sans-serif; font-weight: 400; font-size: clamp(2.3rem, 3.5vw, 3.3rem); line-height: 1; color: #f6fcfa; font-variant-numeric: tabular-nums; text-shadow: 0 0 26px rgba(95,227,210,0.35); }
+.cell small { display: block; margin-top: 8px; font-size: 0.8rem; color: var(--muted); }
+.cell.s b { color: var(--aqua); }
+.cell.tick b { animation: tick .5s var(--ease); }
+@keyframes tick { from { transform: translateY(-14%); opacity: 0.4; } to { transform: none; opacity: 1; } }
+.clock.open .digits { display: none; }
+.clock .doorOpen { display: none; margin: 4px 0 6px; font-family: var(--display); font-size: 1.6rem; color: var(--aqua); }
+.clock.open .doorOpen { display: block; }
+
+/* the riddle: set as classical verse, two hemistichs per line */
+.riddle h2, .traces h2 { margin: 0; font-size: 0.82rem; font-weight: 500; letter-spacing: 0.08em; color: var(--gold); }
+.riddle-h { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 14px; }
+.riddle-h small { color: var(--muted); font-size: 0.8rem; }
+.poem { margin: 0; padding: 20px 26px 14px; border-radius: 22px; border: 1px solid rgba(214,192,143,0.22); background: linear-gradient(180deg, rgba(214,192,143,0.06), rgba(1,13,15,0.5)); display: grid; gap: 6px; position: relative; }
+.poem::before, .poem::after { content: '۞'; position: absolute; top: -0.72em; font-size: 0.9rem; color: var(--gold); background: var(--abyss); padding: 0 8px; line-height: 1.4; }
+.poem::before { inset-inline-start: 22px; } .poem::after { inset-inline-end: 22px; }
+.bayt { display: grid; grid-template-columns: minmax(0, 1fr); font-family: var(--verse); font-size: clamp(1.22rem, 1.5vw, 1.4rem); line-height: 1.72; color: var(--text); }
+.bayt span:last-child { text-align: end; color: var(--text-2); }
+.bayt span { opacity: 0; transform: translateY(6px); filter: blur(4px); transition: opacity 1s var(--ease), transform 1s var(--ease), filter 1s var(--ease); }
+body.ready .bayt span { opacity: 1; transform: none; filter: none; }
+:root[lang='en'] .bayt { grid-template-columns: minmax(0, 1fr); gap: 0; font-size: clamp(1.25rem, 1.6vw, 1.45rem); line-height: 1.45; }
+:root[lang='en'] .bayt span:last-child { text-align: start; padding-inline-start: 1.4em; color: var(--text-2); }
+
+/* the key: big, lit, impossible to miss */
+.key { display: grid; gap: 10px; }
+.key label { font-size: 0.95rem; color: var(--text); display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.key label small { color: var(--muted); font-size: 0.8rem; }
+.field { display: flex; align-items: center; gap: 10px; height: 68px; padding-inline: 18px 8px; border-radius: 20px; background: rgba(2,20,22,0.9); border: 1.5px solid rgba(95,227,210,0.6);
+  box-shadow: 0 0 0 4px rgba(18,165,150,0.12), 0 0 44px rgba(18,165,150,0.22); transition: border-color .3s, box-shadow .3s; animation: invite 2.8s ease-in-out infinite; }
+.field.touched { animation: none; }
+@keyframes invite { 50% { box-shadow: 0 0 0 7px rgba(18,165,150,0.16), 0 0 60px rgba(95,227,210,0.32); border-color: rgba(168,245,234,0.85); } }
+.field:focus-within { border-color: var(--aqua); box-shadow: 0 0 0 5px rgba(168,245,234,0.16), 0 0 50px rgba(95,227,210,0.3); }
+.field svg { width: 22px; height: 22px; color: var(--gold); flex: none; }
+.field input { flex: 1; min-width: 0; height: 100%; background: none; border: 0; outline: none; font-family: var(--display); font-size: 1.3rem; color: #fff; }
+.field input::placeholder { color: rgba(211,228,224,0.66); font-size: 1.05rem; }
+.go { height: 52px; padding: 0 24px; border-radius: 14px; border: 0; flex: none; background: linear-gradient(135deg, var(--gold-hi), var(--gold) 55%, var(--gold-lo)); color: #10201c; font-family: var(--display); font-weight: 500; font-size: 1.02rem; box-shadow: 0 8px 24px rgba(214,192,143,0.25); transition: transform .2s var(--ease), filter .2s; }
+.go:hover { filter: brightness(1.06); }
+.go:active { transform: scale(0.97); }
+.field.no { border-color: var(--ember); animation: shake .45s; }
+.field.near { border-color: var(--aqua); box-shadow: 0 0 0 6px rgba(168,245,234,0.2), 0 0 60px rgba(95,227,210,0.4); }
+.field.ok { border-color: var(--gold-hi); box-shadow: 0 0 0 6px rgba(236,220,180,0.2), 0 0 70px rgba(236,220,180,0.4); }
+@keyframes shake { 20%, 60% { transform: translateX(-7px); } 40%, 80% { transform: translateX(7px); } }
+.whisper { margin: 0; min-height: 1.6em; font-size: 0.95rem; color: var(--aqua); transition: opacity .3s; }
+.whisper.warm { color: var(--ember); }
+
+/* traces */
+.traces { display: grid; gap: 12px; }
+.traces-h { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.traces-h span { color: var(--muted); font-size: 0.8rem; margin-inline-start: 8px; }
+.ghost { height: 42px; padding: 0 18px; border-radius: 999px; border: 1px solid var(--line-2); background: rgba(2,20,22,0.7); color: var(--text); font-size: 0.9rem; transition: border-color .3s, color .3s, opacity .3s; display: inline-flex; align-items: center; gap: 8px; }
+.ghost:hover:not(:disabled) { border-color: var(--teal-hi); }
+.ghost:disabled { cursor: default; color: var(--muted); opacity: 0.85; }
+a.ghost { text-decoration: none; }
+.ghost svg { width: 16px; height: 16px; color: var(--gold); }
+.traces ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.traces li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: baseline; padding: 12px 16px; border-radius: 14px; border: 1px solid rgba(214,192,143,0.22); background: rgba(214,192,143,0.05); animation: rise .8s var(--ease); }
+.traces li b { font-weight: 400; font-size: 0.78rem; color: var(--gold); min-width: 3.6em; }
+.traces li span { color: var(--text); font-size: 0.98rem; }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* seals (secondary game) */
+.seals { border-radius: 18px; border: 1px solid var(--line); background: rgba(1,13,15,0.45); }
+.seals summary { list-style: none; cursor: pointer; padding: 16px 18px; display: grid; gap: 10px; }
+.seals summary::-webkit-details-marker { display: none; }
+.seals .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 0.92rem; color: var(--text); }
+.seals .row span { color: var(--gold); font-size: 0.85rem; }
+.seals .row svg { width: 16px; height: 16px; color: var(--muted); transition: transform .3s; }
+.seals[open] .row svg { transform: rotate(180deg); }
+.bar { height: 3px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.bar i { display: block; height: 100%; width: calc(var(--p, 0) * 100%); background: linear-gradient(90deg, var(--gold), var(--gold-hi)); box-shadow: 0 0 10px rgba(236,220,180,0.5); transition: width 1.2s var(--ease); }
+.seals .in { padding: 0 18px 18px; display: grid; gap: 12px; }
+.seals .in p { margin: 0; font-size: 0.86rem; color: var(--muted); }
+.seals ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.seals li { display: grid; gap: 2px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: rgba(1,13,15,0.4); min-width: 0; }
+.seals li b { font-family: var(--kufi); font-weight: 700; font-size: 1.02rem; line-height: 1.3; color: rgba(214,192,143,0.5); }
+.seals li span { font-size: 0.8rem; line-height: 1.5; color: var(--faint); }
+.seals li.on { border-color: rgba(214,192,143,0.5); background: linear-gradient(135deg, rgba(214,192,143,0.12), rgba(18,165,150,0.06)); }
+.seals li.on b { color: var(--gold-hi); }
+.seals li.on span { color: var(--text); }
+.seals li.fresh { animation: rise .9s var(--ease); }
+
+.alt { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 0; font-size: 0.92rem; color: var(--muted); }
+.link { background: none; border: 0; padding: 6px 0; color: var(--aqua); text-decoration: underline; text-underline-offset: 5px; text-decoration-color: rgba(168,245,234,0.4); }
+.link:hover { text-decoration-color: var(--aqua); }
+.golden { padding: 16px 18px; border-radius: 18px; border: 1px solid rgba(236,220,180,0.5); background: linear-gradient(135deg, rgba(236,220,180,0.14), rgba(18,165,150,0.06)); display: grid; gap: 10px; }
+.golden p { margin: 0; color: var(--gold-hi); }
+.golden small { color: var(--text-2); }
+.foot { margin-top: 8px; padding-top: 22px; border-top: 1px solid var(--line); display: grid; gap: 8px; font-size: 0.84rem; color: var(--muted); }
+.foot .slogan { font-family: var(--display); color: var(--text-2); font-size: 0.95rem; }
+.foot .pvlink { justify-self: start; font-size: 0.8rem; }
+
+/* ---------- intro ---------- */
+.intro { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; text-align: center; padding: 24px; cursor: pointer;
+  background: radial-gradient(60% 50% at 50% 46%, rgba(18,165,150,0.18), transparent 70%), var(--abyss); transition: opacity 1.4s var(--ease), visibility 1.4s; }
+.intro.gone { opacity: 0; visibility: hidden; }
+.intro .in { display: grid; gap: 14px; justify-items: center; }
+.intro small { font-family: 'IBM Plex Sans', sans-serif; letter-spacing: 0.32em; font-size: 0.78rem; color: var(--muted); direction: ltr; opacity: 0; animation: fade 1.2s .2s var(--ease) forwards; }
+.intro p { margin: 0; font-family: var(--display); font-weight: 300; font-size: clamp(1.7rem, 4.6vw, 3rem); line-height: 1.3; opacity: 0; animation: fade 1.6s .7s var(--ease) forwards; }
+.intro p + p { color: var(--gold-hi); font-weight: 400; animation-delay: 1.7s; }
+.intro .enter { margin-top: 18px; opacity: 0; animation: fade 1s 2.5s var(--ease) forwards; }
+@keyframes fade { from { opacity: 0; transform: translateY(10px); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+
+/* ---------- sheets ---------- */
+.sheet { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 20px var(--pad); background: rgba(1,8,9,0.72); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); overflow-y: auto; }
+.sheet[hidden] { display: none; }
+.card { width: min(520px, 100%); margin: auto; padding: 30px 28px 26px; border-radius: 26px; border: 1px solid var(--line-2); background: linear-gradient(180deg, rgba(6,43,42,0.96), rgba(2,18,20,0.98)); box-shadow: 0 40px 100px rgba(0,0,0,0.55); display: grid; gap: 16px; position: relative; animation: rise .7s var(--ease); }
+.card .x { position: absolute; top: 14px; inset-inline-end: 14px; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: none; color: var(--muted); display: grid; place-items: center; }
+.card .x svg { width: 16px; height: 16px; }
+.card h2 { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(1.6rem, 4vw, 2rem); line-height: 1.25; padding-inline-end: 40px; }
+.card .kicker { font-family: var(--kufi); color: var(--gold-hi); font-size: 1.1rem; margin: 0; }
+.card p { margin: 0; color: var(--text-2); }
+.card .note { font-size: 0.84rem; color: var(--muted); }
+.seat { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 18px; border-radius: 18px; border: 1px solid rgba(236,220,180,0.45); background: linear-gradient(135deg, rgba(236,220,180,0.12), rgba(18,165,150,0.06)); }
+.seat span { color: var(--text-2); font-size: 0.92rem; }
+.seat b { font-family: 'Readex Pro', sans-serif; font-weight: 300; font-size: 2.2rem; line-height: 1; color: var(--gold-hi); }
+form.join { display: grid; gap: 12px; }
+.fl { display: grid; gap: 6px; font-size: 0.88rem; color: var(--text-2); }
+.fl input { height: 52px; padding: 0 16px; border-radius: 14px; border: 1px solid var(--line-2); background: rgba(1,13,15,0.7); color: var(--text); font-size: 1.02rem; width: 100%; }
+.fl input:focus { outline: none; border-color: var(--aqua); box-shadow: 0 0 0 4px rgba(168,245,234,0.14); }
+.seg { display: inline-flex; padding: 4px; border-radius: 999px; border: 1px solid var(--line); background: rgba(1,13,15,0.6); justify-self: start; }
+.seg button { height: 36px; padding: 0 16px; border-radius: 999px; border: 0; background: none; color: var(--muted); font-size: 0.86rem; }
+.seg button[aria-pressed='true'] { background: rgba(95,227,210,0.16); color: var(--text); }
+.primary { height: 54px; border-radius: 16px; border: 0; background: linear-gradient(135deg, var(--teal-hi), var(--teal)); color: #02211f; font-family: var(--display); font-weight: 500; font-size: 1.04rem; box-shadow: 0 10px 30px rgba(18,165,150,0.3); }
+.primary:hover { filter: brightness(1.06); }
+.msg { min-height: 1.4em; font-size: 0.9rem; color: var(--aqua); margin: 0; }
+.share { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding-top: 14px; border-top: 1px solid var(--line); }
+.share span { flex: 1 1 100%; font-size: 0.88rem; color: var(--muted); }
+
+/* ---------- preview drawer (removed at launch) ---------- */
+
+/* ---------- laptops with short screens ---------- */
+@media (min-width: 901px) and (max-height: 880px) {
+  .col { padding-top: 76px; }
+  h1 { font-size: clamp(1.45rem, 1.9vw, 1.8rem); margin: 4px 0 2px; }
+  .lede { font-size: 0.92rem; }
+  .clock { padding: 12px 14px 10px; }
+  .clock-h { margin-bottom: 8px; }
+  .cell { padding: 9px 4px 7px; }
+  .cell b { font-size: clamp(1.9rem, 2.8vw, 2.5rem); }
+  .cell small { margin-top: 4px; font-size: 0.74rem; }
+  .riddle-h { margin-bottom: 10px; }
+  .poem { padding: 16px 20px 12px; gap: 4px; }
+  .bayt { font-size: clamp(1.1rem, 1.35vw, 1.24rem); line-height: 1.62; }
+  .field { height: 60px; }
+  .go { height: 46px; }
+}
+
+/* ---------- phones and small tablets ---------- */
+@media (max-width: 900px) {
+  :root { --cx: 50%; }
+  .top { height: 60px; padding-inline: var(--pad); gap: 8px; background: linear-gradient(180deg, rgba(1,13,15,0.95), rgba(1,13,15,0.75) 70%, transparent); }
+  .top .join-top { display: none; }
+  .mini { height: 34px; padding: 0 12px; font-size: 0.86rem; }
+  .chip { height: 36px; min-width: 36px; padding: 0 12px; font-size: 0.84rem; }
+  .chip.icon { width: 36px; }
+  .scrim { display: none; }
+  .hall { display: block; pointer-events: auto; }
+  .col { display: contents; }
+  .lead { padding: 76px var(--pad) 0; display: grid; gap: 18px; }
+  h1 { font-size: clamp(1.5rem, 6.4vw, 1.9rem); }
+  :root[lang='en'] h1 { font-size: clamp(1.8rem, 8vw, 2.3rem); }
+  .lede { font-size: 0.95rem; }
+  .cell b { font-size: clamp(1.9rem, 9vw, 2.6rem); }
+  .digits { gap: 8px; }
+  .clock { padding: 14px 12px 12px; }
+  .stage { position: relative; inset: auto; height: min(52svh, 480px); min-height: 320px; margin-inline: calc(-1 * var(--pad)); border-block: 1px solid var(--line); }
+  .moves { top: 12px; }
+  .gesture { bottom: 12px; font-size: 0.8rem; white-space: normal; width: max-content; max-width: 88%; }
+  .tools { top: 12px; transform: none; inset-inline-end: 12px; gap: 8px; }
+  .tool { width: 42px; height: 42px; }
+  .tool .tip { display: none; }
+  .word { top: 16%; }
+  .rest { padding: 6px var(--pad) calc(150px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 24px; }
+  .bayt { grid-template-columns: minmax(0, 1fr); gap: 0; font-size: clamp(1.14rem, 4.9vw, 1.3rem); line-height: 1.7; }
+  .bayt span:last-child { text-align: end; }
+  .poem { padding: 20px 18px 16px; gap: 12px; }
+  /* the key docks to the bottom: always one thumb away */
+  .key { position: fixed; z-index: 30; inset-inline: 0; bottom: 0; padding: 10px var(--pad) calc(12px + env(safe-area-inset-bottom, 0px)); gap: 6px;
+    background: linear-gradient(180deg, rgba(1,11,13,0.7), rgba(1,11,13,0.97) 30%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid var(--line-2); }
+  .key label { display: none; }
+  .whisper { order: -1; min-height: 0; font-size: 0.88rem; text-align: center; }
+  .whisper:empty { display: none; }
+  .field { height: 58px; border-radius: 18px; padding-inline: 14px 6px; }
+  .field input { font-size: 1.15rem; }
+  .field input::placeholder { font-size: 0.98rem; }
+  .go { height: 46px; padding: 0 18px; }
+  .seals ol { grid-template-columns: minmax(0, 1fr); }
+  .card { padding: 26px 20px 22px; border-radius: 22px; }
+}
+@media (min-width: 901px) { .lead, .rest { display: grid; gap: 26px; } .lead > .clock { margin-top: 2px; } }
+@media (min-width: 901px) and (max-height: 880px) { .lead, .rest { gap: 16px; } .col { gap: 16px; } }
+@media (max-width: 380px) { .cell small { font-size: 0.72rem; } .go { padding: 0 14px; } }
+
+/* ---------- v6: homepage parity ---------- */
+.kw { white-space: nowrap; color: #fff; font-weight: 600; background: linear-gradient(transparent 70%, rgba(63,208,189,0.28) 70% 94%, transparent 94%); padding-inline: 0.06em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.lux { color: #e3c27f; font-weight: 500; }
+h1 .lux { text-shadow: 0 0 28px rgba(227,194,127,0.28); }
+/* the clouds already live in the 3D scene; the stage colour only shows before it lights */
+.stage { background: radial-gradient(42% 50% at var(--cx) 48%, rgba(18,165,150,0.2), rgba(6,90,87,0.08) 52%, transparent 76%), #021719; }
+
+/* signs: the glass vessel (how close you are) and the light shards (what you have caught) */
+.signs { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.sign { padding: 14px 16px 14px; border-radius: 18px; border: 1px solid var(--line); background: linear-gradient(180deg, rgba(18,165,150,0.08), rgba(1,13,15,0.5)); min-width: 0; }
+.sign h2 { margin: 0 0 8px; font-size: 0.8rem; font-weight: 400; letter-spacing: 0.08em; color: var(--gold); }
+.vessel { display: grid; gap: 6px; }
+.glass { position: relative; width: 100%; max-width: 176px; direction: ltr; }
+.glass svg { display: block; width: 100%; height: auto; overflow: visible; }
+.glass .gtop { position: absolute; inset: 0 auto auto 0; width: 100%; pointer-events: none; transform: translateZ(0); }
+.glass .kg { font-family: 'Readex Pro', sans-serif; font-weight: 700; font-size: 256px; letter-spacing: 0.03em; }
+.vstate { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.vstate b { font-family: var(--display); font-weight: 500; font-size: 0.98rem; color: var(--text); transition: color .6s; }
+.vstate b.hot { color: var(--gold-hi); }
+.vstate small { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+.slots { display: flex; gap: 10px; margin: 2px 0 10px; }
+.slots i { width: 18px; height: 18px; transform: rotate(45deg); border-radius: 4px; border: 1px solid rgba(214,192,143,0.45); background: rgba(1,13,15,0.6); transition: background .8s var(--ease), box-shadow .8s var(--ease), border-color .8s; }
+.slots i.on { border-color: var(--gold-hi); background: linear-gradient(135deg, #f4e6c0, var(--gold) 55%, var(--gold-lo)); box-shadow: 0 0 16px rgba(236,220,180,0.55); animation: slotIn .9s var(--ease); }
+@keyframes slotIn { from { transform: rotate(45deg) scale(1.8); opacity: 0; } to { transform: rotate(45deg) scale(1); opacity: 1; } }
+.frag { margin: 0; font-size: 0.9rem; line-height: 1.7; color: var(--muted); }
+.frag span { color: var(--gold-hi); }
+.frag span + span::before { content: ' · '; color: var(--faint); }
+.frag em { font-style: normal; color: var(--faint); }
+.toast { top: 30%; max-width: 86%; white-space: normal; padding: 16px 34px; background: radial-gradient(closest-side, rgba(1,13,15,0.72), rgba(1,13,15,0.4) 60%, transparent); font-family: var(--display); font-weight: 400; font-size: clamp(1.15rem, 2vw, 1.6rem); color: var(--gold-hi); text-shadow: 0 0 30px rgba(236,220,180,0.4); opacity: 0; }
+.toast.show { animation: toast 4.2s var(--ease) forwards; }
+@keyframes toast { 0% { opacity: 0; filter: blur(10px); transform: translate(-50%, 12px); } 18% { opacity: 1; filter: none; transform: translate(-50%, 0); } 78% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -10px); } }
+/* welcome: the name was the answer */
+.wglass { display: grid; justify-items: center; gap: 2px; margin: 4px 0 2px; }
+.wglass { padding-inline: 44px; }
+.wglass .glass { width: min(280px, 100%); max-width: none; }
+.wglass small { font-family: 'IBM Plex Sans', sans-serif; letter-spacing: 0.32em; font-size: 0.74rem; color: var(--muted); direction: ltr; }
+.card .reveal { font-family: var(--display); font-size: 1.02rem; color: var(--text); text-align: center; }
+@media (max-width: 900px) {
+  .signs { grid-template-columns: minmax(0, 1fr); }
+  .vessel { grid-template-columns: minmax(0, 150px) minmax(0, 1fr); align-items: center; column-gap: 16px; }
+  .vessel h2 { grid-column: 1 / -1; }
+  .vstate { display: grid; gap: 2px; }
+  /* the docked key carries a thin heat line: the vessel's level, one glance away */
+  .key::before { content: ''; position: absolute; top: -1px; inset-inline-start: 0; height: 2px; width: calc(var(--heat, 0) * 100%); background: linear-gradient(90deg, var(--teal), var(--aqua), var(--gold-hi)); box-shadow: 0 0 12px rgba(168,245,234,0.6); transition: width 1.2s var(--ease); }
+}
+
+/* ---------- v7: elite pass, same language as the homepage ---------- */
+.grain { position: fixed; inset: 0; z-index: 45; pointer-events: none; opacity: 0.06; contain: strict;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+@media (max-width: 900px) { .grain { display: none; } }
+/* hairline that catches light: the homepage's card edge */
+.clock, .sign, .seals, .card, .golden { position: relative; border-color: transparent !important; }
+.clock::after, .sign::after, .seals::after, .card::after, .golden::after { content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px; background: var(--hair); pointer-events: none;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+.clock { background: linear-gradient(180deg, rgba(4,34,35,0.62), rgba(2,16,18,0.78)) !important; box-shadow: 0 30px 80px -40px rgba(0,0,0,0.8), 0 1px 0 rgba(168,245,234,0.08) inset !important; }
+.sign { background: linear-gradient(180deg, rgba(4,34,35,0.5), rgba(2,16,18,0.7)); }
+/* display type: white into aqua, like the homepage hero */
+h1 { font-weight: 400; font-size: clamp(1.9rem, 2.9vw, 2.8rem); line-height: 1.25; letter-spacing: -0.01em;
+  background: linear-gradient(180deg, #ffffff 20%, #cdf7f0 70%, #8fe9dc); -webkit-background-clip: text; background-clip: text; color: transparent; padding-block: 0.06em 0.12em; }
+:root[lang='en'] h1 { font-size: clamp(2.2rem, 3.3vw, 3.2rem); line-height: 1.06; letter-spacing: -0.02em; }
+h1 .lux { -webkit-text-fill-color: var(--champagne); color: var(--champagne); text-shadow: 0 0 34px rgba(231,211,164,0.25); }
+.lux { color: var(--champagne); }
+.kw { background: linear-gradient(transparent 70%, rgba(63,208,189,0.3) 70% 94%, transparent 94%); }
+.eyebrow { font-size: 0.8rem; letter-spacing: 0.02em; color: var(--teal-hi); }
+:root[lang='en'] .eyebrow { font-family: var(--mono); font-size: 0.7rem; }
+:root[lang='en'] .eyebrow { letter-spacing: 0.22em; text-transform: uppercase; }
+.eyebrow::after { background: linear-gradient(to left, rgba(95,227,210,0.4), transparent) !important; }
+:root[dir='ltr'] .eyebrow::after { background: linear-gradient(to right, rgba(95,227,210,0.4), transparent) !important; }
+/* numbered chapters in fine mono: the reader always knows where they are */
+.riddle h2, .traces h2, .sign h2, .key label > span:first-child { color: var(--text-2); font-weight: 500; letter-spacing: 0.02em; }
+:root[lang='en'] .riddle h2, :root[lang='en'] .traces h2, :root[lang='en'] .sign h2 { letter-spacing: 0.16em; text-transform: uppercase; font-size: 0.74rem; }
+[data-n]::before { content: attr(data-n); font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.08em; color: var(--teal-hi); padding-inline-end: 0.7rem; margin-inline-end: 0.7rem; border-inline-end: 1px solid rgba(95,227,210,0.35); }
+.poem { border-color: rgba(231,211,164,0.24); background: linear-gradient(180deg, rgba(231,211,164,0.05), rgba(1,13,15,0.55)); box-shadow: 0 30px 80px -50px rgba(0,0,0,0.9); }
+.poem::before, .poem::after { color: var(--champagne); }
+/* the key: teal is the colour of action across KON */
+.go { background: linear-gradient(135deg, #8ff0e2, var(--teal-hi) 40%, var(--teal)); color: #02211f; box-shadow: 0 10px 28px rgba(18,165,150,0.32); position: relative; overflow: hidden; }
+.go::after { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,0.45) 50%, transparent 70%); transform: translateX(-120%); transition: transform 1.1s cubic-bezier(0.22,1,0.36,1); }
+.go:hover::after { transform: translateX(120%); }
+.field svg { color: var(--teal-hi); }
+.field.ok { border-color: var(--aqua); box-shadow: 0 0 0 6px rgba(168,245,234,0.2), 0 0 70px rgba(95,227,210,0.45); }
+.whisper.warm { color: var(--champagne); }
+.chip.solid { background: linear-gradient(135deg, #8ff0e2, var(--teal-hi) 45%, var(--teal)); }
+.chip.home { gap: 6px; display: inline-flex; align-items: center; text-decoration: none; }
+.chip.home svg { width: 15px; height: 15px; }
+:root[dir='rtl'] .chip.home svg { transform: scaleX(-1); }
+.seat b { font-family: var(--mono); font-weight: 500; font-size: 1.5rem; letter-spacing: 0.08em; color: var(--aqua); direction: ltr; white-space: nowrap; flex: none; }
+.seat { border-color: rgba(95,227,210,0.35); background: linear-gradient(135deg, rgba(95,227,210,0.1), rgba(2,16,18,0.6)); }
+.card .kicker { color: var(--champagne); }
+.wel-home { display: grid; gap: 8px; padding-top: 14px; border-top: 1px solid var(--line); }
+.wel-home a { justify-content: center; }
+.msg.err { color: var(--champagne); }
+.primary[disabled] { opacity: 0.6; cursor: progress; }
+.intro .skip { margin-top: 6px; font-size: 0.84rem; color: var(--muted); opacity: 0; animation: fade 1s 3s var(--ease) forwards; text-decoration: underline; text-underline-offset: 5px; text-decoration-color: rgba(168,245,234,0.35); }
+.intro .skip:hover { color: var(--aqua); }
+.alt .sep { color: var(--faint); }
+@media (max-width: 900px) { .top .home { display: none; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0s !important; transition-duration: 0.01ms !important; } .bayt span, .intro * { opacity: 1 !important; transform: none !important; filter: none !important; } }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 12h9M18 12v3M21 12v2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+  <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M16.5 9a4 4 0 0 1 0 6M19 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-trace" viewBox="0 0 24 24"><path d="M12 3 20 12l-8 9-8-9z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M4 12h16" fill="none" stroke="currentColor" stroke-width="1.2"/></symbol>
+</svg>
+
+<div class="intro" id="intro" role="button" tabindex="0" aria-label="ادخل">
+  <div class="in">
+    <small>KON UNLIMITED</small>
+    <p data-i18n="intro1">قبل أن يُفتح الباب</p>
+    <p data-i18n="intro2">كلمةٌ واحدة</p>
+    <span class="chip enter" data-i18n="enter">ادخل</span>
+    <a class="skip home-href" href="#" data-i18n="skip">أو ادخل موقع KON مباشرة</a>
+  </div>
+</div>
+
+<header class="top">
+  <a class="brand" href="#" aria-label="KON Unlimited"><b>KON</b><span>Unlimited</span></a>
+  <span class="grow"></span>
+  <span class="mini" id="mini" aria-hidden="true"><i></i><span id="miniTxt"><b id="miniD"></b> <span id="miniU"></span> <b id="miniT" dir="ltr"></b></span></span>
+  <a class="chip home home-href" href="#"><span data-i18n="homeTop">ادخل الموقع</span><svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
+  <button class="chip solid join-top" id="joinTop" type="button" data-i18n="joinTop">احجز مكانك</button>
+  <button class="chip" id="langBtn" type="button">English</button>
+  <button class="chip icon" id="soundBtn" type="button" aria-pressed="false" data-i18n-aria="sound" aria-label="الصوت"><svg><use href="#i-sound"/></svg></button>
+</header>
+
+<main class="hall" id="hall">
+  <div class="col" id="col">
+    <div class="lead">
+      <div>
+        <p class="eyebrow" data-i18n="eyebrow">KON Unlimited · الدعوة الأولى</p>
+        <h1 data-i18n-html="title">شيءٌ <span class="lux">يتكوّن</span> خلف الغيم</h1>
+        <p class="lede" data-i18n-html="lede"></p>
+      </div>
+      <section class="clock" id="clock" aria-labelledby="clockLbl">
+        <div class="clock-h">
+          <p id="clockLbl"><i aria-hidden="true"></i><span data-i18n="doorIn">يُفتح الباب بعد</span></p>
+          <small data-i18n="when">الأحد 22 نوفمبر · 8 مساءً بتوقيت الرياض</small>
+        </div>
+        <div class="digits" role="timer" aria-live="off" id="digits">
+          <div class="cell"><b id="cdD" class="num">0</b><small data-i18n="uD">أيام</small></div>
+          <div class="cell"><b id="cdH" class="num">00</b><small data-i18n="uH">ساعات</small></div>
+          <div class="cell"><b id="cdM" class="num">00</b><small data-i18n="uM">دقائق</small></div>
+          <div class="cell s" id="cellS"><b id="cdS" class="num">00</b><small data-i18n="uS">ثوانٍ</small></div>
+        </div>
+        <p class="doorOpen" data-i18n="doorOpen">الباب مفتوح</p>
+      </section>
+    </div>
+
+    <section class="stage" id="stage" tabindex="0" aria-label="الأثر: مكعّب من الحروف القديمة">
+      <canvas id="gl"></canvas>
+      <div class="poster" aria-hidden="true"></div>
+      <p class="nogl" id="nogl" hidden></p>
+      <div class="ov moves num" id="moves" aria-live="off"></div>
+      <div class="ov gesture" id="gesture" data-i18n="gesture">اسحب على الأثر لتدير طبقة · واسحب حوله لتقلّبه</div>
+      <div class="ov word" id="word" aria-hidden="true">فيكون</div>
+      <div class="ov toast" id="toast" aria-hidden="true"></div>
+      <div class="tools" role="toolbar" id="tools" data-i18n-aria="tools" aria-label="أدوات الأثر">
+        <button class="tool" id="heartBtn" type="button" aria-pressed="false" data-i18n-aria="heart" aria-label="افتح الأثر"><svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" d="M12 3 20 7.5v9L12 21l-8-4.5v-9z"/><path fill="none" stroke="currentColor" stroke-width="1.6" d="M12 12l8-4.5M12 12v9M12 12 4 7.5"/></svg><span class="tip" data-i18n="heart">افتح الأثر</span></button>
+        <button class="tool" id="undoBtn" type="button" data-i18n-aria="undo" aria-label="تراجع"><svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" d="M9 7 5 11l4 4"/><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" d="M5 11h9a5 5 0 0 1 0 10h-2"/></svg><span class="tip" data-i18n="undo">تراجع</span></button>
+        <button class="tool" id="viewBtn" type="button" data-i18n-aria="view" aria-label="أعد الأثر إلى مكانه"><svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" d="M4 12a8 8 0 1 0 2.4-5.7"/><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M4 4v4h4"/></svg><span class="tip" data-i18n="view">أعد الأثر إلى مكانه</span></button>
+      </div>
+      <div class="lite" id="lite"></div>
+    </section>
+
+    <div class="rest">
+      <div class="golden" id="golden" hidden>
+        <p id="goldenTitle"></p>
+        <small data-i18n="goldenSub">دعوة خاصة: الباب مفتوح لك دون لغز</small>
+        <button class="primary" id="goldenBtn" type="button" data-i18n="goldenBtn">ادخل بمفتاحك</button>
+      </div>
+
+      <section class="riddle" aria-labelledby="riddleLbl">
+        <div class="riddle-h"><h2 id="riddleLbl" data-n="01" data-i18n="riddleLbl">اللغز</h2><small data-i18n="riddleSub">ثلاثة أبيات، وكلمة واحدة</small></div>
+        <div class="poem" id="poem"></div>
+      </section>
+
+      <form class="key" id="keyForm" autocomplete="off" novalidate>
+        <label for="keyInput"><span data-n="02" data-i18n="keyLbl">اكتب الكلمة التي تفتح الباب</span><small data-i18n="keyNote">لا عقوبة على الخطأ</small></label>
+        <div class="field" id="field">
+          <svg aria-hidden="true"><use href="#i-key"/></svg>
+          <input id="keyInput" name="key" type="text" inputmode="text" enterkeyhint="go" autocapitalize="off" spellcheck="false" data-i18n-ph="keyPh" placeholder="اكتب الكلمة هنا">
+          <button class="go" id="openBtn" type="submit" data-i18n="open">افتح</button>
+        </div>
+        <p class="whisper" id="whisper" role="status" aria-live="polite"></p>
+      </form>
+
+      <section class="signs" id="signs">
+        <div class="sign vessel">
+          <h2 data-n="03" data-i18n="vTitle">الإناء</h2>
+          <div class="glass" id="vesselA"></div>
+          <p class="vstate"><b id="vState"></b><small data-i18n="vHint">كلما اقتربتَ من الكلمة امتلأ الإناء</small></p>
+        </div>
+        <div class="sign shards">
+          <h2 data-n="04" data-i18n="shTitle">شظايا الضوء</h2>
+          <div class="slots" id="slots" aria-hidden="true"><i></i><i></i><i></i></div>
+          <p class="frag" id="frag" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section class="traces" aria-labelledby="tracesLbl">
+        <div class="traces-h">
+          <h2 id="tracesLbl" data-n="05"><span data-i18n="traces">الآثار</span><span id="traceCount" class="num"></span></h2>
+          <button class="ghost" id="traceBtn" type="button"><svg aria-hidden="true"><use href="#i-trace"/></svg><span id="traceBtnTxt"></span></button>
+        </div>
+        <ol id="traceList"></ol>
+      </section>
+
+      <details class="seals" id="seals">
+        <summary>
+          <span class="row"><span style="color:var(--text)" data-i18n="sealsTitle">للمثابرين: الأختام الثمانية</span><span><span id="sealCount" class="num"></span> <svg aria-hidden="true"><use href="#i-down"/></svg></span></span>
+          <span class="bar" aria-hidden="true"><i></i></span>
+        </summary>
+        <div class="in">
+          <p data-i18n="sealHint">أدِر الأثر حتى تستقيم وجوهه. كل ختمٍ يُفكّ يكشف حكمة، والثمانية معًا تفتح الباب أيضًا</p>
+          <ol id="sealList"></ol>
+        </div>
+      </details>
+
+      <p class="alt"><span data-i18n="altQ">تفضّل الطريق المختصر؟</span><a class="link home-href" href="#" data-i18n="altHome">ادخل الموقع مباشرة</a><span class="sep">·</span><button class="link" id="joinBtn" type="button" data-i18n="altBtn">احجز مكانك دون حلّ</button></p>
+
+      <footer class="foot">
+        <span data-i18n="values">نرفع الوعي · علاقات حقيقية مع أناس حقيقيين · نطلق الإمكانات</span>
+        <span class="slogan" data-i18n="slogan">أيًّا كان التحدي، وكيفما كان، وأينما كان… سنكون هناك</span>
+      </footer>
+    </div>
+  </div>
+</main>
+<div class="scrim" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<div class="sheet" id="welcome" hidden role="dialog" aria-modal="true" aria-labelledby="welTitle">
+  <div class="card">
+    <button class="x" type="button" data-close data-i18n-aria="close" aria-label="إغلاق"><svg><use href="#i-x"/></svg></button>
+    <div class="wglass"><div class="glass" id="vesselB"></div><small>KON · كُن</small></div>
+    <p class="reveal" data-i18n-html="reveal"></p>
+    <p class="kicker" data-i18n="welKicker">فيكون</p>
+    <h2 id="welTitle" data-i18n="welTitle">أهلًا بك في العائلة</h2>
+    <p id="stats"></p>
+    <div class="seat"><span data-i18n="seatLbl">مفتاحك إلى الدائرة المؤسِّسة</span><b id="seatNo"></b></div>
+    <p class="note" data-i18n="welThought">الكلمة كانت فيك قبل أن تقرأ اللغز، وهكذا كل قيمة نكشفها معك</p>
+    <form class="join" id="welForm" novalidate>
+      <label class="fl"><span data-i18n="fName">الاسم</span><input name="name" autocomplete="name" required></label>
+      <div class="seg" role="group" data-i18n-aria="chLbl" aria-label="طريقة التواصل"><button type="button" data-ch="wa" aria-pressed="true" data-i18n="chWa">واتساب</button><button type="button" data-ch="em" aria-pressed="false" data-i18n="chEm">بريد</button></div>
+      <label class="fl"><span class="chLbl" data-i18n="fWa">رقم الواتساب</span><input class="chIn" name="contact" type="tel" autocomplete="tel" inputmode="tel" dir="ltr" required></label>
+      <button class="primary" type="submit" data-i18n="welSave">ثبّت مقعدي</button>
+      <p class="msg" role="status"></p>
+      <p class="note" data-i18n="oneMsg">رسالة واحدة حين يُفتح الباب، بلا إزعاج</p>
+    </form>
+    <div class="share">
+      <span data-i18n="shareLbl">شارك اللغز، لا الجواب</span>
+      <a class="ghost" id="shareWa" target="_blank" rel="noopener" data-i18n="shareWa">أرسله عبر واتساب</a>
+      <button class="ghost" id="shareCopy" type="button" data-i18n="shareCopy">انسخ الرابط</button>
+    </div>
+    <div class="wel-home"><a class="primary ghost home-href" href="#" style="display:inline-flex;align-items:center;gap:8px;height:50px"><span data-i18n="welHome">ادخل موقع KON Unlimited</span><svg aria-hidden="true" style="width:16px;height:16px"><use href="#i-arrow"/></svg></a></div>
+  </div>
+</div>
+
+<div class="sheet" id="waitSheet" hidden role="dialog" aria-modal="true" aria-labelledby="waitTitle">
+  <div class="card">
+    <button class="x" type="button" data-close data-i18n-aria="close" aria-label="إغلاق"><svg><use href="#i-x"/></svg></button>
+    <h2 id="waitTitle" data-i18n="waitTitle">احجز مكانك</h2>
+    <p data-i18n="waitText">ستصلك رسالة واحدة حين يُفتح الباب. ومن يجد الكلمة قبل الإطلاق يأخذ مقعدًا في الدائرة المؤسِّسة</p>
+    <form class="join" id="waitForm" novalidate>
+      <label class="fl"><span data-i18n="fName">الاسم</span><input name="name" autocomplete="name" required></label>
+      <div class="seg" role="group" data-i18n-aria="chLbl" aria-label="طريقة التواصل"><button type="button" data-ch="wa" aria-pressed="true" data-i18n="chWa">واتساب</button><button type="button" data-ch="em" aria-pressed="false" data-i18n="chEm">بريد</button></div>
+      <label class="fl"><span class="chLbl" data-i18n="fWa">رقم الواتساب</span><input class="chIn" name="contact" type="tel" autocomplete="tel" inputmode="tel" dir="ltr" required></label>
+      <button class="primary" type="submit" data-i18n="waitSave">احجز مكاني</button>
+      <p class="msg" role="status"></p>
+    </form>
+    <p class="alt"><span data-i18n="waitTry">أو جرّب حظك مع اللغز أولًا</span><button class="link" type="button" data-close data-i18n="backToRiddle">عُد إلى اللغز</button></p>
+  </div>
+</div>
+
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const root = document.documentElement;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const HOME_URL = 'https://konunlimited-git-kon-glass-kfallatah8-1637s-projects.vercel.app'; // the real homepage friends can enter without solving
+  document.querySelectorAll('.home-href').forEach(a => { a.href = HOME_URL; a.addEventListener('click', e => e.stopPropagation()); });
+  const LAUNCH = new Date('2026-11-22T20:00:00+03:00').getTime(); // placeholder date
+  const WINDOW = 14 * 864e5;
+  const ANSWER_KEY = 'kon-gate-v4';
+  let lang = 'ar';
+
+  const T = {
+    ar: {
+      intro1: 'قبل أن يُفتح الباب', intro2: 'كلمةٌ واحدة', enter: 'ادخل',
+      joinTop: 'احجز مكانك', sound: 'الصوت', close: 'إغلاق',
+      eyebrow: 'KON Unlimited · الدعوة الأولى',
+      title: 'شيءٌ <span class="lux">يتكوّن</span> خلف الغيم',
+      lede: 'والباب الأول لا يُفتح إلا بكلمة واحدة، ومن يجدها يأخذ مقعده في <span class="kw">الدائرة المؤسِّسة</span>',
+      vTitle: 'الإناء', vHint: 'كلما اقتربتَ من الكلمة امتلأ الإناء', vStates: ['ينتظر كلمتك', 'بعيد', 'تقترب', 'دافئ', 'على الحافة', 'امتلأ'],
+      shTitle: 'شظايا الضوء', shEmpty: 'ثلاث شظايا ذهبية تعبر قرب الأثر بين حين وآخر، التقطها', shHint: 'شيءٌ يلمع قرب الأثر، التقطه',
+      frags: ['للكون تاجٌ وقلب', 'إذا سقط التاج وانتُزع القلب', 'بقي الأمرُ الذي به كان كلّ شيء'],
+      reveal: 'اسمنا كان الجواب منذ البداية: <span class="lux">KON</span> تُقرأ <span class="kw">كُن</span>',
+      doorIn: 'يُفتح الباب بعد', when: 'الأحد 22 نوفمبر · 8 مساءً بتوقيت الرياض', doorOpen: 'الباب مفتوح',
+      uD: 'أيام', uH: 'ساعات', uM: 'دقائق', uS: 'ثوانٍ', miniD: 'ي',
+      gesture: 'اسحب على الأثر لتدير طبقة · واسحب حوله لتقلّبه', opened: 'الأثر مفتوح · قلبه فارغ، ينتظر كلمة',
+      moves: n => `${num(n)} حركة`, tools: 'أدوات الأثر', heart: 'افتح الأثر', undo: 'تراجع', view: 'أعد الأثر إلى مكانه',
+      stageLbl: 'الأثر: مكعّب من الحروف القديمة، اسحب لتديره', lite: 'وضع خفيف لسرعة أفضل',
+      nogl: 'هذا الجهاز لا يعرض الأثر ثلاثي الأبعاد، لكن اللغز يعمل: اكتب ما وجدت',
+      riddleLbl: 'اللغز', riddleSub: 'ثلاثة أبيات، وكلمة واحدة',
+      poem: [['مِنَ «الكونِ» أصلي، ولكنْ تراني', 'بلا تاجِهِ، دونَ قلبٍ، أكونْ'], ['صغيرٌ، وحرفانِ كلّي، وإنّي', 'لَبدءُ الذي كانَ قبلَ القرونْ'], ['فقُلني إذا ضاقَ صدرٌ تجدْني', 'كماسٍ أبى بعدَ ضغطٍ يهونْ']],
+      keyLbl: 'اكتب الكلمة التي تفتح الباب', keyNote: 'لا عقوبة على الخطأ', keyPh: 'اكتب الكلمة هنا', open: 'افتح',
+      empty: 'اكتب ما وجدته أولًا',
+      wrong: ['الباب لا يعرف هذه الكلمة، بعد', 'اقرأ البيت الأول مرة أخرى، ببطء', 'الجواب أصغر مما تظن', 'ما تبحث عنه مكتوبٌ أمامك'],
+      near: { 'الكون': 'أنت عند الباب، الآن انزع التاج والقلب', 'كون': 'بقي القلب، انزعه', 'الكن': 'بقي التاج، أسقطه', 'لكن': 'قريبٌ جدًا، في أولها حرفٌ زائد', 'الوجود': 'قريبٌ في المعنى، لكن ابحث في الكلمة المكتوبة', 'ماس': 'الماس صورة، لا جواب، ماذا قال لنفسه؟', 'الماس': 'الماس صورة، لا جواب، ماذا قال لنفسه؟', 'فحم': 'الفحم بداية، لا جواب', 'قلب': 'القلب يُنزع، لا يُكتب', 'تاج': 'التاج يسقط، لا يُكتب' },
+      right: 'فيكون', traceReady: 'أثرٌ جديد بانتظارك في الأسفل',
+      traces: 'الآثار', traceCount: n => ` ${num(n)} من ${num(3)}`, traceBtn: 'اكشف أثرًا', traceWait: s => `الأثر التالي بعد ${clockStr(s)}`, traceDone: 'كُشفت الآثار كلها',
+      traceNames: ['الأول', 'الثاني', 'الثالث'],
+      traceLines: ['ابحث داخل الكلمة، لا في السماء', 'لِـ«الكون» تاجٌ من حرفين، وقلبٌ من حرفٍ واحد، انزعهما', 'فعلُ أمرٍ من حرفين، تقوله لنفسك فتبدأ'],
+      sealsTitle: 'للمثابرين: الأختام الثمانية', sealCount: n => `${num(n)} من ${num(8)}`, sealLocked: 'مختوم', sealOpened: 'انفكّ ختم',
+      sealHint: 'أدِر الأثر حتى تستقيم وجوهه. كل ختمٍ يُفكّ يكشف حكمة، والثمانية معًا تفتح الباب أيضًا',
+      sealLines: ['ما تراه خارجك صورةُ ما في داخلك', 'البذرة لا ترى الشجرة، لكنها تحملها', 'الحجر يلين للماء، لا للقوة', 'حرفان قد يحملان كونًا كاملًا', 'كل وجهٍ يكتمل بمن يصبر عليه', 'ما يبقى منك هو ما بدأ فيك', 'الأركان تحمل البيت قبل أن تُرى جدرانه', 'الوسط ميزانٌ بين العاطفة والعقل'],
+      altQ: 'تفضّل الطريق المختصر؟', altBtn: 'احجز مكانك دون حلّ',
+      values: 'نرفع الوعي · علاقات حقيقية مع أناس حقيقيين · نطلق الإمكانات', slogan: 'أيًّا كان التحدي، وكيفما كان، وأينما كان… سنكون هناك',
+      goldenTitle: n => `مفتاحٌ ذهبي باسم ${n}`, goldenSub: 'دعوة خاصة: الباب مفتوح لك دون لغز', goldenBtn: 'ادخل بمفتاحك',
+      welKicker: 'فيكون', welTitle: 'أهلًا بك في العائلة',
+      stats: (tm, n) => `وجدتَ الكلمة في ${tm}${n ? ` وبعد ${num(n)} حركة` : ''}، وأغلب الناس يبحثون عنها خارجهم`,
+      statsCube: (tm, n) => `فككتَ الأختام الثمانية في ${tm} وبعد ${num(n)} حركة. قلّة يصلون إلى هنا`,
+      statsGolden: 'دخلتَ بمفتاحٍ ذهبي، فمكانك محفوظ قبل أن تطرق الباب',
+      seatLbl: 'مفتاحك إلى الدائرة المؤسِّسة', welThought: 'الكلمة كانت فيك قبل أن تقرأ اللغز، وهكذا كل قيمة نكشفها معك',
+      fName: 'الاسم', chLbl: 'طريقة التواصل', chWa: 'واتساب', chEm: 'بريد', fWa: 'رقم الواتساب', fEm: 'البريد الإلكتروني',
+      welSave: 'ثبّت مقعدي', waitSave: 'احجز مكاني', oneMsg: 'رسالة واحدة حين يُفتح الباب، بلا إزعاج',
+      need: 'اكتب اسمك وطريقة تواصل صحيحة', saved: 'حُفظ مقعدك، وستصلك رسالة واحدة حين يُفتح الباب', sending: 'لحظة…', failed: 'تعذّر الحفظ الآن، جرّب مرة أخرى بعد قليل', already: 'مقعدك محفوظ مسبقًا',
+      skip: 'أو ادخل موقع KON مباشرة', homeTop: 'ادخل الموقع', altHome: 'ادخل الموقع مباشرة', welHome: 'ادخل موقع KON Unlimited',
+      shareLbl: 'شارك اللغز، لا الجواب', shareWa: 'أرسله عبر واتساب', shareCopy: 'انسخ الرابط', copied: 'نُسخ الرابط', copyFail: 'انسخ الرابط يدويًا:',
+      shareText: 'لغزٌ من KON Unlimited: ثلاثة أبيات وكلمة واحدة تفتح الباب، هل تجدها؟',
+      waitTitle: 'احجز مكانك', waitText: 'ستصلك رسالة واحدة حين يُفتح الباب. ومن يجد الكلمة قبل الإطلاق يأخذ مقعدًا في الدائرة المؤسِّسة',
+      waitTry: 'أو جرّب حظك مع اللغز أولًا', backToRiddle: 'عُد إلى اللغز',
+      pv: 'معاينة', pvNote: 'أدوات المعاينة فقط، تُزال عند الإطلاق. التاريخ ورقم المقعد والأختام تجريبية، ولا يُرسل شيء من هنا',
+      pvAnswer: 'اكتب الجواب وافتح', pvTrace: 'اكشف الأثر التالي الآن', pvScramble: 'أعد خلط الأثر', pvShard: 'أطلق شظية ضوء الآن', pvWelcome: 'اعرض شاشة الترحيب', pvGolden: 'جرّب المفتاح الذهبي', langBtn: 'English'
+    },
+    en: {
+      intro1: 'Before the door opens', intro2: 'one word', enter: 'Enter',
+      joinTop: 'Save your place', sound: 'Sound', close: 'Close',
+      eyebrow: 'KON Unlimited · The first invitation',
+      title: 'Something is <span class="lux">taking form</span> behind the clouds',
+      lede: 'The first door opens with one word only. Whoever finds it takes a seat in the <span class="kw">founding circle</span>',
+      vTitle: 'The vessel', vHint: 'The closer you get to the word, the fuller it grows', vStates: ['Waiting for your word', 'Far', 'Closer', 'Warm', 'At the brim', 'Full'],
+      shTitle: 'Shards of light', shEmpty: 'Three gold shards drift past the relic now and then. Catch them', shHint: 'Something glints near the relic. Catch it',
+      frags: ['The universe has a crown and a heart', 'Let the crown fall, take the heart out', 'What remains is the command by which all things came to be'],
+      reveal: 'Our name was the answer all along: <span class="lux">KON</span> reads <span class="kw">kun</span>, be',
+      doorIn: 'The door opens in', when: 'Sunday 22 November · 8 pm Riyadh time', doorOpen: 'The door is open',
+      uD: 'days', uH: 'hours', uM: 'minutes', uS: 'seconds', miniD: 'd',
+      gesture: 'Drag on the relic to turn a layer · drag around it to spin', opened: 'The relic is open · its heart is empty, waiting for a word',
+      moves: n => `${num(n)} moves`, tools: 'Relic tools', heart: 'Open the relic', undo: 'Undo', view: 'Return the relic to its place',
+      stageLbl: 'The relic: a cube of ancient letters, drag to turn it', lite: 'Light mode for speed',
+      nogl: 'This device cannot show the 3D relic, but the riddle still works: write what you found',
+      riddleLbl: 'The riddle', riddleSub: 'Three lines, one word (in Arabic)',
+      poem: [['My root is in “the cosmos”, yet you will see', 'me come to be once crown and heart are gone'], ['Small, two letters are all of me, and yet', 'I am the start of all before the ages'], ['Say me when your chest grows tight; you’ll find', 'a diamond that, pressed hard, refused to break']],
+      keyLbl: 'Type the word that opens the door', keyNote: 'Arabic or Latin letters', keyPh: 'Type the word here', open: 'Open',
+      empty: 'Write what you found first',
+      wrong: ['The door does not know this word, yet', 'Read the first line again, slowly', 'The answer is smaller than you think', 'What you are looking for is written in front of you'],
+      near: { 'الكون': 'You are at the door, now remove the crown and the heart', 'كون': 'The heart is still there, remove it', 'الكن': 'The crown is still there, let it fall', 'لكن': 'Very close, there is one extra letter at the start', 'cosmos': 'In Arabic, “the cosmos” is الكون. Look inside it', 'universe': 'In Arabic, “the universe” is الكون. Look inside it', 'diamond': 'The diamond is an image, not the answer. What did it tell itself?', 'heart': 'The heart is removed, not written', 'crown': 'The crown falls, it is not written' },
+      right: 'Fa-yakun', traceReady: 'A new trace is waiting below',
+      traces: 'Traces', traceCount: n => ` ${num(n)} of ${num(3)}`, traceBtn: 'Reveal a trace', traceWait: s => `Next trace in ${clockStr(s)}`, traceDone: 'All traces revealed',
+      traceNames: ['First', 'Second', 'Third'],
+      traceLines: ['Look inside the word, not in the sky', '“The cosmos” in Arabic is الكون: a two-letter crown (ال) and a one-letter heart (و). Remove both', 'A two-letter command you say to yourself, and begin. Arabic: كن, Latin: kun'],
+      sealsTitle: 'For the persistent: the eight seals', sealCount: n => `${num(n)} of ${num(8)}`, sealLocked: 'Sealed', sealOpened: 'Seal broken',
+      sealHint: 'Turn the relic until its faces align. Each seal you break reveals a line of wisdom, and all eight together also open the door',
+      sealLines: ['What you see outside is the image of what is within', 'The seed never sees the tree, yet it carries it', 'Stone yields to water, not to force', 'Two letters can carry a whole universe', 'Every face is completed by whoever stays with it', 'What remains of you is what began in you', 'Corners carry the house before its walls are seen', 'The middle is a balance between emotion and reason'],
+      altQ: 'Prefer the short way?', altBtn: 'Save your place without solving',
+      values: 'Raising awareness · Real connections with real people · Unlocking potential', slogan: 'Any challenge. Any way. Anywhere… We’ll be there',
+      goldenTitle: n => `A golden key for ${n}`, goldenSub: 'A private invitation: the door is open to you, no riddle needed', goldenBtn: 'Enter with your key',
+      welKicker: 'فيكون', welTitle: 'Welcome to the family',
+      stats: (tm, n) => `You found the word in ${tm}${n ? ` after ${num(n)} moves` : ''}, while most people look for it outside themselves`,
+      statsCube: (tm, n) => `You broke all eight seals in ${tm} after ${num(n)} moves. Few get this far`,
+      statsGolden: 'You came in with a golden key, so your seat was kept before you knocked',
+      seatLbl: 'Your key to the founding circle', welThought: 'The word was in you before you read the riddle. That is how we work: we uncover value that is already there',
+      fName: 'Name', chLbl: 'How should we reach you', chWa: 'WhatsApp', chEm: 'Email', fWa: 'WhatsApp number', fEm: 'Email address',
+      welSave: 'Keep my seat', waitSave: 'Save my place', oneMsg: 'One message when the door opens, nothing else',
+      need: 'Add your name and a valid way to reach you', saved: 'Your seat is kept. One message when the door opens', sending: 'One moment…', failed: 'Could not save right now, please try again shortly', already: 'Your seat is already kept',
+      skip: 'Or go straight to the KON website', homeTop: 'Visit the site', altHome: 'Go straight to the site', welHome: 'Enter the KON Unlimited website',
+      shareLbl: 'Share the riddle, not the answer', shareWa: 'Send on WhatsApp', shareCopy: 'Copy link', copied: 'Link copied', copyFail: 'Copy the link by hand:',
+      shareText: 'A riddle from KON Unlimited: three lines and one word that opens the door. Can you find it?',
+      waitTitle: 'Save your place', waitText: 'You will get one message when the door opens. Whoever finds the word before launch takes a seat in the founding circle',
+      waitTry: 'Or try the riddle first', backToRiddle: 'Back to the riddle',
+      pv: 'Preview', pvNote: 'Preview tools only, removed at launch. Date, seat number and seals are samples, and nothing is sent from here',
+      pvAnswer: 'Type the answer and open', pvTrace: 'Reveal the next trace now', pvScramble: 'Rescramble the relic', pvShard: 'Send a light shard now', pvWelcome: 'Show the welcome screen', pvGolden: 'Try the golden key', langBtn: 'العربية'
+    }
+  };
+  const t = k => T[lang][k];
+  const num = (n, d = 1) => Number(n).toLocaleString('en-US', { minimumIntegerDigits: d, useGrouping: false }); // Latin digits: Arabic-Indic zero is a dot and reads as broken on a clock
+  const clockStr = s => `${num(Math.floor(s / 60))}:${num(Math.floor(s % 60), 2)}`;
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  const R = () => window.RELIC;
+
+  // ---------- state ----------
+  let started = false, startTime = 0, solved = false, moves = 0, opened = false, attempts = 0, wrongIx = 0;
+  let traceLevel = 0, nextTraceAt = 0, sealKeys = [], lastSource = '', lastTime = '';
+  const GAPS = [30, 45, 60];
+
+  // ---------- poem ----------
+  function renderPoem() {
+    const p = $('poem'); p.textContent = '';
+    t('poem').forEach((b, i) => {
+      const d = document.createElement('div'); d.className = 'bayt';
+      b.forEach((h, j) => { const s = document.createElement('span'); s.textContent = h; s.style.transitionDelay = reduce ? '0s' : `${0.5 + i * 0.55 + j * 0.25}s`; d.appendChild(s); });
+      p.appendChild(d);
+    });
+  }
+
+  // ---------- countdown ----------
+  let lastS = -1, miniOn = false;
+  function tick() {
+    const left = Math.max(0, LAUNCH - Date.now());
+    const s = Math.floor(left / 1000), d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), sc = s % 60;
+    $('cdD').textContent = num(d); $('cdH').textContent = num(h, 2); $('cdM').textContent = num(m, 2); $('cdS').textContent = num(sc, 2);
+    if (sc !== lastS && !reduce) { const c = $('cellS'); c.classList.remove('tick'); void c.offsetWidth; c.classList.add('tick'); }
+    lastS = sc;
+    $('clock').classList.toggle('open', left === 0);
+    if (left === 0) $('miniTxt').textContent = t('doorOpen');
+    else { $('miniD').textContent = num(d); $('miniU').textContent = t('uD'); $('miniT').textContent = `${num(h, 2)}:${num(m, 2)}:${num(sc, 2)}`; }
+    if (R() && R().ready && sc === 0) R().setLit(Math.round(28 * Math.min(1, Math.max(0, 1 - left / WINDOW))));
+    updateTraceBtn();
+  }
+  new IntersectionObserver(es => es.forEach(e => { miniOn = !e.isIntersecting; $('mini').classList.toggle('on', miniOn); }), { rootMargin: '-60px 0px 0px 0px' }).observe($('clock'));
+
+  // ---------- traces ----------
+  function renderTraces() {
+    const ol = $('traceList'); ol.textContent = '';
+    for (let i = 0; i < traceLevel; i++) {
+      const li = document.createElement('li');
+      li.innerHTML = '<b></b><span></span>';
+      li.querySelector('b').textContent = t('traceNames')[i]; li.querySelector('span').textContent = t('traceLines')[i];
+      ol.appendChild(li);
+    }
+    $('traceCount').textContent = t('traceCount')(traceLevel);
+    updateTraceBtn();
+  }
+  function updateTraceBtn() {
+    const b = $('traceBtn'), txt = $('traceBtnTxt');
+    if (traceLevel >= 3) { b.disabled = true; txt.textContent = t('traceDone'); return; }
+    const left = Math.ceil((nextTraceAt - Date.now()) / 1000);
+    if (started && left > 0) { b.disabled = true; txt.textContent = t('traceWait')(left); }
+    else { b.disabled = false; txt.textContent = t('traceBtn'); }
+  }
+  function reveal() {
+    if (traceLevel >= 3) return;
+    traceLevel++; nextTraceAt = Date.now() + (GAPS[traceLevel] || 60) * 1000;
+    renderTraces(); sound('trace');
+  }
+  $('traceBtn').addEventListener('click', () => { begin(); if (!$('traceBtn').disabled) reveal(); });
+
+  function begin() {
+    if (started) return;
+    started = true; startTime = performance.now(); nextTraceAt = Date.now() + GAPS[0] * 1000; updateTraceBtn(); planShard(15000);
+  }
+
+  // ---------- the key ----------
+  const norm = s => (s || '').normalize('NFKC').toLowerCase()
+    .replace(/[ً-ٰٟۖ-ۭـ]/g, '')
+    .replace(/[أإآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/ں/g, 'ن').replace(/ڪ/g, 'ك')
+    .replace(/[^\p{L}]/gu, '');
+  const ACCEPT = new Set(['كن', 'كنفيكون', 'kun', 'kon', 'kn', 'koon', 'be']);
+  function say(text, warm = false) { const w = $('whisper'); w.textContent = text; w.classList.toggle('warm', warm); }
+  function mark(cls) { const f = $('field'); f.classList.remove('no', 'near', 'ok'); void f.offsetWidth; if (cls) f.classList.add(cls); }
+  $('keyInput').addEventListener('focus', () => { $('field').classList.add('touched'); begin(); ensureAudio(); askTilt(); });
+  $('keyInput').addEventListener('input', () => { if ($('field').classList.contains('no')) mark(''); });
+  $('keyForm').addEventListener('submit', e => {
+    e.preventDefault(); begin(); ensureAudio();
+    if (solved) return;
+    const v = norm($('keyInput').value);
+    if (!v) { say(t('empty')); $('keyInput').focus(); return; }
+    if (ACCEPT.has(v)) { mark('ok'); say(t('right')); showHeat(1); unseal('word'); return; }
+    attempts++; showHeat(warmth(v));
+    const near = T[lang].near[v] || T.ar.near[v];
+    if (near) { mark('near'); say(near); sound('trace'); buzz(12); }
+    else { mark('no'); say(t('wrong')[wrongIx++ % t('wrong').length], true); sound('no'); buzz([20, 40, 20]); }
+    if (attempts % 3 === 0 && traceLevel < 3 && nextTraceAt > Date.now()) { nextTraceAt = Date.now(); updateTraceBtn(); setTimeout(() => say(t('traceReady')), 1600); }
+  });
+
+  // ---------- unseal ----------
+  async function unseal(source) {
+    if (solved) return;
+    solved = true; lastSource = source; clearTimeout(shardTimer); if (heat < 1) showHeat(1);
+    const secs = startTime ? (performance.now() - startTime) / 1000 : 0, movesAt = moves;
+    $('keyInput').disabled = true; $('openBtn').disabled = true;
+    if (!reduce && innerWidth <= 900) $('stage').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (R() && R().ready) await R().unseal(); else await wait(700);
+    await wait(500);
+    lastTime = clockStr(secs); moves = movesAt;
+    fillWelcome(); openSheet('welcome'); pourWelcome();
+  }
+  function pourWelcome() { vesselB.jump(0.12); setTimeout(() => vesselB.set(1, 1.4), 500); }
+  function fillWelcome() {
+    $('stats').textContent = lastSource === 'golden' ? t('statsGolden') : lastSource === 'cube' ? t('statsCube')(lastTime, moves) : t('stats')(lastTime, moves);
+    $('seatNo').textContent = seat;
+  }
+  // a personal key, not a fake count: four characters from an alphabet with no look-alikes
+  const mkKey = () => { const A = '23456789ABCDEFGHJKMNPQRSTUVWXYZ'; let k = 'KON-'; const r = crypto.getRandomValues(new Uint8Array(4)); r.forEach(x => { k += A[x % A.length]; }); return k; };
+  let seat = mkKey();
+  try { const k = localStorage.getItem('kon-gate-key'); if (k) seat = k; else localStorage.setItem('kon-gate-key', seat); } catch (_) {}
+
+
+  // ---------- the glass KON: three letter-shaped vessels of teal liquid (ported from the homepage footer) ----------
+  // Each letter is its own vessel. The surface chases the real horizon on a damped spring (phone tilt, or the
+  // pointer on a desktop), ripples travel along a row of spring columns, and the level rises with how close
+  // the visitor's word is. The lit glass sits in a static layer above, so its filters never repaint.
+  const coarse = matchMedia('(pointer: coarse)').matches;
+  const TILT = { target: 0, live: false };
+  addEventListener('pointermove', e => { if (e.pointerType === 'touch') return; TILT.live = true; TILT.target = Math.max(-1, Math.min(1, (e.clientX - innerWidth / 2) / (innerWidth / 2))) * 0.4; }, { passive: true });
+  root.addEventListener('pointerleave', () => { TILT.live = false; TILT.target = 0; });
+  const onTilt = e => { if (e.gamma == null) return; TILT.live = true; const o = (screen.orientation && screen.orientation.angle) || 0; const deg = o === 90 ? e.beta : (o === 270 || o === -90) ? -e.beta : e.gamma; TILT.target = Math.max(-45, Math.min(45, deg || 0)) * Math.PI / 180; };
+  const DOE = window.DeviceOrientationEvent;
+  let tiltAsked = false;
+  function askTilt() { // iOS asks once, inside a tap
+    if (tiltAsked || !DOE || !coarse) return; tiltAsked = true;
+    if (typeof DOE.requestPermission === 'function') DOE.requestPermission().then(s => { if (s === 'granted') addEventListener('deviceorientation', onTilt); }).catch(() => {});
+  }
+  if (DOE && coarse && typeof DOE.requestPermission !== 'function') addEventListener('deviceorientation', onTilt);
+  function glassKON(host, uid, start) {
+    const COLS = 32, NS = 'http://www.w3.org/2000/svg';
+    const T = a => `<text x="500" y="236" text-anchor="middle" class="kg" ${a}>KON</text>`;
+    host.innerHTML = `<svg viewBox="250 30 500 250" aria-hidden="true"><defs>
+      <linearGradient id="${uid}l" gradientUnits="userSpaceOnUse" x1="0" y1="60" x2="0" y2="250"><stop offset="0" stop-color="#1fb8a6"/><stop offset="0.12" stop-color="#0a7f74"/><stop offset="0.55" stop-color="#054d48"/><stop offset="1" stop-color="#022b29"/></linearGradient>
+      <linearGradient id="${uid}b" gradientUnits="userSpaceOnUse" x1="0" y1="60" x2="0" y2="250"><stop offset="0" stop-color="#0a5f57"/><stop offset="1" stop-color="#02211f"/></linearGradient>
+      <linearGradient id="${uid}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8fffb" stop-opacity="0.13"/><stop offset="1" stop-color="#7eeedd" stop-opacity="0.05"/></linearGradient>
+      <linearGradient id="${uid}s" gradientUnits="userSpaceOnUse" x1="0" y1="58" x2="0" y2="128"><stop offset="0" stop-color="#fff" stop-opacity="0.4"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+      <filter id="${uid}lit" x="-6%" y="-12%" width="112%" height="130%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="6" result="h"/><feSpecularLighting in="h" surfaceScale="10" specularConstant="1.3" specularExponent="36" lighting-color="#fff" result="s1"><fePointLight x="180" y="-160" z="260"/></feSpecularLighting><feComposite in="s1" in2="SourceAlpha" operator="in" result="spec"/><feSpecularLighting in="h" surfaceScale="8" specularConstant="0.8" specularExponent="16" lighting-color="#58e6d2" result="s2"><fePointLight x="860" y="520" z="160"/></feSpecularLighting><feComposite in="s2" in2="SourceAlpha" operator="in" result="backl"/><feMorphology in="SourceAlpha" operator="erode" radius="6" result="er"/><feComposite in="SourceAlpha" in2="er" operator="out" result="band"/><feGaussianBlur in="band" stdDeviation="3" result="bandB"/><feComposite in="bandB" in2="SourceAlpha" operator="in" result="bandIn"/><feFlood flood-color="#d6fff8" flood-opacity="0.42"/><feComposite in2="bandIn" operator="in" result="rim"/><feMerge><feMergeNode in="rim"/><feMergeNode in="backl"/><feMergeNode in="spec"/></feMerge></filter>
+      <filter id="${uid}thick" x="-4%" y="-8%" width="108%" height="116%" color-interpolation-filters="sRGB"><feMorphology in="SourceAlpha" operator="erode" radius="9" result="core"/><feGaussianBlur in="core" stdDeviation="5" result="coreB"/><feComposite in="SourceAlpha" in2="coreB" operator="out" result="wall"/><feFlood flood-color="#001c1b" flood-opacity="0.55"/><feComposite in2="wall" operator="in" result="wallDark"/><feMorphology in="SourceAlpha" operator="erode" radius="1.6" result="in1"/><feComposite in="SourceAlpha" in2="in1" operator="out" result="hair"/><feFlood flood-color="#eafffb" flood-opacity="0.7"/><feComposite in2="hair" operator="in" result="hairL"/><feMerge><feMergeNode in="wallDark"/><feMergeNode in="hairL"/></feMerge></filter>
+      <filter id="${uid}sh" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="9"/></filter>
+      <clipPath id="${uid}c">${T('')}</clipPath></defs>
+      ${T('fill="none" data-m')}
+      <ellipse cx="500" cy="258" rx="220" ry="6" fill="#000" opacity="0.55" filter="url(#${uid}sh)"/>
+      ${T('fill="#021a19" opacity="0.55"')}${T(`fill="url(#${uid}g)"`)}
+      <g clip-path="url(#${uid}c)"><g data-b></g><g data-f></g><g data-l></g><rect x="0" y="56" width="1000" height="74" fill="url(#${uid}s)" transform="skewY(-3)" opacity="0.45"/></g></svg>
+      <svg class="gtop" viewBox="250 30 500 250" aria-hidden="true"><g filter="url(#${uid}thick)">${T('fill="#fff"')}</g><g filter="url(#${uid}lit)">${T('fill="#fff"')}</g></svg>`;
+    const sv = host.querySelector('svg'), m = sv.querySelector('[data-m]');
+    const mk = (g, attrs) => [0, 1, 2].map(() => { const p = document.createElementNS(NS, 'path'); Object.entries(attrs).forEach(([k, v]) => p.setAttribute(k, v)); g.appendChild(p); return p; });
+    const back = mk(sv.querySelector('[data-b]'), { fill: `url(#${uid}b)`, opacity: '0.85' });
+    const body = mk(sv.querySelector('[data-f]'), { fill: `url(#${uid}l)` });
+    const line = mk(sv.querySelector('[data-l]'), { fill: 'none', stroke: '#b9fff4', 'stroke-width': '2.5', 'stroke-linecap': 'round', opacity: '0.55' });
+    let last0 = 0, ves = [], ang = 0, angV = 0, lv = start, goal = start, raf = 0, last = 0, drawn = 0, visible = false;
+    const build = () => { try { const n = [0, 1, 2].map(i => { const r = m.getExtentOfChar(i); return { x0: r.x - 2, x1: r.x + r.width + 2, y0: 52, y1: 240, h: new Float32Array(COLS), v: new Float32Array(COLS) }; }); if (n.every(w => w.x1 - w.x0 > 20)) ves = n; } catch (_) {} };
+    const surf = (w, k, t, i, x, bk) => {
+      const cx = (w.x0 + w.x1) / 2, level = w.y1 + 4 - (w.y1 + 4 - w.y0) * lv, slope = Math.tan(ang), s = t * 0.001, en = 1 + Math.min(2.2, Math.abs(angV) * 2.4);
+      if (bk) return level + slope * (x - cx) * 0.86 - w.h[COLS - 1 - i] * 0.7 - 6 + Math.sin(x * 0.05 + s * 1.1 + k * 2.3) * 2.6 * en;
+      return level + slope * (x - cx) + w.h[i] + (Math.sin(x * 0.034 - s * 1.35 + k * 1.7) * 3.2 + Math.sin(x * 0.071 + s * 0.9 + k) * 1.5) * en;
+    };
+    const curve = pts => { let d = `M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`; for (let i = 1; i < pts.length - 1; i++) d += `Q${pts[i][0].toFixed(1)} ${pts[i][1].toFixed(1)} ${((pts[i][0] + pts[i + 1][0]) / 2).toFixed(1)} ${((pts[i][1] + pts[i + 1][1]) / 2).toFixed(1)}`; const l = pts[pts.length - 1]; return d + `L${l[0].toFixed(1)} ${l[1].toFixed(1)}`; };
+    const draw = t => ves.forEach((w, k) => {
+      const f = [], g = [];
+      for (let i = 0; i < COLS; i++) { const x = w.x0 + (w.x1 - w.x0) * i / (COLS - 1); f.push([x, surf(w, k, t, i, x, false)]); g.push([x, surf(w, k, t, i, x, true)]); }
+      const close = `L${w.x1} ${w.y1 + 30}L${w.x0} ${w.y1 + 30}Z`, top = curve(f);
+      body[k].setAttribute('d', top + close); back[k].setAttribute('d', curve(g) + close); line[k].setAttribute('d', top);
+    });
+    const step = t => {
+      raf = 0; if (!visible) return;
+      const dt = Math.min(0.033, last ? (t - last) / 1000 : 0.016); last = t;
+      const idle = TILT.live ? 0 : Math.sin(t * 0.00055) * 0.045, g = Math.max(-0.62, Math.min(0.62, TILT.target + idle));
+      angV += ((g - ang) * 26 - angV * 6.4) * dt; ang += angV * dt;
+      lv += (goal - lv) * Math.min(1, Math.min(0.1, last0 ? (t - last0) / 1000 : 0.016) * 1.6); last0 = t;
+      for (const w of ves) { const { h, v } = w, push = angV * (w.x1 - w.x0) * 0.5;
+        for (let i = 0; i < COLS; i++) { const l = h[i ? i - 1 : 0], r = h[i < COLS - 1 ? i + 1 : COLS - 1]; v[i] += ((l + r - 2 * h[i]) * 520 - h[i] * 18 - v[i] * 3.4 + push * ((i / (COLS - 1) - 0.5) * 2) * 15) * dt; }
+        for (let i = 0; i < COLS; i++) h[i] = Math.max(-38, Math.min(38, h[i] + v[i] * dt)); }
+      // phones redraw at 30 fps (20 when nothing is moving); the physics runs every frame
+      const calm = Math.abs(goal - lv) < 0.004 && Math.abs(angV) < 0.02;
+      if (!coarse || t - drawn > (calm ? 50 : 32)) { draw(t); drawn = t; }
+      raf = requestAnimationFrame(step);
+    };
+    const wake = () => { if (visible && !raf && !reduce) { last = 0; last0 = 0; raf = requestAnimationFrame(step); } };
+    new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible && !ves.length) { build(); draw(performance.now()); } wake(); }, { rootMargin: '60px' }).observe(host);
+    build(); (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { build(); draw(performance.now()); });
+    return {
+      set(f, slosh = 1) { goal = Math.max(0.06, Math.min(1, f)); ves.forEach(w => { for (let i = 0; i < COLS; i++) w.v[i] += Math.sin(i * 0.6 + Math.random()) * 90 * slosh; }); if (reduce) { lv = goal; draw(0); } wake(); },
+      jump(f) { lv = goal = f; draw(performance.now()); wake(); },
+      get level() { return goal; }
+    };
+  }
+  const vesselA = glassKON($('vesselA'), 'va', 0.12), vesselB = glassKON($('vesselB'), 'vb', 0.2);
+
+  // how close a word is to the key, 0..1 (1 only for the key itself). It warms on the right letters in the
+  // right order and the right size, and on the known near-answers, but never fills for anything but كن
+  function warmth(raw) {
+    const v = norm(raw); if (!v) return 0;
+    if (ACCEPT.has(v)) return 1;
+    if (/^[a-z]+$/.test(v)) {
+      if (/^k[aeiouwy]{0,3}n$/.test(v)) return 0.9;
+      if (['cosmos', 'universe', 'kawnu', 'alkawn', 'alkon', 'kawni'].includes(v)) return 0.55;
+      return Math.min(0.45, (v.includes('k') ? 0.22 : 0) + (v.includes('n') ? 0.12 : 0) + (v.length <= 4 ? 0.08 : 0));
+    }
+    let w = 0; const a = v.indexOf('ك'), b = v.lastIndexOf('ن');
+    if (a >= 0) w += 0.22; if (b >= 0) w += 0.22; if (a >= 0 && b > a) w += 0.14;
+    w += 0.22 * Math.max(0, 1 - Math.abs(v.length - 2) / 4);
+    if (v.includes('كون')) w = Math.max(w, 0.72);
+    if (v === 'الكون') w = Math.max(w, 0.7);
+    if (v === 'لكن' || v === 'الكن') w = Math.max(w, 0.8);
+    return Math.min(0.9, w);
+  }
+  let heat = -1;
+  function showHeatLabel() { const st = t('vStates'), w = heat, i = w < 0 ? 0 : w >= 1 ? 5 : w < 0.35 ? 1 : w < 0.6 ? 2 : w < 0.8 ? 3 : 4; $('vState').textContent = st[i]; $('vState').classList.toggle('hot', i >= 4); }
+  function showHeat(w) {
+    heat = w; vesselA.set(0.12 + 0.88 * w, 0.6 + w);
+    root.style.setProperty('--heat', String(w));
+    const st = t('vStates'), i = w < 0 ? 0 : w >= 1 ? 5 : w < 0.35 ? 1 : w < 0.6 ? 2 : w < 0.8 ? 3 : 4;
+    const b = $('vState'); b.textContent = st[i]; b.classList.toggle('hot', i >= 4);
+  }
+
+  // ---------- light shards: three catchable sparks, each gives a fragment of a hidden sentence ----------
+  const caught = [false, false, false];
+  let shardTimer = 0, shardHinted = false, stageSeen = true;
+  new IntersectionObserver(([e]) => { stageSeen = e.isIntersecting; }, { threshold: 0.35 }).observe($('stage'));
+  function renderShards() {
+    [...$('slots').children].forEach((el, i) => el.classList.toggle('on', caught[i]));
+    const f = $('frag'); f.textContent = '';
+    if (!caught.some(Boolean)) { const e = document.createElement('em'); e.textContent = t('shEmpty'); f.appendChild(e); return; }
+    t('frags').forEach((s, i) => { const sp = document.createElement('span'); sp.textContent = caught[i] ? s : '…'; f.appendChild(sp); });
+  }
+  function planShard(ms) { clearTimeout(shardTimer); if (!solved && caught.includes(false)) shardTimer = setTimeout(launchShard, ms); }
+  function launchShard() {
+    if (solved) return;
+    const ix = caught.indexOf(false); if (ix < 0) return;
+    if (!(R() && R().ready) || document.hidden || !stageSeen || !$('welcome').hidden || !$('waitSheet').hidden || R().sparkFlying) { planShard(4000); return; }
+    if (!R().spark(ix)) { planShard(5000); return; }
+    if (!shardHinted) { shardHinted = true; if (!$('whisper').textContent) say(t('shHint')); }
+  }
+  function toast(text) { const el = $('toast'); el.textContent = text; el.classList.remove('show'); void el.offsetWidth; el.classList.add('show'); }
+
+  // ---------- link to the 3D engine (a module that loads after this script) ----------
+  function updateMoves() { $('moves').textContent = moves ? t('moves')(moves) : ''; }
+  window.KUN = {
+    begin, audio: () => ensureAudio(),
+    onTurn(n) { moves = n; updateMoves(); if (n > 0) $('stage').classList.add('played'); if (n >= 25 && traceLevel < 1 && nextTraceAt > Date.now()) { nextTraceAt = Date.now(); updateTraceBtn(); } },
+    onOpen(o) { opened = o; $('gesture').textContent = o ? t('opened') : t('gesture'); $('heartBtn').setAttribute('aria-pressed', String(o)); if (o) $('stage').classList.remove('played'); },
+    onSeals(keys, fresh) { sealKeys = keys; renderSeals(fresh); },
+    cubeSolved() { if (!solved) unseal('cube'); },
+    sound: k => sound(k), buzz: p => buzz(p),
+    shard(ix) { caught[ix] = true; renderShards(); toast(t('frags')[ix]); if ($('whisper').textContent === t('shHint')) say(''); planShard(caught.includes(false) ? 35000 : 0); },
+    sparkGone() { planShard(30000); },
+    fayakun() { const w = $('word'); w.classList.remove('show'); void w.offsetWidth; w.classList.add('show'); },
+    engineReady() { if (document.body.classList.contains('ready')) R().enter(); placeStage(); tick(); }
+  };
+
+  // ---------- seals ----------
+  const SEALS = [['pz', 'رؤية'], ['px', 'نمو'], ['ny', 'صبر'], ['nz', 'تدبّر'], ['nx', 'إتقان'], ['py', 'أثر'], ['corners', 'ركن'], ['belt', 'وسط']];
+  function renderSeals(fresh = []) {
+    const ol = $('sealList'); ol.textContent = '';
+    SEALS.forEach(([k, word], i) => {
+      const on = sealKeys.includes(k), li = document.createElement('li');
+      li.className = (on ? 'on' : '') + (fresh.includes(k) ? ' fresh' : '');
+      li.innerHTML = '<b></b><span></span>';
+      li.querySelector('b').textContent = word;
+      li.querySelector('span').textContent = on ? t('sealLines')[i] : t('sealLocked');
+      ol.appendChild(li);
+    });
+    $('sealCount').textContent = t('sealCount')(sealKeys.length);
+    $('seals').style.setProperty('--p', String(sealKeys.length / SEALS.length));
+    if (fresh.length && !solved) say(`${t('sealOpened')}: ${t('sealLines')[SEALS.findIndex(s => s[0] === fresh[0])]}`);
+  }
+  $('undoBtn').addEventListener('click', () => { begin(); R() && R().undo(); });
+  $('heartBtn').addEventListener('click', () => { begin(); R() && R().toggleOpen(); });
+  $('viewBtn').addEventListener('click', () => { begin(); R() && R().resetView(); });
+
+  // ---------- sound & touch (off until asked) ----------
+  let ac = null, soundOn = false;
+  function ensureAudio() { if (soundOn && !ac) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) { ac = null; } } }
+  $('soundBtn').addEventListener('click', () => { soundOn = !soundOn; $('soundBtn').setAttribute('aria-pressed', String(soundOn)); ensureAudio(); if (soundOn) sound('trace'); });
+  function sound(kind) {
+    if (!soundOn || !ac) return;
+    const now = ac.currentTime;
+    const note = (f, at, dur, vol, type = 'sine') => {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = type; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, now + at); g.gain.exponentialRampToValueAtTime(vol, now + at + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, now + at + dur);
+      o.connect(g).connect(ac.destination); o.start(now + at); o.stop(now + at + dur + 0.05);
+    };
+    if (kind === 'tick') { note(180, 0, 0.12, 0.08, 'triangle'); note(1400, 0, 0.05, 0.012); }
+    if (kind === 'click') note(2200, 0, 0.03, 0.01);
+    if (kind === 'grind') { note(90, 0, 0.18, 0.03, 'triangle'); note(140, 0.02, 0.12, 0.015, 'sawtooth'); }
+    if (kind === 'seal') [523.25, 659.25, 783.99].forEach((f, i) => note(f, i * 0.09, 1.6, 0.035));
+    if (kind === 'open') { note(73.4, 0, 2.2, 0.08, 'triangle'); note(110, 0.08, 2, 0.04); note(146.8, 0.16, 1.8, 0.025); }
+    if (kind === 'no') note(98, 0, 0.25, 0.06, 'triangle');
+    if (kind === 'trace') { note(880, 0, 0.9, 0.025); note(1318.5, 0.08, 0.9, 0.018); }
+    if (kind === 'dot') note(1567.98, 0, 0.9, 0.05);
+    if (kind === 'chime') [392, 493.88, 587.33, 783.99, 987.77].forEach((f, i) => note(f, i * 0.11, 2.4, 0.04));
+  }
+  const buzz = p => { try { navigator.vibrate && navigator.vibrate(p); } catch (_) {} };
+
+  // ---------- sheets ----------
+  let lastFocus = null;
+  function openSheet(id) { lastFocus = document.activeElement; const s = $(id); s.hidden = false; document.body.style.overflow = 'hidden'; setTimeout(() => (s.querySelector('input') || s.querySelector('button')).focus({ preventScroll: true }), 60); }
+  function closeSheet(id) { $(id).hidden = true; document.body.style.overflow = ''; lastFocus && lastFocus.focus && lastFocus.focus({ preventScroll: true }); }
+  ['welcome', 'waitSheet'].forEach(id => {
+    const s = $(id);
+    s.addEventListener('click', e => { if (e.target === s || e.target.closest('[data-close]')) closeSheet(id); });
+    s.addEventListener('keydown', e => {
+      if (e.key !== 'Tab') return;
+      const f = [...s.querySelectorAll('button, input, a[href]')].filter(x => !x.disabled && x.offsetParent);
+      if (!f.length) return;
+      if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+      else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+    });
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') ['welcome', 'waitSheet'].forEach(id => { if (!$(id).hidden) closeSheet(id); }); });
+  const openWait = () => openSheet('waitSheet');
+  $('joinTop').addEventListener('click', openWait);
+  $('joinBtn').addEventListener('click', openWait);
+  document.querySelectorAll('form.join').forEach(f => {
+    const seg = f.querySelectorAll('.seg button'), inp = f.querySelector('.chIn'), lbl = f.querySelector('.chLbl');
+    seg.forEach(b => b.addEventListener('click', () => {
+      seg.forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+      const wa = b.dataset.ch === 'wa';
+      inp.type = wa ? 'tel' : 'email'; inp.autocomplete = wa ? 'tel' : 'email'; inp.inputMode = wa ? 'tel' : 'email';
+      lbl.dataset.i18n = wa ? 'fWa' : 'fEm'; lbl.textContent = t(lbl.dataset.i18n); inp.focus();
+    }));
+    f.addEventListener('submit', async e => {
+      e.preventDefault();
+      const msg = f.querySelector('.msg'), btn = f.querySelector('.primary'), wa = inp.type === 'tel';
+      const name = f.name.value.trim(), contact = f.contact.value.trim();
+      const okContact = wa ? contact.replace(/[^\d]/g, '').length >= 8 : /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(contact);
+      msg.classList.remove('err');
+      if (!name || !okContact) { msg.textContent = t('need'); msg.classList.add('err'); return; }
+      btn.disabled = true; msg.textContent = t('sending');
+      try {
+        const r = await fetch('/api/join', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({
+          name, contact, channel: wa ? 'whatsapp' : 'email', form: f.id, lang, key: seat, solved, source: lastSource || null, time: lastTime || null,
+          moves, attempts, shards: caught.filter(Boolean).length, seals: sealKeys.length, ref: document.referrer || null }) });
+        if (!r.ok) throw new Error(String(r.status));
+        msg.textContent = t('saved'); sound('dot'); f.querySelectorAll('input').forEach(i => { i.disabled = true; }); btn.hidden = true;
+        try { localStorage.setItem('kon-gate-joined', '1'); } catch (_) {}
+      } catch (_) { msg.textContent = t('failed'); msg.classList.add('err'); btn.disabled = false; }
+    });
+  });
+  const link = () => location.href.split('#')[0];
+  function refreshShare() { $('shareWa').href = 'https://wa.me/?text=' + encodeURIComponent(`${t('shareText')} ${link()}`); }
+  $('shareCopy').addEventListener('click', async () => {
+    const m = $('welForm').querySelector('.msg');
+    try { await navigator.clipboard.writeText(link()); m.textContent = t('copied'); } catch (_) { m.textContent = `${t('copyFail')} ${link()}`; }
+  });
+
+  // ---------- golden key: #golden-company-name ----------
+  function golden() {
+    const m = decodeURIComponent(location.hash || '').match(/^#golden-(.+)$/);
+    if (!m) { $('golden').hidden = true; return; }
+    $('golden').hidden = false; $('goldenTitle').textContent = t('goldenTitle')(m[1].replace(/-/g, ' '));
+  }
+  $('goldenBtn').addEventListener('click', () => { begin(); unseal('golden'); });
+  addEventListener('hashchange', golden);
+
+  // ---------- layout: keep the relic centred in the free space beside the reading column ----------
+  function placeStage() {
+    const st = $('stage'), wide = innerWidth > 900;
+    // wide: the relic is a fixed backdrop outside the column; narrow: it sits in the flow between the clock and the riddle
+    if (wide) { if (st.parentNode !== document.body) document.body.insertBefore(st, $('hall')); }
+    else { const after = document.querySelector('.riddle'); if (st.previousElementSibling !== after) after.after(st); }
+    if (wide) {
+      const cw = $('col').getBoundingClientRect().width, shift = Math.min(0.3, cw / 2 / innerWidth);
+      st.dataset.shift = shift.toFixed(4);
+      const cx = root.dir === 'ltr' ? 50 + shift * 100 : 50 - shift * 100;
+      root.style.setProperty('--cx', cx.toFixed(2) + '%');
+    } else { root.style.removeProperty('--cx'); }
+  }
+  addEventListener('resize', placeStage);
+  addEventListener('scroll', () => document.body.classList.toggle('scrolled', scrollY > 24), { passive: true });
+
+  // ---------- language ----------
+  function applyLang() {
+    root.lang = lang; root.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.querySelectorAll('[data-i18n]').forEach(el => { const v = t(el.dataset.i18n); if (typeof v === 'string') el.textContent = v; });
+    document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+    document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
+    $('langBtn').textContent = t('langBtn');
+    $('stage').setAttribute('aria-label', t('stageLbl'));
+    $('intro').setAttribute('aria-label', t('enter'));
+    $('gesture').textContent = opened ? t('opened') : t('gesture');
+    if (!$('nogl').hidden) $('nogl').textContent = t('nogl');
+    if ($('stage').dataset.quality) $('lite').textContent = t('lite');
+    renderPoem(); renderTraces(); renderSeals(); updateMoves(); golden(); refreshShare(); tick(); renderShards(); showHeatLabel();
+    if (!$('welcome').hidden) fillWelcome();
+    requestAnimationFrame(placeStage);
+  }
+  $('langBtn').addEventListener('click', () => { lang = lang === 'ar' ? 'en' : 'ar'; applyLang(); });
+
+  // ---------- intro ----------
+  const intro = $('intro');
+  function enter() {
+    if (intro.classList.contains('gone')) return;
+    intro.classList.add('gone'); document.body.classList.add('ready'); begin();
+    if (R() && R().ready) R().enter();
+    setTimeout(() => { intro.hidden = true; }, 1500);
+  }
+  intro.addEventListener('click', () => { ensureAudio(); askTilt(); enter(); });
+  intro.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); enter(); } });
+  setTimeout(enter, reduce ? 0 : 4600);
+
+  placeStage();
+  applyLang();
+  setInterval(tick, 1000);
+  setTimeout(() => { if (!(R() && R().ready)) { $('nogl').hidden = false; $('nogl').textContent = t('nogl'); } }, 9000);
+  new MutationObserver(() => { if ($('stage').dataset.quality) $('lite').textContent = t('lite'); }).observe($('stage'), { attributes: true, attributeFilter: ['data-quality'] });
+})();
+</script>
+<script type="application/json" id="glyphs">{"أ": "M73 740H215V0H73ZM38 810V884H65Q61 891 58 900Q55 910 55 922Q55 963 84 988Q113 1013 160 1013Q180 1013 198 1008Q217 1003 232 995L203 929Q194 934 185 936Q176 938 167 938Q149 938 140 930Q132 923 132 912Q132 902 142 893Q152 884 183 884H240V810Z", "ؤ": "M272 437Q317 437 356 415Q396 393 426 350Q455 308 472 247Q489 186 489 108Q489 64 479 17Q469 -30 448 -74Q428 -118 394 -153Q360 -188 312 -209Q265 -230 202 -230Q152 -230 100 -214Q47 -197 0 -156L47 -63Q77 -72 112 -80Q147 -87 187 -87Q220 -87 254 -78Q288 -69 316 -44Q344 -19 359 26Q331 21 306 18Q281 15 261 15Q206 15 166 27Q127 39 102 62Q78 84 66 114Q54 144 54 180Q54 231 70 277Q86 323 116 359Q145 395 184 416Q224 437 272 437ZM185 209Q185 191 194 178Q203 165 222 158Q241 152 271 152Q295 152 318 155Q340 158 358 164Q355 194 343 224Q331 255 310 276Q290 298 261 298Q240 298 222 285Q205 272 195 252Q185 232 185 209ZM145 569V658H178Q172 666 168 678Q165 689 165 702Q165 752 200 782Q235 812 291 812Q308 812 323 809Q338 806 352 802Q366 798 378 791L344 712Q332 717 321 720Q310 722 300 722Q279 722 268 714Q258 705 258 691Q258 683 263 676Q268 668 282 663Q295 658 319 658H388V569Z", "إ": "M73 740H215V0H73ZM39 -263V-188H66Q62 -182 59 -172Q56 -162 56 -151Q56 -110 84 -85Q113 -60 161 -60Q181 -60 200 -64Q218 -69 233 -77L204 -143Q195 -139 186 -137Q177 -135 168 -135Q150 -135 142 -142Q133 -150 133 -161Q133 -167 138 -174Q142 -180 153 -184Q164 -188 184 -188H241V-263Z", "ا": "M73 740H215V0H73Z", "ب": "M296 0Q155 0 89 54Q23 109 23 206Q23 250 38 306Q53 361 93 431L198 384Q179 336 172 304Q165 271 165 245Q165 202 184 179Q204 156 238 148Q273 139 318 139H749Q744 185 722 232Q700 280 665 330L791 459Q821 400 843 332Q865 264 866 182Q868 101 833 0ZM451 -260 354 -162 447 -64 544 -162Z", "ة": "M252 -18Q183 -18 132 5Q80 28 52 72Q23 115 23 175Q23 223 42 266Q61 309 91 345Q119 380 152 407Q133 419 112 431L184 567Q255 522 306 479Q357 436 392 396Q426 356 446 320Q466 283 474 250Q483 217 483 187Q483 124 456 78Q430 32 378 7Q327 -18 252 -18ZM247 338Q232 323 219 308Q192 277 178 249Q165 221 165 192Q165 158 189 139Q213 120 254 120Q304 120 322 141Q341 162 341 191Q341 211 330 236Q319 262 293 293Q275 314 247 338ZM157 612 60 710 151 808 241 717 327 808 424 710 331 612 241 703Z", "ت": "M296 0Q155 0 89 54Q23 109 23 206Q23 250 38 306Q53 361 93 431L198 384Q179 336 172 304Q165 271 165 245Q165 202 184 179Q204 156 238 148Q273 139 318 139H749Q744 185 722 232Q700 280 665 330L791 459Q821 400 843 332Q865 264 866 182Q868 101 833 0ZM366 463 269 561 360 659 450 568 536 659 633 561 540 463 450 554Z", "ث": "M296 0Q155 0 89 54Q23 109 23 206Q23 250 38 306Q53 361 93 431L198 384Q179 336 172 304Q165 271 165 245Q165 202 184 179Q204 156 238 148Q273 139 318 139H749Q744 185 722 232Q700 280 665 330L791 459Q821 400 843 332Q865 264 866 182Q868 101 833 0ZM366 449 269 548 360 646 450 555 536 646 633 548 540 449 450 541ZM451 606 352 704 445 803 542 704Z", "ج": "M671 -285 702 -395Q650 -415 602 -429Q553 -443 502 -450Q451 -456 390 -456Q311 -456 244 -437Q176 -418 126 -382Q77 -345 50 -292Q22 -239 22 -170Q22 -100 48 -39Q73 22 125 74Q177 125 256 168Q335 211 442 244Q420 255 397 265Q374 275 351 284Q328 292 306 296Q284 301 264 301Q233 301 206 290Q180 279 158 258Q136 236 115 205L34 250Q62 307 100 350Q137 392 185 416Q233 439 292 439Q338 439 382 424Q425 410 466 389Q506 368 542 347Q578 326 609 312Q640 299 665 300V186Q559 158 468 127Q377 96 309 56Q241 17 202 -35Q164 -87 164 -156Q164 -206 195 -242Q226 -278 288 -298Q351 -317 443 -317Q492 -317 530 -313Q569 -309 604 -302Q638 -295 671 -285ZM403 -207 322 -124 399 -41 481 -124Z", "ح": "M671 -285 702 -395Q650 -415 602 -429Q553 -443 502 -450Q451 -456 390 -456Q311 -456 244 -437Q176 -418 126 -382Q77 -345 50 -292Q22 -239 22 -170Q22 -100 48 -39Q73 22 125 74Q177 125 256 168Q335 211 442 244Q420 255 397 265Q374 275 351 284Q328 292 306 296Q284 301 264 301Q233 301 206 290Q180 279 158 258Q136 236 115 205L34 250Q62 307 100 350Q137 392 185 416Q233 439 292 439Q338 439 382 424Q425 410 466 389Q506 368 542 347Q578 326 609 312Q640 299 665 300V186Q559 158 468 127Q377 96 309 56Q241 17 202 -35Q164 -87 164 -156Q164 -206 195 -242Q226 -278 288 -298Q351 -317 443 -317Q492 -317 530 -313Q569 -309 604 -302Q638 -295 671 -285Z", "خ": "M671 -285 702 -395Q650 -415 602 -429Q553 -443 502 -450Q451 -456 390 -456Q311 -456 244 -437Q176 -418 126 -382Q77 -345 50 -292Q22 -239 22 -170Q22 -100 48 -39Q73 22 125 74Q177 125 256 168Q335 211 442 244Q420 255 397 265Q374 275 351 284Q328 292 306 296Q284 301 264 301Q233 301 206 290Q180 279 158 258Q136 236 115 205L34 250Q62 307 100 350Q137 392 185 416Q233 439 292 439Q338 439 382 424Q425 410 466 389Q506 368 542 347Q578 326 609 312Q640 299 665 300V186Q559 158 468 127Q377 96 309 56Q241 17 202 -35Q164 -87 164 -156Q164 -206 195 -242Q226 -278 288 -298Q351 -317 443 -317Q492 -317 530 -313Q569 -309 604 -302Q638 -295 671 -285ZM294 531 197 629 290 727 387 629Z", "د": "M58 0 33 139H318Q308 172 288 209Q267 246 234 286Q201 327 154 368L262 508Q338 424 383 346Q428 267 442 184Q456 101 436 0Z", "ذ": "M58 0 33 139H318Q308 172 288 209Q267 246 234 286Q201 327 154 368L262 508Q338 424 383 346Q428 267 442 184Q456 101 436 0ZM230 554 133 652 226 750 323 652Z", "ر": "M106 -247Q62 -247 10 -230Q-41 -214 -87 -174L-42 -84Q-8 -97 24 -103Q55 -109 81 -109Q139 -109 181 -86Q223 -64 246 -23Q270 18 270 74Q270 100 258 128Q246 155 217 194Q188 234 137 295L247 431Q300 359 333 299Q366 239 381 186Q396 134 396 81Q396 42 386 -2Q377 -47 356 -90Q335 -133 302 -168Q268 -204 219 -226Q170 -247 106 -247Z", "ز": "M106 -247Q62 -247 10 -230Q-41 -214 -87 -174L-42 -84Q-8 -97 24 -103Q55 -109 81 -109Q139 -109 181 -86Q223 -64 246 -23Q270 18 270 74Q270 100 258 128Q246 155 217 194Q188 234 137 295L247 431Q300 359 333 299Q366 239 381 186Q396 134 396 81Q396 42 386 -2Q377 -47 356 -90Q335 -133 302 -168Q268 -204 219 -226Q170 -247 106 -247ZM197 488 100 586 193 684 290 586Z", "س": "M1044 0Q980 0 934 12Q889 25 857 43Q848 47 840 52Q826 27 808 0H653Q644 -58 617 -104Q577 -173 504 -210Q430 -247 328 -247Q244 -247 186 -225Q127 -203 91 -166Q55 -129 39 -83Q23 -37 23 10Q23 51 34 108Q45 165 71 227L189 190Q173 142 166 106Q159 70 159 43Q159 -7 182 -41Q204 -75 246 -92Q289 -109 348 -109Q380 -109 412 -100Q444 -92 470 -76Q497 -60 513 -37Q529 -14 529 16Q529 37 523 66Q517 95 503 135Q489 175 463 228L573 361Q611 292 629 234Q644 180 650 139H765Q771 159 775 184Q779 210 781 238Q783 267 781 297L948 354Q935 290 922 243Q910 196 894 158Q894 157 894 156Q911 150 934 146Q967 139 1007 139H1132Q1123 191 1102 238Q1080 286 1049 331L1175 459Q1198 415 1217 366Q1236 318 1245 262Q1254 207 1248 142Q1242 77 1215 0Z", "ش": "M1044 0Q980 0 934 12Q889 25 857 43Q848 47 840 52Q826 27 808 0H653Q644 -58 617 -104Q577 -173 504 -210Q430 -247 328 -247Q244 -247 186 -225Q127 -203 91 -166Q55 -129 39 -83Q23 -37 23 10Q23 51 34 108Q45 165 71 227L189 190Q173 142 166 106Q159 70 159 43Q159 -7 182 -41Q204 -75 246 -92Q289 -109 348 -109Q380 -109 412 -100Q444 -92 470 -76Q497 -60 513 -37Q529 -14 529 16Q529 37 523 66Q517 95 503 135Q489 175 463 228L573 361Q611 292 629 234Q644 180 650 139H765Q771 159 775 184Q779 210 781 238Q783 267 781 297L948 354Q935 290 922 243Q910 196 894 158Q894 157 894 156Q911 150 934 146Q967 139 1007 139H1132Q1123 191 1102 238Q1080 286 1049 331L1175 459Q1198 415 1217 366Q1236 318 1245 262Q1254 207 1248 142Q1242 77 1215 0ZM785 412 688 511 779 609 869 518 955 609 1052 511 959 412 869 504ZM870 569 771 667 864 766 961 667Z", "ص": "M328 -247Q244 -247 186 -225Q127 -203 91 -165Q55 -127 39 -80Q23 -32 23 20Q23 56 34 108Q46 159 69 219L187 182Q173 140 166 105Q159 70 159 43Q159 6 172 -22Q185 -51 210 -70Q234 -90 269 -100Q304 -109 348 -109Q380 -109 412 -100Q444 -92 470 -74Q497 -57 513 -32Q529 -6 529 28Q529 54 525 81Q521 105 503 142L452 235L562 368L630 218Q644 187 656 170Q668 153 687 146Q698 142 716 140Q785 245 854 315Q925 387 997 423Q1069 459 1143 459Q1232 459 1289 422Q1346 384 1374 320Q1402 255 1402 172Q1403 90 1378 0H744Q700 0 663 13Q659 14 655 15Q647 -52 617 -104Q577 -173 504 -210Q430 -247 328 -247ZM876 139H1259Q1260 192 1249 232Q1238 273 1210 297Q1182 321 1133 321Q1076 321 1018 284Q960 246 905 177Q890 159 876 139Z", "ض": "M328 -247Q244 -247 186 -225Q127 -203 91 -165Q55 -127 39 -80Q23 -32 23 20Q23 56 34 108Q46 159 69 219L187 182Q173 140 166 105Q159 70 159 43Q159 6 172 -22Q185 -51 210 -70Q234 -90 269 -100Q304 -109 348 -109Q380 -109 412 -100Q444 -92 470 -74Q497 -57 513 -32Q529 -6 529 28Q529 54 525 81Q521 105 503 142L452 235L562 368L630 218Q644 187 656 170Q668 153 687 146Q698 142 716 140Q785 245 854 315Q925 387 997 423Q1069 459 1143 459Q1232 459 1289 422Q1346 384 1374 320Q1402 255 1402 172Q1403 90 1378 0H744Q700 0 663 13Q659 14 655 15Q647 -52 617 -104Q577 -173 504 -210Q430 -247 328 -247ZM876 139H1259Q1260 192 1249 232Q1238 273 1210 297Q1182 321 1133 321Q1076 321 1018 284Q960 246 905 177Q890 159 876 139ZM1116 551 1019 649 1112 747 1209 649Z", "ط": "M23 0V139H113V740H255V307Q258 311 262 315Q322 387 392 423Q461 459 535 459Q624 459 682 422Q739 384 767 320Q795 255 795 172Q795 90 770 0ZM256 139H651Q653 192 641 232Q629 273 600 297Q571 321 518 321Q465 321 405 288Q345 255 290 187Q272 165 256 139Z", "ظ": "M23 0V139H113V740H255V307Q258 311 262 315Q322 387 392 423Q461 459 535 459Q624 459 682 422Q739 384 767 320Q795 255 795 172Q795 90 770 0ZM256 139H651Q653 192 641 232Q629 273 600 297Q571 321 518 321Q465 321 405 288Q345 255 290 187Q272 165 256 139ZM502 551 405 649 498 747 595 649Z", "ع": "M361 -456Q288 -456 224 -440Q161 -424 114 -392Q66 -361 40 -314Q13 -268 13 -207Q13 -129 48 -65Q82 -1 148 48Q165 60 184 72Q178 75 173 79Q128 108 100 150Q72 193 72 247Q72 313 103 360Q134 408 188 434Q243 459 317 459Q363 459 407 448Q451 438 487 419L429 297Q401 310 374 316Q346 321 317 321Q262 321 236 298Q210 274 210 241Q210 220 222 201Q233 182 254 167Q275 152 305 142Q317 137 329 134Q414 159 517 168L490 34Q419 21 364 6Q310 -10 270 -30Q231 -50 206 -74Q180 -97 168 -125Q155 -153 155 -185Q155 -228 184 -258Q213 -288 270 -302Q328 -317 414 -317Q465 -317 516 -311Q566 -305 611 -293L644 -404Q587 -427 536 -438Q486 -449 442 -452Q399 -456 361 -456Z", "غ": "M361 -456Q288 -456 224 -440Q161 -424 114 -392Q66 -361 40 -314Q13 -268 13 -207Q13 -129 48 -65Q82 -1 148 48Q165 60 184 72Q178 75 173 79Q128 108 100 150Q72 193 72 247Q72 313 103 360Q134 408 188 434Q243 459 317 459Q363 459 407 448Q451 438 487 419L429 297Q401 310 374 316Q346 321 317 321Q262 321 236 298Q210 274 210 241Q210 220 222 201Q233 182 254 167Q275 152 305 142Q317 137 329 134Q414 159 517 168L490 34Q419 21 364 6Q310 -10 270 -30Q231 -50 206 -74Q180 -97 168 -125Q155 -153 155 -185Q155 -228 184 -258Q213 -288 270 -302Q328 -317 414 -317Q465 -317 516 -311Q566 -305 611 -293L644 -404Q587 -427 536 -438Q486 -449 442 -452Q399 -456 361 -456ZM320 551 223 649 316 747 413 649Z", "ف": "M296 0Q155 0 89 54Q23 109 23 206Q23 250 38 306Q53 361 93 430L198 384Q179 336 172 304Q165 271 165 245Q165 202 184 179Q204 156 238 148Q273 139 318 139H915Q916 156 917 170Q918 184 918 202Q914 201 910 200Q857 187 803 187Q755 187 718 196Q681 206 655 225Q629 244 616 272Q602 301 602 337Q602 389 620 434Q639 478 670 511Q702 544 742 562Q782 581 826 581Q891 581 942 546Q994 512 1024 444Q1053 375 1053 273Q1053 237 1048 188Q1044 138 1037 88Q1030 39 1021 0ZM913 315Q908 347 897 376Q885 405 866 424Q847 442 818 442Q795 442 778 430Q760 417 750 398Q741 379 741 359Q741 341 750 330Q760 319 779 313Q798 307 828 307Q855 307 879 310Q897 312 913 315ZM823 673 726 771 819 869 916 771Z", "ق": "M530 442Q591 442 640 404Q689 365 718 294Q747 224 747 127Q747 53 724 -12Q702 -77 655 -126Q608 -175 534 -202Q459 -230 356 -230Q248 -230 174 -198Q99 -167 61 -108Q23 -50 23 32Q23 69 34 123Q45 177 69 235L191 194Q178 156 171 122Q164 88 164 63Q164 17 184 -18Q204 -53 250 -72Q297 -91 374 -91Q433 -91 482 -78Q531 -64 566 -36Q601 -8 614 32Q589 26 564 23Q539 20 519 20Q464 20 425 32Q386 45 361 67Q336 89 324 120Q313 150 313 186Q313 236 329 282Q345 328 374 364Q404 400 444 421Q483 442 530 442ZM443 214Q443 196 452 184Q461 171 480 164Q499 157 529 157Q554 157 576 160Q598 164 616 169Q613 199 601 230Q589 261 569 282Q549 303 519 303Q499 303 482 290Q464 278 454 258Q443 237 443 214ZM446 534 349 632 440 730 530 639 616 730 713 632 620 534 530 625Z", "ك": "M296 0Q155 0 89 54Q23 109 23 206Q23 250 38 306Q53 361 93 430L198 384Q179 336 172 304Q165 271 165 245Q165 202 184 179Q204 156 238 148Q273 139 318 139H739V740H881V0ZM345 301V390H378Q372 398 368 410Q365 421 365 435Q365 484 400 514Q435 544 491 544Q508 544 523 542Q538 539 552 534Q566 530 578 523L544 444Q532 449 521 452Q510 454 500 454Q479 454 468 446Q458 437 458 424Q458 415 463 408Q468 400 482 395Q495 390 519 390H588V301Z", "ل": "M328 -230Q244 -230 186 -208Q127 -186 91 -149Q55 -112 39 -66Q23 -20 23 28Q23 69 34 122Q45 174 69 237L187 199Q173 157 166 122Q159 88 159 61Q159 11 182 -23Q204 -57 246 -74Q287 -91 343 -91Q380 -91 413 -82Q446 -73 472 -52Q499 -32 514 2Q529 36 529 85V740H671V89Q671 -13 630 -84Q590 -155 514 -192Q437 -230 328 -230Z", "م": "M272 424Q327 424 374 391Q422 358 456 294Q489 231 501 138L453 -1Q433 4 406 8Q380 12 350 14Q319 16 286 16Q261 16 228 14Q196 11 167 6Q169 -46 176 -104Q184 -161 190 -221Q196 -281 196 -340Q195 -400 183 -454L74 -448Q71 -355 63 -287Q55 -219 46 -172Q36 -126 30 -98Q23 -69 23 -56Q23 -22 36 12Q48 46 84 87Q108 114 146 128Q183 141 227 146Q271 150 310 150Q324 150 338 149Q352 148 364 147Q357 189 342 220Q328 251 309 268Q290 285 267 285Q239 285 221 264Q203 242 195 201L81 226Q86 278 111 323Q136 368 178 396Q219 424 272 424Z", "ن": "M328 -247Q244 -247 186 -225Q127 -203 91 -166Q55 -129 39 -83Q23 -37 23 10Q23 51 34 108Q45 165 71 227L189 190Q173 142 166 106Q159 70 159 43Q159 -7 182 -41Q204 -75 246 -92Q289 -109 348 -109Q380 -109 412 -100Q444 -92 470 -76Q497 -60 513 -37Q529 -14 529 16Q529 37 523 66Q517 95 503 135Q489 175 463 228L573 361Q611 292 628 234Q646 175 652 131Q657 87 657 59Q657 -36 617 -104Q577 -173 504 -210Q430 -247 328 -247ZM333 345 236 443 329 541 426 443Z", "ه": "M252 -18Q183 -18 132 5Q80 28 52 72Q23 115 23 175Q23 223 42 266Q61 309 91 345Q119 380 152 407Q133 419 112 431L184 567Q255 522 306 479Q357 436 392 396Q426 356 446 320Q466 283 474 250Q483 217 483 187Q483 124 456 78Q430 32 378 7Q327 -18 252 -18ZM247 338Q232 323 219 308Q192 277 178 249Q165 221 165 192Q165 158 189 139Q213 120 254 120Q304 120 322 141Q341 162 341 191Q341 211 330 236Q319 262 293 293Q275 314 247 338Z", "و": "M272 437Q317 437 356 415Q396 393 426 350Q455 308 472 247Q489 186 489 108Q489 64 479 17Q469 -30 448 -74Q428 -118 394 -153Q360 -188 312 -209Q265 -230 202 -230Q152 -230 100 -214Q47 -197 0 -156L47 -63Q77 -72 112 -80Q147 -87 187 -87Q220 -87 254 -78Q288 -69 316 -44Q344 -19 359 26Q331 21 306 18Q281 15 261 15Q206 15 166 27Q127 39 102 62Q78 84 66 114Q54 144 54 180Q54 231 70 277Q86 323 116 359Q145 395 184 416Q224 437 272 437ZM185 209Q185 191 194 178Q203 165 222 158Q241 152 271 152Q295 152 318 155Q340 158 358 164Q355 194 343 224Q331 255 310 276Q290 298 261 298Q240 298 222 285Q205 272 195 252Q185 232 185 209Z", "ى": "M356 -230Q281 -230 220 -214Q159 -199 114 -168Q70 -136 46 -86Q23 -37 23 32Q23 69 34 123Q45 177 69 232L191 194Q177 156 170 124Q164 91 164 62Q164 25 176 -4Q189 -32 216 -52Q242 -72 282 -82Q321 -91 374 -91Q440 -91 486 -82Q532 -73 560 -58Q589 -43 602 -27Q616 -11 616 1Q616 10 606 20Q597 30 570 44Q543 59 490 83Q451 101 423 122Q395 143 380 170Q365 198 365 233Q365 303 396 354Q428 406 484 435Q539 464 611 464Q643 464 674 458Q704 452 732 441Q760 430 782 414L718 298Q695 312 669 319Q643 326 611 326Q563 326 537 304Q511 283 511 257Q511 240 522 226Q534 211 562 196Q591 180 640 158Q683 139 706 122Q729 106 738 86Q748 66 748 40Q748 11 737 -24Q726 -60 700 -96Q674 -132 630 -162Q585 -193 518 -212Q450 -230 356 -230Z", "ي": "M356 -230Q281 -230 220 -214Q159 -199 114 -168Q70 -136 46 -86Q23 -37 23 32Q23 69 34 123Q45 177 69 232L191 194Q177 156 170 124Q164 91 164 62Q164 25 176 -4Q189 -32 216 -52Q242 -72 282 -82Q321 -91 374 -91Q440 -91 486 -82Q532 -73 560 -58Q589 -43 602 -27Q616 -11 616 1Q616 10 606 20Q597 30 570 44Q543 59 490 83Q451 101 423 122Q395 143 380 170Q365 198 365 233Q365 303 396 354Q428 406 484 435Q539 464 611 464Q643 464 674 458Q704 452 732 441Q760 430 782 414L718 298Q695 312 669 319Q643 326 611 326Q563 326 537 304Q511 283 511 257Q511 240 522 226Q534 211 562 196Q591 180 640 158Q683 139 706 122Q729 106 738 86Q748 66 748 40Q748 11 737 -24Q726 -60 700 -96Q674 -132 630 -162Q585 -193 518 -212Q450 -230 356 -230ZM271 -490 174 -392 265 -294 355 -385 441 -294 538 -392 445 -490 355 -399Z", "ٮ": "M296 0Q155 0 89 54Q23 109 23 206Q23 250 38 306Q53 361 93 431L198 384Q179 336 172 304Q165 271 165 245Q165 202 184 179Q204 156 238 148Q273 139 318 139H749Q744 185 722 232Q700 280 665 330L791 459Q821 400 843 332Q865 264 866 182Q868 101 833 0Z", "ٯ": "M530 442Q591 442 640 404Q689 365 718 294Q747 224 747 127Q747 53 724 -12Q702 -77 655 -126Q608 -175 534 -202Q459 -230 356 -230Q248 -230 174 -198Q99 -167 61 -108Q23 -50 23 32Q23 69 34 123Q45 177 69 235L191 194Q178 156 171 122Q164 88 164 63Q164 17 184 -18Q204 -53 250 -72Q297 -91 374 -91Q433 -91 482 -78Q531 -64 566 -36Q601 -8 614 32Q589 26 564 23Q539 20 519 20Q464 20 425 32Q386 45 361 67Q336 89 324 120Q313 150 313 186Q313 236 329 282Q345 328 374 364Q404 400 444 421Q483 442 530 442ZM443 214Q443 196 452 184Q461 171 480 164Q499 157 529 157Q554 157 576 160Q598 164 616 169Q613 199 601 230Q589 261 569 282Q549 303 519 303Q499 303 482 290Q464 278 454 258Q443 237 443 214Z", "ں": "M328 -247Q244 -247 186 -225Q127 -203 91 -166Q55 -129 39 -83Q23 -37 23 10Q23 51 34 108Q45 165 71 227L189 190Q173 142 166 106Q159 70 159 43Q159 -7 182 -41Q204 -75 246 -92Q289 -109 348 -109Q380 -109 412 -100Q444 -92 470 -76Q497 -60 513 -37Q529 -14 529 16Q529 37 523 66Q517 95 503 135Q489 175 463 228L573 361Q611 292 628 234Q646 175 652 131Q657 87 657 59Q657 -36 617 -104Q577 -173 504 -210Q430 -247 328 -247Z", "kun0": "M328 -247Q244 -247 186 -225Q127 -203 91 -165Q55 -127 39 -80Q23 -32 23 20Q23 56 34 108Q46 159 69 219L187 182Q173 140 166 105Q159 70 159 43Q159 6 172 -22Q185 -51 210 -70Q234 -90 269 -100Q304 -109 348 -109Q380 -109 412 -100Q444 -92 470 -74Q497 -57 513 -32Q529 -6 529 28Q529 54 525 81Q521 105 503 142L452 235L562 368L630 218Q644 187 656 170Q668 153 686 146Q705 139 737 139H754V0H744Q700 0 663 13Q659 14 655 15Q647 -52 617 -104Q577 -173 504 -210Q430 -247 328 -247ZM818 524 1105 762 1197 652 967 461Q1061 428 1117 372Q1181 305 1200 211Q1218 117 1199 0H754Q724 0 724 70Q724 139 754 139H1077Q1068 191 1038 236Q1009 281 956 314Q902 348 818 364Z", "kdot": "M333 345 236 443 329 541 426 443Z"}</script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { SVGLoader } from 'three/addons/loaders/SVGLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const KUN = window.KUN || {};
+const call = (k, ...a) => { try { KUN[k] && KUN[k](...a); } catch (_) {} };
+const stage = document.getElementById('stage');
+const canvas = document.getElementById('gl');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const coarse = matchMedia('(pointer: coarse)').matches;
+const GLYPHS = JSON.parse(document.getElementById('glyphs').textContent);
+
+// ---------- renderer ----------
+// guard every lit surface: a NaN or infinite pixel (a specular spike on a facet at a grazing angle) would be smeared by bloom into a white blot
+THREE.ShaderChunk.dithering_fragment += `
+  gl_FragColor.rgb = (any(isnan(gl_FragColor.rgb)) || any(isinf(gl_FragColor.rgb))) ? vec3(0.0) : clamp(gl_FragColor.rgb, 0.0, 8.0);`;
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+let dprCap = coarse ? 1.75 : 2;
+renderer.setPixelRatio(Math.min(devicePixelRatio || 1, dprCap));
+renderer.setClearColor(0x010d0f, 1);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x010d0f, 0.035);
+const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 120);
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), 0.5, 0.7, 0.82);
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
+let useComposer = true;
+
+// ---------- the sky: the same clouds as the homepage ----------
+// The cloud field (log-polar fbm, lit from the open centre, gold-silver edges) is rendered ONCE into a
+// small texture whenever the stage changes size. Each frame only slides and turns that texture a little,
+// which costs one texture read per pixel: the sky is free on a phone.
+const SKY_FRAG = `
+precision highp float;
+uniform vec2 res; uniform float t; uniform float oct; uniform vec2 ctr;
+float h(vec3 p){ p = fract(p * 0.3183099 + 0.1); p *= 17.0; return fract(p.x * p.y * p.z * (p.x + p.y + p.z)); }
+float n(vec3 x){ vec3 i = floor(x), f = fract(x); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(mix(h(i), h(i + vec3(1,0,0)), f.x), mix(h(i + vec3(0,1,0)), h(i + vec3(1,1,0)), f.x), f.y),
+             mix(mix(h(i + vec3(0,0,1)), h(i + vec3(1,0,1)), f.x), mix(h(i + vec3(0,1,1)), h(i + vec3(1,1,1)), f.x), f.y), f.z); }
+float fbm(vec3 p){ float v = 0.0, a = 0.5; for (int i = 0; i < 6; i++) { if (float(i) >= oct) break; v += a * n(p); p = p * 2.03 + vec3(1.7, 9.2, 3.1); a *= 0.5; } return v; }
+float clouds(vec2 q, bool cheap){
+  float r = length(q) + 1e-4;
+  float a = atan(q.y, q.x) + 0.22 * log(r) + t * 0.006;
+  float z = log(r) * 1.6 - t * 0.045;
+  vec3 p = vec3(cos(a), sin(a), 0.0) * 1.35 + vec3(0.0, 0.0, z);
+  if (cheap) return fbm(p);
+  vec3 w = vec3(fbm(p + vec3(0.0, 0.0, t * 0.01)), fbm(p + vec3(5.2, 1.3, -t * 0.008)), 0.0);
+  return fbm(p + w * 0.75);
+}
+void main(){
+  vec2 uv = gl_FragCoord.xy / res;
+  float asp = res.x / res.y;
+  vec2 q = (uv - ctr) * vec2(asp, 1.0);
+  float hd = 0.5 * length(vec2(asp, 1.0));
+  float rn = length(q) / hd;
+  float d = clouds(q, false);
+  float body = smoothstep(0.45, 0.70, d);
+  vec2 dir = -normalize(q + 1e-4) * 0.045; float od = 0.0;
+  for (int i = 1; i <= 3; i++) od += smoothstep(0.45, 0.76, clouds(q + dir * float(i), true));
+  float light = exp(-od * 0.9);
+  float silver = pow(1.0 - body, 2.0) * light;
+  vec3 col = mix(vec3(0.035, 0.16, 0.17), vec3(0.86, 0.97, 0.94), 0.18 + 0.82 * light);
+  col = mix(col, vec3(0.92, 0.84, 0.66), silver * 0.35);
+  float edge = smoothstep(0.24, 0.78, rn) * (1.0 - 0.3 * smoothstep(0.95, 1.2, rn));
+  float alpha = body * edge * 0.62;
+  // the night behind the clouds: deep teal, a little lighter around the relic
+  vec3 base = mix(vec3(0.03, 0.15, 0.155), vec3(0.006, 0.045, 0.05), smoothstep(0.0, 0.9, rn));
+  vec3 c = mix(base, col, alpha);
+  gl_FragColor = vec4(pow(c, vec3(2.2)), 1.0);
+}`;
+const skyRT = new THREE.WebGLRenderTarget(8, 8, { depthBuffer: false, stencilBuffer: false });
+const skyMat = new THREE.ShaderMaterial({
+  uniforms: { res: { value: new THREE.Vector2(8, 8) }, t: { value: 60 + Math.random() * 400 }, oct: { value: coarse ? 4 : 5 }, ctr: { value: new THREE.Vector2(0.5, 0.52) } },
+  vertexShader: 'void main(){ gl_Position = vec4(position.xy, 0.0, 1.0); }', fragmentShader: SKY_FRAG, depthTest: false, depthWrite: false
+});
+const skyScene = new THREE.Scene(), skyCam = new THREE.Camera();
+{ const q = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), skyMat); q.frustumCulled = false; skyScene.add(q); }
+const skyTex = skyRT.texture; skyTex.center.set(0.5, 0.5);
+let skyTimer = 0;
+function paintSky(w, h, cx) {
+  const k = coarse ? 0.4 : 0.5, sw = Math.max(64, Math.round(w * k)), sh = Math.max(64, Math.round(h * k));
+  skyRT.setSize(sw, sh); skyMat.uniforms.res.value.set(sw, sh); skyMat.uniforms.ctr.value.set(cx, 0.5);
+  renderer.setRenderTarget(skyRT); renderer.render(skyScene, skyCam); renderer.setRenderTarget(null);
+}
+
+// ---------- shared shader bits: low-frequency mottling for aged stone and bronze (no speckle) ----------
+const NOISE = `
+varying vec3 vRelicPos;
+float rh(vec3 p){ p = fract(p * 0.3183099 + 0.1); p *= 17.0; return fract(p.x * p.y * p.z * (p.x + p.y + p.z)); }
+float rn(vec3 x){ vec3 i = floor(x); vec3 f = fract(x); f = f*f*(3.0-2.0*f);
+  return mix(mix(mix(rh(i+vec3(0,0,0)),rh(i+vec3(1,0,0)),f.x),mix(rh(i+vec3(0,1,0)),rh(i+vec3(1,1,0)),f.x),f.y),
+             mix(mix(rh(i+vec3(0,0,1)),rh(i+vec3(1,0,1)),f.x),mix(rh(i+vec3(0,1,1)),rh(i+vec3(1,1,1)),f.x),f.y),f.z); }
+float rfbm(vec3 p){ float v = 0.0; float a = 0.5; for (int i = 0; i < 4; i++){ v += a * rn(p); p *= 2.03; a *= 0.5; } return v; }
+`;
+function aged(mat, scale, amount, seed) {
+  mat.onBeforeCompile = sh => {
+    sh.uniforms.uSeed = { value: seed };
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vRelicPos;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvRelicPos = (modelMatrix * vec4(position, 1.0)).xyz;');
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nuniform float uSeed;' + NOISE)
+      .replace('#include <color_fragment>', `#include <color_fragment>
+        float relicN = rfbm(vRelicPos * ${scale.toFixed(2)} + uSeed);
+        diffuseColor.rgb *= ${(1 - amount).toFixed(3)} + ${(amount * 2).toFixed(3)} * relicN;`)
+      .replace('#include <roughnessmap_fragment>', `#include <roughnessmap_fragment>
+        roughnessFactor = clamp(roughnessFactor + (relicN - 0.5) * 0.35, 0.04, 1.0);`);
+  };
+  mat.customProgramCacheKey = () => 'aged' + scale + amount;
+  return mat;
+}
+
+// ---------- glyphs ----------
+const svgLoader = new SVGLoader();
+const glyphCache = {};
+// every letter shares one type scale (so a row reads as one line of type) and is capped to its tablet,
+// so wide letters like س and ص never spill past the gold frame
+function glyphGeo(key, height, depth, width = height * 1.1, ref = null) {
+  const id = [key, height, depth, width, ref ? ref.uuid : ''].join('|');
+  if (glyphCache[id]) return glyphCache[id];
+  const data = svgLoader.parse(`<svg xmlns="http://www.w3.org/2000/svg"><path d="${GLYPHS[key]}"/></svg>`);
+  const shapes = [];
+  data.paths.forEach(p => shapes.push(...SVGLoader.createShapes(p)));
+  const g = new THREE.ExtrudeGeometry(shapes, { depth: 1, bevelEnabled: false, curveSegments: 5 });
+  g.computeBoundingBox();
+  const b = g.boundingBox, w = Math.max(1, b.max.x - b.min.x), h = Math.max(1, b.max.y - b.min.y);
+  const s = ref ? ref.userData.s : Math.min(height * 0.00115, height / h, width / w);
+  const cx = ref ? ref.userData.cx : (b.max.x + b.min.x) / 2, cy = ref ? ref.userData.cy : (b.max.y + b.min.y) / 2;
+  g.translate(-cx, -cy, 0);
+  g.scale(s, s, depth);
+  g.computeVertexNormals();
+  g.userData = { s, cx, cy };
+  return (glyphCache[id] = g);
+}
+
+// ---------- materials ----------
+const M = {
+  bronze: aged(new THREE.MeshStandardMaterial({ color: 0x2a2017, metalness: 0.85, roughness: 0.48, envMapIntensity: 0.7 }), 3.2, 0.22, 1.7),
+  gold: new THREE.MeshStandardMaterial({ color: 0xd9c289, metalness: 1, roughness: 0.26, envMapIntensity: 1.25, emissive: 0x000000 }),
+  inlay: new THREE.MeshStandardMaterial({ color: 0x1d150c, metalness: 0.55, roughness: 0.55, envMapIntensity: 0.6 }),
+  gem: new THREE.MeshPhysicalMaterial({ color: 0x12a596, emissive: 0x0a6b66, emissiveIntensity: 0.9, metalness: 0, roughness: 0.1, clearcoat: 1, clearcoatRoughness: 0.04, envMapIntensity: 1.6 }),
+  basalt: aged(new THREE.MeshStandardMaterial({ color: 0x0b1c1d, metalness: 0.15, roughness: 0.78, envMapIntensity: 0.5 }), 1.4, 0.2, 4.1),
+  floor: new THREE.MeshStandardMaterial({ color: 0x031618, metalness: 0.1, roughness: 0.92, envMapIntensity: 0.2 })
+};
+// six faces: stone and metal from the brand world (teal, champagne, ivory, obsidian)
+const FACE = [
+  { n: [1, 0, 0], key: 'px', mat: { color: 0x2c6a60, metalness: 0.08, roughness: 0.8 }, ink: 'gold' },
+  { n: [-1, 0, 0], key: 'nx', mat: { color: 0xa98f60, metalness: 0.05, roughness: 0.86 }, ink: 'inlay' },
+  { n: [0, 1, 0], key: 'py', mat: { color: 0xa79f8a, metalness: 0.02, roughness: 0.66 }, ink: 'inlay' },
+  { n: [0, -1, 0], key: 'ny', mat: { color: 0x0d2222, metalness: 0.3, roughness: 0.32 }, ink: 'gold' },
+  { n: [0, 0, 1], key: 'pz', mat: { color: 0x0e4b48, metalness: 0.12, roughness: 0.5 }, ink: 'gold' },
+  { n: [0, 0, -1], key: 'nz', mat: { color: 0x5a472c, metalness: 0.75, roughness: 0.44 }, ink: 'gold' }
+];
+FACE.forEach((f, i) => { f.material = aged(new THREE.MeshStandardMaterial({ ...f.mat, envMapIntensity: 0.8 }), 2.6, 0.16, i * 3.1); });
+// gems after rebirth: one family of KON teal, six tones
+const REBORN = [0x1ec2b0, 0x0d8d82, 0x5fe3d2, 0x065a57, 0x12a596, 0x0a6b66];
+// placeholder face words, full letters with their dots (Readex Pro, the brand face): رؤية · نمو · صبر · تدبر · إتقان · أثر
+const WORDS = { pz: 'رؤية', px: 'نمو', ny: 'صبر', nz: 'تدبر', nx: 'إتقان', py: 'أثر' };
+const FILL = ['ح', 'د', 'ط', 'ع', 'ل', 'س', 'م', 'ه', 'ك', 'و', 'ق', 'ص', 'ف', 'ج', 'ش', 'ز', 'خ', 'ي', 'ب', 'غ'];
+
+// ---------- the world ----------
+const world = new THREE.Group(); scene.add(world);
+const cube = new THREE.Group(); world.add(cube);
+const CUBE_Y = 0.25;
+cube.position.y = CUBE_Y;
+cube.quaternion.setFromEuler(new THREE.Euler(0.42, -0.62, 0, 'XYZ'));
+
+// backdrop haze: soft and edgeless
+const backdrop = new THREE.Mesh(new THREE.PlaneGeometry(70, 44), new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false, fog: false,
+  uniforms: { uT: { value: 0 }, uFlare: { value: 0 } },
+  vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
+  fragmentShader: `varying vec2 vUv; uniform float uT; uniform float uFlare;
+    void main(){ vec2 p = (vUv - vec2(0.5, 0.56)) * vec2(1.6, 1.0);
+      float r = length(p);
+      vec3 teal = vec3(0.07, 0.65, 0.59); vec3 deep = vec3(0.024, 0.35, 0.34); vec3 champ = vec3(0.84, 0.75, 0.56);
+      float g1 = exp(-r * r * 9.0) * (0.12 + 0.03 * sin(uT * 0.4));
+      float g2 = exp(-pow(length(p - vec2(0.0, -0.32)), 2.0) * 6.0) * 0.18;
+      float g3 = exp(-pow(length(p - vec2(0.0, 0.5)), 2.0) * 10.0) * 0.05;
+      vec3 c = teal * g1 + deep * g2 + champ * g3 + teal * uFlare * exp(-r * r * 5.0) * 0.35;
+      gl_FragColor = vec4(c, clamp(g1 + g2 + g3 + uFlare * 0.3, 0.0, 1.0)); }`
+}));
+backdrop.position.set(0, 1, -16);
+scene.add(backdrop);
+scene.background = skyTex;
+
+// light shaft from above
+const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 2.9, 13, 64, 1, true), new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false,
+  uniforms: { uT: { value: 0 }, uI: { value: 0 } },
+  vertexShader: `varying vec3 vN; varying vec3 vV; varying float vH;
+    void main(){ vec4 wp = modelMatrix * vec4(position,1.0); vN = normalize(mat3(modelMatrix) * normal); vV = normalize(cameraPosition - wp.xyz); vH = uv.y; gl_Position = projectionMatrix * viewMatrix * wp; }`,
+  fragmentShader: `varying vec3 vN; varying vec3 vV; varying float vH; uniform float uT; uniform float uI;
+    void main(){ float f = abs(dot(normalize(vN), normalize(vV)));
+      float a = pow(f, 2.2) * smoothstep(0.0, 0.35, vH) * smoothstep(1.0, 0.55, vH);
+      a *= 0.75 + 0.25 * sin(vH * 9.0 - uT * 0.6);
+      gl_FragColor = vec4(vec3(0.93, 0.86, 0.70) * a * 0.075 * uI, 1.0); }`
+}));
+shaft.position.y = 4.4;
+scene.add(shaft);
+
+// lights
+const key = new THREE.SpotLight(0xffe7c2, 150, 30, 0.36, 0.85, 1.7);
+key.position.set(0.8, 10.5, 1.6);
+key.target.position.set(0, -0.6, 0);
+key.castShadow = true;
+key.shadow.mapSize.set(coarse ? 1024 : 2048, coarse ? 1024 : 2048);
+key.shadow.bias = -0.0004; key.shadow.normalBias = 0.02;
+key.shadow.camera.near = 4; key.shadow.camera.far = 18;
+scene.add(key, key.target);
+const rim = new THREE.DirectionalLight(0x5fe3d2, 2.4); rim.position.set(-5, 2.5, -6); scene.add(rim);
+const rim2 = new THREE.DirectionalLight(0xa8f5ea, 0.9); rim2.position.set(6, -1, -4); scene.add(rim2);
+const fill = new THREE.DirectionalLight(0xcfe9e3, 0.45); fill.position.set(4, 1.5, 8); scene.add(fill);
+scene.add(new THREE.HemisphereLight(0x0d3f3b, 0x010d0f, 0.7));
+const coreLight = new THREE.PointLight(0x7cf0de, 0, 9, 1.6); coreLight.position.y = CUBE_Y; scene.add(coreLight);
+
+// altar
+const altar = new THREE.Group(); scene.add(altar);
+const ALTAR_TOP = -1.95;
+const top = new THREE.Mesh(new THREE.CylinderGeometry(2.75, 2.85, 0.22, 96), M.basalt); top.position.y = ALTAR_TOP - 0.11;
+const shaftC = new THREE.Mesh(new THREE.CylinderGeometry(2.25, 2.4, 0.9, 96), M.basalt); shaftC.position.y = ALTAR_TOP - 0.22 - 0.45;
+const base = new THREE.Mesh(new THREE.CylinderGeometry(3.1, 3.25, 0.28, 96), M.basalt); base.position.y = ALTAR_TOP - 1.12 - 0.14;
+[top, shaftC, base].forEach(m => { m.receiveShadow = true; m.castShadow = false; altar.add(m); });
+const ringGold = new THREE.Mesh(new THREE.TorusGeometry(2.62, 0.018, 8, 160), M.gold); ringGold.rotation.x = Math.PI / 2; ringGold.position.y = ALTAR_TOP + 0.005; altar.add(ringGold);
+const ringIn = new THREE.Mesh(new THREE.TorusGeometry(1.62, 0.012, 8, 140), M.gold); ringIn.rotation.x = Math.PI / 2; ringIn.position.y = ALTAR_TOP + 0.005; altar.add(ringIn);
+const floor = new THREE.Mesh(new THREE.CircleGeometry(30, 64), M.floor); floor.rotation.x = -Math.PI / 2; floor.position.y = ALTAR_TOP - 1.4; floor.receiveShadow = true; scene.add(floor);
+// the floor dissolves into the clouds instead of ending in a dark horizon
+M.floor.transparent = true; M.floor.depthWrite = false;
+M.floor.onBeforeCompile = sh => {
+  sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec2 vFloorXZ;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvFloorXZ = (modelMatrix * vec4(position, 1.0)).xz;');
+  sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec2 vFloorXZ;').replace('#include <dithering_fragment>', '#include <dithering_fragment>\ngl_FragColor.a *= 1.0 - smoothstep(3.6, 9.5, length(vFloorXZ));');
+};
+// the 28 letters in abjad order, carved as their undotted skeletons; they light one by one as launch day nears
+const ABJAD = ['ا', 'ب', 'ج', 'د', 'ه', 'و', 'ز', 'ح', 'ط', 'ي', 'ك', 'ل', 'م', 'ن', 'س', 'ع', 'ف', 'ص', 'ق', 'ر', 'ش', 'ت', 'ث', 'خ', 'ذ', 'ض', 'ظ', 'غ'];
+const ringLetters = ABJAD.map((ch, i) => {
+  const mat = new THREE.MeshStandardMaterial({ color: 0x8c7b55, metalness: 1, roughness: 0.4, emissive: 0x000000, envMapIntensity: 0.9 });
+  const m = new THREE.Mesh(glyphGeo(ch, 0.19, 0.025, 0.21), mat);
+  const a = -i / 28 * Math.PI * 2 + Math.PI / 2;
+  m.position.set(Math.cos(a) * 2.13, ALTAR_TOP + 0.002, Math.sin(a) * 2.13);
+  m.rotation.set(-Math.PI / 2, 0, a - Math.PI / 2, 'XYZ');
+  m.userData = { ch, mat };
+  altar.add(m);
+  return m;
+});
+
+// ---------- cube ----------
+const bodyGeo = new RoundedBoxGeometry(0.97, 0.97, 0.97, 4, 0.085);
+const plateGeo = new RoundedBoxGeometry(0.8, 0.8, 0.06, 3, 0.024);
+const gemGeo = new THREE.SphereGeometry(0.21, 40, 20); gemGeo.scale(1, 1, 0.5);
+const bezelGeo = new THREE.TorusGeometry(0.235, 0.022, 12, 64);
+const Z = new THREE.Vector3(0, 0, 1);
+// a thin gold inlay frame on every plate, like the border of an old tablet
+const frameShape = new THREE.Shape(); frameShape.moveTo(-0.355, -0.355); frameShape.lineTo(0.355, -0.355); frameShape.lineTo(0.355, 0.355); frameShape.lineTo(-0.355, 0.355); frameShape.closePath();
+const frameHole = new THREE.Path(); frameHole.moveTo(-0.33, -0.33); frameHole.lineTo(-0.33, 0.33); frameHole.lineTo(0.33, 0.33); frameHole.lineTo(0.33, -0.33); frameHole.closePath();
+frameShape.holes.push(frameHole);
+const frameGeo = new THREE.ExtrudeGeometry(frameShape, { depth: 0.012, bevelEnabled: false });
+const cubies = [], pickables = [], plates = [];
+const slots = {};
+for (let x = -1; x <= 1; x++) for (let y = -1; y <= 1; y++) for (let z = -1; z <= 1; z++) {
+  if (!x && !y && !z) continue;
+  const c = new THREE.Group();
+  c.userData.p = new THREE.Vector3(x, y, z);
+  c.position.set(x, y, z);
+  const body = new THREE.Mesh(bodyGeo, M.bronze); body.castShadow = true; body.receiveShadow = true;
+  body.userData.cubie = c; c.add(body); pickables.push(body);
+  FACE.forEach(f => {
+    const n = new THREE.Vector3(...f.n), ax = f.n.findIndex(v => v);
+    if ([x, y, z][ax] !== f.n[ax]) return;
+    const q = new THREE.Quaternion().setFromUnitVectors(Z, n);
+    const plate = new THREE.Mesh(plateGeo, f.material);
+    plate.position.copy(n).multiplyScalar(0.468); plate.quaternion.copy(q);
+    plate.receiveShadow = true; plate.userData.cubie = c; plate.userData.n = n.clone(); plate.userData.fkey = f.key;
+    c.add(plate); pickables.push(plate); plates.push(plate);
+    const fr = new THREE.Mesh(frameGeo, M.gold); fr.position.copy(n).multiplyScalar(0.499); fr.quaternion.copy(q); c.add(fr);
+    const others = [0, 1, 2].filter(i => i !== ax), u = [x, y, z][others[0]], v = [x, y, z][others[1]];
+    if (!u && !v) {
+      const bez = new THREE.Mesh(bezelGeo, M.gold); bez.position.copy(n).multiplyScalar(0.5); bez.quaternion.copy(q); bez.scale.setScalar(0.62); c.add(bez);
+    } else (slots[f.key] = slots[f.key] || []).push({ c, n, q, u, v, f });
+  });
+  cube.add(c); cubies.push(c);
+}
+let fi = 0;
+const letterMeshes = [];
+Object.entries(slots).forEach(([k, list]) => {
+  // order by the letter's own frame: top row first, then right to left, as Arabic is read
+  const R = new THREE.Vector3(1, 0, 0).applyQuaternion(list[0].q), U = new THREE.Vector3(0, 1, 0).applyQuaternion(list[0].q);
+  list.forEach(s => { const p = s.c.userData.p; s.ru = p.dot(R); s.uu = p.dot(U); });
+  list.sort((a, b) => b.uu - a.uu || b.ru - a.ru);
+  const words = [...WORDS[k]];
+  list.forEach((s, i) => {
+    const ch = i < words.length ? words[i] : FILL[(fi++) % FILL.length];
+    const mat = s.f.ink === 'gold' ? M.gold : M.inlay;
+    const m = new THREE.Mesh(glyphGeo(ch, 0.5, 0.035, 0.54), mat);
+    m.position.copy(s.n).multiplyScalar(0.497); m.quaternion.copy(s.q);
+    m.userData.cubie = s.c; m.userData.face = s.f;
+    s.c.add(m); pickables.push(m); letterMeshes.push(m);
+  });
+});
+
+// the heart: it lives in the hollow at the centre of the relic (where a 27th piece would be).
+// It is a solid: it never passes through a piece. The relic opens a window for it, and it travels only through open space.
+const core = new THREE.Group(); core.visible = false; cube.add(core);
+const HEART_R = 0.49; // the closed hollow is 1.03 wide, so the stone always fits inside
+// a round brilliant cut: table, crown, girdle, pavilion, culet; 16 facets around, every face hard-edged
+function brilliant(R, seg = 24) {
+  const prof = [[0, -0.86], [0.12, -0.78], [0.62, -0.4], [1, -0.02], [1, 0.03], [0.88, 0.15], [0.7, 0.28], [0.54, 0.36], [0, 0.36]].map(([r, y]) => new THREE.Vector2(r * R, y * R));
+  // non-indexed, so every triangle keeps its own face normal: hard facets without derivative shading, and no zero-area slivers
+  const src = new THREE.LatheGeometry(prof, seg).toNonIndexed(), pos = src.attributes.position.array, keep = [];
+  const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
+  for (let i = 0; i < pos.length; i += 9) { a.fromArray(pos, i); b.fromArray(pos, i + 3); c.fromArray(pos, i + 6); if (b.clone().sub(a).cross(c.clone().sub(a)).lengthSq() > 1e-10) keep.push(...pos.slice(i, i + 9)); }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(keep, 3)); g.computeVertexNormals(); return g;
+}
+// no glass pass (too costly on phones, unstable in some drivers): the stone fakes its light path instead.
+// Facets that face you glow from within like light through a table; each facet's brightness shifts as it turns (scintillation)
+const gemT = { value: 0 };
+const heartMat = new THREE.MeshPhysicalMaterial({
+  color: 0x05433e, emissive: 0x19c9b2, emissiveIntensity: 0.4, metalness: 0.15, roughness: 0.03,
+  clearcoat: 1, clearcoatRoughness: 0, specularIntensity: 1, ior: 2.1, envMapIntensity: 1.9
+});
+heartMat.onBeforeCompile = sh => {
+  sh.fragmentShader = sh.fragmentShader.replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
+    { vec3 fq = floor(normal * 7.0 + 0.5);
+      float h = fract(sin(dot(fq, vec3(12.9898, 78.233, 37.719))) * 43758.5453);
+      float face = pow(abs(normal.z), 4.0);
+      totalEmissiveRadiance *= (0.06 + 1.25 * face) * (0.25 + 1.3 * h * h);
+      totalEmissiveRadiance = clamp(totalEmissiveRadiance, 0.0, 4.0); }`)
+    // the stone may sparkle, never flare: cap its brightness so bloom keeps the facets readable at every angle
+    .replace('#include <dithering_fragment>', `#include <dithering_fragment>
+    { // the table of a real brilliant is never one flat colour: you see the pavilion facets through it,
+      // a star of light and dark wedges (the "arrows"), plus a ring where the star facets meet the table
+      if (vGemP.y > 0.34) {
+        float rr = length(vGemP.xz) / 0.54, ang = atan(vGemP.z, vGemP.x) + uGemT;
+        float wedge = mod(floor(ang * 8.0 / 3.14159265), 2.0);
+        float ring = smoothstep(0.5, 0.56, rr) * (1.0 - smoothstep(0.62, 0.68, rr));
+        float tone = mix(0.42, 1.06, wedge) * mix(0.55, 1.0, smoothstep(0.0, 0.35, rr));
+        gl_FragColor.rgb *= tone * (1.0 - 0.45 * ring);
+        gl_FragColor.rgb += vec3(0.5, 0.95, 0.88) * pow(max(0.0, sin(ang * 8.0 + uGemT * 3.0)), 24.0) * (1.0 - rr) * 0.35;
+      }
+      float m = max(max(gl_FragColor.r, gl_FragColor.g), gl_FragColor.b);
+      if (m > 0.9) gl_FragColor.rgb *= 0.9 / m;
+      // reflections of the room pass through the stone's own teal instead of reading as white
+      float l = dot(gl_FragColor.rgb, vec3(0.299, 0.587, 0.114));
+      gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.16, 0.86, 0.76) * l * 1.3, smoothstep(0.3, 0.75, l) * 0.5); }`);
+  sh.uniforms.uGemT = gemT;
+  sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vGemP;')
+    .replace('#include <begin_vertex>', '#include <begin_vertex>\nvGemP = position / 0.74;');
+  sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vGemP;\nuniform float uGemT;');
+};
+heartMat.customProgramCacheKey = () => 'heart5';
+const heart = new THREE.Group(); heart.scale.setScalar(HEART_R / 0.75); core.add(heart);
+const stone = new THREE.Mesh(brilliant(0.74), heartMat); heart.add(stone);
+const girdle = new THREE.Mesh(new THREE.TorusGeometry(0.748, 0.014, 6, 96), M.gold); girdle.rotation.x = Math.PI / 2; girdle.position.y = 0.004; heart.add(girdle);
+heart.rotation.x = 1.15;
+const kunMat = new THREE.MeshStandardMaterial({ color: 0xecdcb4, metalness: 1, roughness: 0.22, emissive: 0x6b5a33, emissiveIntensity: 0.6 });
+// كں in the brand face; the missing dot of ن is the real dot of the font, cut out as its own small diamond
+const kunGeo = glyphGeo('kun0', 0.4, 0.07, 0.9);
+const dotGeo = glyphGeo('kdot', 0.4, 0.07, 0.9, kunGeo);
+const word = new THREE.Group(); core.add(word);
+const kun = new THREE.Mesh(kunGeo, kunMat); word.add(kun);
+const dot = new THREE.Mesh(dotGeo, kunMat); dot.visible = false; word.add(dot);
+// the word floats just in front of the stone, so the pair always sits inside the window's outline
+const WORD_IN = new THREE.Vector3(0, 0, 0.8), WORD_OUT = new THREE.Vector3(0, 0, 0.62);
+word.position.copy(WORD_IN); word.scale.setScalar(0.001);
+
+// ---------- gems rising through the clouds (one instanced draw) ----------
+// They live in a ring that never comes closer than 4.6 to the relic's axis (the altar is 3.25 wide),
+// rise slowly and turn: nothing they do can touch the relic, the altar or the heart.
+const FIELD_N = coarse ? 26 : 56;
+const fieldMat = new THREE.MeshPhysicalMaterial({ color: 0x7ff0e0, emissive: 0x16b3a4, emissiveIntensity: 0.7, flatShading: true, metalness: 0.1, roughness: 0.04, clearcoat: 1, clearcoatRoughness: 0, envMapIntensity: 3.2, ior: 2.0, fog: false });
+const field = new THREE.InstancedMesh(brilliant(0.5, 10), fieldMat, FIELD_N);
+field.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+field.frustumCulled = false;
+const fieldData = [];
+for (let i = 0; i < FIELD_N; i++) {
+  // never between the camera and the relic: either well to the side, or behind it
+  let a, r, x, z; do { a = Math.random() * Math.PI * 2; r = 4.8 + Math.pow(Math.random(), 0.9) * 7.5; x = Math.cos(a) * r; z = Math.sin(a) * r; } while (!(Math.abs(x) > 5.5 || z < -2.5));
+  fieldData.push({ a, r, y: -5 + Math.random() * 14, s: 0.14 + Math.pow(Math.random(), 2.0) * 0.6, v: 0.05 + Math.random() * 0.12, w: (Math.random() - 0.5) * 0.02,
+    q: new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.random() * 6, Math.random() * 6, Math.random() * 6)), spin: new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize(), sp: 0.15 + Math.random() * 0.35 });
+}
+scene.add(field);
+const fm = new THREE.Matrix4(), fq = new THREE.Quaternion(), fp = new THREE.Vector3(), fs = new THREE.Vector3();
+function moveField(dt, t) {
+  fieldData.forEach((g, i) => {
+    g.y += g.v * dt; if (g.y > 9.5) g.y = -5.5;
+    
+    fp.set(Math.cos(g.a) * g.r, g.y, Math.sin(g.a) * g.r);
+    fq.setFromAxisAngle(g.spin, t * g.sp).premultiply(g.q);
+    fs.setScalar(g.s);
+    field.setMatrixAt(i, fm.compose(fp, fq, fs));
+  });
+  field.instanceMatrix.needsUpdate = true;
+}
+
+// ---------- light shards: three gold sparks that drift past in front of the altar ----------
+// Each one, caught with a tap, gives the page a fragment of a hidden sentence. One at a time, never on top of anything:
+// they fly 4.3 in front of the relic's axis, well outside the altar (3.25) and the heart's furthest point (3.25).
+const sparkMat = new THREE.MeshStandardMaterial({ color: 0xf3dfa8, emissive: 0xc9993f, emissiveIntensity: 0.55, metalness: 0.85, roughness: 0.12, envMapIntensity: 2.2, flatShading: true });
+const spark = new THREE.Group(); spark.visible = false; scene.add(spark);
+const sparkGem = new THREE.Mesh(brilliant(0.16, 10), sparkMat); spark.add(sparkGem);
+const haloMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, uniforms: { uA: { value: 1 } },
+  vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+  fragmentShader: 'varying vec2 vUv; uniform float uA; void main(){ float r = length(vUv - 0.5) * 2.0; float a = exp(-r * r * 6.0) * 0.55 + exp(-r * r * 40.0) * 0.6; a *= (1.0 - smoothstep(0.85, 1.0, r)); gl_FragColor = vec4(vec3(0.95, 0.82, 0.55) * a * uA, 1.0); }' });
+const halo = new THREE.Mesh(new THREE.PlaneGeometry(2.3, 2.3), haloMat); spark.add(halo);
+const sparkHit = new THREE.Mesh(new THREE.SphereGeometry(0.75, 8, 6), new THREE.MeshBasicMaterial({ visible: false })); spark.add(sparkHit);
+let sparkPath = null, sparkT = -1, sparkDur = 18, sparkCaught = -1, sparkIx = 0, sparkDir = 1;
+const SPARK_Z = 4.3;
+function planePoint(nx, ny) {
+  ray.setFromCamera(ndc.set(nx, ny), camera);
+  const k = (SPARK_Z - ray.ray.origin.z) / ray.ray.direction.z;
+  return ray.ray.origin.clone().addScaledVector(ray.ray.direction, k);
+}
+function makeSparkPath() {
+  // across the free part of the stage (not under the reading column), in its lower third
+  const wide = stage.clientWidth > 900, rtl = document.documentElement.dir !== 'ltr';
+  const shift = wide ? Math.min(0.3, parseFloat(stage.dataset.shift || '0.17')) : 0;
+  const lo = (wide && !rtl ? -1 + 4 * shift : -1) + 0.16, hi = (wide && rtl ? 1 - 4 * shift : 1) - 0.16;
+  const a = planePoint(lo, -0.5), b = planePoint(hi, -0.5);
+  [a, b].forEach(p => { const r = Math.hypot(p.x, p.z); if (r < 4.3) p.multiplyScalar(4.3 / r); });
+  return sparkDir > 0 ? [a, b] : [b, a];
+}
+function launchSpark(ix) {
+  if (sparkT >= 0 || solved) return false;
+  sparkIx = ix; sparkDir = -sparkDir; sparkPath = makeSparkPath(); sparkT = 0; sparkCaught = -1;
+  spark.visible = true; spark.scale.setScalar(0.001);
+  return true;
+}
+function moveSpark(dt, t) {
+  if (sparkT < 0) return;
+  if (!sparkPath) sparkPath = makeSparkPath();
+  if (sparkCaught >= 0) {
+    sparkCaught += dt;
+    const k = Math.min(1, sparkCaught / 0.9);
+    // caught: a short flare where it was, then it rises a little and dissolves (never flies at the lens)
+    spark.position.y += dt * 0.9;
+    sparkGem.scale.setScalar(Math.max(0.001, 1 - k * 2.2));
+    halo.scale.setScalar(1 + k * 1.4); haloMat.uniforms.uA.value = 1.8 * Math.pow(1 - k, 1.6);
+    if (k >= 1) { spark.visible = false; sparkT = -1; sparkGem.scale.setScalar(1); halo.scale.setScalar(1); }
+  } else {
+    sparkT += dt;
+    const k = sparkT / sparkDur;
+    if (k >= 1) { spark.visible = false; sparkT = -1; call('sparkGone', sparkIx); return; }
+    spark.position.lerpVectors(sparkPath[0], sparkPath[1], ease(k));
+    spark.position.y += Math.sin(t * 1.3) * 0.12;
+    const fade = Math.min(1, k * 8, (1 - k) * 8);
+    spark.scale.setScalar(Math.max(0.001, fade));
+    haloMat.uniforms.uA.value = (0.8 + 0.25 * Math.sin(t * 4.2)) * fade;
+  }
+  sparkGem.rotation.set(t * 0.9, t * 1.3, 0.4);
+  halo.quaternion.copy(camera.quaternion);
+}
+function tryCatch(x, y) {
+  if (sparkT < 0 || sparkCaught >= 0 || !spark.visible) return false;
+  const r = canvas.getBoundingClientRect();
+  ray.setFromCamera(ndc.set(((x - r.left) / r.width) * 2 - 1, -((y - r.top) / r.height) * 2 + 1), camera);
+  if (!ray.intersectObject(sparkHit, false).length) return false;
+  sparkCaught = 0; flare = Math.max(flare, 0.5);
+  call('sound', 'seal'); call('buzz', [10, 30, 10]); call('shard', sparkIx);
+  return true;
+}
+const tmp2 = new THREE.Vector3();
+
+// ---------- sizing ----------
+const camHome = new THREE.Vector3(), camLook = new THREE.Vector3(0, -0.35, 0);
+let camDist = 10, camPush = 0;
+const lightOff = new THREE.Vector3(0, -0.1, -0.7); // the heart's glow sits behind the stone and lights the hollow around it
+function frame() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  if (!w || !h) return;
+  renderer.setSize(w, h, false);
+  composer.setSize(w, h);
+  bloom.resolution.set(w / 2, h / 2);
+  camera.aspect = w / h;
+  const wide = w > 900, rtl = document.documentElement.dir !== 'ltr';
+  const shift = wide ? Math.min(0.3, Math.max(0, parseFloat(stage.dataset.shift || '0.17'))) : 0;
+  if (wide) camera.setViewOffset(w, h, (rtl ? 1 : -1) * w * shift, 0, w, h); else camera.clearViewOffset();
+  camera.updateProjectionMatrix();
+  const t = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)), effA = wide ? camera.aspect * (1 - 2 * shift) * 0.92 : camera.aspect;
+  camDist = Math.max(3.55 / t, 3.4 / (t * effA));
+  camHome.set(0, 1.1 + camDist * 0.05, camDist);
+  // the clear centre of the sky sits on the relic
+  const cx = wide ? (rtl ? 0.5 - shift : 0.5 + shift) : 0.5;
+  clearTimeout(skyTimer);
+  if (!skyRT.width || skyRT.width <= 8) paintSky(w, h, cx); else skyTimer = setTimeout(() => paintSky(w, h, cx), 160);
+  sparkPath = null;
+}
+new ResizeObserver(frame).observe(stage);
+new MutationObserver(frame).observe(document.documentElement, { attributes: true, attributeFilter: ['dir'] });
+new MutationObserver(frame).observe(stage, { attributes: true, attributeFilter: ['data-shift'] });
+frame();
+
+// ---------- turning: real cube rules, every layer including the middle slices ----------
+const ease = k => k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+const easeOut = k => 1 - Math.pow(1 - k, 3);
+const AX = [new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 1)];
+const QUARTER = Math.PI / 2;
+let history = [], userMoves = 0, busy = false, opened = false, solved = false, explode = 1;
+const tweens = new Set();
+function tween(dur, fn, ez = ease) {
+  return new Promise(res => {
+    if (!dur || reduce) { fn(1); res(); return; }
+    const t0 = performance.now();
+    const tw = now => { const k = Math.min(1, (now - t0) / dur); fn(ez(k)); if (k >= 1) { tweens.delete(tw); res(); } };
+    tweens.add(tw);
+  });
+}
+const m4 = new THREE.Matrix4();
+function snap(c) {
+  c.position.set(Math.round(c.position.x), Math.round(c.position.y), Math.round(c.position.z));
+  m4.makeRotationFromQuaternion(c.quaternion);
+  const e = m4.elements; for (let i = 0; i < 16; i++) e[i] = Math.round(e[i]);
+  c.quaternion.setFromRotationMatrix(m4);
+  c.userData.p.copy(c.position);
+}
+function layerOf(axis, layer) { return cubies.filter(c => Math.round(c.userData.p.getComponent(axis)) === layer); }
+function grab(axis, layer) {
+  const group = layerOf(axis, layer), pivot = new THREE.Object3D();
+  cube.add(pivot); cube.updateMatrixWorld(true);
+  group.forEach(c => pivot.attach(c));
+  return { pivot, group, axis, layer };
+}
+function release(g, quarters) {
+  g.pivot.quaternion.setFromAxisAngle(AX[g.axis], quarters * QUARTER);
+  g.pivot.updateMatrixWorld(true);
+  g.group.forEach(c => { cube.attach(c); snap(c); if (explode !== 1) c.position.copy(c.userData.p).multiplyScalar(explode); });
+  cube.remove(g.pivot);
+}
+async function turn(axis, layer, dir, dur) {
+  const g = grab(axis, layer);
+  if (dur && !reduce) await tween(dur, k => g.pivot.quaternion.setFromAxisAngle(AX[axis], dir * QUARTER * k), easeOut);
+  release(g, dir);
+}
+function record(axis, layer, quarters) {
+  const d = Math.sign(quarters);
+  for (let i = 0; i < Math.abs(quarters); i++) history.push([axis, layer, d]);
+  userMoves += Math.abs(quarters);
+  save();
+  call('onTurn', userMoves);
+  checkSeals(true);
+}
+
+// ---------- the six seals: a face is restored when its nine plates share one stone again ----------
+const nTmp = new THREE.Vector3();
+let sealed = new Set();
+const vTmp = new THREE.Vector3();
+function checkSeals(announce) {
+  const groups = {};
+  plates.forEach(pl => {
+    nTmp.copy(pl.userData.n).applyQuaternion(pl.parent.quaternion);
+    const k = Math.round(nTmp.x) + ',' + Math.round(nTmp.y) + ',' + Math.round(nTmp.z);
+    (groups[k] = groups[k] || new Set()).add(pl.userData.fkey);
+  });
+  const now = new Set();
+  Object.values(groups).forEach(s => { if (s.size === 1) now.add([...s][0]); });
+  const faces = now.size;
+  // two deeper seals: the eight corners, and the middle belt, each whole and in agreement with itself
+  const whole = list => {
+    const q0 = list[0].quaternion;
+    return list.every(c => Math.abs(c.quaternion.dot(q0)) > 0.999 && vTmp.copy(c.userData.home).applyQuaternion(q0).distanceTo(c.userData.p) < 0.1);
+  };
+  if (whole(cubies.filter(c => c.userData.home.x && c.userData.home.y && c.userData.home.z))) now.add('corners');
+  if (whole(cubies.filter(c => !c.userData.home.y && (c.userData.home.x || c.userData.home.z)))) now.add('belt');
+  const fresh = [...now].filter(k => !sealed.has(k));
+  sealed = now;
+  call('onSeals', [...now], announce ? fresh : []);
+  if (announce && fresh.length) { flare = Math.max(flare, 0.5); call('sound', 'seal'); call('buzz', [12, 40, 12]); }
+  if (announce && faces === 6 && !solved) setTimeout(() => call('cubeSolved'), 600);
+}
+
+// ---------- scrambling and memory: progress survives a closed tab ----------
+const STORE = 'kon-relic-v2';
+function save() { try { localStorage.setItem(STORE, JSON.stringify({ h: history, u: userMoves })); } catch (_) {} }
+function load() { try { return JSON.parse(localStorage.getItem(STORE) || 'null'); } catch (_) { return null; } }
+function resetPieces() {
+  cubies.forEach(c => { c.position.copy(c.userData.home); c.quaternion.identity(); c.userData.p.copy(c.userData.home); });
+  cube.updateMatrixWorld(true);
+}
+function scramble(fromSaved) {
+  resetPieces();
+  const saved = fromSaved ? load() : null;
+  if (saved && Array.isArray(saved.h) && saved.h.length) {
+    history = saved.h; userMoves = saved.u || 0;
+    history.forEach(([a, l, d]) => release(grab(a, l), d));
+  } else {
+    history = []; userMoves = 0;
+    let last = -1;
+    for (let i = 0; i < 30; i++) {
+      let a; do { a = Math.floor(Math.random() * 3); } while (a === last); last = a;
+      const mv = [a, Math.floor(Math.random() * 3) - 1, Math.random() < 0.5 ? -1 : 1];
+      history.push(mv); release(grab(mv[0], mv[1]), mv[2]);
+    }
+    save();
+  }
+  call('onTurn', userMoves);
+  checkSeals(false);
+}
+cubies.forEach(c => { c.userData.home = c.userData.p.clone(); });
+
+// FRONT: the face that looks at the viewer when the relic opens, in the cube's own axes
+const FRONT = { f: new THREE.Vector3(0, 0, 1), u: new THREE.Vector3(0, 1, 0), r: new THREE.Vector3(1, 0, 0) };
+let openK = 0, heartOut = 0, wordOut = 0;
+const clamp01 = v => Math.max(0, Math.min(1, v));
+// exact positions of every piece for the current opening; the stone's path stays clear at every frame:
+// 1) all pieces part a little (gaps of 0.23), 2) in the face that looks at you, the side columns slide out
+// and the top two pieces of the middle column slide up, leaving a window 3.3 wide and 1.5 tall around the stone
+const OPEN_EXPLODE = 1.2, SIDE = 0.95, LIFT = 1.12;
+function layout() {
+  const e1 = ease(clamp01(openK / 0.4)), e2 = ease(clamp01((openK - 0.4) / 0.6));
+  explode = 1 + (OPEN_EXPLODE - 1) * e1;
+  cubies.forEach(c => {
+    const p = c.userData.p;
+    c.position.copy(p).multiplyScalar(explode);
+    if (e2 > 0 && Math.round(p.dot(FRONT.f)) === 1) {
+      const u = Math.round(p.dot(FRONT.r)), v = Math.round(p.dot(FRONT.u));
+      if (u) c.position.addScaledVector(FRONT.r, u * SIDE * e2);
+      else if (v >= 0) c.position.addScaledVector(FRONT.u, LIFT * e2);
+    }
+  });
+  placeHeart();
+}
+const VIEW = { d: new THREE.Vector3(0, 0, 1), q0: new THREE.Quaternion(), q1: new THREE.Quaternion() };
+const CLEAR = 2.25; // depth at which the stone has fully left the window (front faces at 1.69, stone radius 0.5)
+function aimHeart() {
+  // the line of sight in the cube's frame: past CLEAR the stone may move toward it, since nothing stands in front of the relic
+  const inv = cube.getWorldQuaternion(new THREE.Quaternion()).invert();
+  const cw = cube.getWorldPosition(new THREE.Vector3());
+  VIEW.d.copy(camera.position).sub(cw).normalize().applyQuaternion(inv);
+  const up = new THREE.Vector3(0, 1, 0).applyQuaternion(inv); up.addScaledVector(VIEW.d, -up.dot(VIEW.d)).normalize();
+  VIEW.q0.setFromRotationMatrix(new THREE.Matrix4().makeBasis(FRONT.r, FRONT.u, FRONT.f));
+  VIEW.q1.setFromRotationMatrix(new THREE.Matrix4().makeBasis(up.clone().cross(VIEW.d), up, VIEW.d));
+}
+function placeHeart() {
+  // v7: the relic is hollow. Nothing lives inside it; only light, when it opens
+  core.visible = false;
+  if (heartOut <= CLEAR) { core.position.copy(FRONT.f).multiplyScalar(heartOut); core.quaternion.copy(VIEW.q0); }
+  else {
+    const k = ease(clamp01((heartOut - CLEAR) / (HEART_OUT - CLEAR)));
+    core.position.copy(FRONT.f).multiplyScalar(CLEAR).lerp(tmp.copy(VIEW.d).multiplyScalar(HEART_OUT), k);
+    core.quaternion.slerpQuaternions(VIEW.q0, VIEW.q1, k);
+  }
+  const ws = ease(clamp01((openK - 0.75) / 0.25)); // the word shows only once the window is wide open
+  word.scale.setScalar(Math.max(0.001, ws));
+  word.position.lerpVectors(WORD_IN, WORD_OUT, ease(wordOut));
+  coreLight.intensity = 2.4 * clamp01(openK * 1.5);
+}
+// turn the relic so a face looks straight at the viewer and sits upright: the window then opens toward the eye
+function faceTheViewer(keep) {
+  const cq = cube.getWorldQuaternion(new THREE.Quaternion()), inv = cq.clone().invert();
+  const cw = cube.getWorldPosition(new THREE.Vector3());
+  const view = camera.position.clone().sub(cw).normalize();
+  const up = new THREE.Vector3(0, 1, 0).addScaledVector(view, -view.y).normalize();
+  const right = up.clone().cross(view).normalize();
+  const best = w => {
+    const l = w.clone().applyQuaternion(inv); const a = [Math.abs(l.x), Math.abs(l.y), Math.abs(l.z)], i = a.indexOf(Math.max(...a));
+    const v = new THREE.Vector3(); v.setComponent(i, Math.sign(l.getComponent(i)) || 1); return { v, i };
+  };
+  const F = keep ? { v: FRONT.f.clone() } : best(view);
+  let U = keep ? { v: FRONT.u.clone(), i: -1 } : best(up);
+  if (!keep && U.i === F.i) { const l = up.clone().applyQuaternion(inv); l.setComponent(F.i, 0); const a = [Math.abs(l.x), Math.abs(l.y), Math.abs(l.z)], i = a.indexOf(Math.max(...a)); U = { v: new THREE.Vector3(), i }; U.v.setComponent(i, Math.sign(l.getComponent(i)) || 1); }
+  FRONT.f.copy(F.v); FRONT.u.copy(U.v); FRONT.r.copy(U.v).cross(F.v);
+  const L = new THREE.Matrix4().makeBasis(FRONT.r, FRONT.u, FRONT.f), W = new THREE.Matrix4().makeBasis(right, up, view);
+  const target = new THREE.Quaternion().setFromRotationMatrix(W.multiply(L.transpose()));
+  // a quarter-turn short of flat: the face turns 17° so the relic keeps its depth, and the window still frames the stone
+  target.premultiply(new THREE.Quaternion().setFromAxisAngle(up, document.documentElement.dir === 'ltr' ? 0.3 : -0.3));
+  // the cube's parent may be rotated: express the target in the parent's frame
+  const pq = cube.parent.getWorldQuaternion(new THREE.Quaternion()).invert();
+  target.premultiply(pq);
+  VIEW.q0.setFromRotationMatrix(new THREE.Matrix4().makeBasis(FRONT.r, FRONT.u, FRONT.f)); core.quaternion.copy(VIEW.q0);
+  return target;
+}
+function setOpen(target, dur) {
+  const from = openK;
+  let turnTo = null, q0 = cube.quaternion.clone();
+  if (target > from && from < 0.01) { vx = vy = 0; turnTo = faceTheViewer(); }
+  return tween(dur, k => {
+    if (turnTo) cube.quaternion.slerpQuaternions(q0, turnTo, ease(clamp01(k / 0.55)));
+    openK = from + (target - from) * k;
+    layout();
+  }, k => k);
+}
+async function toggleOpen(force) {
+  const want = force === undefined ? !opened : force;
+  if (want === opened || busy || live || solved) return;
+  opened = want; busy = true;
+  call('onOpen', opened);
+  if (opened) call('sound', 'open');
+  await setOpen(opened ? 1 : 0, opened ? 1500 : 1100);
+  busy = false;
+}
+
+// ---------- input: the layer follows the finger, then settles with the flick ----------
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+const pointers = new Map();
+let drag = null, live = null, holdTimer = 0, pinch0 = 0, vx = 0, vy = 0, lastInteract = performance.now(), started = false;
+function begin() { if (!started) { started = true; call('begin'); } }
+function pick(x, y) {
+  const r = canvas.getBoundingClientRect();
+  ndc.set(((x - r.left) / r.width) * 2 - 1, -((y - r.top) / r.height) * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  return ray.intersectObjects(pickables, false)[0];
+}
+function toScreen(v) { const p = v.clone().project(camera), r = canvas.getBoundingClientRect(); return new THREE.Vector2((p.x + 1) / 2 * r.width, (1 - p.y) / 2 * r.height); }
+function localNormal(hit) {
+  const n = hit.face.normal.clone().transformDirection(hit.object.matrixWorld);
+  n.applyQuaternion(cube.getWorldQuaternion(new THREE.Quaternion()).invert());
+  const a = [Math.abs(n.x), Math.abs(n.y), Math.abs(n.z)], i = a.indexOf(Math.max(...a));
+  const v = new THREE.Vector3(); v.setComponent(i, Math.sign(n.getComponent(i))); return { v, i };
+}
+let tapAt = null;
+canvas.addEventListener('pointerdown', e => { tapAt = { x: e.clientX, y: e.clientY, t: performance.now() }; if (tryCatch(e.clientX, e.clientY)) { tapAt = null; e.stopImmediatePropagation(); } }, true);
+canvas.addEventListener('pointerdown', e => {
+  canvas.setPointerCapture?.(e.pointerId);
+  pointers.set(e.pointerId, [e.clientX, e.clientY]);
+  lastInteract = performance.now(); begin(); call('audio');
+  if (pointers.size === 2) {
+    clearTimeout(holdTimer);
+    if (live) settle(0);
+    const [a, b] = [...pointers.values()]; pinch0 = Math.hypot(a[0] - b[0], a[1] - b[1]);
+    drag = { x: (a[0] + b[0]) / 2, y: (a[1] + b[1]) / 2, lx: (a[0] + b[0]) / 2, ly: (a[1] + b[1]) / 2, lt: performance.now(), mode: 'orbit2' };
+    return;
+  }
+  if (pointers.size > 2) return;
+  const hit = pick(e.clientX, e.clientY);
+  drag = { x: e.clientX, y: e.clientY, lx: e.clientX, ly: e.clientY, lt: performance.now(), mode: null, hit: hit && hit.object.userData.cubie ? hit : null };
+  vx = vy = 0; stage.classList.add('dragging');
+  clearTimeout(holdTimer);
+  holdTimer = setTimeout(() => { if (drag && !drag.mode && Math.hypot(drag.lx - drag.x, drag.ly - drag.y) < 6) { drag.mode = 'held'; toggleOpen(); call('buzz', 15); } }, 800);
+});
+canvas.addEventListener('pointermove', e => {
+  if (!pointers.has(e.pointerId)) return;
+  pointers.set(e.pointerId, [e.clientX, e.clientY]);
+  if (!drag) return;
+  const now = performance.now();
+  if (pointers.size === 2) {
+    const [a, b] = [...pointers.values()], mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
+    const r = pinch0 ? Math.hypot(a[0] - b[0], a[1] - b[1]) / pinch0 : 1;
+    if (pinch0 && r > 1.3) { toggleOpen(true); pinch0 = 0; } else if (pinch0 && r < 0.75) { toggleOpen(false); pinch0 = 0; }
+    spinBy((mx - drag.lx) * 0.0085, (my - drag.ly) * 0.0085);
+    drag.lx = mx; drag.ly = my; drag.lt = now;
+    return;
+  }
+  const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+  if (!drag.mode && Math.hypot(dx, dy) > 7) {
+    clearTimeout(holdTimer);
+    if (drag.hit && !busy && !live && !opened && !solved) { startLive(drag.hit, dx, dy); drag.mode = 'twist'; }
+    else drag.mode = 'orbit';
+  }
+  if (drag.mode === 'twist' && live) {
+    const ev = e.getCoalescedEvents ? (e.getCoalescedEvents().slice(-1)[0] || e) : e;
+    const proj = (ev.clientX - drag.x) * live.sx + (ev.clientY - drag.y) * live.sy;
+    const ang = proj / live.ppr, dt = Math.max(1, now - live.lt);
+    live.vel = live.vel * 0.6 + ((ang - live.angle) / dt) * 0.4;
+    live.angle = ang; live.lt = now;
+    live.g.pivot.quaternion.setFromAxisAngle(AX[live.g.axis], ang);
+    const q = Math.round(ang / QUARTER);
+    if (q !== live.click) { live.click = q; call('sound', 'click'); call('buzz', 4); }
+  } else if (drag.mode === 'orbit') {
+    const dt = Math.max(8, now - drag.lt), mx = e.clientX - drag.lx, my = e.clientY - drag.ly;
+    spinBy(mx * 0.0085, my * 0.0085);
+    vx = mx * 0.0085 / dt * 16; vy = my * 0.0085 / dt * 16;
+  }
+  drag.lx = e.clientX; drag.ly = e.clientY; drag.lt = now;
+});
+const end = e => {
+  pointers.delete(e.pointerId);
+  if (pointers.size === 1 && drag && drag.mode === 'orbit2') { drag = null; vx = vy = 0; return; }
+  if (pointers.size) return;
+  pinch0 = 0; clearTimeout(holdTimer);
+  if (live) settle(live.vel);
+  if (drag && drag.mode !== 'orbit') vx = vy = 0;
+  drag = null; stage.classList.remove('dragging'); lastInteract = performance.now();
+};
+canvas.addEventListener('pointerup', end);
+canvas.addEventListener('pointercancel', end);
+canvas.addEventListener('lostpointercapture', e => { if (pointers.has(e.pointerId)) end(e); });
+
+function startLive(hit, dx, dy) {
+  const { v: n, i: nAx } = localNormal(hit);
+  const cq = cube.getWorldQuaternion(new THREE.Quaternion());
+  const p0 = toScreen(hit.point);
+  let best = null;
+  [0, 1, 2].filter(a => a !== nAx).forEach(a => {
+    const t = AX[a].clone().cross(n).applyQuaternion(cq);
+    const s = toScreen(hit.point.clone().addScaledVector(t, 0.25)).sub(p0).multiplyScalar(4); // px per world unit along the tangent
+    const len = s.length() || 1, score = (s.x * dx + s.y * dy) / len;
+    if (!best || Math.abs(score) > Math.abs(best.score)) best = { a, score, s, len };
+  });
+  const local = cube.worldToLocal(hit.point.clone());
+  const r = Math.max(1, Math.hypot(...[0, 1, 2].filter(i => i !== best.a).map(i => local.getComponent(i))));
+  const layer = Math.round(hit.object.userData.cubie.userData.p.getComponent(best.a));
+  live = { g: grab(best.a, layer), sx: best.s.x / best.len, sy: best.s.y / best.len, ppr: Math.max(26, Math.min(best.len * r * 0.5, Math.min(innerWidth, innerHeight) * 0.22)), angle: 0, vel: 0, lt: performance.now(), click: 0 };
+  call('sound', 'grind');
+}
+function settle(vel) {
+  const L = live; live = null; if (!L) return;
+  busy = true;
+  const flick = Math.max(-0.9, Math.min(0.9, vel * 130));
+  const aim = (L.angle + flick) / QUARTER; // commit once a third of a quarter is reached
+  let q = Math.sign(aim) * Math.floor(Math.abs(aim) + 0.66);
+  q = Math.max(-2, Math.min(2, q));
+  const from = L.angle, to = q * QUARTER;
+  const dur = reduce ? 0 : Math.min(240, 70 + Math.abs(to - from) / QUARTER * 200);
+  tween(dur, k => L.g.pivot.quaternion.setFromAxisAngle(AX[L.g.axis], from + (to - from) * k), k => 1 - Math.pow(1 - k, 3)).then(() => {
+    release(L.g, q);
+    busy = false;
+    if (q) { call('sound', 'tick'); call('buzz', 8); record(L.g.axis, L.g.layer, q); }
+  });
+}
+const qa = new THREE.Quaternion(), qb = new THREE.Quaternion();
+function spinBy(yaw, pitch) {
+  qa.setFromAxisAngle(AX[1], yaw); qb.setFromAxisAngle(AX[0], pitch);
+  cube.quaternion.premultiply(qa).premultiply(qb).normalize();
+}
+async function keyTurn(a, l, d) {
+  if (busy || live || opened || solved) return;
+  busy = true; call('sound', 'tick');
+  await turn(a, l, d, 170);
+  busy = false; record(a, l, d);
+}
+async function undo() {
+  if (busy || live || opened || solved || !userMoves || !history.length) return;
+  const [a, l, d] = history.pop();
+  busy = true; call('sound', 'tick');
+  await turn(a, l, -d, 170);
+  busy = false;
+  userMoves = Math.max(0, userMoves - 1); save(); call('onTurn', userMoves); checkSeals(true);
+}
+const HOMEQ = new THREE.Quaternion().setFromEuler(new THREE.Euler(0.42, -0.62, 0, 'XYZ'));
+function resetView() { const q0 = cube.quaternion.clone(); vx = vy = 0; lastInteract = performance.now(); return tween(600, k => cube.quaternion.slerpQuaternions(q0, HOMEQ, k)); }
+stage.addEventListener('keydown', e => {
+  const k = e.key; begin();
+  if (k === 'ArrowLeft') spinBy(-0.18, 0); else if (k === 'ArrowRight') spinBy(0.18, 0);
+  else if (k === 'ArrowUp') spinBy(0, -0.18); else if (k === 'ArrowDown') spinBy(0, 0.18);
+  else if (k === 'o' || k === 'O' || k === 'Enter' || k === ' ') toggleOpen();
+  else if ((e.ctrlKey || e.metaKey) && k.toLowerCase() === 'z') undo();
+  else if ('rludfbmes'.includes(k.toLowerCase()) && k.length === 1) {
+    const map = { r: [0, 1], l: [0, -1], m: [0, 0], u: [1, 1], d: [1, -1], e: [1, 0], f: [2, 1], b: [2, -1], s: [2, 0] }, [a, l] = map[k.toLowerCase()];
+    keyTurn(a, l, k === k.toUpperCase() ? 1 : -1);
+  } else return;
+  lastInteract = performance.now(); e.preventDefault();
+});
+
+// ---------- the unsealing ----------
+const wait = ms => new Promise(r => setTimeout(r, reduce ? 0 : ms));
+let flare = 0, ringKeyed = false;
+const IDQ = new THREE.Quaternion(), ZERO = new THREE.Vector3();
+const HEART_OUT = 2.75; // in front of the relic: past every piece, even mid-flight
+async function reassemble() {
+  // every piece flies home on its own arc around the stone (never through the middle): it rises outward,
+  // turns only while it is high, and lands. Centres go first, then edges, then corners, so the shells rarely cross
+  const data = cubies.map(c => {
+    const n = Math.round(Math.abs(c.userData.home.x) + Math.abs(c.userData.home.y) + Math.abs(c.userData.home.z));
+    const p0 = c.userData.p.clone(), home = c.userData.home;
+    const arc = new THREE.Quaternion().setFromUnitVectors(p0.clone().normalize(), home.clone().normalize());
+    return { c, p0, q0: c.quaternion.clone(), home, arc, len: p0.length(), d: (n - 1) * 0.14 + Math.random() * 0.06 };
+  });
+  const v = new THREE.Vector3(), qq = new THREE.Quaternion();
+  await tween(2200, k => {
+    data.forEach(o => {
+      const e = ease(Math.min(1, Math.max(0, (k - o.d) / 0.66)));
+      qq.identity().slerp(o.arc, e);
+      v.copy(o.p0).normalize().applyQuaternion(qq).multiplyScalar(o.len);
+      const lift = Math.sin(e * Math.PI) * 0.6;
+      v.multiplyScalar(explode + lift);
+      o.c.position.copy(v);
+      const er = Math.min(1, Math.max(0, (e - 0.2) / 0.6));
+      o.c.quaternion.slerpQuaternions(o.q0, IDQ, er * er * (3 - 2 * er));
+    });
+  }, k => k);
+  cubies.forEach(c => { c.userData.p.copy(c.userData.home); c.quaternion.identity(); });
+  layout();
+  history = []; userMoves = 0;
+  try { localStorage.removeItem(STORE); } catch (_) {}
+}
+async function unseal() {
+  if (solved) return;
+  if (live) settle(0);
+  while (busy) await wait(60);
+  solved = true; busy = true; vx = vy = 0; lastInteract = performance.now();
+  // 1. the relic opens toward the viewer
+  tween(1400, k => { camPush = 0.7 * k; });
+  if (!opened) { opened = true; call('onOpen', true); call('sound', 'open'); await setOpen(1, 1500); }
+  else { const q0 = cube.quaternion.clone(), q1 = faceTheViewer(true); await tween(700, k => cube.quaternion.slerpQuaternions(q0, q1, k)); }
+  await wait(300);
+  // 2. the hollow is empty: a breath of light rises from where a heart would be, and that is the answer
+  call('sound', 'dot'); call('buzz', 25);
+  await tween(1700, k => { const b = Math.sin(Math.PI * k); coreLight.intensity = 2.4 + 16 * b; flare = Math.max(flare, b); });
+  ringKeyed = true;
+  ringLetters.forEach(m => { if (m.userData.ch === 'ك' || m.userData.ch === 'ن') { m.userData.mat.color.set(0xa8f5ea); m.userData.mat.emissive.set(0x5fe3d2); m.userData.mat.emissiveIntensity = 1.4; } });
+  await wait(500);
+  // 3. فيكون: the window closes, every piece returns to its place, the relic closes
+  call('fayakun'); call('sound', 'chime');
+  await wait(900);
+  await tween(900, k => { openK = 1 - 0.6 * k; layout(); }, k => k); // the window closes; the pieces stay parted around the stone
+  await reassemble();
+  opened = false; call('onOpen', false);
+  await tween(800, k => { openK = 0.4 * (1 - k); layout(); });
+  openK = 0; layout();
+  checkSeals(false);
+  // 4. rebirth: stone and bronze become KON teal gems, wave by wave
+  const starts = FACE.map(f => f.material.color.clone());
+  const bronze0 = M.bronze.color.clone();
+  const tg = REBORN.map(c => new THREE.Color(c));
+  tween(1600, k => {
+    FACE.forEach((f, i) => {
+      const kk = Math.min(1, Math.max(0, k * 1.6 - i * 0.1));
+      f.material.color.copy(starts[i]).lerp(tg[i], kk);
+      f.material.roughness = 0.6 - 0.48 * kk; f.material.metalness = 0.1 + 0.2 * kk;
+      f.material.emissive.copy(tg[i]).multiplyScalar(0.18 * kk);
+    });
+    M.bronze.color.copy(bronze0).lerp(new THREE.Color(0x0b2a29), k);
+    M.inlay.color.set(0x1d150c).lerp(new THREE.Color(0xecdcb4), k); M.inlay.metalness = 0.55 + 0.45 * k; M.inlay.roughness = 0.55 - 0.3 * k;
+    M.gold.emissive.set(0x3d3220).multiplyScalar(k);
+    ringLetters.forEach(m => { if (!(m.userData.ch === 'ك' || m.userData.ch === 'ن')) { m.userData.mat.color.set(0x8c7b55).lerp(new THREE.Color(0xecdcb4), k); m.userData.mat.emissive.set(0x4a3d22).multiplyScalar(k); } });
+  });
+  flare = 1.2;
+  // 5. one full turn of glory, then a calm three-quarter view
+  const q0 = cube.quaternion.clone();
+  await tween(2200, k => {
+    cube.quaternion.slerpQuaternions(q0, HOMEQ, k);
+    cube.quaternion.premultiply(qa.setFromAxisAngle(AX[1], Math.PI * 2 * k));
+  });
+  tween(1600, k => { camPush = 0.7 * (1 - k); });
+  busy = false;
+}
+function setLit(n) {
+  ringLetters.forEach((m, i) => {
+    if (ringKeyed && (m.userData.ch === 'ك' || m.userData.ch === 'ن')) return;
+    if (solved) return;
+    const on = i < n;
+    m.userData.mat.emissive.set(on ? 0x6b5a33 : 0x000000);
+    m.userData.mat.color.set(on ? 0xecdcb4 : 0x6e6046);
+  });
+}
+
+// ---------- the camera: one slow cinematic arrival ----------
+let entered = false, enterT = 0;
+const camStart = new THREE.Vector3(0, 3.8, 22);
+camera.position.copy(camStart);
+function enter() { if (entered) return; entered = true; enterT = performance.now(); }
+
+// ---------- loop, with an adaptive quality budget ----------
+let last = performance.now(), frames = 0, slow = 0, visible = true, raf = 0;
+new IntersectionObserver(es => { visible = es[0].isIntersecting; }).observe(stage);
+const tmp = new THREE.Vector3();
+function loop(now) {
+  raf = requestAnimationFrame(loop);
+  if (!visible || document.hidden) { last = now; return; }
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  tweens.forEach(fn => fn(now));
+  const t = now / 1000;
+  // camera
+  let k = entered ? Math.min(1, (now - enterT) / (reduce ? 1 : 3600)) : 0;
+  const e = ease(k);
+  tmp.copy(camHome); tmp.z -= camPush - 1.4 * openK; tmp.y -= camPush * 0.12 - 0.25 * openK; // step back while the relic is open, so the parted pieces stay in frame
+  camera.position.lerpVectors(camStart, tmp, e);
+  if (!reduce) { camera.position.x += Math.sin(t * 0.21) * 0.12; camera.position.y += Math.sin(t * 0.17) * 0.06; }
+  camera.lookAt(camLook);
+  shaft.material.uniforms.uI.value = 0.25 + 0.75 * e + flare * 0.8;
+  shaft.material.uniforms.uT.value = t;
+  backdrop.material.uniforms.uT.value = t;
+  backdrop.material.uniforms.uFlare.value = flare;
+  if (!reduce) { const z = 0.93 + 0.03 * Math.sin(t * 0.05); skyTex.repeat.set(z, z); skyTex.rotation = Math.sin(t * 0.031) * 0.025; skyTex.offset.set(Math.sin(t * 0.023) * 0.012, -0.01 + Math.sin(t * 0.04) * 0.012); }
+  moveField(reduce ? 0 : dt, t);
+  moveSpark(dt, t);
+  flare *= 0.965;
+  bloom.strength = 0.5 + flare * 0.7;
+  // relic: inertia, idle drift, levitation
+  if (!drag && !reduce) {
+    if (Math.abs(vx) > 0.0004 || Math.abs(vy) > 0.0004) { spinBy(vx, vy); vx *= 0.93; vy *= 0.93; }
+    else if (now - lastInteract > 4000 && !busy && !opened) spinBy(dt * 0.12, 0);
+  }
+  const bob = reduce ? 0 : Math.sin(t * 0.9) * 0.05;
+  cube.position.y = CUBE_Y + bob;
+  if (openK > 0.01) cube.getWorldPosition(coreLight.position);
+  stone.rotation.y = girdle.rotation.z = t * 0.35; heart.rotation.x = 1.15 + Math.sin(t * 0.3) * 0.1;
+  gemT.value = t * 0.35;
+  heartMat.emissiveIntensity = 0.4 + Math.sin(t * 1.6) * 0.08 + flare * 0.6;
+  M.gem.emissiveIntensity = 0.75 + Math.sin(t * 1.4) * 0.15 + (solved ? 0.4 : 0) + flare * 0.6;
+  if (useComposer) composer.render(); else renderer.render(scene, camera);
+  if (!stage.classList.contains('lit')) stage.classList.add('lit');
+  // quality budget: after a warm-up, drop bloom and resolution on slow devices
+  frames++;
+  if (frames > 40 && frames < 160) { if (dt > 0.026) slow++; if (frames === 159 && slow > 60) degrade(); }
+}
+function degrade() {
+  useComposer = false; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.outputColorSpace = THREE.SRGBColorSpace;
+  dprCap = 1.25; renderer.setPixelRatio(Math.min(devicePixelRatio || 1, dprCap)); frame();
+  scene.traverse(o => { if (o.material) [].concat(o.material).forEach(m => { m.needsUpdate = true; }); });
+  stage.dataset.quality = 'lite';
+}
+renderer.compile(scene, camera);
+raf = requestAnimationFrame(loop);
+
+window.RELIC = {
+  ready: true, enter, toggleOpen, unseal, setLit, undo, resetView,
+  rescramble() { if (busy || live || solved) return; try { localStorage.removeItem(STORE); } catch (_) {} scramble(false); },
+  get moves() { return userMoves; },
+  get isOpen() { return opened; },
+  spark: ix => launchSpark(ix),
+  get sparkFlying() { return sparkT >= 0; }
+};
+scramble(true);
+call('engineReady');
+
+</script>
