@@ -63,3 +63,8 @@ main h3 { font-weight: 600; color: var(--ink); }
 
 /* small labels that sit inside more specific rules */
 #main .hero .proof li span, #main .hero .proof li small, #main .ob-personas .persona span, #main .ob-toggle span, #main .ob-rail li span { font-size: max(0.9rem, 14px) !important; }
+
+/* glass KON in the footer */
+.kon-foot.kon-glass3d { width: min(100%, 60rem); }
+.kon-glass3d canvas { display: block; width: 100%; aspect-ratio: 2.45; height: auto; touch-action: pan-y; cursor: pointer; }
+.kon-glass3d .kf-sub { margin-top: 0.4rem !important; }

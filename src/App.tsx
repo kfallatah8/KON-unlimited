@@ -6,7 +6,7 @@ import type { CaseItem } from './content/site'
 import { BOOKING_URL, contact, SHOW_SOLUTIONS, SHOW_TALENT, tourUrl, type IconId } from './content/site'
 import { Talent } from './components/Talent'
 import { Solutions } from './components/Solutions'
-import { KonFooterMark } from './components/KonFooterMark'
+import { KonGlass } from './components/KonGlass'
 import { detectCapabilities } from './lib/capabilities'
 import { motion, setLang, startOnboarding, useStore } from './state/store'
 import { Cursor } from './components/Cursor'
@@ -837,7 +837,7 @@ function Footer() {
     <footer className="site-footer">
       <div className="wrap footer-grid">
         <div className="footer-brand">
-          <KonFooterMark />
+          <KonGlass />
           <p className="footer-slogan">{f.slogan}</p>
           <p className="footer-contact" dir="ltr">
             <a href={`mailto:${contact.email}`}>{contact.email}</a>
