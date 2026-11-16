@@ -703,3 +703,64 @@ html.cta-pulse .stage-glow { animation: ctaPulse 1.8s cubic-bezier(0.16, 1, 0.3,
 .hero .proof li small { font-size: 0.78rem; }
 .hero .proof li span { font-size: 0.86rem !important; }
 @media (max-width: 520px) { .hero .proof li span { font-size: 0.8rem !important; } .hero .proof li small { font-size: 0.74rem; } }
+
+/* ---------- Clouds: a quiet rise behind everything ---------- */
+.cloud-sky { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 3.2s cubic-bezier(0.16, 1, 0.3, 1); image-rendering: auto; }
+.cloud-sky.is-on { opacity: 1; }
+
+/* ==========================================================================
+   Typography system (final). One scale, one rhythm, everywhere.
+   Steps: 13 · 15 · 17 · 20 · 24 · 32 · 52 · 84 (each display step ≈ ×1.618 from the one two below)
+   Arabic needs taller lines than Latin; headings tighten, body breathes, labels sit on 1.5.
+   ========================================================================== */
+:root {
+  --fs-xs: 0.8125rem; --fs-sm: 0.9375rem; --fs-md: 1.0625rem; --fs-lg: 1.25rem;
+  --fs-h3: clamp(1.18rem, 1.1rem + 0.45vw, 1.5rem);
+  --fs-h2: clamp(2rem, 1.3rem + 3vw, 3.25rem);
+  --fs-hero: clamp(2.35rem, 1.2rem + 4.6vw, 5.2rem);
+  --lh-body: 1.8; --lh-h: 1.4; --lh-label: 1.5;
+}
+:root[lang='en'] { --lh-body: 1.65; --lh-h: 1.15; }
+@media (max-width: 520px) { :root { --fs-md: 1rem; --fs-sm: 0.9rem; } }
+
+body { font-size: var(--fs-md); line-height: var(--lh-body); }
+main p, main li { line-height: var(--lh-body); }
+
+/* headings */
+main h2.display { font-size: var(--fs-h2) !important; line-height: var(--lh-h) !important; font-weight: 300; letter-spacing: -0.005em; text-wrap: balance; }
+.start-offer h2.display { font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.1rem) !important; }
+main h3 { font-size: var(--fs-h3) !important; line-height: 1.45 !important; font-weight: 400 !important; text-wrap: balance; }
+:root[lang='en'] main h3 { line-height: 1.25 !important; }
+.hero-title { font-size: var(--fs-hero) !important; line-height: 1.3 !important; text-wrap: balance; }
+:root[lang='en'] .hero-title { line-height: 1.05 !important; }
+
+/* lead / body / secondary */
+.hero-lede, .body-lg, .fd-intro, .ss-body, .problem-line { font-size: var(--fs-lg) !important; line-height: 1.75 !important; }
+@media (max-width: 520px) { .hero-lede, .body-lg, .fd-intro, .ss-body, .problem-line { font-size: 1.0625rem !important; } }
+.sv-card p, .fr-card p, .ap-card p, .more-card p, .case-card p, .fd-body p, .ti-row p, .tl-big { font-size: var(--fs-md) !important; line-height: var(--lh-body) !important; }
+.case-meta, .case-metric, .case-extra, .fine, .tl-sec, .tl-big-label, .hint, .ob-lede, .offer-meta, .sol-toolsub { font-size: var(--fs-sm) !important; line-height: 1.65 !important; }
+
+/* one-line labels: no tall empty line boxes */
+.eyebrow, .btn, .chip, .fr-tag, .more-k, .fd-roles li, .ob-rail li, .ob-rail span, .kf-sub, .footer-slogan, .footer-contact, .ha-stage, .hero .proof li span, .hero .proof li small { line-height: var(--lh-label) !important; }
+.eyebrow { font-size: var(--fs-sm) !important; letter-spacing: 0.02em; }
+.btn { font-size: 1rem !important; }
+.ob-rail li, .ob-rail span { font-size: var(--fs-xs) !important; }
+
+/* statement lines (problem close, finale, dedication, punch) share one voice */
+.problem-close, .finale-line, .finale-line2, .ss-title, .sol-hook { line-height: 1.55 !important; }
+.dedication { line-height: 1.6 !important; }
+.ha-q { line-height: 1.45 !important; }
+
+/* highlights: two kinds only.
+   ** ** = the idea to remember: brighter text with a soft teal ink line under it
+   ++ ++ = the signature: champagne gold, used once or twice per section */
+.kw { color: #fff !important; font-weight: 500; text-shadow: none !important; padding-inline: 0.06em;
+  background: linear-gradient(transparent 70%, rgba(63, 208, 189, 0.28) 70%, rgba(63, 208, 189, 0.28) 94%, transparent 94%) !important; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.lux { color: #e3c27f !important; -webkit-text-fill-color: #e3c27f !important; font-weight: 500; background: none !important; text-shadow: none; animation: none !important; }
+.hero-promise .kw { background: none !important; color: var(--gold) !important; }
+.tl-n { font-weight: 500; }
+
+/* the Latin slogan keeps the brand display face */
+.footer-slogan { font-family: 'Readex Pro', sans-serif !important; font-weight: 300; letter-spacing: 0.03em; }
+@media (max-width: 520px) { .footer-slogan { font-size: 0.86rem !important; white-space: normal !important; } }
+.hero .proof li small { font-size: 0.8rem !important; }

@@ -272,7 +272,7 @@ const en: Book = {
     {
       k: 'closing',
       title: 'To be continued',
-      paras: ['These pages are the start of the book, not its end. New chapters are on their way, and so is a fine printed edition', 'Any challenge. Any way. Anywhere… We’ll be there'],
+      paras: ['These pages are the start of the book, not its end. New chapters are on their way, and so is a fine printed edition', 'Any challenge…Any way…Anywhere…We’ll be there'],
     },
     { k: 'back' },
   ],

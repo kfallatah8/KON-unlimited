@@ -75,7 +75,7 @@ const ar = {
   hero: {
     eyebrow: 'تشغيل · تطوير أعمال · ابتكار',
     rotating: ['نرفع كفاءة مشروعك', 'نبتكر حلولًا تسبق التحدي', 'نضبط تشغيلك اليومي', 'نحوّل فكرتك إلى مشروع يعمل', 'نجعل استثمارك أذكى'],
-    statement: ['ما تراه في أرقامك،', 'بدأ في عقل إنسان'],
+    statement: ['ما تراه في أرقامك', 'بدأ في عقل إنسان'],
     asks: [
       { who: 'لصاحب المشروع', q: 'مبيعاتك تكبر، فلماذا لا يكبر ربحك معها؟' },
       { who: 'لرائد الأعمال', q: 'فكرتك جميلة، لكن هل سيدفع أحد ثمنها؟' },
@@ -87,7 +87,7 @@ const ar = {
     lede: 'نقرأ الإنسان خلف الرقم: **عميلك، وفريقك، وأنت**، ثم ننزل معك الميدان حتى تتحرك الأرقام',
     primary: 'احجز تشخيصك المجاني',
     secondary: 'شاهد النتائج',
-    slogan: 'Any challenge. Any way. Anywhere… We’ll be there',
+    slogan: 'Any challenge…Any way…Anywhere…We’ll be there',
     scroll: 'مرّر',
     proof: [
       { n: '+4,200', l: 'ساعة استشارية', s: 'خبرة ميدانية' },
@@ -348,7 +348,7 @@ const ar = {
     eyebrow: 'مبادرة KON',
     title: 'مشروعك يتعثّر، ولا تملك الميزانية؟ هذا لك',
     body: 'نقدّم الاستشارة المتقدّمة والدعم التشغيلي الكامل ++مجانًا++ للمشاريع المتعثّرة التي لا تستطيع تحمّل تكلفته، بلا مقابل، وبلا شروط خفية',
-    dedication: 'صدقةً عن والدي رحمه الله، وعن جميع المسلمين',
+    dedication: 'صدقةً عن والدي رحمه الله وعن جميع المسلمين',
     note: 'نستقبل الطلبات بحسب طاقتنا، ونردّ على كل طلب',
     cta: 'قدّم طلب الدعم',
   },
@@ -551,7 +551,7 @@ const ar = {
 
   footer: {
     rights: '© 2026 KON Unlimited · جميع الحقوق محفوظة',
-    slogan: 'Any challenge. Any way. Anywhere… We’ll be there',
+    slogan: 'Any challenge…Any way…Anywhere…We’ll be there',
     top: 'إلى الأعلى',
   },
 }
@@ -588,7 +588,7 @@ const en: Content = {
     lede: 'We read the people behind the number: **your customer, your team, and you**. Then we work on the ground with you until the numbers move',
     primary: 'Book your free diagnosis',
     secondary: 'See the results',
-    slogan: 'Any challenge. Any way. Anywhere… We’ll be there',
+    slogan: 'Any challenge…Any way…Anywhere…We’ll be there',
     scroll: 'Scroll',
     proof: [
       { n: '4,200+', l: 'advisory hours', s: 'in the field' },
@@ -1041,7 +1041,7 @@ const en: Content = {
 
   footer: {
     rights: '© 2026 KON Unlimited. All rights reserved',
-    slogan: 'Any challenge. Any way. Anywhere… We’ll be there',
+    slogan: 'Any challenge…Any way…Anywhere…We’ll be there',
     top: 'Back to top',
   },
 }

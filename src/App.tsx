@@ -22,6 +22,7 @@ import { ChapterRail, CountUp, useCardLight, useHeaderAutoHide } from './compone
 
 // The WebGL stage is its own chunk: copy and layout never wait for it.
 const GemField = lazy(() => import('./three/GemField'))
+import { CloudSky } from './components/CloudSky'
 
 
 gsap.registerPlugin(ScrollTrigger)
@@ -743,9 +744,9 @@ function Start() {
           </div>
         </div>
         <div className="support-strip" id="support" data-reveal>
-          <p className="ss-title">{s.title}</p>
+          <p className="ss-title"><Hl text={s.title} /></p>
           <p className="ss-body"><Rich text={s.body} /></p>
-          <p className="dedication">{s.dedication.split(/(?<=،)\s|(?<=,)\s(?=and )/).map((part, i) => <span key={i} className="ded-line">{part}</span>)}</p>
+          <p className="dedication">{s.dedication.split(/\s(?=وعن )|(?<=,)\s(?=and )/).map((part, i) => <span key={i} className="ded-line">{part}</span>)}</p>
           <button type="button" className="btn btn-ghost" onClick={() => startOnboarding({ persona: 'business', support: true })}><span>{s.cta}</span></button>
         </div>
       </div>
@@ -1024,6 +1025,7 @@ export default function App() {
       <Cursor />
       <div className="stage" aria-hidden="true">
         <div className="stage-glow" />
+        <CloudSky tier={caps.tier} reduced={caps.reducedMotion} />
         <div className="stage-dream"><i /><i /></div>
         {webgl && (
           <SafeBoundary>
