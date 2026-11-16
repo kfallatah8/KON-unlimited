@@ -14,7 +14,7 @@ import { Icon, GemMark } from './components/Icons'
 import { MagneticButton } from './components/MagneticButton'
 import { chipPain, Onboarding } from './components/Onboarding'
 import { lenis, SmoothScroll } from './components/SmoothScroll'
-import { SplitReveal } from './components/SplitReveal'
+import { SplitReveal, Hl } from './components/SplitReveal'
 import { Rich } from './components/Rich'
 import { KonMark } from './components/KonMark'
 import { SafeBoundary } from './components/SafeBoundary'
@@ -234,7 +234,7 @@ function HeroAsk({ asks }: { asks: { who: string; q: string }[] }) {
     <div className="hero-ask hero-fade">
       <p className="ha-stage" key={i} aria-hidden="true">
         <span className="ha-who">{a.who}</span>
-        <span className="ha-q">{a.q}</span>
+        <span className="ha-q"><Hl text={a.q} /></span>
       </p>
       <ol className="ha-dots" aria-hidden="true">{asks.map((x, j) => <li key={x.who} className={j === i ? 'is-on' : ''} />)}</ol>
       <ul className="sr-only">{asks.map((x) => <li key={x.who}>{x.who}: {x.q}</li>)}</ul>
@@ -261,7 +261,7 @@ function Hero({ ready }: { ready: boolean }) {
       </div>
       <ul className="proof hero-fade" aria-label="KON">
         {h.proof.map((p) => (
-          <li key={p.l}><b dir="ltr"><CountUp value={p.n} play={ready} /></b><span>{p.l}</span></li>
+          <li key={p.l}><b dir="ltr"><CountUp value={p.n} play={ready} /></b><span>{p.l}</span><small>{p.s}</small></li>
         ))}
       </ul>
       <a href="#problem" className="scroll-cue"><b className="breath-ring" aria-hidden="true" /><span>{h.scroll}</span><i aria-hidden="true" /></a>
@@ -338,7 +338,7 @@ function Who() {
           {w.groups.map((g, i) => (
             <article key={g.title} className="who-card glass" data-reveal style={{ transitionDelay: `${i * 70}ms` }}>
               <Icon id={g.icon} className="icon icon-lg" />
-              <h3>{g.title}</h3>
+              <h3><Hl text={g.title} /></h3>
               <p className="who-line">{g.line}</p>
               <p><Rich text={g.body} /></p>
               <button type="button" className="link-btn" onClick={() => startOnboarding({ persona: g.persona })}>{w.cta} <span className="arr" aria-hidden="true">←</span></button>
@@ -431,7 +431,7 @@ function Approach() {
             <li key={p.title} className="ap-card glass" data-reveal style={{ transitionDelay: `${i * 90}ms` }}>
               <span className="ap-num" dir="ltr">{pad(i + 1)}</span>
               <Icon id={p.icon} className="icon icon-lg" />
-              <h3>{p.title}</h3>
+              <h3><Hl text={p.title} /></h3>
               <p><Rich text={p.body} /></p>
             </li>
           ))}
@@ -458,7 +458,7 @@ function Services() {
             <li key={it.title} className="sv-card" data-reveal style={{ transitionDelay: `${(i % 3) * 70}ms` }}>
               <span className="sv-num" dir="ltr">{pad(i + 1)}</span>
               <Icon id={SV_ICONS[i] ?? 'spark'} className="icon sv-icon" />
-              <h3>{it.title}</h3>
+              <h3><Hl text={it.title} /></h3>
               <p>{it.body}</p>
             </li>
           ))}
@@ -486,10 +486,8 @@ function Freebies() {
             <a key={it.k} href={it.href} onClick={go(it.href)} className={`fr-card is-${i}`} data-reveal style={{ transitionDelay: `${i * 90}ms` }}>
               <Icon id={FR_ICONS[i] ?? 'spark'} className="icon icon-lg card-icon" />
               <span className="fr-tag">{it.k}</span>
-              <h3>{it.title}</h3>
+              <h3><Hl text={it.title} /></h3>
               <p>{it.body}</p>
-              <ul className="fr-points">{it.points.map((x) => <li key={x}>{x}</li>)}</ul>
-              <span className="fr-price"><b dir="ltr">0</b><em>{lang === 'ar' ? 'ر.س' : 'SAR'}</em></span>
               <span className="fr-cta">{it.cta} <i aria-hidden="true" className="fr-arr">{lang === 'ar' ? '←' : '→'}</i></span>
             </a>
           ))}
@@ -515,7 +513,7 @@ function More() {
             <a key={it.side} href={it.href} onClick={() => { (window as unknown as { __konTalentSide?: string }).__konTalentSide = it.side }} className={`more-card glass is-${i}`} data-reveal style={{ transitionDelay: `${i * 90}ms` }}>
               <Icon id={it.side === 'company' ? 'company' : 'talent'} className="icon icon-lg card-icon" />
               <span className="more-k">{it.k}</span>
-              <h3>{it.title}</h3>
+              <h3><Hl text={it.title} /></h3>
               <p><Rich text={it.body} /></p>
               <span className="more-cta">{it.cta} <i aria-hidden="true">{lang === 'ar' ? '←' : '→'}</i></span>
             </a>
@@ -538,7 +536,7 @@ function Why() {
             <li key={it.title} className="why-item" data-reveal style={{ transitionDelay: `${(i % 2) * 80}ms` }}>
               <span className="why-icon"><Icon id={it.icon} /></span>
               <div>
-                <h3>{it.title}</h3>
+                <h3><Hl text={it.title} /></h3>
                 <p><Rich text={it.body} /></p>
               </div>
             </li>
@@ -564,7 +562,7 @@ function Human() {
             <article key={p.title} className="pillar glass" data-reveal style={{ transitionDelay: `${i * 70}ms` }}>
               <Icon id={p.icon} className="icon icon-lg" />
               <div>
-                <h3>{p.title}</h3>
+                <h3><Hl text={p.title} /></h3>
                 <p><Rich text={p.body} /></p>
               </div>
             </article>
@@ -663,7 +661,7 @@ function Tour() {
   return (
     <div className="tour-card glass" data-reveal>
       <p className="eyebrow centered">{t.eyebrow}</p>
-      <h3>{t.title}</h3>
+      <h3><Hl text={t.title} /></h3>
       <p className="tour-body">{t.body}</p>
       {open ? (
         <div className="tour-frame">
@@ -698,20 +696,28 @@ function Support() {
 
 function Founder() {
   const f = useContent().founder
+  const [intro, roles, ...rest] = f.paragraphs
   return (
     <section id="founder" className="band founder" aria-labelledby="founder-title">
-      <div className="wrap narrow">
-        <p className="eyebrow" id="founder-title" data-reveal>{f.eyebrow}</p>
-        <div className="founder-text">
-          {f.paragraphs.map((p) => <p key={p} data-reveal><Rich text={p} /></p>)}
+      <div className="wrap">
+        <div className="fd-card" data-reveal>
+          <div className="fd-lead">
+            <p className="eyebrow" id="founder-title">{f.eyebrow}</p>
+            <p className="fd-intro"><Rich text={intro} /></p>
+            <p className="fd-roles"><Rich text={roles} /></p>
+          </div>
+          <div className="fd-body">
+            {rest.map((p) => <p key={p}><Rich text={p} /></p>)}
+          </div>
+          <div className="fd-close">
+            <p className="founder-punch"><Hl text={f.punch} /></p>
+            <MagneticButton href="#start">{f.cta}</MagneticButton>
+          </div>
         </div>
-        <p className="founder-punch" data-reveal>{f.punch}</p>
-        <div data-reveal><MagneticButton href="#start">{f.cta}</MagneticButton></div>
       </div>
     </section>
   )
 }
-
 function Start() {
   const c = useContent()
   const o = c.offer

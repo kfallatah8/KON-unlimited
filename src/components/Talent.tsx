@@ -3,6 +3,7 @@
 // "talent read" (archetypes + where they add value), a company gets a summary of its request.
 // Everything stays client-side; sending works like the main onboarding (WhatsApp / email / copy).
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { Hl } from './SplitReveal'
 import { contact as inbox } from '../content/site'
 import { archetypes, dims, laneOf, lanes, talentOption, talentRead, talentSteps, type Archetype, type LaneId, type TalentSide } from '../content/talent'
 import { useContent } from '../content/useContent'
@@ -157,7 +158,7 @@ function TalentFlow({ preset }: { preset: { side: TalentSide; n: number; quiet?:
 
       {step === -1 && (
         <div className="ob-screen" key="doors">
-          <h3 tabIndex={-1}>{t.doorsQ}</h3>
+          <h3 tabIndex={-1}><Hl text={t.doorsQ} /></h3>
           <p className="ob-lede">{t.doorsTime}</p>
           <div className="ob-personas talent-doors">
             {(['talent', 'company'] as TalentSide[]).map((s) => (
@@ -181,7 +182,7 @@ function TalentFlow({ preset }: { preset: { side: TalentSide; n: number; quiet?:
 
       {step >= 0 && step < n && (
         <div className="ob-screen" key={`${d.side}-${step}`}>
-          <h3 tabIndex={-1}>{steps[step].title}</h3>
+          <h3 tabIndex={-1}><Hl text={steps[step].title} /></h3>
           {steps[step].lede && <p className="ob-lede">{steps[step].lede}</p>}
           {steps[step].questions.map((q) => (
             <QuestionField
@@ -199,7 +200,7 @@ function TalentFlow({ preset }: { preset: { side: TalentSide; n: number; quiet?:
 
       {step === n && d.side && (
         <div className="ob-screen" key="contact">
-          <h3 tabIndex={-1}>{t.contact.title}</h3>
+          <h3 tabIndex={-1}><Hl text={t.contact.title} /></h3>
           <p className="ob-lede">{d.side === 'talent' ? t.contact.lede : t.contact.ledeCompany}</p>
           <div className="ob-grid">
             {FIELDS[d.side].map((f) => (
@@ -221,7 +222,7 @@ function TalentFlow({ preset }: { preset: { side: TalentSide; n: number; quiet?:
 
       {step === n + 1 && d.side === 'talent' && read && read.top.length > 0 && (
         <div className="ob-screen ob-summary" key="read">
-          <h3 tabIndex={-1}>{t.read.title}</h3>
+          <h3 tabIndex={-1}><Hl text={t.read.title} /></h3>
           <p className="ob-lede">{t.read.lede}</p>
           <div className="ob-rec talent-read">
             <GemMark className="talent-read-gem" />
@@ -249,7 +250,7 @@ function TalentFlow({ preset }: { preset: { side: TalentSide; n: number; quiet?:
 
       {step === n + 1 && d.side === 'company' && (
         <div className="ob-screen ob-summary" key="brief">
-          <h3 tabIndex={-1}>{t.brief.title}</h3>
+          <h3 tabIndex={-1}><Hl text={t.brief.title} /></h3>
           <p className="ob-lede">{t.brief.lede}</p>
           <dl className="ob-overview">
             {typeof d.answers.role === 'string' && d.answers.role.trim() && <div className="wide"><dt>{t.brief.role}</dt><dd>{d.answers.role.trim()}</dd></div>}
@@ -399,7 +400,7 @@ function Wins() {
           >
             <span className="talent-win-n" dir="ltr">{String(i + 1).padStart(2, '0')}</span>
             <b>{x.k}</b>
-            <h3>{x.gain}</h3>
+            <h3><Hl text={x.gain} /></h3>
             <p><Rich text={x.body} /></p>
           </li>
         ))}
@@ -498,7 +499,7 @@ export function Talent() {
             {t.journey.steps.map((st, i) => (
               <li key={st.title} data-reveal style={{ transitionDelay: `${i * 90}ms` }}>
                 <span className="journey-n" dir="ltr">{String(i + 1).padStart(2, '0')}</span>
-                <h3>{st.title}</h3>
+                <h3><Hl text={st.title} /></h3>
                 <p>{st.body}</p>
               </li>
             ))}

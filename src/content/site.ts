@@ -73,7 +73,7 @@ const ar = {
   headerCta: 'احجز تشخيصك',
 
   hero: {
-    eyebrow: 'استشارات · تطوير أعمال · تشغيل · ابتكار',
+    eyebrow: 'تطوير أعمال · تشغيل · ابتكار',
     rotating: ['نرفع كفاءة مشروعك', 'نبتكر حلولًا تسبق التحدي', 'نضبط تشغيلك اليومي', 'نحوّل فكرتك إلى مشروع يعمل', 'نجعل استثمارك أذكى'],
     statement: ['ما تراه في أرقامك،', 'بدأ في عقل إنسان'],
     asks: [
@@ -81,7 +81,7 @@ const ar = {
       { who: 'لرائد الأعمال', q: 'فكرتك جميلة، لكن هل سيدفع أحد ثمنها؟' },
       { who: 'للمدير', q: 'فريقك مشغول طوال اليوم، فأين يذهب الوقت؟' },
       { who: 'للمطاعم والمتاجر', q: 'في أي ساعة يبدأ ربحك اليوم، فعلًا؟' },
-      { who: 'للمستثمر', q: 'الأرقام على الورق مقنعة، فماذا يقول الميدان؟' },
+      { who: 'للمستثمر', q: 'هل هذا أفضل عائد لاستثمارك، أم أفضل استخدام له؟' },
     ],
     promise: 'وعدنا بسيط: **نطوّر أي عملية تشغيلية، ونحسّنها**',
     lede: 'نقرأ الإنسان خلف الرقم: **عميلك، وفريقك، وأنت**، ثم ننزل معك الميدان حتى تتحرك الأرقام',
@@ -90,9 +90,9 @@ const ar = {
     slogan: 'Any challenge. Any way. Anywhere… We’ll be there',
     scroll: 'مرّر',
     proof: [
-      { n: '+4,200', l: 'ساعة استشارية' },
-      { n: '14M', l: 'ريال إيرادات، Telkomsel' },
-      { n: '+161%', l: 'نمو في 30 يومًا، Games Club' },
+      { n: '+4,200', l: 'ساعة استشارية', s: 'خبرة ميدانية' },
+      { n: '14M', l: 'ريال إيرادات', s: 'Telkomsel' },
+      { n: '+161%', l: 'نمو في 30 يومًا', s: 'Games Club' },
     ],
   },
 
@@ -482,7 +482,7 @@ const ar = {
     start: 'لنبدأ',
     next: 'التالي',
     back: 'رجوع',
-    finish: 'التالي، اختر موعدك',
+    finish: 'اختر موعدك',
     skip: 'تخطَّ',
     stepOf: (a: number, b: number) => `الخطوة ${a} من ${b}`,
     otherPlaceholder: 'أخرى؟ اكتبها هنا',
@@ -574,7 +574,7 @@ const en: Content = {
   headerCta: 'Book your diagnosis',
 
   hero: {
-    eyebrow: 'Advisory · Business development · Operations · Innovation',
+    eyebrow: 'Business development · Operations · Innovation',
     rotating: ['We make your business run better', 'We innovate ahead of every challenge', 'We sharpen how you operate', 'We turn ideas into working businesses', 'We make your capital work smarter'],
     statement: ['What you see in your numbers', 'began in a human mind'],
     asks: [
@@ -582,7 +582,7 @@ const en: Content = {
       { who: 'For founders', q: 'It’s a beautiful idea. But will anyone pay for it?' },
       { who: 'For managers', q: 'Your team is busy all day. So where does the time go?' },
       { who: 'For restaurants and retail', q: 'What time does your profit actually start today?' },
-      { who: 'For investors', q: 'The numbers convince on paper. What does the ground say?' },
+      { who: 'For investors', q: 'Is this the best return on your capital, or the best use of it?' },
     ],
     promise: 'Our promise is simple: **we optimise and develop any operation**',
     lede: 'We read the people behind the number: **your customer, your team, and you**. Then we work on the ground with you until the numbers move',
@@ -591,9 +591,9 @@ const en: Content = {
     slogan: 'Any challenge. Any way. Anywhere… We’ll be there',
     scroll: 'Scroll',
     proof: [
-      { n: '4,200+', l: 'advisory hours' },
-      { n: '14M', l: 'SAR revenue, Telkomsel' },
-      { n: '+161%', l: 'growth in 30 days, Games Club' },
+      { n: '4,200+', l: 'advisory hours', s: 'in the field' },
+      { n: '14M', l: 'SAR revenue', s: 'Telkomsel' },
+      { n: '+161%', l: 'growth in 30 days', s: 'Games Club' },
     ],
   },
 
@@ -972,7 +972,7 @@ const en: Content = {
     start: 'Let’s begin',
     next: 'Next',
     back: 'Back',
-    finish: 'Next: pick your time',
+    finish: 'Pick your time',
     skip: 'Skip',
     stepOf: (a: number, b: number) => `Step ${a} of ${b}`,
     otherPlaceholder: 'Something else? Type it here',

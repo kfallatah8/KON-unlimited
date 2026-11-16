@@ -2,6 +2,7 @@
 // situation overview with recommended services. Runs fully client-side; where the brief goes is
 // set in content/site.ts → contact, and the UI says plainly when nothing is connected yet.
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { Hl } from './SplitReveal'
 import { BOOKING_URL, contact as inbox, type Lang, type Persona, type Question } from '../content/site'
 import { leadRead, optionLabel, recommend, serviceNames, stepsFor, type Answers } from '../content/onboarding'
 import { useContent } from '../content/useContent'
@@ -284,7 +285,7 @@ export function Onboarding() {
 
       {step === -1 && (
         <div className="ob-screen" key="persona">
-          <h3 tabIndex={-1}>{ob.personaQ}</h3>
+          <h3 tabIndex={-1}><Hl text={ob.personaQ} /></h3>
           <p className="ob-lede">{ob.intro}</p>
           <div className="ob-personas">
             {(['founder', 'business', 'investor'] as Persona[]).map((p) => (
@@ -311,7 +312,7 @@ export function Onboarding() {
 
       {step >= 0 && step < n && (
         <div className="ob-screen" key={`s${step}`}>
-          <h3 tabIndex={-1}>{steps[step].title}</h3>
+          <h3 tabIndex={-1}><Hl text={steps[step].title} /></h3>
           {steps[step].lede && <p className="ob-lede">{steps[step].lede}</p>}
           {steps[step].questions.map((q) => (
             <QuestionField
@@ -329,7 +330,7 @@ export function Onboarding() {
 
       {step === n && d.persona && (
         <div className="ob-screen" key="contact">
-          <h3 tabIndex={-1}>{ob.contact.title}</h3>
+          <h3 tabIndex={-1}><Hl text={ob.contact.title} /></h3>
           <p className="ob-lede">{ob.contact.lede}</p>
           <div className="ob-grid">
             {(['name', 'company', 'phone', 'email', 'city'] as const).map((f) => (
@@ -359,7 +360,7 @@ export function Onboarding() {
 
       {step === n + 1 && d.persona && rec && (
         <div className="ob-screen ob-final" key="book">
-          <h3 tabIndex={-1}>{BOOKING_URL ? ob.book.title : ob.summary.title}</h3>
+          <h3 tabIndex={-1}><Hl text={BOOKING_URL ? ob.book.title : ob.summary.title} /></h3>
           <p className="ob-lede">{ob.book.lede}</p>
           <div className="ob-rec-line">
             <span className="ob-rec-k">{ob.summary.primary}</span>
