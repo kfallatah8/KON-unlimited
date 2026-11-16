@@ -1,4 +1,4 @@
-<title>كُن · KON Unlimited</title>
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>كُن · KON Unlimited</title>
 <meta name="description" content="شيءٌ يتكوّن خلف الغيم، والباب الأول يُفتح بكلمة واحدة">
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#010d0f">
@@ -442,7 +442,10 @@ h1 .lux { -webkit-text-fill-color: var(--champagne); color: var(--champagne); te
 html, body { overflow-x: clip; }
 .field input { min-width: 0; flex: 1 1 auto; width: 100%; }
 .sign.vessel { overflow: hidden; }
-</style>
+
+.ask { margin: 0 0 6px; font-family: var(--display); font-size: 1.02rem; font-weight: 500; color: var(--aqua); }
+@media (max-width: 900px) { .ask { font-size: 1.12rem; } }
+</style></head><body>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 12h9M18 12v3M21 12v2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
@@ -477,6 +480,7 @@ html, body { overflow-x: clip; }
   <div class="col" id="col">
     <div class="lead">
       <div>
+        <p class="ask" data-i18n="ask">هل تجد الكلمة التي تفتح الباب؟</p>
         <p class="eyebrow" data-i18n="eyebrow">KON Unlimited · الدعوة الأولى</p>
         <h1 data-i18n-html="title">شيءٌ <span class="lux">يتكوّن</span> خلف الغيم</h1>
         <p class="lede" data-i18n-html="lede"></p>
@@ -638,6 +642,7 @@ html, body { overflow-x: clip; }
     ar: {
       intro1: 'بابٌ لا يُفتح', intro2: 'إلا بكلمة', enter: 'ادخل',
       joinTop: 'احجز مكانك', sound: 'الصوت', close: 'إغلاق',
+      ask: 'هل تجد الكلمة التي تفتح الباب؟',
       eyebrow: 'KON Unlimited · الدعوة الأولى',
       title: 'شيءٌ <span class="lux">يتكوّن</span> خلف الغيم',
       lede: 'ثلاثة أبيات تخفي كلمة واحدة، اقرأها وقلّب الأثر، ومن يجد الكلمة يفتح الباب ويحجز مقعده في <span class="kw">الدائرة المؤسِّسة</span>',
@@ -686,6 +691,7 @@ html, body { overflow-x: clip; }
     en: {
       intro1: 'Before the door opens', intro2: 'one word', enter: 'Enter',
       joinTop: 'Save your place', sound: 'Sound', close: 'Close',
+      ask: 'Can you find the word that opens the door?',
       eyebrow: 'KON Unlimited · The first invitation',
       title: 'Something is <span class="lux">taking form</span> behind the clouds',
       lede: 'Three lines hide one word. Read them, turn the relic, and whoever finds the word opens the door and takes a seat in the <span class="kw">founding circle</span>',
@@ -2170,3 +2176,4 @@ scramble(true);
 call('engineReady');
 
 </script>
+</body></html>
