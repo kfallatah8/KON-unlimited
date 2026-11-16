@@ -36,7 +36,8 @@ export function KonFooterMark() {
     if (!el || !measure.current) return
     let vessels: Vessel[] = []
     let raf = 0, visible = false, last = 0
-    let ang = 0, angV = 0, idle = 0
+    let ang = 0, angV = 0, idle = 0, drawn = 0
+    const coarse = matchMedia('(pointer: coarse)').matches
     const still = matchMedia('(prefers-reduced-motion: reduce)').matches
 
     const build = () => {
@@ -107,7 +108,8 @@ export function KonFooterMark() {
         }
         for (let i = 0; i < COLS; i++) h[i] = Math.max(-38, Math.min(38, h[i] + v[i] * dt))
       }
-      draw(t)
+      // phones redraw the surface at 30 fps; the physics still runs every frame
+      if (!coarse || t - drawn > 32) { draw(t); drawn = t }
       raf = requestAnimationFrame(step)
     }
     const wake = () => { if (visible && !raf && !still) { last = 0; raf = requestAnimationFrame(step) } }
@@ -226,13 +228,16 @@ export function KonFooterMark() {
           <g clipPath="url(#kl-clip)">
             {[0, 1, 2].map((k) => <path key={`b${k}`} ref={(n) => { back.current[k] = n }} fill="url(#kl-back)" opacity="0.85" />)}
             {[0, 1, 2].map((k) => <path key={`f${k}`} ref={(n) => { body.current[k] = n }} fill="url(#kl-liquid)" />)}
-            {[0, 1, 2].map((k) => <path key={`g${k}`} ref={(n) => { line.current[k] = n }} fill="none" stroke="#b9fff4" strokeWidth="5" opacity="0.75" filter="url(#kl-line)" />)}
+            {[0, 1, 2].map((k) => <path key={`g${k}`} ref={(n) => { line.current[k] = n }} fill="none" stroke="#b9fff4" strokeWidth="2.5" strokeLinecap="round" opacity="0.55" />)}
             <rect x="0" y="56" width="1000" height="74" fill="url(#kl-gloss)" transform="skewY(-3)" opacity="0.45" />
           </g>
-          <g filter="url(#kl-thick)"><T fill="#fff" /></g>
-          <g filter="url(#kl-lit)"><T fill="#fff" /></g>
         </g>
-
+      </svg>
+      {/* The lit glass sits in its own static layer above the liquid: its expensive filters are
+          rasterised once and never repainted while the liquid moves underneath */}
+      <svg className="kl-glass-top" viewBox="0 20 1000 270" aria-hidden="true">
+        <g filter="url(#kl-thick)"><T fill="#fff" /></g>
+        <g filter="url(#kl-lit)"><T fill="#fff" /></g>
       </svg>
       <p className="kf-sub"><span>Unlimited</span></p>
       {needAsk && (

@@ -73,7 +73,7 @@ export function CloudSky({ tier, reduced, front = false }: { tier: string; reduc
   useEffect(() => {
     const cv = ref.current
     if (!cv) return
-    const gl = cv.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: false, depth: false, stencil: false, powerPreference: 'low-power' })
+    const gl = cv.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: false, preserveDrawingBuffer: true, depth: false, stencil: false, powerPreference: 'low-power' })
     if (!gl) return
     const sh = (type: number, src: string) => { const s = gl.createShader(type)!; gl.shaderSource(s, src); gl.compileShader(s); return s }
     const pr = gl.createProgram()!
@@ -88,7 +88,7 @@ export function CloudSky({ tier, reduced, front = false }: { tier: string; reduc
     gl.uniform1f(uO, low || front ? 4 : 5)
     gl.uniform1f(gl.getUniformLocation(pr, 'front'), front ? 1 : 0)
 
-    const scale = (low || matchMedia('(pointer: coarse)').matches ? 0.22 : 0.28) * (front ? 0.8 : 1)
+    const scale = low || matchMedia('(pointer: coarse)').matches ? 0.4 : 0.5
     const size = () => {
       const w = Math.max(160, Math.round(window.innerWidth * scale)), h = Math.max(160, Math.round(window.innerHeight * scale))
       if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; gl.viewport(0, 0, w, h); gl.uniform2f(uRes, w, h) }
@@ -109,13 +109,14 @@ export function CloudSky({ tier, reduced, front = false }: { tier: string; reduc
     }
     const start = () => { if (!raf && !reduced && !document.hidden) raf = requestAnimationFrame(loop) }
     const stop = () => { cancelAnimationFrame(raf); raf = 0 }
-    const onVis = () => (document.hidden ? stop() : start())
+    const onVis = () => {}
     let rt = 0
     const onResize = () => { clearTimeout(rt); rt = window.setTimeout(() => { size(); frame(performance.now()) }, 150) }
 
     frame(performance.now())
     requestAnimationFrame(() => cv.classList.add('is-on'))
-    start()
+    // drawn once: the drift is a slow CSS transform on the finished image, so scrolling costs nothing
+    void start
     document.addEventListener('visibilitychange', onVis)
     window.addEventListener('resize', onResize)
     return () => {
