@@ -30,7 +30,7 @@
   color: var(--text-2); font: inherit; font-size: 0.92rem; display: inline-flex; align-items: center; gap: 0.45rem; white-space: nowrap;
   transition: background 0.45s var(--ease);
 }
-.sol-subtabs button b { font-family: var(--mono); font-weight: 400; font-size: 0.7rem; color: var(--gold); border: 1px solid rgba(214, 192, 143, 0.35); border-radius: 999px; padding: 0.05rem 0.45rem; line-height: 1.5; }
+.sol-subtabs button b { font-family: var(--mono); font-weight: 400; font-size: 0.7rem; color: var(--gold); border: 1px solid rgba(95, 227, 210, 0.35); border-radius: 999px; padding: 0.05rem 0.45rem; line-height: 1.5; }
 .sol-subtabs button.is-on { color: #011214; font-weight: 500; background: linear-gradient(135deg, #3fd0bd, #12a596); }
 .sol-subtabs button.is-on b { color: #011214; border-color: rgba(1, 18, 20, 0.35); }
 .sol-lede { text-align: center; color: var(--muted); max-width: 40rem; margin: 0 auto 1.6rem; font-size: 0.95rem; }
@@ -109,7 +109,7 @@
 .sol-toolsub { display: none; font-size: 0.84rem; color: var(--muted); margin: -0.6rem 0 1rem; text-align: center; }
 .sol-next {
   margin-top: 1.4rem; padding: 1.2rem; border-radius: 18px; text-align: center; display: grid; justify-items: center; gap: 0.7rem;
-  border: 1px dashed rgba(214, 192, 143, 0.35); background: rgba(214, 192, 143, 0.04);
+  border: 1px dashed rgba(95, 227, 210, 0.35); background: rgba(95, 227, 210, 0.04);
 }
 .sol-next p { color: var(--text); font-size: 0.98rem; }
 .sol-next .btn { min-height: 46px; padding-block: 0.7rem; }
@@ -122,7 +122,7 @@
   transition: border-color 0.4s, transform 0.5s var(--ease), box-shadow 0.5s;
 }
 .sol-pick:hover { border-color: var(--line-strong); transform: translateY(-2px); }
-.sol-pick.is-hot { border-color: rgba(214, 192, 143, 0.7); box-shadow: 0 0 0 1px rgba(214, 192, 143, 0.35), 0 20px 50px -26px rgba(214, 192, 143, 0.6); }
+.sol-pick.is-hot { border-color: rgba(95, 227, 210, 0.7); box-shadow: 0 0 0 1px rgba(95, 227, 210, 0.35), 0 20px 50px -26px rgba(95, 227, 210, 0.6); }
 .sol-badge { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.7rem; color: var(--teal-hi); letter-spacing: 0.02em; }
 :root[lang='en'] .sol-badge { text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.62rem; }
 .sol-badge i { width: 6px; height: 6px; border-radius: 50%; background: var(--teal-hi); box-shadow: 0 0 0 0 rgba(95, 227, 210, 0.6); animation: solPulse 2.6s infinite; }
@@ -146,7 +146,7 @@
 .sol-extra .icon, .sol-extra-gem { width: 26px; height: 26px; color: var(--teal-hi); }
 .sol-extra.is-studio .sol-extra-gem { color: var(--gold); }
 .sol-extra-tag { position: absolute; top: 1rem; inset-inline-end: 1rem; font-size: 0.66rem; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0.1rem 0.55rem; }
-.sol-extra.is-studio .sol-extra-tag { color: var(--gold); border-color: rgba(214, 192, 143, 0.35); }
+.sol-extra.is-studio .sol-extra-tag { color: var(--gold); border-color: rgba(95, 227, 210, 0.35); }
 .sol-extra h4 { font-family: var(--display); font-size: 1.05rem; color: var(--text); text-shadow: none; line-height: 1.5; padding-inline-end: 4.5rem; }
 :root[lang='en'] .sol-extra h4 { font-family: var(--body); font-weight: 500; font-size: 0.98rem; }
 .sol-extra p { font-size: 0.86rem; color: var(--muted); line-height: 1.7; }
@@ -178,7 +178,7 @@ html.sheet-open { overflow: hidden; }
 .rq-steps { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
 .rq-steps li { display: grid; gap: 0.3rem; font-size: 0.8rem; color: var(--text-2); line-height: 1.5; padding: 0.7rem; border-radius: 14px; border: 1px solid var(--line); background: rgba(1, 14, 16, 0.45); }
 .rq-steps b { font: 400 0.72rem var(--mono); color: var(--gold); }
-.rq-result { margin-top: 0.9rem; padding: 0.75rem 0.9rem; border-radius: 14px; background: rgba(214, 192, 143, 0.06); border: 1px solid rgba(214, 192, 143, 0.22); font-size: 0.84rem; color: var(--text-2); line-height: 1.7; display: grid; gap: 0.2rem; }
+.rq-result { margin-top: 0.9rem; padding: 0.75rem 0.9rem; border-radius: 14px; background: rgba(95, 227, 210, 0.06); border: 1px solid rgba(95, 227, 210, 0.22); font-size: 0.84rem; color: var(--text-2); line-height: 1.7; display: grid; gap: 0.2rem; }
 .rq-result span { font-size: 0.72rem; color: var(--gold); }
 .rq-form { margin-top: 1.1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
 .rq-field { display: grid; gap: 0.3rem; font-size: 0.82rem; color: var(--text-2); }
@@ -228,9 +228,9 @@ html.sheet-open { overflow: hidden; }
 
 /* ---------- KON lens calculators ---------- */
 .sol-toolpick button { position: relative; }
-.sol-toolpick button.is-kon { border-color: rgba(214, 192, 143, 0.32); background: linear-gradient(165deg, rgba(214, 192, 143, 0.07), rgba(1, 14, 16, 0.55)); }
-.sol-toolpick button.is-kon.is-on { border-color: rgba(214, 192, 143, 0.75); box-shadow: 0 0 0 1px rgba(214, 192, 143, 0.25) inset, 0 16px 40px -24px rgba(214, 192, 143, 0.55); }
-.sol-lens { justify-self: center; font-style: normal; font-size: 0.62rem; letter-spacing: 0.04em; color: var(--gold); border: 1px solid rgba(214, 192, 143, 0.4); border-radius: 999px; padding: 0.08rem 0.5rem; line-height: 1.6; }
+.sol-toolpick button.is-kon { border-color: rgba(95, 227, 210, 0.32); background: linear-gradient(165deg, rgba(95, 227, 210, 0.07), rgba(1, 14, 16, 0.55)); }
+.sol-toolpick button.is-kon.is-on { border-color: rgba(95, 227, 210, 0.75); box-shadow: 0 0 0 1px rgba(95, 227, 210, 0.25) inset, 0 16px 40px -24px rgba(95, 227, 210, 0.55); }
+.sol-lens { justify-self: center; font-style: normal; font-size: 0.62rem; letter-spacing: 0.04em; color: var(--gold); border: 1px solid rgba(95, 227, 210, 0.4); border-radius: 999px; padding: 0.08rem 0.5rem; line-height: 1.6; }
 :root[lang='en'] .sol-lens { text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.56rem; }
 .tl-day { position: relative; margin: 0.4rem 0 2rem; height: 10px; border-radius: 999px; background: linear-gradient(90deg, rgba(255, 154, 138, 0.55) 0 var(--f), rgba(95, 227, 210, 0.75) var(--f) 100%); box-shadow: 0 0 18px -6px rgba(95, 227, 210, 0.6); }
 :root[dir='rtl'] .tl-day { background: linear-gradient(-90deg, rgba(255, 154, 138, 0.55) 0 var(--f), rgba(95, 227, 210, 0.75) var(--f) 100%); }
@@ -241,9 +241,9 @@ html.sheet-open { overflow: hidden; }
 .tl-levers { display: grid; gap: 0.4rem; margin: 0.3rem 0 0.9rem; }
 .tl-levers span { position: relative; display: block; height: 26px; border-radius: 8px; background: rgba(143, 240, 226, 0.06); overflow: hidden; isolation: isolate; }
 .tl-levers span::before { content: ''; position: absolute; inset-block: 0; inset-inline-start: 0; width: var(--w); z-index: -1; border-radius: inherit; background: linear-gradient(90deg, rgba(18, 165, 150, 0.55), rgba(95, 227, 210, 0.3)); transition: width 0.6s var(--ease); }
-.tl-levers span:first-child::before { background: linear-gradient(90deg, rgba(214, 192, 143, 0.65), rgba(214, 192, 143, 0.25)); }
+.tl-levers span:first-child::before { background: linear-gradient(90deg, rgba(95, 227, 210, 0.65), rgba(95, 227, 210, 0.25)); }
 .tl-levers i { font-style: normal; font-size: 0.76rem; color: var(--text); line-height: 26px; padding-inline: 0.6rem; }
-.sol-next-kon { border-style: solid; border-color: rgba(214, 192, 143, 0.45); background: radial-gradient(120% 120% at 50% 0%, rgba(214, 192, 143, 0.1), transparent 70%); }
+.sol-next-kon { border-style: solid; border-color: rgba(95, 227, 210, 0.45); background: radial-gradient(120% 120% at 50% 0%, rgba(95, 227, 210, 0.1), transparent 70%); }
 
 /* ---------- responsive ---------- */
 @media (max-width: 900px) {
@@ -292,7 +292,7 @@ html.sheet-open { overflow: hidden; }
 }
 
 /* ---------- "how this tool works" ---------- */
-.sol-how { margin: 0 0 1.2rem; border: 1px solid rgba(214, 192, 143, 0.28); border-radius: 16px; background: rgba(214, 192, 143, 0.05); text-align: start; }
+.sol-how { margin: 0 0 1.2rem; border: 1px solid rgba(95, 227, 210, 0.28); border-radius: 16px; background: rgba(95, 227, 210, 0.05); text-align: start; }
 .sol-how summary { cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: center; gap: 0.6rem; min-height: 48px; padding: 0.6rem 1rem; color: var(--gold); font-weight: 500; font-size: 0.95rem; }
 .sol-how summary::-webkit-details-marker { display: none; }
 .sol-how summary::after { content: '+'; font: 400 1.2rem/1 var(--mono); transition: transform 0.35s var(--ease); }

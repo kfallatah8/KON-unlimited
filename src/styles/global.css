@@ -17,7 +17,7 @@
   --teal: #12a596;
   --teal-hi: #5fe3d2;
   --aqua: #a8f5ea;
-  --gold: #d6c08f;
+  --gold: #9ff3e6;
 
   --display: 'Readex Pro', 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
   --body: 'IBM Plex Sans Arabic', 'IBM Plex Sans', 'Segoe UI', Tahoma, sans-serif;
@@ -425,7 +425,7 @@ main, .site-footer { position: relative; z-index: 1; }
 .ob-back, .ob-link { background: none; border: 0; color: var(--muted); cursor: pointer; padding: 0.6rem 0; min-height: 44px; font-size: 0.9rem; }
 .ob-back:hover, .ob-link:hover { color: var(--text); }
 .ob-error { margin-top: 1rem; color: #ffc9a8; font-size: 0.9rem; }
-.ob-badge { justify-self: start; font-size: 0.8rem; padding: 0.35rem 0.9rem; border-radius: 999px; border: 1px solid rgba(214, 192, 143, 0.5); color: var(--gold); }
+.ob-badge { justify-self: start; font-size: 0.8rem; padding: 0.35rem 0.9rem; border-radius: 999px; border: 1px solid rgba(95, 227, 210, 0.5); color: var(--gold); }
 .ob-overview { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.8rem; }
 .ob-overview > div { padding: 0.9rem 1rem; border-radius: 14px; background: rgba(1, 14, 16, 0.55); border: 1px solid var(--line); }
 .ob-overview .wide { grid-column: 1 / -1; }
@@ -441,7 +441,7 @@ main, .site-footer { position: relative; z-index: 1; }
 .ob-rec-v { font-family: var(--display); font-size: clamp(1.4rem, 2.4vw, 1.9rem); color: var(--aqua); margin-bottom: 0.4rem; }
 .ob-next { display: grid; gap: 0.3rem; color: var(--text-2); }
 .ob-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
-.ob-note { font-size: 0.82rem; color: var(--gold); padding: 0.8rem 1rem; border-radius: 12px; border: 1px dashed rgba(214, 192, 143, 0.4); }
+.ob-note { font-size: 0.82rem; color: var(--gold); padding: 0.8rem 1rem; border-radius: 12px; border: 1px dashed rgba(95, 227, 210, 0.4); }
 .ob-raw summary { cursor: pointer; font-size: 0.86rem; color: var(--text-2); min-height: 44px; display: flex; align-items: center; }
 .ob-raw textarea { margin-top: 0.4rem; font-family: var(--mono); font-size: 0.78rem !important; }
 .ob-link { justify-self: start; text-decoration: underline; text-underline-offset: 4px; }
@@ -461,7 +461,7 @@ main, .site-footer { position: relative; z-index: 1; }
   font-weight: 500; padding-inline: 0.06em; -webkit-box-decoration-break: clone; box-decoration-break: clone;
   background:
     linear-gradient(100deg, #b98d4f 0%, #e9d3a1 22%, #fff4d6 34%, #d8b678 48%, #b98d4f 62%, #f1dfb2 80%, #c9a465 100%) 0 0 / 220% 100% no-repeat,
-    linear-gradient(90deg, rgba(214, 192, 143, 0), rgba(214, 192, 143, 0.75) 18%, rgba(241, 227, 191, 0.9) 50%, rgba(214, 192, 143, 0.75) 82%, rgba(214, 192, 143, 0)) 0 100% / 100% 1px no-repeat;
+    linear-gradient(90deg, rgba(95, 227, 210, 0), rgba(95, 227, 210, 0.75) 18%, rgba(241, 227, 191, 0.9) 50%, rgba(95, 227, 210, 0.75) 82%, rgba(95, 227, 210, 0)) 0 100% / 100% 1px no-repeat;
   -webkit-background-clip: text, border-box; background-clip: text, border-box;
   color: transparent; -webkit-text-fill-color: transparent;
   padding-bottom: 0.12em;
@@ -711,7 +711,7 @@ main, .site-footer { position: relative; z-index: 1; }
 }
 .stage-glow::after {
   width: 55vmax; height: 55vmax; right: -12vmax; bottom: -18vmax;
-  background: radial-gradient(closest-side, rgba(214, 192, 143, 0.06), rgba(6, 90, 87, 0.12) 50%, transparent);
+  background: radial-gradient(closest-side, rgba(95, 227, 210, 0.06), rgba(6, 90, 87, 0.12) 50%, transparent);
   animation: aura 18s ease-in-out -6s infinite alternate-reverse;
 }
 @keyframes aura { from { transform: scale(0.92) translate3d(-2%, 1%, 0); opacity: 0.75; } to { transform: scale(1.08) translate3d(2%, -1%, 0); opacity: 1; } }
@@ -720,7 +720,7 @@ main, .site-footer { position: relative; z-index: 1; }
 .kon-halo {
   background:
     radial-gradient(closest-side, rgba(63, 224, 207, 0.34), rgba(18, 165, 150, 0.18) 38%, rgba(6, 90, 87, 0.08) 65%, transparent),
-    radial-gradient(closest-side at 50% 54%, rgba(214, 192, 143, 0.07), transparent 55%);
+    radial-gradient(closest-side at 50% 54%, rgba(95, 227, 210, 0.07), transparent 55%);
 }
 .kon-halo::before, .kon-halo::after { content: ''; position: absolute; inset: 0; border-radius: 50%; pointer-events: none; }
 .kon-halo::before {
@@ -856,7 +856,7 @@ html.is-ready .stage-glow { opacity: 1; }
 .kon-halo {
   background:
     radial-gradient(closest-side, rgba(63, 224, 207, 0.300) 0%, rgba(63, 224, 207, 0.252) 14%, rgba(63, 224, 207, 0.180) 28%, rgba(63, 224, 207, 0.114) 42%, rgba(63, 224, 207, 0.060) 56%, rgba(63, 224, 207, 0.027) 70%, rgba(63, 224, 207, 0.009) 84%, rgba(63, 224, 207, 0.000) 100%),
-    radial-gradient(closest-side at 50% 54%, rgba(214, 192, 143, 0.060) 0%, rgba(214, 192, 143, 0.050) 14%, rgba(214, 192, 143, 0.036) 28%, rgba(214, 192, 143, 0.023) 42%, rgba(214, 192, 143, 0.012) 56%, rgba(214, 192, 143, 0.005) 70%, rgba(214, 192, 143, 0.002) 84%, rgba(214, 192, 143, 0.000) 100%);
+    radial-gradient(closest-side at 50% 54%, rgba(95, 227, 210, 0.060) 0%, rgba(95, 227, 210, 0.050) 14%, rgba(95, 227, 210, 0.036) 28%, rgba(95, 227, 210, 0.023) 42%, rgba(95, 227, 210, 0.012) 56%, rgba(95, 227, 210, 0.005) 70%, rgba(95, 227, 210, 0.002) 84%, rgba(95, 227, 210, 0.000) 100%);
 }
 .kon-halo::before { background: radial-gradient(closest-side, rgba(168, 245, 234, 0.200) 0%, rgba(168, 245, 234, 0.168) 14%, rgba(168, 245, 234, 0.120) 28%, rgba(168, 245, 234, 0.076) 42%, rgba(168, 245, 234, 0.040) 56%, rgba(168, 245, 234, 0.018) 70%, rgba(168, 245, 234, 0.006) 84%, rgba(168, 245, 234, 0.000) 100%); }
 .kon-halo::after { background: radial-gradient(closest-side, rgba(168, 245, 234, 0.240) 0%, rgba(168, 245, 234, 0.202) 14%, rgba(168, 245, 234, 0.144) 28%, rgba(168, 245, 234, 0.091) 42%, rgba(168, 245, 234, 0.048) 56%, rgba(168, 245, 234, 0.022) 70%, rgba(168, 245, 234, 0.007) 84%, rgba(168, 245, 234, 0.000) 100%); filter: blur(24px); }
@@ -985,20 +985,20 @@ html.is-ready .stage-glow { opacity: 1; }
 .talent-side ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.85rem; }
 .talent-side li { position: relative; padding-inline-start: 1.1rem; color: var(--text); font-size: 1.02rem; line-height: 1.6; }
 .talent-side li::before { content: ''; position: absolute; inset-inline-start: 0; top: 0.72em; width: 6px; height: 6px; border-radius: 50%; background: var(--teal-hi); box-shadow: 0 0 10px rgba(95, 227, 210, 0.7); }
-.talent-side.is-company li::before { background: var(--gold); box-shadow: 0 0 10px rgba(214, 192, 143, 0.6); }
+.talent-side.is-company li::before { background: var(--gold); box-shadow: 0 0 10px rgba(95, 227, 210, 0.6); }
 .talent-side .link-btn { justify-self: start; }
 
 .journey { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.1rem; position: relative; }
 .journey::before { content: ''; position: absolute; top: 1.45rem; inset-inline: 12%; height: 1px; background: linear-gradient(90deg, transparent, var(--line-strong), transparent); }
 .journey li { position: relative; display: grid; justify-items: center; text-align: center; gap: 0.6rem; padding: 0 0.8rem; }
-.journey-n { display: grid; place-items: center; width: 2.9rem; height: 2.9rem; border-radius: 50%; font-family: var(--mono); font-size: 0.8rem; color: var(--gold); border: 1px solid rgba(214, 192, 143, 0.5); background: rgba(2, 18, 20, 0.92); box-shadow: 0 0 24px -6px rgba(214, 192, 143, 0.45); }
+.journey-n { display: grid; place-items: center; width: 2.9rem; height: 2.9rem; border-radius: 50%; font-family: var(--mono); font-size: 0.8rem; color: var(--gold); border: 1px solid rgba(95, 227, 210, 0.5); background: rgba(2, 18, 20, 0.92); box-shadow: 0 0 24px -6px rgba(95, 227, 210, 0.45); }
 .journey h3 { font-size: 1.25rem; }
 .journey p { font-size: 0.96rem; color: var(--text-2); max-width: 18rem; }
 
 .talent-wins-lede { color: var(--text-2); font-size: 1.02rem; margin-top: -0.8rem; }
 .win-tri-wrap { margin: 2rem auto 1.4rem; max-width: 22rem; }
 .win-tri { width: 100%; height: auto; display: block; overflow: visible; }
-.wt-spoke { stroke: rgba(214, 192, 143, 0.3); stroke-width: 1; stroke-dasharray: 3 5; transition: stroke 0.6s, stroke-width 0.6s; }
+.wt-spoke { stroke: rgba(95, 227, 210, 0.3); stroke-width: 1; stroke-dasharray: 3 5; transition: stroke 0.6s, stroke-width 0.6s; }
 .wt-spoke.is-on { stroke: rgba(95, 227, 210, 0.9); stroke-width: 1.6; stroke-dasharray: none; }
 .wt-gem { fill: rgba(30, 194, 176, 0.3); stroke: #5fe3d2; stroke-width: 1.2; transition: fill 0.6s; }
 .wt-node.is-on .wt-gem { fill: rgba(95, 227, 210, 0.85); }

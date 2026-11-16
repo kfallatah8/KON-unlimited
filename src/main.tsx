@@ -11,6 +11,8 @@ import './styles/codex.css'
 import './styles/director.css'
 import './styles/clean.css'
 import './styles/clear.css'
+import './styles/hl.css'
+import { initHighlights } from './lib/highlights'
 
 // Every visit and every refresh opens at the very top: no restored scroll position and no jump
 // to a #section left over in the address bar (#en / #ar and #/pages are kept).
@@ -23,6 +25,8 @@ window.addEventListener('pageshow', (e) => { if ((e as PageTransitionEvent).pers
 
 // Arabic-first; English via the header switch or a link ending in #en.
 setLang(store.get().lang)
+
+requestAnimationFrame(() => initHighlights())
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -5,10 +5,10 @@
   --phi: 1.618;
   --emerald: #e8d5a8; /* Tempest: the "second stone" is now a burgundy-rose highlight */
   --emerald-deep: #065a57;
-  --garnet: #d6c08f;
+  --garnet: #9ff3e6;
   --garnet-deep: #065a57;
   --breath: 10.9s;
-  --hair: linear-gradient(135deg, rgba(168, 245, 234, 0.45), rgba(168, 245, 234, 0.12) 30%, rgba(214, 192, 143, 0.06) 61.8%, rgba(214, 192, 143, 0.4));
+  --hair: linear-gradient(135deg, rgba(168, 245, 234, 0.45), rgba(168, 245, 234, 0.12) 30%, rgba(95, 227, 210, 0.06) 61.8%, rgba(95, 227, 210, 0.4));
 }
 
 /* ---------- the sky: three soft pools of light drifting and breathing behind the stones ---------- */
@@ -34,7 +34,7 @@
 }
 .stage-dream i:nth-child(2) {
   width: 38.2vmax; height: 38.2vmax; left: 61.8%; top: 8%;
-  background: radial-gradient(closest-side, rgba(168, 245, 234, 0.08), rgba(214, 192, 143, 0.05) 60%, transparent);
+  background: radial-gradient(closest-side, rgba(168, 245, 234, 0.08), rgba(95, 227, 210, 0.05) 60%, transparent);
   animation: drift 61.8s ease-in-out -20s infinite alternate, breathSoft var(--breath) ease-in-out -5.45s infinite;
 }
 @keyframes breath { 0%, 100% { transform: scale(0.94); opacity: 0.7; } 50% { transform: scale(1.06); opacity: 1; } }
@@ -47,8 +47,8 @@
 /* ---------- typography in the three stones ---------- */
 .rot-line { background: linear-gradient(180deg, #ffffff 8%, #d9fbf6 38.2%, var(--aqua) 61.8%, #9ff0e3); -webkit-background-clip: text; background-clip: text; }
 .display .wi { background: linear-gradient(180deg, #ffffff 20%, #d4f8f1 61.8%, #9be8cf); -webkit-background-clip: text; background-clip: text; }
-.band .eyebrow::before { color: var(--emerald); border-inline-end-color: rgba(214, 192, 143, 0.45); }
-.band::before { background: linear-gradient(90deg, transparent, rgba(95, 227, 210, 0.3) 23.6%, rgba(168, 245, 234, 0.3) 50%, rgba(214, 192, 143, 0.32) 76.4%, transparent); }
+.band .eyebrow::before { color: var(--emerald); border-inline-end-color: rgba(95, 227, 210, 0.45); }
+.band::before { background: linear-gradient(90deg, transparent, rgba(95, 227, 210, 0.3) 23.6%, rgba(168, 245, 234, 0.3) 50%, rgba(95, 227, 210, 0.32) 76.4%, transparent); }
 .proof b { background: linear-gradient(180deg, #fff, var(--aqua) 61.8%, var(--emerald)); -webkit-background-clip: text; background-clip: text; }
 .case-metric b { background: linear-gradient(180deg, #fff, var(--aqua) 61.8%, var(--emerald)); -webkit-background-clip: text; background-clip: text; }
 .kw { background: linear-gradient(transparent 64%, rgba(18, 165, 150, 0.3) 64%, rgba(168, 245, 234, 0.26) 92%, transparent 92%); }
@@ -61,7 +61,7 @@
 
 /* ---------- cards: a garnet whisper under the hand ---------- */
 .glass::after, .why-item::after, .offer-card::after {
-  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(95, 227, 210, 0.14), rgba(168, 245, 234, 0.06) 38.2%, rgba(214, 192, 143, 0.05) 61.8%, transparent 75%);
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(95, 227, 210, 0.14), rgba(168, 245, 234, 0.06) 38.2%, rgba(95, 227, 210, 0.05) 61.8%, transparent 75%);
 }
 .offer-card {
   background:
@@ -70,13 +70,13 @@
     radial-gradient(60% 50% at 0% 100%, rgba(6, 90, 87, 0.2), transparent 70%),
     linear-gradient(180deg, rgba(6, 52, 52, 0.92), rgba(2, 18, 20, 0.95));
 }
-.offer-card::before { background: linear-gradient(140deg, rgba(200, 255, 247, 0.7), rgba(168, 245, 234, 0.2) 38.2%, rgba(214, 192, 143, 0.15) 61.8%, rgba(214, 192, 143, 0.6)); }
+.offer-card::before { background: linear-gradient(140deg, rgba(200, 255, 247, 0.7), rgba(168, 245, 234, 0.2) 38.2%, rgba(95, 227, 210, 0.15) 61.8%, rgba(95, 227, 210, 0.6)); }
 
 /* ---------- the breath, made visible: a ring under the scroll cue ---------- */
 .breath-ring {
   display: block; width: 22px; height: 22px; margin: 0 auto 0.4rem; border-radius: 50%;
   border: 1px solid rgba(168, 245, 234, 0.5);
-  box-shadow: 0 0 18px rgba(168, 245, 234, 0.35), inset 0 0 10px rgba(214, 192, 143, 0.25);
+  box-shadow: 0 0 18px rgba(168, 245, 234, 0.35), inset 0 0 10px rgba(95, 227, 210, 0.25);
   animation: ring var(--breath) ease-in-out infinite;
 }
 @keyframes ring { 0%, 100% { transform: scale(0.72); opacity: 0.55; } 50% { transform: scale(1.18); opacity: 1; } }

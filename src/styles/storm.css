@@ -6,7 +6,7 @@
 :root {
   --oxblood: #03302f;
   --wine: #065a57;
-  --garnet: #d6c08f;
+  --garnet: #9ff3e6;
   --rose: #e8d5a8;
 }
 
@@ -130,7 +130,7 @@
 
 /* ---------- teal and champagne accents in the copy ---------- */
 .display .wi { background: linear-gradient(180deg, #ffffff 20%, #d4f8f1 61.8%, #9be8cf); -webkit-background-clip: text; background-clip: text; }
-.kw { background: linear-gradient(transparent 64%, rgba(18, 165, 150, 0.3) 64%, rgba(214, 192, 143, 0.32) 92%, transparent 92%); }
+.kw { background: linear-gradient(transparent 64%, rgba(18, 165, 150, 0.3) 64%, rgba(95, 227, 210, 0.32) 92%, transparent 92%); }
 
 /* ---------- footer: KON cut like a stone ---------- */
 .kon-foot { position: relative; width: min(100%, 44rem); margin-inline: auto; isolation: isolate; }
@@ -152,7 +152,7 @@
 }
 .kf-sub::before, .kf-sub::after {
   content: ''; display: inline-block; width: clamp(2rem, 8vw, 4.236rem); height: 1px; vertical-align: middle; margin-inline: 1rem;
-  background: linear-gradient(90deg, transparent, var(--teal-hi), #d6c08f, transparent);
+  background: linear-gradient(90deg, transparent, var(--teal-hi), #9ff3e6, transparent);
 }
 .footer-brand::before { display: none; }
 @media (prefers-reduced-motion: reduce) { .kf-sheen, .kon-foot::before { animation: none; } }

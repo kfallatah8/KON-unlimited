@@ -6,7 +6,7 @@
 :root {
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-cine: cubic-bezier(0.65, 0, 0.35, 1);
-  --hair: linear-gradient(135deg, rgba(168, 245, 234, 0.42), rgba(168, 245, 234, 0.06) 38%, rgba(214, 192, 143, 0.06) 62%, rgba(214, 192, 143, 0.38));
+  --hair: linear-gradient(135deg, rgba(168, 245, 234, 0.42), rgba(168, 245, 234, 0.06) 38%, rgba(95, 227, 210, 0.06) 62%, rgba(95, 227, 210, 0.38));
   --champagne: #e7d3a4;
 }
 
@@ -37,7 +37,7 @@ main { counter-reset: chapter; }
 .band .eyebrow::before {
   content: counter(chapter, decimal-leading-zero); width: auto; height: auto; background: none !important;
   font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.08em; color: var(--teal-hi);
-  padding-inline-end: 0.85rem; border-inline-end: 1px solid rgba(214, 192, 143, 0.35); line-height: 1;
+  padding-inline-end: 0.85rem; border-inline-end: 1px solid rgba(95, 227, 210, 0.35); line-height: 1;
 }
 .eyebrow { letter-spacing: 0.02em; }
 :root[lang='en'] .eyebrow { letter-spacing: 0.22em; }
@@ -45,7 +45,7 @@ main { counter-reset: chapter; }
 /* A hairline horizon between chapters: light, not a rule. */
 .band::before {
   content: ''; position: absolute; inset-inline: 0; top: 0; margin-inline: auto; width: min(60%, 46rem); height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(95, 227, 210, 0.28) 30%, rgba(214, 192, 143, 0.3) 70%, transparent);
+  background: linear-gradient(90deg, transparent, rgba(95, 227, 210, 0.28) 30%, rgba(95, 227, 210, 0.3) 70%, transparent);
   opacity: 0.6;
 }
 .band.problem::before { display: none; }
@@ -70,7 +70,7 @@ main { counter-reset: chapter; }
 .proof::before { content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px; background: var(--hair); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
 .proof li { padding: 1.25rem 0.9rem 1.2rem; }
 .proof b { font-weight: 200; letter-spacing: -0.01em; background: linear-gradient(180deg, #fff, var(--aqua) 70%, var(--teal-hi)); -webkit-background-clip: text; background-clip: text; color: transparent; font-variant-numeric: tabular-nums; }
-.hero-slogan { color: rgba(214, 192, 143, 0.78); letter-spacing: 0.04em; }
+.hero-slogan { color: rgba(95, 227, 210, 0.78); letter-spacing: 0.04em; }
 /* The opening: copy rises in sequence instead of all at once. */
 .hero-fade { transition-duration: 1.6s, 1.6s; }
 .is-ready .hero-copy .eyebrow { transition-delay: 0.15s; }
@@ -106,7 +106,7 @@ main { counter-reset: chapter; }
 }
 .glass::after, .why-item::after, .offer-card::after {
   content: ''; position: absolute; inset: 0; border-radius: inherit; z-index: -1; pointer-events: none; opacity: 0;
-  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(95, 227, 210, 0.13), rgba(214, 192, 143, 0.05) 40%, transparent 70%);
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(95, 227, 210, 0.13), rgba(95, 227, 210, 0.05) 40%, transparent 70%);
   transition: opacity 0.5s var(--ease-out);
 }
 .is-lit::after { opacity: 1; }
@@ -124,7 +124,7 @@ main { counter-reset: chapter; }
 .offer-card { isolation: isolate; box-shadow: 0 80px 140px -60px rgba(18, 165, 150, 0.75), 0 1px 0 rgba(255, 255, 255, 0.12) inset; }
 .offer-card::before {
   content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
-  background: linear-gradient(140deg, rgba(200, 255, 247, 0.7), rgba(95, 227, 210, 0.12) 35%, rgba(214, 192, 143, 0.15) 65%, rgba(241, 223, 178, 0.7));
+  background: linear-gradient(140deg, rgba(200, 255, 247, 0.7), rgba(95, 227, 210, 0.12) 35%, rgba(95, 227, 210, 0.15) 65%, rgba(241, 223, 178, 0.7));
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
 }
 .offer-value { background: linear-gradient(100deg, var(--aqua), #fff 45%, var(--champagne)); -webkit-background-clip: text; background-clip: text; color: transparent; }
