@@ -7,7 +7,7 @@ import { leadRead, optionLabel, recommend, serviceNames, stepsFor, type Answers 
 import { useContent } from '../content/useContent'
 import { motion, useStore } from '../state/store'
 import { lenis } from './SmoothScroll'
-import { GemMark } from './Icons'
+import { GemMark, Icon } from './Icons'
 
 interface Draft {
   persona: Persona | null
@@ -294,7 +294,7 @@ export function Onboarding() {
                 onPointerEnter={() => (motion.glow = 1)}
                 onPointerLeave={() => (motion.glow = 0)}
               >
-                <GemMark className="persona-gem" />
+                <Icon id={p === 'founder' ? 'seed' : p === 'investor' ? 'compass' : 'company'} className="icon persona-gem" />
                 <b>{ob.personas[p].label}</b>
                 <span>{ob.personas[p].sub}</span>
               </button>
@@ -403,6 +403,9 @@ export function Onboarding() {
 }
 
 function CalFrame({ src, lang, copy }: { src: string; lang: Lang; copy: { loading: string; open: string } }) {
+  const u = new URL(src)
+  ;['embed_type', 'embed_domain', 'hide_gdpr_banner', 'background_color', 'text_color', 'primary_color'].forEach((k) => u.searchParams.delete(k))
+  const full = u.toString()
   const [ready, setReady] = useState(false)
   const [slow, setSlow] = useState(false)
   useEffect(() => {
@@ -419,7 +422,7 @@ function CalFrame({ src, lang, copy }: { src: string; lang: Lang; copy: { loadin
         </div>
         <iframe src={src} title={lang === 'ar' ? 'اختر موعد الجلسة' : 'Pick your session time'} onLoad={() => setReady(true)} />
       </div>
-      <a className={`ob-link cal-open${slow && !ready ? ' is-loud' : ''}`} href={src.replace('embed_type=Inline&', '')} target="_blank" rel="noreferrer">{copy.open} ↗</a>
+      <a className={`ob-link cal-open${slow && !ready ? ' is-loud' : ''}`} href={full} target="_blank" rel="noreferrer">{copy.open} ↗</a>
     </div>
   )
 }

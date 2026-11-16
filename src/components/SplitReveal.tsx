@@ -18,7 +18,7 @@ export function SplitReveal({ as = 'h2', text, className, id, play, delay = 0 }:
   // the full stop at the end of a line is dropped (the line break already does its job).
   const lines = Array.isArray(text)
     ? text
-    : text.split(/(?<=[.؟?…])\s+/).map((x) => x.replace(/\.$/, '')).filter(Boolean)
+    : text.split(/(?<=[.؟?…،,:])\s+/).map((x) => x.replace(/[.،,:]$/, '')).filter(Boolean)
 
   useEffect(() => {
     const el = ref.current
@@ -49,7 +49,7 @@ export function SplitReveal({ as = 'h2', text, className, id, play, delay = 0 }:
 
   return createElement(
     as,
-    { ref, className, id, 'aria-label': Array.isArray(text) ? text.join(' ') : text },
+    { ref, className, id, 'aria-label': Array.isArray(text) ? text.join(' ') : text.replace(/[،,:.]/g, '') },
     lines.map((line, li) => (
       <span key={li} className="line" aria-hidden="true">
         {line.split(' ').map((w, wi, all) => (

@@ -231,15 +231,17 @@ function SectorPanel({ sec, onRequest }: { sec: SolSector; onRequest: (r: Req) =
           <p className="fine sol-note">{s.toolsNote}</p>
           {toolMeta[tool].kon && (
             <div className="sol-next sol-next-kon">
-              <p>{s.konLabel}</p>
+              <div className="sn-text"><span className="sn-k">{lang === 'ar' ? 'مع خبير' : 'With an expert'}</span><p>{s.konLabel}</p></div>
               <button type="button" className="btn btn-primary" onClick={() => onRequest({ title: `${s.konTitle}: ${toolMeta[tool].name[lang]}`, sector, kind: 'service', result: summary.current })}><span>{s.konCta}</span></button>
             </div>
           )}
           {nextPick && (
             <div className="sol-next">
-              <p>{s.nextLabel}</p>
-              <button type="button" className="btn btn-ghost" onClick={() => showPick(nextPick.id)}><span>{s.nextCta}: {nextPick.title[lang]}</span></button>
+              <div className="sn-text"><span className="sn-k">{lang === 'ar' ? 'الحل المقترح' : 'Suggested next'}</span><p>{s.nextLabel}</p><strong>{nextPick.title[lang]}</strong></div>
+              <div className="sn-act">
+              <button type="button" className="btn btn-primary" onClick={() => showPick(nextPick.id)}><span>{s.nextCta}</span></button>
               <button type="button" className="link-btn" onClick={() => onRequest({ title: nextPick.title[lang], tech: apps[nextPick.app]?.name, sector, kind: 'setup', result: summary.current })}>{s.request} <span aria-hidden="true">{lang === 'ar' ? '←' : '→'}</span></button>
+              </div>
             </div>
           )}
         </div>

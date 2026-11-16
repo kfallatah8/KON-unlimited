@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import type { Lang } from '../content/site'
 import type { ToolId } from '../content/solutions'
+import { useStore } from '../state/store'
 
 type T = { ar: string; en: string }
 const t = (ar: string, en: string): T => ({ ar, en })
@@ -77,6 +78,27 @@ function Toggle({ label, on, set }: { label: string; on: boolean; set: (b: boole
   )
 }
 
+// The reading under each result: split into short clauses, one idea per line, with every number
+// lifted out so the eye lands on it first. The last clause is usually the move to make.
+const NUM = /(\d[\d,.:]*(?:[\s  ]?%|[\s  ]?ر\.س|\s?SAR|[\s  ](?:م|ص)(?=[\s،,.]|$))?)/g
+function marks(t: string) {
+  return t.split(NUM).map((x, i) => (i % 2 ? <b key={i} className="tl-n" dir="ltr">{x}</b> : x))
+}
+function Insight({ body }: { body: ReactNode }) {
+  const lang = useStore((st) => st.lang)
+  if (typeof body !== 'string') return <div className="tl-insight">{body}</div>
+  const parts = body.split(/(?<=[،.])\s+/).map((x) => x.replace(/[،.]$/, '').trim()).filter(Boolean)
+  const lead = parts[0], rest = parts.slice(1, -1), move = parts.length > 1 ? parts[parts.length - 1] : ''
+  return (
+    <div className="tl-insight">
+      <p className="ti-k">{lang === 'ar' ? 'ماذا يعني رقمك' : 'What your number means'}</p>
+      <p className="ti-lead">{marks(lead)}</p>
+      {rest.length > 0 && <ul className="ti-list">{rest.map((x, i) => <li key={i}>{marks(x)}</li>)}</ul>}
+      {move && <p className="ti-move"><span>{lang === 'ar' ? 'الخطوة' : 'The move'}</span><span className="ti-txt">{marks(move)}</span></p>}
+    </div>
+  )
+}
+
 /** The big answer, its supporting numbers, and one sentence that says what it means. */
 function Result({ big, label, unit, tone, rows, insight, children }: { big: string; label: string; unit?: string; tone?: 'good' | 'warn' | 'bad'; rows: [string, string][]; insight?: ReactNode; children?: ReactNode }) {
   return (
@@ -89,7 +111,7 @@ function Result({ big, label, unit, tone, rows, insight, children }: { big: stri
         ))}
       </dl>
       {children}
-      {insight && <p className="tl-insight">{insight}</p>}
+      {insight && <Insight body={insight} />}
     </div>
   )
 }

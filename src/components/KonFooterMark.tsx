@@ -1,201 +1,179 @@
-// KON footer mark, set like fine jewellery: each letter is a champagne-gold channel paved with two
-// rows of round brilliant-cut stones (teal, deep teal and a few white diamonds). Every stone is a
-// real faceted drawing (table, star and girdle facets, a specular glint, four prongs), reused
-// through <use>, so the whole piece stays one crisp SVG at any size. A few stones twinkle and a
-// slow light sweeps across the pavé.
+// KON footer mark: three cut crystals. Each letter is a solid block of teal crystal finished the
+// way a stone cutter finishes an emerald cut: a flat polished table on top and a ring of bevelled
+// facets around every edge. Every facet is lit by its own angle to one light (top left), so the
+// shading comes from the geometry, never from drawn outlines. A dark extruded body gives depth,
+// a light sweeps across the table now and then, and a few facet corners catch a glint.
 import { useMemo } from 'react'
 
-type Pt = [number, number]
-const STEP = 24 // centre-to-centre along a row
-const ROWS = [-12, 12] // two rows of pavé, offset either side of the letter's spine
-const GEM = 24 // drawn size of one stone
+type P = [number, number]
+const BEVEL = 17
+const DEPTH = 12
 
-const LINES: [Pt, Pt][] = [
-  // K
-  [[168, 62], [168, 268]],
-  [[318, 62], [196, 160]],
-  [[214, 150], [322, 268]],
-  // N
-  [[692, 268], [692, 62]],
-  [[704, 70], [836, 260]],
-  [[848, 268], [848, 62]],
-]
-const O = { cx: 500, cy: 165, rx: 92, ry: 103 }
-
-function onLine([a, b]: [Pt, Pt], off: number): Pt[] {
-  const dx = b[0] - a[0], dy = b[1] - a[1]
-  const len = Math.hypot(dx, dy)
-  const nx = -dy / len, ny = dx / len
-  const n = Math.max(1, Math.round(len / STEP))
-  return Array.from({ length: n + 1 }, (_, i) => [a[0] + (dx * i) / n + nx * off, a[1] + (dy * i) / n + ny * off] as Pt)
-}
-
-function onEllipse(off: number): Pt[] {
-  const rx = O.rx + off, ry = O.ry + off
-  const fine: Pt[] = Array.from({ length: 720 }, (_, i) => {
-    const t = (i / 720) * Math.PI * 2
-    return [O.cx + rx * Math.sin(t), O.cy - ry * Math.cos(t)]
+// Letter outlines, chamfered like emerald-cut stones. The O is an octagon, like the crystals that
+// form KON in the finale.
+const ch = (pts: P[], c: number, keep: number[] = []): P[] => {
+  const out: P[] = []
+  pts.forEach((p, i) => {
+    if (keep.includes(i)) { out.push(p); return }
+    const a = pts[(i - 1 + pts.length) % pts.length], b = pts[(i + 1) % pts.length]
+    const da = Math.hypot(a[0] - p[0], a[1] - p[1]), db = Math.hypot(b[0] - p[0], b[1] - p[1])
+    out.push([p[0] + ((a[0] - p[0]) * c) / da, p[1] + ((a[1] - p[1]) * c) / da])
+    out.push([p[0] + ((b[0] - p[0]) * c) / db, p[1] + ((b[1] - p[1]) * c) / db])
   })
-  let total = 0
-  for (let i = 1; i <= fine.length; i++) total += Math.hypot(fine[i % fine.length][0] - fine[i - 1][0], fine[i % fine.length][1] - fine[i - 1][1])
-  const n = Math.round(total / STEP), step = total / n
-  const out: Pt[] = [fine[0]]
-  let acc = 0
-  for (let i = 1; i < fine.length && out.length < n; i++) {
-    acc += Math.hypot(fine[i][0] - fine[i - 1][0], fine[i][1] - fine[i - 1][1])
-    if (acc >= step * out.length) out.push(fine[i])
-  }
   return out
 }
+const K: P[] = ch([[146, 64], [212, 64], [212, 146], [292, 64], [374, 64], [268, 166], [378, 276], [294, 276], [212, 192], [212, 276], [146, 276]], 11, [2, 3, 4, 5, 6, 7, 8])
+const N: P[] = ch([[640, 276], [640, 64], [702, 64], [796, 196], [796, 64], [858, 64], [858, 276], [796, 276], [702, 146], [702, 276]], 11, [2, 3, 7, 8])
+const oct = (cx: number, cy: number, w: number, h: number, c: number): P[] => [
+  [cx - w + c, cy - h], [cx + w - c, cy - h], [cx + w, cy - h + c], [cx + w, cy + h - c],
+  [cx + w - c, cy + h], [cx - w + c, cy + h], [cx - w, cy + h - c], [cx - w, cy - h + c],
+]
+const O_OUT = oct(506, 170, 108, 106, 46)
+const O_IN = oct(506, 170, 46, 46, 19)
 
-interface Stone { x: number; y: number; kind: 'a' | 'b' | 'c'; rot: number; tw: number }
+const area = (p: P[]) => p.reduce((s, a, i) => { const b = p[(i + 1) % p.length]; return s + a[0] * b[1] - b[0] * a[1] }, 0) / 2
 
-function layout(): Stone[] {
-  const pts: Pt[] = []
-  for (const off of ROWS) {
-    LINES.forEach((l) => pts.push(...onLine(l, off)))
-    pts.push(...onEllipse(off))
-  }
-  const kept: Pt[] = []
-  for (const p of pts) if (!kept.some((k) => Math.hypot(k[0] - p[0], k[1] - p[1]) < 19)) kept.push(p)
-  // Deterministic variety: mostly teal, some deep teal, a few white diamonds; a handful twinkle.
-  return kept.map(([x, y], i) => {
-    const r = ((i * 7919) % 97) / 97
-    return { x, y, kind: r < 0.14 ? 'c' : r < 0.36 ? 'b' : 'a', rot: (i * 37) % 45, tw: (i * 13) % 11 === 0 ? ((i * 0.37) % 6) : -1 }
+// Move every edge by d along its inward normal and re-intersect neighbours (mitred offset).
+function inset(p: P[], d: number): P[] {
+  const s = area(p) > 0 ? 1 : -1
+  const n = p.length
+  const lines = p.map((a, i) => {
+    const b = p[(i + 1) % n]
+    const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy)
+    const nx = (-dy / L) * s, ny = (dx / L) * s
+    return { a: [a[0] + nx * d, a[1] + ny * d] as P, dx, dy }
+  })
+  return p.map((_, i) => {
+    const l1 = lines[(i - 1 + n) % n], l2 = lines[i]
+    const den = l1.dx * l2.dy - l1.dy * l2.dx
+    if (Math.abs(den) < 1e-6) return l2.a
+    const t = ((l2.a[0] - l1.a[0]) * l2.dy - (l2.a[1] - l1.a[1]) * l2.dx) / den
+    const q: P = [l1.a[0] + l1.dx * t, l1.a[1] + l1.dy * t]
+    // Sharp tips (the arms of K, the joins of N) would push the mitre far out; cap it.
+    const o = p[i], dist = Math.hypot(q[0] - o[0], q[1] - o[1]), cap = Math.abs(d) * 2.4
+    return dist > cap ? [o[0] + ((q[0] - o[0]) * cap) / dist, o[1] + ((q[1] - o[1]) * cap) / dist] as P : q
   })
 }
 
-// Facets of a round brilliant seen from above, in a -50..50 box.
-function facets() {
-  const P = (r: number, a: number): string => `${(r * Math.cos(a)).toFixed(2)},${(r * Math.sin(a)).toFixed(2)}`
-  const T = 23, G = 47, out: { d: string; o: number }[] = []
-  for (let i = 0; i < 8; i++) {
-    const a0 = (i / 8) * Math.PI * 2 - Math.PI / 8, a1 = a0 + Math.PI / 4, am = (a0 + a1) / 2
-    out.push({ d: `M${P(T, a0)} L${P(T, a1)} L${P(G * 0.82, am)}Z`, o: i % 2 ? 0.34 : 0.1 }) // star facets
-    out.push({ d: `M${P(T, a0)} L${P(G * 0.82, am)} L${P(G, a0 + Math.PI / 16)} L${P(G, a0)}Z`, o: i % 2 ? 0.05 : 0.28 }) // upper girdle
-    out.push({ d: `M${P(T, a1)} L${P(G * 0.82, am)} L${P(G, a1 - Math.PI / 16)} L${P(G, a1)}Z`, o: i % 2 ? 0.24 : 0.06 })
-  }
-  const table = Array.from({ length: 8 }, (_, i) => P(T, (i / 8) * Math.PI * 2 - Math.PI / 8)).join(' ')
-  return { out, table }
+const LIGHT = (() => { const v = [-0.55, -0.75, 0.62]; const m = Math.hypot(...v); return v.map((x) => x / m) })()
+const RAMP = ['#022e2a', '#05514a', '#0b7a6e', '#16a594', '#3fd0bd', '#9af2e5', '#e6fffb']
+function shade(t: number) {
+  const x = Math.max(0, Math.min(1, t)) * (RAMP.length - 1)
+  return RAMP[Math.round(x)]
 }
 
-function GemSymbol({ id, base }: { id: string; base: string }) {
-  const { out, table } = useMemo(facets, [])
-  return (
-    <symbol id={id} viewBox="-54 -54 108 108" overflow="visible">
-      <circle r="49" fill={`url(#${base})`} />
-      {out.map((f, i) => <path key={i} d={f.d} fill="#fff" opacity={f.o} />)}
-      <polygon points={table} fill="#fff" opacity="0.16" stroke="#fff" strokeOpacity="0.45" strokeWidth="1.2" />
-      <circle r="48.5" fill="none" stroke="#fff" strokeOpacity="0.5" strokeWidth="1.6" />
-      <ellipse cx="-15" cy="-19" rx="11" ry="5.5" transform="rotate(-35 -15 -19)" fill="#fff" opacity="0.92" />
-      <circle cx="17" cy="15" r="3.4" fill="#fff" opacity="0.7" />
-      {[45, 135, 225, 315].map((a) => (
-        <circle key={a} cx={50 * Math.cos((a * Math.PI) / 180)} cy={50 * Math.sin((a * Math.PI) / 180)} r="7.5" fill="url(#kg-prong)" />
-      ))}
-    </symbol>
-  )
+interface Facet { d: string; fill: string; hi: boolean }
+
+// One ring of facets between an outline and its inset. `outward` is +1 for an outer edge, -1 for
+// the edge of a hole (its bevel faces the other way).
+function ring(outer: P[], inner: P[], outward: 1 | -1): Facet[] {
+  const s = area(outer) > 0 ? 1 : -1
+  return outer.map((a, i) => {
+    const b = outer[(i + 1) % outer.length], ia = inner[i], ib = inner[(i + 1) % inner.length]
+    const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy)
+    const nx = (dy / L) * s * outward, ny = (-dx / L) * s * outward // points away from the table
+    const nz = 0.9, m = Math.hypot(nx, ny, nz)
+    const lit = (nx * LIGHT[0] + ny * LIGHT[1] + nz * LIGHT[2]) / m
+    const t = 0.08 + lit * 0.98
+    return { d: `M${a[0]} ${a[1]}L${b[0]} ${b[1]}L${ib[0].toFixed(1)} ${ib[1].toFixed(1)}L${ia[0].toFixed(1)} ${ia[1].toFixed(1)}Z`, fill: shade(t), hi: t > 0.78 }
+  })
 }
+
+const path = (p: P[]) => `M${p.map((q) => `${q[0].toFixed(1)} ${q[1].toFixed(1)}`).join('L')}Z`
 
 export function KonFooterMark() {
-  const stones = useMemo(layout, [])
-  const channel = (props: Record<string, unknown>) => (
-    <g fill="none" strokeLinecap="round" strokeLinejoin="round" {...props}>
-      {LINES.map(([a, b], i) => <line key={i} x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} />)}
-      <ellipse cx={O.cx} cy={O.cy} rx={O.rx} ry={O.ry} />
-    </g>
-  )
-  const pave = (prefix: string) => stones.map((s, i) => (
-    <use key={prefix + i} href={`#kg-${s.kind}`} x={s.x - GEM / 2} y={s.y - GEM / 2} width={GEM} height={GEM} transform={`rotate(${s.rot} ${s.x} ${s.y})`} />
-  ))
+  const g = useMemo(() => {
+    const kIn = inset(K, BEVEL), nIn = inset(N, BEVEL), oIn = inset(O_OUT, BEVEL), hOut = inset(O_IN, -BEVEL)
+    return {
+      body: [path(K), path(N), `${path(O_OUT)}${path(O_IN)}`],
+      facets: [...ring(K, kIn, 1), ...ring(N, nIn, 1), ...ring(O_OUT, oIn, 1), ...ring(O_IN, hOut, -1)],
+      tables: [path(kIn), path(nIn), `${path(oIn)}${path(hOut)}`],
+      glints: [kIn[0], kIn[kIn.length - 1], oIn[0], oIn[7], nIn[3], nIn[4]],
+    }
+  }, [])
   return (
-    <div className="kon-foot kon-pave" dir="ltr">
+    <div className="kon-foot kon-crystal" dir="ltr">
       <svg viewBox="0 0 1000 360" role="img" aria-label="KON Unlimited">
         <defs>
-          <radialGradient id="kg-ga" cx="0.36" cy="0.3" r="0.8">
-            <stop offset="0" stopColor="#effffc" />
-            <stop offset="0.22" stopColor="#8af3e4" />
-            <stop offset="0.55" stopColor="#1fbcaa" />
-            <stop offset="0.82" stopColor="#07665e" />
-            <stop offset="1" stopColor="#033a36" />
-          </radialGradient>
-          <radialGradient id="kg-gb" cx="0.36" cy="0.3" r="0.8">
-            <stop offset="0" stopColor="#c8fff6" />
-            <stop offset="0.25" stopColor="#3fcdb9" />
-            <stop offset="0.6" stopColor="#0b7c71" />
-            <stop offset="1" stopColor="#01302c" />
-          </radialGradient>
-          <radialGradient id="kg-gc" cx="0.36" cy="0.3" r="0.8">
-            <stop offset="0" stopColor="#ffffff" />
-            <stop offset="0.4" stopColor="#e9f6f4" />
-            <stop offset="0.75" stopColor="#a9c9c5" />
-            <stop offset="1" stopColor="#6f8f8b" />
-          </radialGradient>
-          <radialGradient id="kg-prong" cx="0.35" cy="0.3" r="0.8">
-            <stop offset="0" stopColor="#fff6dc" />
-            <stop offset="0.5" stopColor="#d9b46a" />
-            <stop offset="1" stopColor="#7a5a24" />
-          </radialGradient>
-          <linearGradient id="kg-metal" gradientUnits="userSpaceOnUse" x1="0" y1="40" x2="0" y2="290">
-            <stop offset="0" stopColor="#fff3d1" />
-            <stop offset="0.3" stopColor="#e2c07a" />
-            <stop offset="0.55" stopColor="#a87d36" />
-            <stop offset="0.78" stopColor="#ecd197" />
-            <stop offset="1" stopColor="#7d5b22" />
+          <linearGradient id="kc-table" gradientUnits="userSpaceOnUse" x1="140" y1="60" x2="760" y2="300">
+            <stop offset="0" stopColor="#7eeedd" />
+            <stop offset="0.35" stopColor="#27bba8" />
+            <stop offset="0.7" stopColor="#0f8a7d" />
+            <stop offset="1" stopColor="#0a6158" />
           </linearGradient>
-          <linearGradient id="kg-sheen" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stopColor="#fff" stopOpacity="0" />
+          <linearGradient id="kc-inner" gradientUnits="userSpaceOnUse" x1="0" y1="80" x2="0" y2="270">
+            <stop offset="0" stopColor="#fff" stopOpacity="0.22" />
             <stop offset="0.45" stopColor="#fff" stopOpacity="0" />
-            <stop offset="0.5" stopColor="#fff" stopOpacity="0.6" />
-            <stop offset="0.55" stopColor="#fff" stopOpacity="0" />
-            <stop offset="1" stopColor="#fff" stopOpacity="0" />
+            <stop offset="1" stopColor="#001a18" stopOpacity="0.28" />
           </linearGradient>
-          <linearGradient id="kg-fade" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#fff" stopOpacity="0.3" />
+          <linearGradient id="kc-streak" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0.38" stopColor="#fff" stopOpacity="0" />
+            <stop offset="0.5" stopColor="#fff" stopOpacity="0.32" />
+            <stop offset="0.53" stopColor="#fff" stopOpacity="0" />
+            <stop offset="0.62" stopColor="#fff" stopOpacity="0.16" />
+            <stop offset="0.66" stopColor="#fff" stopOpacity="0" />
+          </linearGradient>
+          <linearGradient id="kc-sheen" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0.4" stopColor="#fff" stopOpacity="0" />
+            <stop offset="0.5" stopColor="#fff" stopOpacity="0.5" />
             <stop offset="0.6" stopColor="#fff" stopOpacity="0" />
           </linearGradient>
-          <filter id="kg-soft" x="-10%" y="-20%" width="120%" height="160%"><feGaussianBlur stdDeviation="12" /></filter>
-          <filter id="kg-glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="9" /></filter>
-          <GemSymbol id="kg-a" base="kg-ga" />
-          <GemSymbol id="kg-b" base="kg-gb" />
-          <GemSymbol id="kg-c" base="kg-gc" />
-          <mask id="kg-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1000" height="360">
-            {channel({ stroke: '#fff', strokeWidth: 58 })}
+          <linearGradient id="kc-fade" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#fff" stopOpacity="0.32" />
+            <stop offset="0.7" stopColor="#fff" stopOpacity="0" />
+          </linearGradient>
+          <filter id="kc-blur" x="-20%" y="-30%" width="140%" height="160%"><feGaussianBlur stdDeviation="16" /></filter>
+          <filter id="kc-glint" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.4" /></filter>
+          <clipPath id="kc-clip">{g.tables.map((d, i) => <path key={i} d={d} clipRule="evenodd" />)}</clipPath>
+          <mask id="kc-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1000" height="360">
+            {g.body.map((d, i) => <path key={i} d={d} fill="#fff" fillRule="evenodd" />)}
           </mask>
-          <mask id="kg-refl" maskUnits="userSpaceOnUse" x="0" y="284" width="1000" height="76">
-            <rect x="0" y="290" width="1000" height="70" fill="url(#kg-fade)" />
+          <mask id="kc-refl" maskUnits="userSpaceOnUse" x="0" y="290" width="1000" height="70">
+            <rect x="0" y="292" width="1000" height="68" fill="url(#kc-fade)" />
           </mask>
         </defs>
 
-        <ellipse cx="500" cy="300" rx="370" ry="14" fill="#000" opacity="0.5" filter="url(#kg-soft)" />
+        {/* the light the crystals throw onto the dark around them */}
+        <g filter="url(#kc-blur)" opacity="0.5">
+          {g.body.map((d, i) => <path key={i} d={d} fill="#1fc4ae" fillRule="evenodd" />)}
+        </g>
+        <ellipse cx="505" cy="300" rx="380" ry="12" fill="#000" opacity="0.55" filter="url(#kc-blur)" />
 
-        {/* soft teal light the stones throw around them */}
-        {channel({ stroke: '#2fd8c3', strokeWidth: 70, opacity: 0.22, filter: 'url(#kg-glow)' })}
-
-        {/* reflection on the floor */}
-        <g mask="url(#kg-refl)" opacity="0.5">
-          <g transform="translate(0 586) scale(1 -1)">
-            {channel({ stroke: 'url(#kg-metal)', strokeWidth: 58 })}
-            {pave('r')}
+        {/* floor reflection */}
+        <g mask="url(#kc-refl)" opacity="0.55">
+          <g transform="translate(0 572) scale(1 -1)">
+            {g.facets.map((f, i) => <path key={i} d={f.d} fill={f.fill} />)}
+            {g.tables.map((d, i) => <path key={i} d={d} fill="url(#kc-table)" fillRule="evenodd" />)}
           </g>
         </g>
 
-        {/* the setting: a depth edge, the gold channel, and the dark bed the stones sit in */}
-        {channel({ stroke: '#3b2a0c', strokeWidth: 60, transform: 'translate(3 7)' })}
-        {channel({ stroke: 'url(#kg-metal)', strokeWidth: 58 })}
-        {channel({ stroke: '#021614', strokeWidth: 50 })}
+        {/* body: the stone's depth, stacked a few pixels down and right */}
+        {Array.from({ length: DEPTH }, (_, i) => DEPTH - i).map((k) => (
+          <g key={k} transform={`translate(${k * 0.45} ${k * 0.95})`}>
+            {g.body.map((d, j) => <path key={j} d={d} fill={k > DEPTH * 0.6 ? '#011917' : '#032b28'} fillRule="evenodd" />)}
+          </g>
+        ))}
 
-        <g className="kg-stones">{pave('s')}</g>
+        {/* bevel facets, each lit by its angle; hairline joins in the facet's own colour hide seams */}
+        {g.facets.map((f, i) => <path key={i} d={f.d} fill={f.fill} stroke={f.fill} strokeWidth="0.6" strokeLinejoin="round" />)}
 
-        <g className="kg-twinkles" aria-hidden="true">
-          {stones.filter((s) => s.tw >= 0).map((s, i) => (
-            <path key={i} className="kg-tw" style={{ animationDelay: `${s.tw}s` }}
-              d={`M${s.x} ${s.y - 16} L${s.x + 2} ${s.y - 2} L${s.x + 16} ${s.y} L${s.x + 2} ${s.y + 2} L${s.x} ${s.y + 16} L${s.x - 2} ${s.y + 2} L${s.x - 16} ${s.y} L${s.x - 2} ${s.y - 2}Z`}
-              fill="#fff" />
-          ))}
+        {/* the polished table, with light refracting through it */}
+        {g.tables.map((d, i) => <path key={i} d={d} fill="url(#kc-table)" fillRule="evenodd" />)}
+        <g clipPath="url(#kc-clip)">
+          <rect x="0" y="0" width="1000" height="360" fill="url(#kc-inner)" />
+          <rect x="100" y="40" width="820" height="280" fill="url(#kc-streak)" />
         </g>
 
-        <g mask="url(#kg-mask)">
-          <rect className="kf-sheen" x="-1000" width="1000" height="360" fill="url(#kg-sheen)" />
+        {/* a slow light passing over the stones */}
+        <g mask="url(#kc-mask)">
+          <rect className="kf-sheen" x="-1000" width="1000" height="360" fill="url(#kc-sheen)" />
+        </g>
+
+        <g className="kc-glints" filter="url(#kc-glint)">
+          {g.glints.map(([x, y], i) => (
+            <path key={i} className="kg-tw" style={{ animationDelay: `${i * 1.1}s` }} fill="#fff"
+              d={`M${x} ${y - 13}L${x + 1.6} ${y - 1.6}L${x + 13} ${y}L${x + 1.6} ${y + 1.6}L${x} ${y + 13}L${x - 1.6} ${y + 1.6}L${x - 13} ${y}L${x - 1.6} ${y - 1.6}Z`} />
+          ))}
         </g>
       </svg>
       <p className="kf-sub"><span>Unlimited</span></p>
