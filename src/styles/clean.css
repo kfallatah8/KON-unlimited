@@ -765,38 +765,30 @@ main h3 { font-size: var(--fs-h3) !important; line-height: 1.45 !important; font
 @media (max-width: 520px) { .footer-slogan { font-size: 0.86rem !important; white-space: normal !important; } }
 .hero .proof li small { font-size: 0.8rem !important; }
 /* With bloom the gem canvas is opaque black: screen-blend it so the clouds behind still show */
-.gem-canvas.is-rich { mix-blend-mode: screen; }
 .cloud-sky.is-front { z-index: 1; }
-
-/* ---------- Keywords: brushed champagne gold, alive but quiet ----------
-   ** ** keywords: pale white-gold metal with a soft ink line under it
-   ++ ++ signature: deeper polished gold
-   A slow sheen crosses each one now and then (12s, staggered by position), so the page breathes
-   without anything blinking. Reduced-motion visitors get the still metal. */
-.kw, .lux {
-  -webkit-text-fill-color: transparent !important; color: transparent !important; text-shadow: none !important; font-weight: 500;
-  background-repeat: no-repeat !important; -webkit-background-clip: text, border-box !important; background-clip: text, border-box !important;
-  background-size: 250% 100%, 100% 100% !important; background-position: 100% 0, 0 0 !important;
-  -webkit-box-decoration-break: clone; box-decoration-break: clone; padding-inline: 0.04em;
-  animation: metalSheen 12s cubic-bezier(0.45, 0, 0.2, 1) infinite !important;
-}
-.kw {
-  background-image:
-    linear-gradient(100deg, #f4ead2 0%, #f4ead2 38%, #fffaf0 46%, #e7cf98 50%, #f4ead2 58%, #f4ead2 100%),
-    linear-gradient(transparent 82%, rgba(214, 192, 143, 0.32) 82%, rgba(214, 192, 143, 0.32) 90%, transparent 90%) !important;
-}
-.lux {
-  background-image:
-    linear-gradient(100deg, #e0bf7a 0%, #e9cd8f 36%, #fff3d6 46%, #c99d52 52%, #e5c684 60%, #e0bf7a 100%),
-    linear-gradient(transparent, transparent) !important;
-}
-.kw:nth-of-type(2n) { animation-delay: -4s !important; }
-.lux:nth-of-type(2n) { animation-delay: -7s !important; }
-@keyframes metalSheen { 0%, 62% { background-position: 100% 0, 0 0; } 82%, 100% { background-position: 0% 0, 0 0; } }
-.hero-promise .kw { background-image: linear-gradient(100deg, #e0bf7a, #f3dfae 46%, #c99d52 52%, #e0bf7a), linear-gradient(transparent, transparent) !important; }
-@media (prefers-reduced-motion: reduce) { .kw, .lux { animation: none !important; } }
 
 /* the scene breathes: the ambient glow swells and settles on a slow 14s cycle */
 html.is-ready .stage-glow { animation: stageBreath 14s ease-in-out infinite !important; }
-@keyframes stageBreath { 0%, 100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 0.68; transform: scale(1.035); } }
+@keyframes stageBreath { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.66; } }
 @media (prefers-reduced-motion: reduce) { html.is-ready .stage-glow { animation: none !important; } }
+
+/* ---------- Final 3: weight, contrast, footer fade ---------- */
+/* a touch more weight everywhere: display 400, card titles 500, leads 500, body stays 400 but brighter */
+main h2.display, .hero-title, .il-line, .il-lead, .il-kick { font-weight: 400 !important; }
+main h3, .fd-name, .founder-punch, .problem-close, .finale-line, .finale-line2, .ss-title, .sol-hook, .ha-q, .dedication { font-weight: 500 !important; }
+.hero-lede, .body-lg, .fd-intro, .ss-body, .problem-line, .ti-lead { font-weight: 500 !important; }
+main p, main li { color: #dbe9e6; }
+.hero .proof li b { font-weight: 300 !important; }
+.kw { font-weight: 600; }
+
+/* calculator reading: labels stand out as small tags */
+.ti-row .ti-k { display: inline-block; justify-self: start; font-size: 0.92rem !important; font-weight: 600; color: #8ff0e2 !important; padding: 0.05rem 0.6rem; border-radius: 999px; background: rgba(95, 227, 210, 0.1); border: 1px solid rgba(95, 227, 210, 0.28); }
+.ti-row.ti-move .ti-k { color: #f0d49a !important; background: rgba(216, 178, 106, 0.12); border-color: rgba(216, 178, 106, 0.35); }
+.ti-row p { color: #e4efed; }
+
+/* footer: no hard edge. The page (and its clouds) runs straight into the footer; the dark
+   begins under the KON word and deepens smoothly into the footer's own background */
+.site-footer { border-top: 0 !important;
+  background: linear-gradient(180deg, rgba(1, 10, 12, 0) 0, rgba(1, 10, 12, 0) calc(2.5rem + 9vw), rgba(1, 10, 12, 0.55) calc(4rem + 15vw), rgba(1, 10, 12, 0.88) calc(5.5rem + 21vw), #010a0c min(calc(8rem + 27vw), 34rem)) !important; }
+.site-footer::before, .site-footer::after { display: none !important; }
+.kon-foot::before { display: none !important; }

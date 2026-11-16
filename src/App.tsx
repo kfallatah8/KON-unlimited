@@ -1025,7 +1025,6 @@ export default function App() {
       <Cursor />
       <div className="stage" aria-hidden="true">
         <div className="stage-glow" />
-        <CloudSky tier={caps.tier} reduced={caps.reducedMotion} />
         <div className="stage-dream"><i /><i /></div>
         {webgl && (
           <SafeBoundary>
@@ -1034,7 +1033,7 @@ export default function App() {
             </Suspense>
           </SafeBoundary>
         )}
-        <CloudSky tier={caps.tier} reduced={caps.reducedMotion} front />
+        <CloudSky tier={caps.tier} reduced={caps.reducedMotion} />
         <div className="stage-flash" />
         <div className="stage-burst" />
         <div className="stage-veil" />

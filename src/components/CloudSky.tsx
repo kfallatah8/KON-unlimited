@@ -63,7 +63,7 @@ void main(){
   vec3 col = mix(shadow, sun, 0.12 + 0.88 * light);
   col = mix(col, gold, silver * 0.35);
   float edge = smoothstep(0.382, 0.82, rn) * (1.0 - 0.3 * smoothstep(0.88, 1.0, rn));
-  float alpha = body * edge * mix(0.26, 0.15, front);
+  float alpha = body * edge * mix(0.22, 0.15, front);
   gl_FragColor = vec4(col * alpha, alpha);
 }`
 
@@ -88,7 +88,7 @@ export function CloudSky({ tier, reduced, front = false }: { tier: string; reduc
     gl.uniform1f(uO, low || front ? 4 : 5)
     gl.uniform1f(gl.getUniformLocation(pr, 'front'), front ? 1 : 0)
 
-    const scale = (low ? 0.22 : 0.28) * (front ? 0.8 : 1)
+    const scale = (low || matchMedia('(pointer: coarse)').matches ? 0.22 : 0.28) * (front ? 0.8 : 1)
     const size = () => {
       const w = Math.max(160, Math.round(window.innerWidth * scale)), h = Math.max(160, Math.round(window.innerHeight * scale))
       if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; gl.viewport(0, 0, w, h); gl.uniform2f(uRes, w, h) }
@@ -99,7 +99,8 @@ export function CloudSky({ tier, reduced, front = false }: { tier: string; reduc
     const frame = (now: number) => { gl.uniform1f(uT, now / 1000 - t0); gl.drawArrays(gl.TRIANGLES, 0, 3) }
 
     let raf = 0, last = 0
-    const step = 1000 / (low ? 18 : front ? 20 : 24)
+    const touch = matchMedia('(pointer: coarse)').matches
+    const step = 1000 / (low || touch ? 16 : front ? 20 : 24)
     const loop = (now: number) => {
       raf = requestAnimationFrame(loop)
       if (now - last < step) return
