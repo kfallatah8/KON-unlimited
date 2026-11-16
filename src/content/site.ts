@@ -212,9 +212,9 @@ const ar = {
     eyebrow: 'مجانًا',
     title: 'القيمة أولًا، قبل أي التزام',
     items: [
-      { k: 'أدوات مجانية', title: 'احسب ما يضيع منك الآن', body: 'حاسبات لكل قطاع تقرأ أرقامك بعدسة كُن، وتعمل على جهازك فقط', cta: 'جرّب الأدوات', href: '#solutions' },
-      { k: 'تشخيص مجاني', title: 'التشخيص الأول علينا', body: 'جلسة 30 دقيقة مع خبير أول، وخريطة طريق مبدئية مكتوبة', cta: 'احجز تشخيصك', href: '#start' },
-      { k: 'دعم مجاني', title: 'للمشاريع المتعثّرة', body: 'استشارة متقدّمة ودعم تشغيلي كامل بلا مقابل، لمن لا يستطيع تحمّل التكلفة', cta: 'قدّم طلب الدعم', href: '#support' },
+      { k: 'أدوات مجانية', title: 'احسب ما يضيع منك الآن', body: 'حاسبات لكل قطاع تقرأ أرقامك بعدسة كُن، وتعمل على جهازك فقط', cta: 'جرّب الأدوات', href: '#solutions', points: ['حاسبات لستة قطاعات', 'نتيجة فورية مع شرح مبسّط', 'أرقامك تبقى على جهازك'] },
+      { k: 'تشخيص مجاني', title: 'التشخيص الأول علينا', body: 'جلسة 30 دقيقة مع خبير أول، وخريطة طريق مبدئية مكتوبة', cta: 'احجز تشخيصك', href: '#start', points: ['30 دقيقة مع خبير أول', 'قراءة من ثمانية أبعاد', 'خريطة طريق مبدئية مكتوبة'] },
+      { k: 'دعم مجاني', title: 'للمشاريع المتعثّرة', body: 'استشارة متقدّمة ودعم تشغيلي كامل بلا مقابل، لمن لا يستطيع تحمّل التكلفة', cta: 'قدّم طلب الدعم', href: '#support', points: ['استشارة متقدّمة', 'دعم تشغيلي كامل', 'بلا مقابل وبلا شروط خفية'] },
     ],
   },
 
@@ -710,9 +710,9 @@ const en: Content = {
     eyebrow: 'Free',
     title: 'Value first, before any commitment',
     items: [
-      { k: 'Free tools', title: 'See what you’re losing right now', body: 'Calculators for every sector that read your numbers through the KON lens, and run on your device only', cta: 'Try the tools', href: '#solutions' },
-      { k: 'Free diagnosis', title: 'Your first diagnosis is on us', body: 'A 30-minute session with a senior advisor, plus a written first-draft roadmap', cta: 'Book your diagnosis', href: '#start' },
-      { k: 'Free support', title: 'For struggling businesses', body: 'Advanced advisory and full operational support at no cost, for those who can’t afford it', cta: 'Apply for support', href: '#support' },
+      { k: 'Free tools', title: 'See what you’re losing right now', body: 'Calculators for every sector that read your numbers through the KON lens, and run on your device only', cta: 'Try the tools', href: '#solutions', points: ['Calculators for six sectors', 'Instant result with a plain reading', 'Your numbers stay on your device'] },
+      { k: 'Free diagnosis', title: 'Your first diagnosis is on us', body: 'A 30-minute session with a senior advisor, plus a written first-draft roadmap', cta: 'Book your diagnosis', href: '#start', points: ['30 minutes with a senior advisor', 'A read across eight dimensions', 'A written first-draft roadmap'] },
+      { k: 'Free support', title: 'For struggling businesses', body: 'Advanced advisory and full operational support at no cost, for those who can’t afford it', cta: 'Apply for support', href: '#support', points: ['Advanced advisory', 'Full operational support', 'No fee, no hidden conditions'] },
     ],
   },
 

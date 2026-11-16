@@ -488,6 +488,8 @@ function Freebies() {
               <span className="fr-tag">{it.k}</span>
               <h3>{it.title}</h3>
               <p>{it.body}</p>
+              <ul className="fr-points">{it.points.map((x) => <li key={x}>{x}</li>)}</ul>
+              <span className="fr-price"><b dir="ltr">0</b><em>{lang === 'ar' ? 'ر.س' : 'SAR'}</em></span>
               <span className="fr-cta">{it.cta} <i aria-hidden="true" className="fr-arr">{lang === 'ar' ? '←' : '→'}</i></span>
             </a>
           ))}

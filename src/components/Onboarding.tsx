@@ -95,7 +95,7 @@ export function QuestionField({ q, value, other, onChange, onOther, lang }: {
                 else onChange(on ? undefined : op.id)
               }}
             >
-              {on && <GemMark className="chip-gem" />}{op.label}
+              {op.label}
             </button>
           )
         })}
@@ -112,7 +112,9 @@ function keepInView(force: boolean) {
   if (!el) return
   const top = el.getBoundingClientRect().top
   const head = window.innerWidth < 700 ? 72 : 96
-  if (!force && top >= head - 4 && top < window.innerHeight * 0.45) return
+  // Never move the page while the card's top is on screen: only bring it back when it has
+  // scrolled out above the header (a long step, then Next).
+  if (!force && top >= head - 4) return
   const y = window.scrollY + top - head
   if (lenis) lenis.scrollTo(y, { duration: 0.7 })
   else window.scrollTo({ top: y, behavior: 'smooth' })

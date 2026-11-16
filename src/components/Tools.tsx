@@ -80,7 +80,7 @@ function Toggle({ label, on, set }: { label: string; on: boolean; set: (b: boole
 
 // The reading under each result: split into short clauses, one idea per line, with every number
 // lifted out so the eye lands on it first. The last clause is usually the move to make.
-const NUM = /(\d[\d,.:]*(?:[\s  ]?%|[\s  ]?ر\.س|\s?SAR|[\s  ](?:م|ص)(?=[\s،,.]|$))?)/g
+const NUM = /(\u2066?\d[\d,.:]*\u2069?(?:[\s  ]?%|[\s  ]?ر\.س|\s?SAR|[\s  ](?:م|ص)(?=[\s،,.]|$))?)/g
 function marks(t: string) {
   return t.split(NUM).map((x, i) => (i % 2 ? <b key={i} className="tl-n" dir="ltr">{x}</b> : x))
 }
@@ -88,13 +88,26 @@ function Insight({ body }: { body: ReactNode }) {
   const lang = useStore((st) => st.lang)
   if (typeof body !== 'string') return <div className="tl-insight">{body}</div>
   const parts = body.split(/(?<=[،.])\s+/).map((x) => x.replace(/[،.]$/, '').trim()).filter(Boolean)
-  const lead = parts[0], rest = parts.slice(1, -1), move = parts.length > 1 ? parts[parts.length - 1] : ''
+  const lead = parts[0], why = parts.slice(1, -1).join(lang === 'ar' ? '، ' : ', '), move = parts.length > 1 ? parts[parts.length - 1] : ''
+  const L = lang === 'ar'
   return (
     <div className="tl-insight">
-      <p className="ti-k">{lang === 'ar' ? 'ماذا يعني رقمك' : 'What your number means'}</p>
-      <p className="ti-lead">{marks(lead)}</p>
-      {rest.length > 0 && <ul className="ti-list">{rest.map((x, i) => <li key={i}>{marks(x)}</li>)}</ul>}
-      {move && <p className="ti-move"><span>{lang === 'ar' ? 'الخطوة' : 'The move'}</span><span className="ti-txt">{marks(move)}</span></p>}
+      <div className="ti-row ti-says">
+        <i aria-hidden="true">1</i>
+        <div><span className="ti-k">{L ? 'ماذا يقول رقمك' : 'What your number says'}</span><p className="ti-lead">{marks(lead)}</p></div>
+      </div>
+      {why && (
+        <div className="ti-row ti-why">
+          <i aria-hidden="true">2</i>
+          <div><span className="ti-k">{L ? 'لماذا يهمّك' : 'Why it matters'}</span><p>{marks(why)}</p></div>
+        </div>
+      )}
+      {move && (
+        <div className="ti-row ti-move">
+          <i aria-hidden="true">{why ? 3 : 2}</i>
+          <div><span className="ti-k">{L ? 'فرصتك الآن' : 'Your opportunity now'}</span><p>{marks(move)}</p></div>
+        </div>
+      )}
     </div>
   )
 }
