@@ -764,3 +764,6 @@ main h3 { font-size: var(--fs-h3) !important; line-height: 1.45 !important; font
 .footer-slogan { font-family: 'Readex Pro', sans-serif !important; font-weight: 300; letter-spacing: 0.03em; }
 @media (max-width: 520px) { .footer-slogan { font-size: 0.86rem !important; white-space: normal !important; } }
 .hero .proof li small { font-size: 0.8rem !important; }
+/* With bloom the gem canvas is opaque black: screen-blend it so the clouds behind still show */
+.gem-canvas.is-rich { mix-blend-mode: screen; }
+.cloud-sky.is-front { z-index: 1; }

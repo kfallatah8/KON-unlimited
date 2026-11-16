@@ -32,37 +32,42 @@ float fbm(vec3 p){
   for (int i = 0; i < 6; i++) { if (float(i) >= oct) break; v += a * n(p); p = p * 2.03 + vec3(1.7, 9.2, 3.1); a *= 0.5; }
   return v;
 }
+uniform float front;   // 0 = the deep layer behind the gems, 1 = thin wisps in front of them
 float clouds(vec2 q, float tt, bool cheap){
   float r = length(q) + 1e-4;
-  float a = atan(q.y, q.x) + 0.22 * log(r) + tt * 0.006; // the slow twist
-  float z = log(r) * 1.6 - tt * 0.045;                      // flying forward through them
-  vec3 p = vec3(cos(a) * 1.35, sin(a) * 1.35, z);
+  float sp = 1.0 + front * 0.7;                                   // nearer clouds pass faster (parallax)
+  float a = atan(q.y, q.x) + 0.22 * log(r) + tt * 0.006 + front * 2.1; // the slow twist
+  float z = log(r) * (1.6 - front * 0.5) - tt * 0.045 * sp + front * 40.0; // flying forward through them
+  vec3 p = vec3(cos(a), sin(a), 0.0) * (1.35 - front * 0.35) + vec3(0.0, 0.0, z);
   if (cheap) return fbm(p);
   vec3 w = vec3(fbm(p + vec3(0.0, 0.0, tt * 0.01)), fbm(p + vec3(5.2, 1.3, -tt * 0.008)), 0.0);
-  float b = fbm(p + w * 0.7);
-  return b + 0.05 * (1.0 - abs(2.0 * n(p * 5.0 + w * 2.0) - 1.0)) - 0.025; // billowy detail on the rims
+  return fbm(p + w * 0.75);
 }
 void main(){
   vec2 uv = gl_FragCoord.xy / res;
   vec2 q = (uv - 0.5) * vec2(res.x / res.y, 1.0);
   float hd = 0.5 * length(vec2(res.x / res.y, 1.0));
-  float rn = length(q) / hd;                                   // 0 centre .. 1 corner
+  float rn = length(q) / hd;                                       // 0 centre .. 1 corner
   float d = clouds(q, t, false);
-  float lit = d + (clouds(q * 0.965, t, true) - clouds(q, t, true)); // light from the middle                            // a sample nearer the centre = light from the middle
-  float edge = smoothstep(0.382, 0.80, rn) * (1.0 - 0.35 * smoothstep(0.85, 1.0, rn));
-  float body = smoothstep(0.44, 0.74, d) * edge;
-  float shade = clamp((lit - d) * 5.0 + 0.5, 0.0, 1.0);
-  float core = smoothstep(0.6, 0.85, d);            // thick parts sit in their own shadow
-  vec3 deep = vec3(0.03, 0.16, 0.165);
-  vec3 mist = vec3(0.62, 0.84, 0.81);
-  vec3 rim  = vec3(0.86, 0.80, 0.66);                          // a hint of the brand's gold on the lit edges
-  vec3 col = mix(deep, mist, (0.3 + 0.7 * shade) * (1.0 - 0.3 * core));
-  col = mix(col, rim, smoothstep(0.7, 1.0, shade) * 0.25);
-  float alpha = body * 0.23;
+  float lo = mix(0.45, 0.53, front), hi = mix(0.70, 0.74, front);
+  float body = smoothstep(lo, hi, d);
+  // light comes from the open centre: march a few steps toward it and let thicker cloud shadow itself
+  vec2 dir = -normalize(q + 1e-4) * 0.045;
+  float od = 0.0;
+  for (int i = 1; i <= 3; i++) od += smoothstep(lo, hi + 0.06, clouds(q + dir * float(i), t, true));
+  float light = exp(-od * 0.9);
+  float silver = pow(1.0 - body, 2.0) * light;                     // thin edges facing the light glow
+  vec3 shadow = vec3(0.025, 0.12, 0.13);
+  vec3 sun = vec3(0.80, 0.93, 0.90);
+  vec3 gold = vec3(0.92, 0.84, 0.66);
+  vec3 col = mix(shadow, sun, 0.12 + 0.88 * light);
+  col = mix(col, gold, silver * 0.35);
+  float edge = smoothstep(0.382, 0.82, rn) * (1.0 - 0.3 * smoothstep(0.88, 1.0, rn));
+  float alpha = body * edge * mix(0.26, 0.15, front);
   gl_FragColor = vec4(col * alpha, alpha);
 }`
 
-export function CloudSky({ tier, reduced }: { tier: string; reduced: boolean }) {
+export function CloudSky({ tier, reduced, front = false }: { tier: string; reduced: boolean; front?: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -80,9 +85,10 @@ export function CloudSky({ tier, reduced }: { tier: string; reduced: boolean }) 
     const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0)
     const uRes = gl.getUniformLocation(pr, 'res'), uT = gl.getUniformLocation(pr, 't'), uO = gl.getUniformLocation(pr, 'oct')
     const low = tier === 'low'
-    gl.uniform1f(uO, low ? 4 : 5)
+    gl.uniform1f(uO, low || front ? 4 : 5)
+    gl.uniform1f(gl.getUniformLocation(pr, 'front'), front ? 1 : 0)
 
-    const scale = low ? 0.22 : 0.28
+    const scale = (low ? 0.22 : 0.28) * (front ? 0.8 : 1)
     const size = () => {
       const w = Math.max(160, Math.round(window.innerWidth * scale)), h = Math.max(160, Math.round(window.innerHeight * scale))
       if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; gl.viewport(0, 0, w, h); gl.uniform2f(uRes, w, h) }
@@ -117,7 +123,7 @@ export function CloudSky({ tier, reduced }: { tier: string; reduced: boolean }) 
       window.removeEventListener('resize', onResize)
       gl.getExtension('WEBGL_lose_context')?.loseContext()
     }
-  }, [tier, reduced])
+  }, [tier, reduced, front])
 
-  return <canvas ref={ref} className="cloud-sky" aria-hidden="true" />
+  return <canvas ref={ref} className={`cloud-sky${front ? ' is-front' : ''}`} aria-hidden="true" />
 }

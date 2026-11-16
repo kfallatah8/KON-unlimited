@@ -610,7 +610,7 @@ export default function GemField({ tier, reduced }: { tier: Tier; reduced: boole
   const narrow = typeof window !== 'undefined' && window.innerWidth < 700
   return (
     <Canvas
-      className="gem-canvas"
+      className={rich ? "gem-canvas is-rich" : "gem-canvas"}
       dpr={dpr}
       // The stage never changes size on scroll; ignore scroll for measuring, and settle window
       // resizes before reallocating (meanwhile the last frame just stretches, never blanks).

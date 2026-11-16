@@ -1034,6 +1034,7 @@ export default function App() {
             </Suspense>
           </SafeBoundary>
         )}
+        <CloudSky tier={caps.tier} reduced={caps.reducedMotion} front />
         <div className="stage-flash" />
         <div className="stage-burst" />
         <div className="stage-veil" />
