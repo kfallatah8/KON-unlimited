@@ -408,6 +408,39 @@ h1 .lux { -webkit-text-fill-color: var(--champagne); color: var(--champagne); te
 .alt .sep { color: var(--faint); }
 @media (max-width: 900px) { .top .home { display: none; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0s !important; transition-duration: 0.01ms !important; } .bayt span, .intro * { opacity: 1 !important; transform: none !important; filter: none !important; } }
+
+/* ---------- v8: phone-first ---------- */
+@media (max-width: 900px) {
+  .lead { padding-top: 70px; gap: 14px; }
+  .lead .eyebrow { display: none; }
+  h1 { margin: 0 0 4px; }
+  .lede { font-size: 0.9rem; line-height: 1.65; color: var(--text-2); }
+  .stage { height: clamp(330px, 56svh, 540px); min-height: 0; margin-top: 2px; }
+  .rest { gap: 22px; padding-top: 14px; }
+  .rest > .clock { margin-top: 2px; }
+  .gesture { font-size: 0.78rem; padding: 7px 14px; }
+  /* no live blur over the 3D canvas: it is the main cause of scroll jank on iPhone */
+  .gesture, .tool, .mini, .chip, .key, .sheet { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+  .gesture, .tool { background: rgba(1,13,15,0.86); }
+  .chip { background: rgba(2,20,22,0.92); }
+  .mini { background: rgba(2,20,22,0.95); }
+  .key { background: linear-gradient(180deg, rgba(1,11,13,0.9), #010b0d 34%); }
+  .sheet { background: rgba(1,8,9,0.94); }
+  .signs, .traces, .seals, .alt, .foot { content-visibility: auto; contain-intrinsic-size: auto 320px; }
+  .top { background: linear-gradient(180deg, #010d0f, rgba(1,13,15,0.92) 70%, rgba(1,13,15,0)); }
+}
+@media (max-width: 900px) and (max-height: 700px) { .stage { height: clamp(300px, 52svh, 420px); } .lede { display: none; } }
+
+@media (max-width: 900px) {
+  .mini { white-space: nowrap; font-size: 0.8rem; padding: 0 10px; gap: 6px; height: 32px; }
+  .top { gap: 6px; }
+}
+@media (max-width: 420px) { .brand span { display: none; } }
+@media (max-width: 350px) { .chip { padding: 0 9px; font-size: 0.78rem; } .mini { font-size: 0.74rem; padding: 0 8px; } :root { --pad: 14px; } }
+
+html, body { overflow-x: clip; }
+.field input { min-width: 0; flex: 1 1 auto; width: 100%; }
+.sign.vessel { overflow: hidden; }
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -1061,8 +1094,10 @@ h1 .lux { -webkit-text-fill-color: var(--champagne); color: var(--champagne); te
   function placeStage() {
     const st = $('stage'), wide = innerWidth > 900;
     // wide: the relic is a fixed backdrop outside the column; narrow: it sits in the flow between the clock and the riddle
-    if (wide) { if (st.parentNode !== document.body) document.body.insertBefore(st, $('hall')); }
-    else { const after = document.querySelector('.riddle'); if (st.previousElementSibling !== after) after.after(st); }
+    // narrow: the relic comes straight after the title (the puzzle is the first thing you see), and the clock moves below the riddle
+    const lead = document.querySelector('.lead'), title = lead.firstElementChild, clock = $('clock'), riddle = document.querySelector('.riddle');
+    if (wide) { if (st.parentNode !== document.body) document.body.insertBefore(st, $('hall')); if (clock.parentNode !== lead) lead.appendChild(clock); }
+    else { if (st.previousElementSibling !== title) title.after(st); if (clock.previousElementSibling !== riddle) riddle.after(clock); }
     if (wide) {
       const cw = $('col').getBoundingClientRect().width, shift = Math.min(0.3, cw / 2 / innerWidth);
       st.dataset.shift = shift.toFixed(4);
@@ -1136,10 +1171,10 @@ const GLYPHS = JSON.parse(document.getElementById('glyphs').textContent);
 THREE.ShaderChunk.dithering_fragment += `
   gl_FragColor.rgb = (any(isnan(gl_FragColor.rgb)) || any(isinf(gl_FragColor.rgb))) ? vec3(0.0) : clamp(gl_FragColor.rgb, 0.0, 8.0);`;
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-let dprCap = coarse ? 1.75 : 2;
+let dprCap = coarse ? 1.5 : 2;
 renderer.setPixelRatio(Math.min(devicePixelRatio || 1, dprCap));
 renderer.setClearColor(0x010d0f, 1);
-renderer.shadowMap.enabled = true;
+renderer.shadowMap.enabled = !coarse; // phones: no shadow pass, the floor glow carries the depth
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const scene = new THREE.Scene();
@@ -1153,7 +1188,9 @@ composer.addPass(new RenderPass(scene, camera));
 const bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), 0.5, 0.7, 0.82);
 composer.addPass(bloom);
 composer.addPass(new OutputPass());
-let useComposer = true;
+let useComposer = !coarse;
+// phones skip the bloom pass entirely: tone mapping goes straight to the canvas
+if (coarse) { renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.outputColorSpace = THREE.SRGBColorSpace; }
 
 // ---------- the sky: the same clouds as the homepage ----------
 // The cloud field (log-polar fbm, lit from the open centre, gold-silver edges) is rendered ONCE into a
@@ -1492,7 +1529,7 @@ word.position.copy(WORD_IN); word.scale.setScalar(0.001);
 // ---------- gems rising through the clouds (one instanced draw) ----------
 // They live in a ring that never comes closer than 4.6 to the relic's axis (the altar is 3.25 wide),
 // rise slowly and turn: nothing they do can touch the relic, the altar or the heart.
-const FIELD_N = coarse ? 26 : 56;
+const FIELD_N = coarse ? 14 : 56;
 const fieldMat = new THREE.MeshPhysicalMaterial({ color: 0x7ff0e0, emissive: 0x16b3a4, emissiveIntensity: 0.7, flatShading: true, metalness: 0.1, roughness: 0.04, clearcoat: 1, clearcoatRoughness: 0, envMapIntensity: 3.2, ior: 2.0, fog: false });
 const field = new THREE.InstancedMesh(brilliant(0.5, 10), fieldMat, FIELD_N);
 field.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
@@ -2111,7 +2148,7 @@ function loop(now) {
 }
 function degrade() {
   useComposer = false; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.outputColorSpace = THREE.SRGBColorSpace;
-  dprCap = 1.25; renderer.setPixelRatio(Math.min(devicePixelRatio || 1, dprCap)); frame();
+  dprCap = coarse ? 1.15 : 1.25; renderer.setPixelRatio(Math.min(devicePixelRatio || 1, dprCap)); frame();
   scene.traverse(o => { if (o.material) [].concat(o.material).forEach(m => { m.needsUpdate = true; }); });
   stage.dataset.quality = 'lite';
 }
