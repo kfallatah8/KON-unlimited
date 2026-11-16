@@ -6,6 +6,7 @@ import type { CaseItem } from './content/site'
 import { BOOKING_URL, contact, SHOW_SOLUTIONS, SHOW_TALENT, tourUrl, type IconId } from './content/site'
 import { Talent } from './components/Talent'
 import { Solutions } from './components/Solutions'
+import { CirclePage, CircleTeaser } from './components/Circle'
 import { KonFooterMark } from './components/KonFooterMark'
 import { detectCapabilities } from './lib/capabilities'
 import { motion, setLang, startOnboarding, useStore } from './state/store'
@@ -800,6 +801,7 @@ function Page({ route }: { route: string }) {
       <div className="wrap page-back"><a href="#top" className="link-btn"><span className="arr" aria-hidden="true">→</span> {c.meta.home}</a></div>
       {route === 'solutions' && <Solutions />}
       {route === 'talent' && <Talent />}
+      {route === 'circle' && <CirclePage />}
       {route === 'work' && <><Work full /><Support /></>}
       <section className="band page-next">
         <div className="wrap narrow center">
@@ -1082,7 +1084,7 @@ export default function App() {
       <ChapterRail />
       <div className="grain" aria-hidden="true" />
       <main id="main">
-        {route && ['solutions', 'talent', 'work'].includes(route) ? (
+        {route && ['solutions', 'talent', 'work', 'circle'].includes(route) ? (
           <Page key={route} route={route} />
         ) : (
           <>
@@ -1093,6 +1095,7 @@ export default function App() {
             <Services />
             <Interlude />
             <QuickTools />
+            <CircleTeaser />
             <Founder />
             <Finale fallback={!webgl} />
             <Start />
