@@ -477,6 +477,17 @@ html, body { overflow-x: clip; }
   .intro .skip { font-size: 0.95rem; color: var(--text-2); padding: 10px 6px; }
   .intro .chip.enter { height: 48px; padding: 0 28px; font-size: 1rem; }
 }
+
+/* ---------- v11: more air between lines (khalid) ---------- */
+body { line-height: 1.85; }
+h1 { line-height: 1.5 !important; }
+.ask { line-height: 1.7; }
+.lede { line-height: 2 !important; }
+.bayt { line-height: 2.1 !important; }
+.poem { gap: 16px !important; }
+.riddle-h small, .stage-h small, .clock-h small, .frag, .vstate small, .whisper, .note, .card p, .sheet p, .traces li, .seals li, .seals p, .foot span, .gesture { line-height: 1.95 !important; }
+.gesture { line-height: 1.6 !important; }
+@media (max-width: 900px) { .bayt { line-height: 2.15 !important; } .poem { gap: 18px !important; } }
 </style></head><body>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
