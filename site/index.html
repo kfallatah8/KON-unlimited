@@ -494,7 +494,6 @@ html, body { overflow-x: clip; }
     <p data-i18n="intro1">قبل أن يُفتح الباب</p>
     <p data-i18n="intro2">كلمةٌ واحدة</p>
     <span class="chip enter" data-i18n="enter">ادخل</span>
-    <a class="skip home-href" href="#" data-i18n="skip">أو ادخل موقع KON مباشرة</a>
   </div>
 </div>
 
@@ -502,8 +501,6 @@ html, body { overflow-x: clip; }
   <a class="brand" href="#" aria-label="KON Unlimited"><b>KON</b><span>Unlimited</span></a>
   <span class="grow"></span>
   <span class="mini" id="mini" aria-hidden="true"><i></i><span id="miniTxt"><b id="miniD"></b> <span id="miniU"></span> <b id="miniT" dir="ltr"></b></span></span>
-  <a class="chip home home-href" href="#"><span data-i18n="homeTop">ادخل الموقع</span><svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
-  <button class="chip solid join-top" id="joinTop" type="button" data-i18n="joinTop">احجز مكانك</button>
   <button class="chip" id="langBtn" type="button">English</button>
   <button class="chip icon" id="soundBtn" type="button" aria-pressed="false" data-i18n-aria="sound" aria-label="الصوت"><svg><use href="#i-sound"/></svg></button>
 </header>
@@ -603,7 +600,6 @@ html, body { overflow-x: clip; }
         </div>
       </details>
 
-      <p class="alt" id="alt"><span data-i18n="altQ">تفضّل الطريق المختصر؟</span><a class="link home-href" href="#" data-i18n="altHome">ادخل الموقع مباشرة</a><span class="sep">·</span><button class="link" id="joinBtn" type="button" data-i18n="altBtn">احجز مكانك دون حلّ</button></p>
 
       <footer class="foot">
         <span data-i18n="values">نرفع الوعي · علاقات حقيقية مع أناس حقيقيين · نُطلق الطاقات الكامنة</span>
@@ -638,7 +634,6 @@ html, body { overflow-x: clip; }
       <a class="ghost" id="shareWa" target="_blank" rel="noopener" data-i18n="shareWa">أرسله عبر واتساب</a>
       <button class="ghost" id="shareCopy" type="button" data-i18n="shareCopy">انسخ الرابط</button>
     </div>
-    <div class="wel-home"><a class="primary ghost home-href" href="#" style="display:inline-flex;align-items:center;gap:8px;height:50px"><span data-i18n="welHome">ادخل موقع KON Unlimited</span><svg aria-hidden="true" style="width:16px;height:16px"><use href="#i-arrow"/></svg></a></div>
   </div>
 </div>
 
@@ -1087,8 +1082,7 @@ html, body { overflow-x: clip; }
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') ['welcome', 'waitSheet'].forEach(id => { if (!$(id).hidden) closeSheet(id); }); });
   const openWait = () => openSheet('waitSheet');
-  $('joinTop').addEventListener('click', openWait);
-  $('joinBtn').addEventListener('click', openWait);
+  // the waitlist is reached only by solving: no shortcut buttons on this build
   document.querySelectorAll('form.join').forEach(f => {
     const seg = f.querySelectorAll('.seg button'), inp = f.querySelector('.chIn'), lbl = f.querySelector('.chLbl');
     seg.forEach(b => b.addEventListener('click', () => {
