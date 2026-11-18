@@ -1,46 +1,48 @@
-/* ---------- one highlight voice (see src/lib/highlights.ts) ---------- */
+/* ---------- highlights v5: liquid ink marker tied to the scroll (src/lib/highlights.ts) ---------- */
+@property --p { syntax: '<number>'; inherits: false; initial-value: 0; }
+
 .hlx, .hlx.kw, .hlx.lux {
-  --hl-a: #f2fffc; --hl-b: #9ff3e6; --hl-c: #3fd0bd;
-  font-weight: inherit !important; text-shadow: none !important; animation: none !important; padding: 0 !important;
-  color: var(--ink) !important; -webkit-text-fill-color: transparent !important;
-  background: linear-gradient(to left, var(--hl-a) 0%, var(--hl-b) 34%, var(--hl-c) 43%, var(--ink) 54%, var(--ink) 100%) no-repeat !important;
-  background-size: 230% 100% !important; background-position: 0% 0 !important;
-  -webkit-background-clip: text !important; background-clip: text !important;
+  --p: 0;
+  font-weight: inherit !important; text-shadow: none !important; animation: none !important;
+  text-decoration: none !important; filter: none !important;
+  -webkit-text-fill-color: currentColor !important; -webkit-background-clip: border-box !important; background-clip: border-box !important;
+  color: color-mix(in oklab, var(--ink, #dbe9e6), #ffffff calc(var(--p) * 100%)) !important;
+  transition: --p 0.22s linear;
   -webkit-box-decoration-break: clone; box-decoration-break: clone;
-  text-decoration: underline 1px; text-decoration-color: rgba(95, 227, 210, 0); text-underline-offset: 0.42em; text-decoration-skip-ink: none;
-  transition: background-position 0.7s cubic-bezier(0.4, 0, 0.2, 1), text-decoration-color 0.5s ease, filter 0.7s ease;
 }
-[dir="ltr"] .hlx, [dir="ltr"] .hlx.kw, [dir="ltr"] .hlx.lux {
-  background-image: linear-gradient(to right, var(--hl-a) 0%, var(--hl-b) 34%, var(--hl-c) 43%, var(--ink) 54%, var(--ink) 100%) !important;
-  background-position: 100% 0 !important;
-}
-.hlx.is-hl, .hlx.kw.is-hl, .hlx.lux.is-hl {
-  background-position: 100% 0 !important;
-  text-decoration-color: rgba(95, 227, 210, 0.55);
-  transition: background-position var(--hl-dur, 1.2s) cubic-bezier(0.45, 0.05, 0.25, 1) var(--hl-delay, 0.1s),
-              text-decoration-color 1s ease calc(var(--hl-delay, 0.1s) + var(--hl-dur, 1.2s) * 0.7);
-  animation: hlBreath 5.5s ease-in-out calc(var(--hl-delay, 0.1s) + var(--hl-dur, 1.2s)) infinite !important;
-}
-[dir="ltr"] .hlx.is-hl, [dir="ltr"] .hlx.kw.is-hl, [dir="ltr"] .hlx.lux.is-hl { background-position: 0% 0 !important; }
-@keyframes hlBreath {
-  0%, 100% { filter: drop-shadow(0 0 0 rgba(95, 227, 210, 0)); }
-  50% { filter: drop-shadow(0 0 9px rgba(95, 227, 210, 0.38)); }
-}
-/* the hero waits for its own entrance before writing in */
-.hero .hlx { --hl-delay: 1.5s; }
-html:not(.is-ready) .hero .hlx.is-hl { background-position: 0% 0 !important; }
-/* consecutive phrases in one line follow each other like a reader's eye */
-.hlx.kw:nth-of-type(2) { --hl-delay: 0.55s; } .hlx.kw:nth-of-type(3) { --hl-delay: 1s; }
-.dedication .ded-line:nth-child(2) { --hl-delay: 0.9s; }
 
-/* the dedication and the founder's name: same voice, given room */
-.support-strip .dedication { color: #eaf6f3 !important; letter-spacing: 0.01em; }
-.fd-name { position: relative; display: inline-block; font-weight: 400 !important; letter-spacing: 0.02em; padding-bottom: 0.25rem !important; }
-.fd-name.hlx { text-decoration: none !important; }
-.fd-name::after { content: ''; position: absolute; inset-inline: 18%; bottom: 0; height: 1px; transform: scaleX(0); transition: transform 1.4s cubic-bezier(0.45, 0.05, 0.25, 1) 0.6s;
-  background: linear-gradient(90deg, transparent, #5fe3d2, transparent); }
-.fd-name.is-hl::after { transform: scaleX(1); }
-
-@media (prefers-reduced-motion: reduce) {
-  .hlx, .hlx.is-hl { transition: none !important; animation: none !important; }
+/* inline phrases: a rounded band of teal glass pours in behind the words */
+.hlx-in, .hlx-in.kw, .hlx-in.lux {
+  padding: 0.04em 0.2em 0.1em !important; margin-inline: -0.06em; border-radius: 0.38em;
+  background:
+    /* sheen that drifts across once the band is full */
+    linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.16) 50%, transparent 62%) 0 0 / 260% 100% no-repeat,
+    /* the ink, brightest at its leading edge (the meniscus) */
+    linear-gradient(to left, rgba(10, 120, 110, 0.34) 0%, rgba(30, 170, 155, 0.36) 80%, rgba(120, 240, 225, 0.62) 97%, rgba(200, 255, 248, 0.85) 100%)
+      right center / calc(var(--p) * 100%) 100% no-repeat !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, calc(var(--p) * 0.12)), 0 0 calc(var(--p) * 18px) rgba(63, 208, 189, calc(var(--p) * 0.18));
 }
+[dir="ltr"] .hlx-in, [dir="ltr"] .hlx-in.kw, [dir="ltr"] .hlx-in.lux {
+  background:
+    linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.16) 50%, transparent 62%) 0 0 / 260% 100% no-repeat,
+    linear-gradient(to right, rgba(10, 120, 110, 0.34) 0%, rgba(30, 170, 155, 0.36) 80%, rgba(120, 240, 225, 0.62) 97%, rgba(200, 255, 248, 0.85) 100%)
+      left center / calc(var(--p) * 100%) 100% no-repeat !important;
+}
+.hlx-in.is-full { animation: hlSheen 6s ease-in-out 0.4s infinite !important; }
+@keyframes hlSheen { 0% { background-position: 130% 0, right center; } 55%, 100% { background-position: -30% 0, right center; } }
+[dir="ltr"] .hlx-in.is-full { animation-name: hlSheenL !important; }
+@keyframes hlSheenL { 0% { background-position: -30% 0, left center; } 55%, 100% { background-position: 130% 0, left center; } }
+
+/* large lines (dedication, founder's name): the ink settles as a soft bar under the words */
+.hlx-lg {
+  background: linear-gradient(to left, rgba(18, 165, 150, 0.0), rgba(63, 208, 189, 0.5) 30%, rgba(168, 245, 234, 0.9) 100%)
+    right bottom / calc(var(--p) * 100%) 0.09em no-repeat !important;
+  padding-bottom: 0.12em !important;
+}
+[dir="ltr"] .hlx-lg { background-position: left bottom !important; }
+.hlx-hero { transition: --p 1.6s cubic-bezier(0.45, 0.05, 0.25, 1) !important; }
+.fd-name { display: inline-block; letter-spacing: 0.02em; }
+.fd-name::after { display: none !important; }
+.support-strip .dedication { color: #eaf6f3 !important; }
+
+@media (prefers-reduced-motion: reduce) { .hlx { transition: none !important; } .hlx-in.is-full { animation: none !important; } }
