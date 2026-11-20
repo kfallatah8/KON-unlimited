@@ -1,9 +1,9 @@
-/** Highlights v5: a liquid ink marker that follows the scroll.
- *  Every highlighted phrase (** **, ++ ++, the dedication, the founder's name) rests as plain text.
- *  As it rises through the reading zone, a translucent teal glass band pours in behind it from
- *  the reading start, tied directly to the scroll position (--p, 0..1), and the text brightens to
- *  white with it. Scroll back and the ink drains out the same way. Once full it carries a slow sheen.
- *  One rAF loop, only for phrases on screen; nothing is split, so Arabic joining stays intact. */
+/** Highlights v6: a light that reads with you.
+ *  Every highlighted phrase (** **, ++ ++, the dedication, the founder's name) rests softly dimmed.
+ *  As it rises through the reading zone, a band of light sweeps across its letters from the start
+ *  of the line, tied directly to the scroll position (--p, 0..1), and a fine underline fades in.
+ *  Scroll back and it recedes. One rAF loop, only for phrases on screen, only while scrolling;
+ *  nothing is split, so Arabic joining stays intact. */
 const SEL = '.kw, .lux, .dedication .ded-line, .fd-name'
 
 export function initHighlights() {
@@ -16,8 +16,8 @@ export function initHighlights() {
   const tick = () => {
     raf = 0
     const vh = innerHeight
-    // the zone: the ink starts at 90% of the screen height and is full by 58%
-    const a = vh * 0.9, b = vh * 0.58
+    // the zone: the light enters at 92% of the screen height and has crossed the phrase by 50%
+    const a = vh * 0.92, b = vh * 0.5
     for (const el of live) {
       const r = el.getBoundingClientRect()
       const y = r.top + r.height / 2

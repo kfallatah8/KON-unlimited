@@ -1,7 +1,8 @@
 // KON free tools: small calculators that give a business owner a real number in a minute.
 // Everything is computed in the browser; nothing is stored or sent. Each tool can hand its
 // result to the "request setup" sheet, so the number becomes the start of a conversation.
-import { useMemo, useState } from 'react'
+import { createContext, useContext, useId, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import type { ReactNode } from 'react'
 import type { Lang } from '../content/site'
 import type { ToolId } from '../content/solutions'
@@ -52,18 +53,40 @@ function useForm<K extends string>(init: Record<K, number>) {
   return { v, bind }
 }
 
+// A friendly nudge size for the − / + buttons: about 5% of the value, rounded to a clean step.
+function nudge(v: number) {
+  const a = Math.abs(v)
+  if (a < 10) return 1
+  const raw = a * 0.05
+  const mag = 10 ** Math.floor(Math.log10(raw))
+  const n = raw / mag
+  return (n < 1.5 ? 1 : n < 3.5 ? 2 : n < 7.5 ? 5 : 10) * mag
+}
+
 function Num({ label, unit, value, onChange, hint, sec }: { label: string; unit?: string; value: string; onChange: (s: string) => void; hint?: string; sec?: string }) {
+  const L = useStore((st) => st.lang) === 'ar'
+  const fid = useId()
+  const bump = (dir: 1 | -1) => {
+    const v = toNum(value)
+    const st = nudge(v || 1)
+    const next = Math.max(0, v + dir * st)
+    onChange(String(Math.round(next * 100) / 100))
+  }
   return (
     <>
     {sec && <p className="tl-sec">{sec}</p>}
-    <label className="tl-field">
-      <span className="tl-label">{label}</span>
-      <span className="tl-input">
-        <input type="text" inputMode="decimal" dir="ltr" value={value} onChange={(e) => onChange(e.target.value)} onFocus={(e) => e.target.select()} />
-        {unit && <i>{unit}</i>}
+    <div className="tl-field">
+      <label className="tl-label" htmlFor={fid}>{label}</label>
+      <span className="tl-ctrl" dir="ltr">
+        <button type="button" className="tl-btn" aria-label={L ? `أنقص ${label}` : `Decrease ${label}`} onClick={() => bump(-1)}>−</button>
+        <span className="tl-input">
+          <input id={fid} type="text" inputMode="decimal" dir="ltr" value={value} onChange={(e) => onChange(e.target.value)} onFocus={(e) => e.target.select()} />
+          {unit && <i>{unit}</i>}
+        </span>
+        <button type="button" className="tl-btn" aria-label={L ? `زِد ${label}` : `Increase ${label}`} onClick={() => bump(1)}>+</button>
       </span>
       {hint && <small className="tl-hint">{hint}</small>}
-    </label>
+    </div>
     </>
   )
 }
@@ -113,8 +136,16 @@ function Insight({ body }: { body: ReactNode }) {
 }
 
 /** The big answer, its supporting numbers, and one sentence that says what it means. */
+const LiveSlot = createContext<HTMLElement | null>(null)
+
 function Result({ big, label, unit, tone, rows, insight, children }: { big: string; label: string; unit?: string; tone?: 'good' | 'warn' | 'bad'; rows: [string, string][]; insight?: ReactNode; children?: ReactNode }) {
+  const slot = useContext(LiveSlot)
   return (
+    <>
+    {slot && createPortal(
+      <span className={`tl-live-in${tone ? ` is-${tone}` : ''}`}><span className="tl-live-k">{label}</span><b dir="ltr">{big}</b>{unit && <em>{unit}</em>}</span>,
+      slot,
+    )}
     <div className={`tl-result${tone ? ` is-${tone}` : ''}`} aria-live="polite">
       <p className="tl-big-label">{label}</p>
       <p className="tl-big"><b dir="ltr">{big}</b>{unit && <span>{unit}</span>}</p>
@@ -126,6 +157,7 @@ function Result({ big, label, unit, tone, rows, insight, children }: { big: stri
       {children}
       {insight && <Insight body={insight} />}
     </div>
+    </>
   )
 }
 
@@ -889,5 +921,12 @@ const TOOLS: Record<ToolId, ToolFn> = {
 export function Tool({ id, lang, report }: { id: ToolId; lang: Lang; report: (s: string) => void }) {
   const C = TOOLS[id]
   // Keyed by tool and language: switching either starts from clean, localised defaults.
-  return <div className="tl-body"><C key={`${id}-${lang}`} lang={lang} report={report} /></div>
+  const [slot, setSlot] = useState<HTMLElement | null>(null)
+  return (
+    <div className="tl-body">
+      {/* on phones, the answer rides along at the top while you change the numbers */}
+      <div className="tl-live" ref={setSlot} aria-hidden="true" />
+      <LiveSlot.Provider value={slot}><C key={`${id}-${lang}`} lang={lang} report={report} /></LiveSlot.Provider>
+    </div>
+  )
 }

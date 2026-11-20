@@ -4,8 +4,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useContent } from './content/useContent'
 import type { CaseItem } from './content/site'
 import { BOOKING_URL, contact, SHOW_SOLUTIONS, SHOW_TALENT, tourUrl, type IconId } from './content/site'
-import { Talent } from './components/Talent'
-import { Solutions } from './components/Solutions'
+const Talent = lazy(() => import('./components/Talent').then((m) => ({ default: m.Talent })))
+const Solutions = lazy(() => import('./components/Solutions').then((m) => ({ default: m.Solutions })))
 import { KonGlass } from './components/KonGlass'
 import { detectCapabilities } from './lib/capabilities'
 import { motion, setLang, startOnboarding, useStore } from './state/store'
@@ -480,6 +480,7 @@ function QuickTools() {
   const lang = useStore((s) => s.lang)
   const [id, setId] = useState<ToolId>(q.items[0].id as ToolId)
   const summary = useRef('')
+  const panel = useRef<HTMLParagraphElement>(null)
   return (
     <section id="tools" className="band quick" aria-labelledby="quick-title">
       <div className="wrap">
@@ -488,14 +489,20 @@ function QuickTools() {
           <SplitReveal as="h2" id="quick-title" className="display" text={q.title} />
           <p className="body-lg" data-reveal><Rich text={q.lede} /></p>
         </div>
+        <p className="qt-step" data-reveal><i>1</i>{lang === 'ar' ? 'اختر سؤالك' : 'Pick a question'}</p>
         <div className="qt-picks" role="tablist" aria-label={q.eyebrow} data-reveal>
           {q.items.map((it) => (
-            <button key={it.id} type="button" role="tab" aria-selected={id === it.id} className={`qt-pick${id === it.id ? ' is-on' : ''}`} onClick={() => setId(it.id as ToolId)}>
-              <span className="qt-k">{it.k}</span>
-              <b>{it.q}</b>
+            <button key={it.id} type="button" role="tab" aria-selected={id === it.id} className={`qt-pick${id === it.id ? ' is-on' : ''}`} onClick={() => {
+              setId(it.id as ToolId)
+              // on phones, glide straight to the calculator
+              if (window.innerWidth < 760) requestAnimationFrame(() => panel.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+            }}>
+              <span className="qt-dot" aria-hidden="true" />
+              <span className="qt-txt"><span className="qt-k">{it.k}</span><b>{it.q}</b></span>
             </button>
           ))}
         </div>
+        <p className="qt-step" ref={panel}><i>2</i>{lang === 'ar' ? 'حط أرقامك، والنتيجة تتغيّر قدامك' : 'Put in your numbers, the answer updates as you type'}</p>
         <div className="qt-panel glass" role="tabpanel">
           <Tool key={id} id={id} lang={lang} report={(x) => { summary.current = x }} />
           <div className="qt-foot">
@@ -799,8 +806,10 @@ function Page({ route }: { route: string }) {
   return (
     <div className="page-view">
       <div className="wrap page-back"><a href="#top" className="link-btn"><span className="arr" aria-hidden="true">→</span> {c.meta.home}</a></div>
-      {route === 'solutions' && <Solutions />}
-      {route === 'talent' && <Talent />}
+      <Suspense fallback={<div className="page-wait" aria-busy="true" />}>
+        {route === 'solutions' && <Solutions />}
+        {route === 'talent' && <Talent />}
+      </Suspense>
       {route === 'work' && <><Work full /><Support /></>}
       <section className="band page-next">
         <div className="wrap narrow center">

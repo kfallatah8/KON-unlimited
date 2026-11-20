@@ -599,6 +599,28 @@ function Governor({ onSlow }: { onSlow: () => void }) {
   return null
 }
 
+/** Paces the stones: 60 fps on strong desktops, 30 elsewhere (the drift is slow, the eye can't
+ *  tell), and nothing at all while the footer's glass KON is on screen or the tab is hidden. */
+function Pace({ fps }: { fps: number }) {
+  const { invalidate } = useThree()
+  useEffect(() => {
+    let raf = 0, last = 0, paused = false
+    const step = 1000 / fps - 2
+    const foot = document.querySelector('.site-footer')
+    const io = foot ? new IntersectionObserver(([e]) => { paused = e.intersectionRatio > 0.6 }, { threshold: [0, 0.6, 0.9] }) : null
+    if (foot && io) io.observe(foot)
+    const loop = (now: number) => {
+      raf = requestAnimationFrame(loop)
+      if (paused || now - last < step) return
+      last = now
+      invalidate()
+    }
+    raf = requestAnimationFrame(loop)
+    return () => { cancelAnimationFrame(raf); io?.disconnect() }
+  }, [fps, invalidate])
+  return null
+}
+
 export default function GemField({ tier, reduced }: { tier: Tier; reduced: boolean }) {
   const narrowView = typeof window !== 'undefined' && window.innerWidth < 700
   const count = narrowView ? (tier === 'high' ? 54 : 42) : tier === 'high' ? 82 : tier === 'mid' ? 64 : 48
@@ -612,6 +634,7 @@ export default function GemField({ tier, reduced }: { tier: Tier; reduced: boole
     <Canvas
       className={rich ? "gem-canvas is-rich" : "gem-canvas"}
       dpr={dpr}
+      frameloop="demand"
       // The stage never changes size on scroll; ignore scroll for measuring, and settle window
       // resizes before reallocating (meanwhile the last frame just stretches, never blanks).
       resize={{ scroll: false, debounce: { scroll: 0, resize: 180 } }}
@@ -619,6 +642,7 @@ export default function GemField({ tier, reduced }: { tier: Tier; reduced: boole
       gl={{ antialias: !rich, alpha: true, powerPreference: 'high-performance', stencil: false }}
       style={{ pointerEvents: 'none' }}
     >
+      <Pace fps={tier === 'high' && !lite ? 60 : 30} />
       <ContextGuard />
       <ambientLight intensity={0.25} />
       <directionalLight position={[4, 6, 8]} intensity={1.6} color="#dffcf7" />
@@ -643,7 +667,7 @@ export default function GemField({ tier, reduced }: { tier: Tier; reduced: boole
       <BurstFx narrow={narrow} />
       <Trio />
       <Warmup />
-      {!lite && <Governor onSlow={() => setLite(true)} />}
+      {!lite && tier === 'high' && <Governor onSlow={() => setLite(true)} />}
       {rich && (
         <EffectComposer multisampling={2} enableNormalPass={false}>
           <Bloom mipmapBlur intensity={0.72} luminanceThreshold={0.55} luminanceSmoothing={0.25} radius={0.7} />

@@ -128,3 +128,65 @@ main .eyebrow, .eyebrow {
   .band .eyebrow::before { width: auto; }
   :root[lang='en'] .band .eyebrow::after, :root[lang='en'] .hero-copy .eyebrow::after { display: none; }
 }
+
+/* performance: the footer halo no longer re-blurs every frame */
+.kon-foot::before { filter: none !important; animation: none !important; background: radial-gradient(closest-side, rgba(63, 224, 207, 0.16), rgba(63, 224, 207, 0.06) 61.8%, transparent) !important; }
+.page-wait { min-height: 70vh; }
+
+/* ============ free tools v2: clear steps, thumb-friendly inputs, the answer always in sight ============ */
+.qt-step { display: flex; align-items: center; justify-content: center; gap: 0.6rem; margin: 0 auto 0.9rem; font-size: 1.02rem; font-weight: 500; color: var(--text); scroll-margin-top: 84px; }
+.qt-step i { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; font: 600 0.85rem/1 var(--mono); font-style: normal; color: #011214; background: linear-gradient(135deg, #8ff3e6, #2fc4b2); flex: none; }
+.qt-picks + .qt-step { margin-top: 2rem; }
+.qt-pick { display: flex !important; align-items: flex-start; gap: 0.8rem; text-align: start; }
+.qt-txt { display: grid; gap: 0.25rem; min-width: 0; }
+.qt-dot { width: 20px; height: 20px; margin-top: 0.2rem; border-radius: 50%; border: 1.5px solid rgba(168, 245, 234, 0.45); flex: none; position: relative; transition: border-color 0.3s; }
+.qt-dot::after { content: ''; position: absolute; inset: 4px; border-radius: 50%; background: #5fe3d2; transform: scale(0); transition: transform 0.3s cubic-bezier(0.3, 1.4, 0.5, 1); }
+.qt-pick.is-on .qt-dot { border-color: #5fe3d2; }
+.qt-pick.is-on .qt-dot::after { transform: scale(1); }
+
+/* number fields: label above, then − [value] + */
+.tl-field { display: grid; gap: 0.45rem; }
+.tl-form > .tl-field { grid-template-columns: minmax(0, 1fr) minmax(12.5rem, 15rem) !important; grid-template-areas: 'label input' 'hint input' !important; }
+.tl-form > .tl-field .tl-label { grid-area: label; }
+.tl-form > .tl-field .tl-ctrl { grid-area: input; }
+.tl-form > .tl-field .tl-hint { grid-area: hint; }
+.tl-ctrl { display: flex; align-items: stretch; gap: 0.4rem; min-width: 0; }
+.tl-ctrl .tl-input { flex: 1 1 auto; min-width: 0; }
+.tl-btn {
+  width: 46px; min-height: 46px; flex: none; border-radius: 12px; cursor: pointer;
+  border: 1px solid rgba(168, 245, 234, 0.2); background: rgba(10, 60, 60, 0.55); color: #c9fbf4;
+  font: 400 1.35rem/1 var(--body); display: grid; place-items: center; touch-action: manipulation;
+  transition: background 0.2s, border-color 0.2s, transform 0.12s;
+}
+.tl-btn:hover { border-color: rgba(95, 227, 210, 0.6); background: rgba(14, 84, 82, 0.7); }
+.tl-btn:active { transform: scale(0.94); }
+.tl-btn:focus-visible { outline: 2px solid #5fe3d2; outline-offset: 2px; }
+.tl-form > .tl-field .tl-input input { height: 46px !important; text-align: center; }
+
+/* the live answer: hidden on wide screens (the result sits beside the inputs there) */
+.tl-live { display: none; }
+@media (max-width: 900px) {
+  .tl-live:not(:empty) {
+    display: block; position: sticky; top: 76px; z-index: 6; margin-bottom: 0.9rem;
+    padding: 0.6rem 0.95rem; border-radius: 14px; border: 1px solid rgba(95, 227, 210, 0.38);
+    background: rgba(3, 30, 32, 0.96); box-shadow: 0 14px 30px -18px rgba(0, 0, 0, 0.8);
+  }
+  .tl-live-in { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
+  .tl-live-k { font-size: 0.9rem; color: var(--text-2); }
+  .tl-live b { font: 500 1.45rem/1.2 'Readex Pro', var(--display); color: #8ff3e6; font-variant-numeric: tabular-nums; }
+  .tl-live .is-warn b { color: #e9c98a; } .tl-live .is-bad b { color: #ff9a8a; }
+  .tl-live em { font-style: normal; font-size: 0.9rem; color: var(--text-2); }
+}
+
+@media (max-width: 760px) {
+  .quick .qt-picks { gap: 0.55rem; }
+  .qt-pick { padding: 0.8rem 0.95rem !important; border-radius: 14px; }
+  .qt-pick b { font-size: 1rem; line-height: 1.55; }
+  .qt-k { font-size: 0.85rem; }
+  .qt-panel { padding: 1rem 0.9rem 1.2rem !important; }
+  .qt-panel .tl-form { border: 0 !important; background: none !important; padding: 0 !important; box-shadow: none !important; }
+  .tl-form > .tl-field { grid-template-columns: 1fr !important; grid-template-areas: 'label' 'input' 'hint' !important; padding: 0.85rem 0 !important; }
+  .tl-btn { width: 52px; }
+  .qt-panel .tl-result { margin-top: 1rem; }
+  .qt-panel .tl-insight { background: none !important; border: 0 !important; padding: 0.4rem 0 0 !important; }
+}
