@@ -105,3 +105,9 @@ main h3 { font-weight: 600; color: var(--ink); }
 /* r5 polish: balanced headline breaks, no orphan words in body copy */
 main h2.display, main h3, .hero-title, .fd-name, .founder-punch, .finale-line, .finale-line2 { text-wrap: balance; }
 main p, main li { text-wrap: pretty; }
+
+/* go-live QA: comfortable tap areas on phones */
+@media (max-width: 600px) {
+  .site-header .logo { min-height: 44px; }
+  .scroll-cue { min-width: 44px; padding-inline: 0.6rem; }
+}
