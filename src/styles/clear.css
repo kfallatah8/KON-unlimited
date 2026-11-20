@@ -111,3 +111,20 @@ main p, main li { text-wrap: pretty; }
   .site-header .logo { min-height: 44px; }
   .scroll-cue { min-width: 44px; padding-inline: 0.6rem; }
 }
+
+/* Section headers (eyebrows) enlarged site-wide: clear chapter markers above every headline */
+main .eyebrow, .eyebrow {
+  font-size: clamp(1.15rem, 0.95rem + 0.8vw, 1.55rem) !important;
+  font-weight: 600 !important; letter-spacing: 0.01em; gap: 1rem;
+  margin-bottom: 1.6rem; line-height: 1.35 !important;
+}
+:root[lang='en'] .eyebrow { font-size: clamp(0.95rem, 0.82rem + 0.55vw, 1.2rem) !important; letter-spacing: 0.16em; }
+.eyebrow::before, .band .eyebrow::after, .hero-copy .eyebrow::after { width: 3rem; }
+.band .eyebrow::before { width: auto; font-size: 0.85em; padding-inline-end: 1rem; color: #7fe6d6 !important; }
+@media (max-width: 420px) {
+  .eyebrow { gap: 0.7rem; flex-wrap: nowrap; justify-content: center; text-align: center; }
+  :root[lang='en'] .eyebrow { letter-spacing: 0.1em; }
+  .eyebrow::before, .band .eyebrow::after, .hero-copy .eyebrow::after { width: 1.8rem; }
+  .band .eyebrow::before { width: auto; }
+  :root[lang='en'] .band .eyebrow::after, :root[lang='en'] .hero-copy .eyebrow::after { display: none; }
+}
