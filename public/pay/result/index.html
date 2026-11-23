@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>KON · نتيجة الدفع</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{--bg:#04151a;--panel:rgba(255,255,255,.04);--line:rgba(166,232,226,.16);--ink:#eef7f6;--mute:#9fb9b7;--teal:#5fd3c6;--gold:#d8b878;--warn:#f2c99a}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:radial-gradient(1200px 700px at 50% -10%,#0b3a3e 0%,var(--bg) 60%);color:var(--ink);min-height:100%;font-family:"IBM Plex Sans Arabic",Inter,system-ui,sans-serif}
+  html[lang=en] body{font-family:Inter,"IBM Plex Sans Arabic",system-ui,sans-serif}
+  main{max-width:460px;margin:0 auto;padding:40px 16px 56px;text-align:center}
+  .logo{display:inline-block;font-family:Inter,sans-serif;font-weight:600;letter-spacing:.32em;font-size:15px;color:var(--ink);text-decoration:none;margin-bottom:48px}
+  .orb{width:84px;height:84px;margin:0 auto 26px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);background:var(--panel)}
+  .orb svg{width:38px;height:38px}
+  .spin{animation:s 1s linear infinite}@keyframes s{to{transform:rotate(360deg)}}
+  @media (prefers-reduced-motion:reduce){.spin{animation:none}}
+  h1{font-size:26px;font-weight:600;margin:0 0 10px}
+  p{color:var(--mute);line-height:1.7;margin:0 0 24px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px 18px;text-align:start;font-size:14px}
+  .row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+  .row:last-child{border:0}
+  .row span{color:var(--mute)} .row b{font-weight:500;direction:ltr;unicode-bidi:embed;word-break:break-all}
+  .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 22px;margin-top:26px;border-radius:14px;border:1px solid var(--line);color:var(--ink);text-decoration:none}
+  details{margin-top:22px;text-align:start;color:var(--mute);font-size:12px}
+  pre{white-space:pre-wrap;word-break:break-all;direction:ltr;text-align:left;background:rgba(0,0,0,.25);padding:10px;border-radius:10px}
+</style>
+</head>
+<body>
+<main>
+  <a class="logo" href="/">KON</a>
+  <div class="orb" id="orb"></div>
+  <h1 id="h"></h1>
+  <p id="p"></p>
+  <div class="card" id="card" hidden></div>
+  <a class="btn" id="again" href="/pay/"></a>
+  <details><summary>Debug (test mode)</summary><pre id="dbg"></pre></details>
+</main>
+<script>
+(() => {
+  const q = new URLSearchParams(location.search);
+  const lang = q.get('lang') === 'en' ? 'en' : 'ar';
+  document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  const T = {
+    ar:{ check:'نتحقق من الدفع…', checkP:'نتأكد مباشرة من بوابة الدفع قبل اعتماد العملية', ok:'تم الدفع بنجاح', okP:'شكراً لك. تأكدنا من العملية مع بوابة الدفع', no:'لم تكتمل عملية الدفع', noP:'لم يُخصم أي مبلغ. يمكنك المحاولة مرة أخرى', wait:'العملية قيد المعالجة', waitP:'لم يصل التأكيد النهائي بعد. سنراجعها ونتواصل معك', unk:'تعذّر التحقق الآن', unkP:'لا تقلق، سنراجع العملية من لوحة التحكم ونتواصل معك', order:'رقم الطلب', amount:'المبلغ', tx:'رقم العملية', again:'العودة' },
+    en:{ check:'Checking your payment…', checkP:'We confirm directly with the payment gateway before accepting it.', ok:'Payment successful', okP:'Thank you. We confirmed it with the payment gateway.', no:'Payment not completed', noP:'Nothing was charged. You can try again.', wait:'Payment is processing', waitP:'The final confirmation has not arrived yet. We will review it and get back to you.', unk:'We could not verify it right now', unkP:'No worries, we will review it in the dashboard and contact you.', order:'Order', amount:'Amount', tx:'Transaction', again:'Back' }
+  }[lang];
+  const icons = {
+    spin:'<svg class="spin" viewBox="0 0 24 24" fill="none" stroke="#5fd3c6" stroke-width="2"><path d="M21 12a9 9 0 1 1-9-9" stroke-linecap="round"/></svg>',
+    ok:'<svg viewBox="0 0 24 24" fill="none" stroke="#5fd3c6" stroke-width="2"><path d="M5 12.5l4.5 4.5L19 7.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    no:'<svg viewBox="0 0 24 24" fill="none" stroke="#f2c99a" stroke-width="2"><path d="M7 7l10 10M17 7L7 17" stroke-linecap="round"/></svg>',
+    wait:'<svg viewBox="0 0 24 24" fill="none" stroke="#d8b878" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2" stroke-linecap="round"/></svg>'
+  };
+  const $ = (s) => document.querySelector(s);
+  const esc = (v) => String(v).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  function show(kind, data){
+    const k = { ok:['ok','ok','okP'], no:['no','no','noP'], wait:['wait','wait','waitP'], unk:['wait','unk','unkP'], check:['spin','check','checkP'] }[kind];
+    $('#orb').innerHTML = icons[k[0]]; $('#h').textContent = T[k[1]]; $('#p').textContent = T[k[2]];
+    const rows = [[T.order, q.get('order')], [T.amount, data && data.amount != null ? data.amount + ' SAR' : null], [T.tx, data && data.transactionId]].filter(r => r[1]);
+    $('#card').hidden = !rows.length;
+    $('#card').innerHTML = rows.map(r => `<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join('');
+  }
+  $('#again').textContent = T.again; $('#again').href = '/pay/?lang=' + lang;
+
+  let saved = {}; try { saved = JSON.parse(sessionStorage.getItem('kon_pay') || '{}'); } catch {}
+  const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  // DigetPay's return parameters aren't documented, so look for any transaction or session id it adds.
+  const params = Object.fromEntries(q.entries());
+  const txId = ['transactionId','transaction_id','gatewayTransactionId','id','tranId'].map(k => q.get(k)).find(v => v && UUID.test(v));
+  const sessionId = [q.get('sessionId'), q.get('session_id'), saved.order === q.get('order') ? saved.sessionId : null].find(v => v && UUID.test(v));
+  $('#dbg').textContent = JSON.stringify({ params, txId: txId || null, sessionId: sessionId || null }, null, 2);
+
+  show('check');
+  if (!txId && !sessionId) { show(q.get('result') === 'failure' ? 'no' : 'unk'); return; }
+  const qs = new URLSearchParams(); if (txId) qs.set('id', txId); if (sessionId) qs.set('sessionId', sessionId);
+  fetch('/api/pay/status?' + qs).then(r => r.json()).then(j => {
+    $('#dbg').textContent += '\n\nstatus: ' + JSON.stringify(j, null, 2);
+    if (j.ok && j.paid) return show('ok', j);
+    if (j.ok && (j.transactionStatus === 'FAILED' || j.paymentStatus === 'DECLINED')) return show('no', j);
+    if (j.ok && j.transactionStatus === 'PENDING') return show('wait', j);
+    show(q.get('result') === 'failure' ? 'no' : 'unk', j.ok ? j : null);
+  }).catch(() => show('unk'));
+})();
+</script>
+</body>
+</html>
