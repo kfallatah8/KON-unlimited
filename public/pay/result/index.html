@@ -80,7 +80,7 @@
   fetch('/api/pay/status?' + qs).then(r => r.json()).then(j => {
     $('#dbg').textContent += '\n\nstatus: ' + JSON.stringify(j, null, 2);
     if (j.ok && j.paid) return show('ok', j);
-    if (j.ok && (j.transactionStatus === 'FAILED' || j.paymentStatus === 'DECLINED')) return show('no', j);
+    if (j.ok && (j.transactionStatus === 'FAILED' || j.transactionStatus === 'NOT_STARTED' || j.paymentStatus === 'DECLINED')) return show('no', j);
     if (j.ok && j.transactionStatus === 'PENDING') return show('wait', j);
     show(q.get('result') === 'failure' ? 'no' : 'unk', j.ok ? j : null);
   }).catch(() => show('unk'));

@@ -25,7 +25,8 @@ export default async function handler(req, res) {
   // The docs show both forms (?id= gateway transaction ID, and ?sessionId= in the hosted examples).
   const tries = [];
   if (UUID.test(id)) tries.push(`/payment/checkout/status?id=${id}`);
-  if (UUID.test(sessionId)) tries.push(`/payment/checkout/status?sessionId=${sessionId}`, `/payment/checkout/status?id=${sessionId}`);
+  // Tested 2026-11-23: the live API takes ?sessionId= (it answers "Missing sessionId" to ?id=).
+  if (UUID.test(sessionId)) tries.unshift(`/payment/checkout/status?sessionId=${sessionId}`);
 
   const seen = [];
   try {
@@ -35,6 +36,10 @@ export default async function handler(req, res) {
       seen.push({ path: path.split('?')[1], status: r.status, body: r.json || r.text });
       console.log('KON_PAY_STATUS ' + JSON.stringify({ path: path.split('?')[1], status: r.status, result: s, raw: s ? undefined : (r.json || r.text) }));
       if (s) return res.status(200).json({ ok: true, sessionId: UUID.test(sessionId) ? sessionId : null, ...s });
+      // DigetPay says this when the card was never submitted to the bank (customer left, or checkout failed before paying).
+      if (r.json?.code === 'GATEWAY_TRANSACTION_ID_NOT_AVAILABLE') {
+        return res.status(200).json({ ok: true, sessionId, paid: false, transactionStatus: 'NOT_STARTED', paymentStatus: null, transactionId: null, amount: null });
+      }
     }
     return res.status(404).json({ ok: false, error: 'not_found', ...(preview() ? { gateway: seen } : {}) });
   } catch (e) {
