@@ -75,8 +75,8 @@
   $('#dbg').textContent = JSON.stringify({ params, txId: txId || null, sessionId: sessionId || null }, null, 2);
 
   show('check');
-  if (!txId && !sessionId) { show(q.get('result') === 'failure' ? 'no' : 'unk'); return; }
-  const qs = new URLSearchParams(); if (txId) qs.set('id', txId); if (sessionId) qs.set('sessionId', sessionId);
+  const qs = new URLSearchParams(); if (txId) qs.set('id', txId); if (sessionId) qs.set('sessionId', sessionId); if (q.get('order')) qs.set('order', q.get('order'));
+  if (!txId && !sessionId && !q.get('order')) { show(q.get('result') === 'failure' ? 'no' : 'unk'); return; }
   fetch('/api/pay/status?' + qs).then(r => r.json()).then(j => {
     $('#dbg').textContent += '\n\nstatus: ' + JSON.stringify(j, null, 2);
     if (j.ok && j.paid) return show('ok', j);

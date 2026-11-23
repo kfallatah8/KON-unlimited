@@ -46,6 +46,8 @@ export default async function handler(req, res) {
       console.error('KON_PAY_CREATE_FAILED ' + JSON.stringify({ status: r.status, json: r.json, text: r.text }));
       return res.status(502).json({ ok: false, error: 'gateway', gatewayStatus: r.status });
     }
+    // Remember which checkout belongs to this order, so the return page can verify it even if the browser lost its tab state.
+    res.setHeader('Set-Cookie', `kon_pay=${encodeURIComponent(merchantOrderId + '|' + id)}; Path=/api/pay; Max-Age=3600; HttpOnly; Secure; SameSite=Lax`);
     return res.status(200).json({ ok: true, merchantOrderId, sessionId: id, redirectUrl });
   } catch (e) {
     console.error('KON_PAY_CREATE_ERROR ' + e.message);
