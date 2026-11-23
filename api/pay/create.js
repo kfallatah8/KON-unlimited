@@ -1,6 +1,6 @@
-// POST /api/pay/create  { product, name, email, phone, lang }
+// POST /api/pay/create  { product | invoice, name, email, phone, lang }
 // Creates a DigetPay hosted checkout session and returns its redirectUrl.
-import { dp, PRODUCTS, normalizePhone, clip, origin } from '../_lib/digetpay.js';
+import { dp, resolveOffer, normalizePhone, clip, origin } from '../_lib/digetpay.js';
 
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
@@ -12,8 +12,8 @@ export default async function handler(req, res) {
   if (typeof b === 'string') { try { b = JSON.parse(b); } catch { b = null; } }
   if (!b || typeof b !== 'object') return res.status(400).json({ ok: false, error: 'body' });
 
-  const product = PRODUCTS[b.product];
-  if (!product) return res.status(400).json({ ok: false, error: 'product' });
+  const offer = resolveOffer({ product: b.product, invoice: b.invoice });
+  if (!offer || offer.error) return res.status(400).json({ ok: false, error: offer?.error || 'product' });
 
   const customerName = clip(b.name, 80);
   const customerEmail = clip(b.email, 120);
@@ -28,11 +28,12 @@ export default async function handler(req, res) {
 
   const payload = {
     merchantOrderId,
-    amount: product.amount,
-    currency: product.currency,
+    amount: offer.amount,
+    currency: offer.currency,
     customerName,
     ...(customerEmail ? { customerEmail } : {}),
     customerPhone,
+    ...(offer.recurring ? { payWithRecurring: true } : {}),
     successUrl: `${back}&result=success`,
     failureUrl: `${back}&result=failure`,
   };
@@ -41,7 +42,7 @@ export default async function handler(req, res) {
     const r = await dp('POST', '/payment/checkout/intiate', payload);
     const body = r.json?.body || r.json || {};
     const id = body.id, redirectUrl = body.redirectUrl;
-    console.log('KON_PAY_CREATE ' + JSON.stringify({ merchantOrderId, product: b.product, amount: product.amount, status: r.status, sessionId: id || null }));
+    console.log('KON_PAY_CREATE ' + JSON.stringify({ merchantOrderId, kind: offer.kind, label: offer.en, recurring: offer.recurring || undefined, client: offer.client || undefined, amount: offer.amount, status: r.status, sessionId: id || null }));
     if (!r.ok || !redirectUrl) {
       console.error('KON_PAY_CREATE_FAILED ' + JSON.stringify({ status: r.status, json: r.json, text: r.text }));
       return res.status(502).json({ ok: false, error: 'gateway', gatewayStatus: r.status });

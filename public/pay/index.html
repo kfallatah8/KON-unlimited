@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
+<meta name="referrer" content="no-referrer" />
 <title>KON · الدفع</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -21,9 +22,11 @@
   h1{font-size:28px;font-weight:600;line-height:1.35;margin:0 0 8px}
   p.lead{color:var(--mute);margin:0 0 28px;line-height:1.7}
   .card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:22px;backdrop-filter:blur(8px)}
-  .sum{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:18px;margin-bottom:18px;border-bottom:1px solid var(--line)}
-  .sum b{font-size:26px;font-weight:600;font-family:Inter,sans-serif}
-  .sum span{color:var(--mute)}
+  .sum{padding-bottom:18px;margin-bottom:6px;border-bottom:1px solid var(--line)}
+  .sum .row{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+  .sum b{font-size:26px;font-weight:600;font-family:Inter,sans-serif;white-space:nowrap}
+  .sum span{color:var(--ink);line-height:1.5}
+  .sum small{display:block;color:var(--mute);font-size:13px;margin-top:6px}
   label{display:block;font-size:13px;color:var(--mute);margin:14px 0 6px}
   input{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:12px;color:var(--ink);font:inherit;font-size:16px;padding:13px 14px;min-height:48px;outline:none;transition:border-color .2s}
   input:focus{border-color:var(--teal)}
@@ -35,7 +38,14 @@
   .note{margin-top:22px;font-size:13px;color:var(--mute);line-height:1.7}
   .note a{color:var(--teal)}
   .note code{font-family:ui-monospace,Menlo,monospace;color:var(--ink);direction:ltr;unicode-bidi:embed}
-  .safe{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:18px;font-size:12px;color:var(--mute)}
+  .safe{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:18px;font-size:12px;color:var(--mute);text-align:center}
+  .state{text-align:center;padding:36px 22px}
+  .state h2{font-size:20px;font-weight:600;margin:0 0 8px}
+  .state p{color:var(--mute);margin:0;line-height:1.7}
+  .skel{height:18px;border-radius:8px;background:linear-gradient(90deg,rgba(255,255,255,.04),rgba(255,255,255,.09),rgba(255,255,255,.04));background-size:200% 100%;animation:sh 1.4s infinite}
+  @keyframes sh{to{background-position:-200% 0}}
+  @media (prefers-reduced-motion:reduce){.skel{animation:none}}
+  [hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -45,46 +55,98 @@
     <button class="lang" id="lang" type="button">English</button>
   </div>
 
-  <span class="tag" data-i18n="tag">وضع الاختبار</span>
-  <h1 data-i18n="title">دفعة تجريبية</h1>
-  <p class="lead" data-i18n="lead">صفحة اختبار لبوابة الدفع. لا تُخصم أي مبالغ حقيقية في وضع الاختبار</p>
+  <span class="tag" id="tag" hidden data-i18n="tag">وضع الاختبار</span>
+  <h1 id="title">&nbsp;</h1>
+  <p class="lead" id="lead">&nbsp;</p>
 
-  <form class="card" id="f" novalidate>
-    <div class="sum"><span data-i18n="item">KON · دفعة تجريبية</span><b dir="ltr">1.00 SAR</b></div>
+  <div class="card" id="loading"><div class="skel" style="width:60%"></div><div class="skel" style="width:35%;margin-top:14px"></div></div>
+
+  <div class="card state" id="bad" hidden><h2 id="badT"></h2><p id="badP"></p></div>
+
+  <form class="card" id="f" novalidate hidden>
+    <div class="sum">
+      <div class="row"><span id="item"></span><b dir="ltr" id="amt"></b></div>
+      <small id="meta"></small>
+    </div>
     <label for="name" data-i18n="name">الاسم</label>
-    <input id="name" name="name" autocomplete="name" required />
+    <input id="name" name="name" autocomplete="name" required maxlength="80" />
     <label for="phone" data-i18n="phone">رقم الجوال</label>
     <input id="phone" name="phone" type="tel" inputmode="tel" dir="ltr" placeholder="05X XXX XXXX" autocomplete="tel" required />
     <label for="email" data-i18n="email">البريد الإلكتروني (اختياري)</label>
-    <input id="email" name="email" type="email" dir="ltr" autocomplete="email" />
-    <button class="pay" id="go" type="submit" data-i18n="pay">ادفع 1 ريال</button>
+    <input id="email" name="email" type="email" dir="ltr" autocomplete="email" maxlength="120" />
+    <button class="pay" id="go" type="submit"></button>
     <div class="msg" id="msg" role="status" aria-live="polite"></div>
     <div class="safe" data-i18n="safe">تُدخل بيانات البطاقة في صفحة DigetPay الآمنة، لا في موقعنا</div>
   </form>
 
-  <p class="note" data-i18n-html="test">للاختبار: استخدم بطاقة Mastercard من <a href="https://docs.digetpay.com/docs/test-cards" target="_blank" rel="noopener">قائمة بطاقات الاختبار</a> · الانتهاء <code>01/39</code> · CVV <code>100</code> · الاسم <code>TEST CUSTOMER</code></p>
+  <p class="note" id="testnote" hidden data-i18n-html="test"></p>
 </main>
 <script>
 (() => {
   const T = {
-    ar: { tag:'وضع الاختبار', title:'دفعة تجريبية', lead:'صفحة اختبار لبوابة الدفع. لا تُخصم أي مبالغ حقيقية في وضع الاختبار', item:'KON · دفعة تجريبية', name:'الاسم', phone:'رقم الجوال', email:'البريد الإلكتروني (اختياري)', pay:'ادفع 1 ريال', wait:'لحظات…', safe:'تُدخل بيانات البطاقة في صفحة DigetPay الآمنة، لا في موقعنا', test:'للاختبار: استخدم بطاقة Mastercard من <a href="https://docs.digetpay.com/docs/test-cards" target="_blank" rel="noopener">قائمة بطاقات الاختبار</a> · الانتهاء <code>01/39</code> · CVV <code>100</code> · الاسم <code>TEST CUSTOMER</code>',
-      e_name:'اكتب اسمك', e_phone:'اكتب رقم جوال سعودي صحيح يبدأ بـ 05', e_email:'البريد الإلكتروني غير صحيح', e_not_configured:'بوابة الدفع غير مفعّلة بعد', e_gateway:'تعذّر الاتصال ببوابة الدفع، حاول مرة أخرى', e_net:'تحقق من الاتصال وحاول مرة أخرى', other:'English' },
-    en: { tag:'Test mode', title:'Test payment', lead:'A test page for the payment gateway. No real money is charged in test mode.', item:'KON · Test payment', name:'Name', phone:'Mobile number', email:'Email (optional)', pay:'Pay 1 SAR', wait:'One moment…', safe:'Card details are entered on DigetPay’s secure page, not on our site', test:'For testing: use a Mastercard from the <a href="https://docs.digetpay.com/docs/test-cards" target="_blank" rel="noopener">test cards list</a> · expiry <code>01/39</code> · CVV <code>100</code> · name <code>TEST CUSTOMER</code>',
-      e_name:'Please enter your name', e_phone:'Enter a valid Saudi mobile starting with 05', e_email:'That email looks wrong', e_not_configured:'The payment gateway is not switched on yet', e_gateway:'Could not reach the payment gateway, please try again', e_net:'Check your connection and try again', other:'العربية' }
+    ar: { tag:'وضع الاختبار', lead_invoice:'رابط دفع خاص من KON Unlimited', lead_product:'أكمل الدفع لتأكيد طلبك', lead_test:'صفحة اختبار لبوابة الدفع. لا تُخصم أي مبالغ حقيقية في وضع الاختبار', for:'باسم', until:'صالح حتى', month:'شهرياً', renew:'يتجدد تلقائياً كل شهر على نفس البطاقة، ويمكنك إيقافه بالتواصل معنا', pay_m:'اشترك بـ {a} ريال شهرياً', lead_team:'فريق تطوير كامل يعمل على شركتك كل شهر', name:'الاسم', phone:'رقم الجوال', email:'البريد الإلكتروني (اختياري)', pay:'ادفع {a} ريال', wait:'لحظات…', safe:'تُدخل بيانات البطاقة في صفحة DigetPay الآمنة، لا في موقعنا', test:'للاختبار: استخدم بطاقة Mastercard من <a href="https://docs.digetpay.com/docs/test-cards" target="_blank" rel="noopener">قائمة بطاقات الاختبار</a> · الانتهاء <code>01/39</code> · CVV <code>100</code> · الاسم <code>TEST CUSTOMER</code>',
+      bad_t:'هذا الرابط غير صالح', bad_p:'تأكد من نسخ الرابط كاملاً، أو تواصل معنا لنرسل لك رابطاً جديداً', exp_t:'انتهت صلاحية هذا الرابط', exp_p:'تواصل معنا لنرسل لك رابطاً جديداً', net_t:'تعذّر تحميل الصفحة', net_p:'تحقق من الاتصال وأعد تحميل الصفحة',
+      e_name:'اكتب اسمك', e_phone:'اكتب رقم جوال سعودي صحيح يبدأ بـ 05', e_email:'البريد الإلكتروني غير صحيح', e_not_configured:'بوابة الدفع غير مفعّلة بعد', e_expired:'انتهت صلاحية هذا الرابط', e_product:'هذا الرابط غير صالح', e_gateway:'تعذّر الاتصال ببوابة الدفع، حاول مرة أخرى', e_net:'تحقق من الاتصال وحاول مرة أخرى', other:'English' },
+    en: { tag:'Test mode', lead_invoice:'A private payment link from KON Unlimited', lead_product:'Complete your payment to confirm your booking', lead_test:'A test page for the payment gateway. No real money is charged in test mode.', for:'For', until:'Valid until', month:'/ month', renew:'Renews automatically every month on the same card. Contact us any time to stop it.', pay_m:'Subscribe for {a} SAR a month', lead_team:'A full development team working on your company every month', name:'Name', phone:'Mobile number', email:'Email (optional)', pay:'Pay {a} SAR', wait:'One moment…', safe:'Card details are entered on DigetPay’s secure page, not on our site', test:'For testing: use a Mastercard from the <a href="https://docs.digetpay.com/docs/test-cards" target="_blank" rel="noopener">test cards list</a> · expiry <code>01/39</code> · CVV <code>100</code> · name <code>TEST CUSTOMER</code>',
+      bad_t:'This link is not valid', bad_p:'Check that you copied the whole link, or contact us for a new one.', exp_t:'This link has expired', exp_p:'Contact us and we will send you a new one.', net_t:'The page could not load', net_p:'Check your connection and reload the page.',
+      e_name:'Please enter your name', e_phone:'Enter a valid Saudi mobile starting with 05', e_email:'That email looks wrong', e_not_configured:'The payment gateway is not switched on yet', e_expired:'This link has expired', e_product:'This link is not valid', e_gateway:'Could not reach the payment gateway, please try again', e_net:'Check your connection and try again', other:'العربية' }
   };
-  let lang = new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'ar';
+  const q = new URLSearchParams(location.search);
+  const invoice = q.get('i') || '';
+  const product = invoice ? '' : (q.get('p') || 'test');
+  let lang = q.get('lang') === 'en' ? 'en' : 'ar';
+  let offer = null, state = 'loading';
   const $ = (s) => document.querySelector(s);
+  const fmt = (n) => Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const short = (n) => Number.isInteger(Number(n)) ? Number(n).toLocaleString('en-US') : fmt(n);
+  const date = (ms) => new Date(ms).toLocaleDateString(lang === 'ar' ? 'ar-SA-u-ca-gregory-nu-latn' : 'en-GB', { day:'numeric', month:'long', year:'numeric' });
+
   function apply(){
-    const d = T[lang]; document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    const d = T[lang];
+    document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
     document.querySelectorAll('[data-i18n]').forEach(n => n.textContent = d[n.dataset.i18n]);
     document.querySelectorAll('[data-i18n-html]').forEach(n => n.innerHTML = d[n.dataset.i18nHtml]);
     $('#lang').textContent = d.other; $('#msg').textContent = '';
+    $('#loading').hidden = state !== 'loading';
+    $('#f').hidden = state !== 'ready';
+    $('#bad').hidden = !(state === 'bad' || state === 'expired' || state === 'net');
+    if (state === 'bad' || state === 'expired' || state === 'net') {
+      const k = state === 'expired' ? 'exp' : state;
+      $('#badT').textContent = d[k + '_t']; $('#badP').textContent = d[k + '_p'];
+      $('#title').textContent = 'KON Unlimited'; $('#lead').textContent = '';
+    }
+    if (state === 'ready') {
+      const label = lang === 'ar' ? offer.ar : offer.en;
+      $('#title').textContent = label;
+      $('#lead').textContent = offer.kind.startsWith('test') ? d.lead_test : offer.kind === 'invoice' ? d.lead_invoice : offer.kind === 'team' ? d.lead_team : d.lead_product;
+      $('#item').textContent = 'KON · ' + label;
+      $('#amt').textContent = fmt(offer.amount) + ' SAR' + (offer.recurring ? ' ' + d.month : '');
+      const meta = [];
+      if (offer.recurring) meta.push(d.renew);
+      if (offer.client) meta.push(d.for + ' ' + offer.client);
+      if (offer.expires) meta.push(d.until + ' ' + date(offer.expires));
+      $('#meta').textContent = meta.join(' · '); $('#meta').hidden = !meta.length;
+      $('#go').textContent = (offer.recurring ? d.pay_m : d.pay).replace('{a}', short(offer.amount));
+    }
+    $('#tag').hidden = !(offer && offer.test);
+    $('#testnote').hidden = !(offer && offer.test && state === 'ready');
   }
   $('#lang').onclick = () => { lang = lang === 'ar' ? 'en' : 'ar'; apply(); };
   apply();
 
+  (async () => {
+    try {
+      const r = await fetch('/api/pay/offer?' + (invoice ? 'i=' + encodeURIComponent(invoice) : 'p=' + encodeURIComponent(product)), { cache:'no-store' });
+      const j = await r.json().catch(() => ({}));
+      if (j.ok) { offer = j; state = 'ready'; if (j.kind === 'invoice' && j.client && !$('#name').value) $('#name').value = j.client; }
+      else state = r.status === 410 ? 'expired' : 'bad';
+    } catch { state = 'net'; }
+    apply();
+  })();
+
   $('#f').addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (!offer) return;
     const d = T[lang], msg = $('#msg'), go = $('#go');
     const name = $('#name').value.trim(), phone = $('#phone').value.trim(), email = $('#email').value.trim();
     if (!name) { msg.textContent = d.e_name; return $('#name').focus(); }
@@ -93,7 +155,8 @@
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { msg.textContent = d.e_email; return $('#email').focus(); }
     msg.textContent = ''; go.disabled = true; go.textContent = d.wait;
     try {
-      const r = await fetch('/api/pay/create', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ product:'test', name, phone, email, lang }) });
+      const body = invoice ? { invoice } : { product };
+      const r = await fetch('/api/pay/create', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ ...body, name, phone, email, lang }) });
       const j = await r.json().catch(() => ({}));
       if (j.ok && j.redirectUrl) {
         try { sessionStorage.setItem('kon_pay', JSON.stringify({ order: j.merchantOrderId, sessionId: j.sessionId })); } catch {}
@@ -101,7 +164,7 @@
       }
       msg.textContent = d['e_' + j.error] || d.e_gateway;
     } catch { msg.textContent = d.e_net; }
-    go.disabled = false; go.textContent = d.pay;
+    go.disabled = false; go.textContent = (offer.recurring ? d.pay_m : d.pay).replace('{a}', short(offer.amount));
   });
 })();
 </script>

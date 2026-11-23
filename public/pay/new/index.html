@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="referrer" content="no-referrer" />
+<title>KON · رابط دفع جديد</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{--bg:#04151a;--panel:rgba(255,255,255,.04);--line:rgba(166,232,226,.16);--ink:#eef7f6;--mute:#9fb9b7;--teal:#5fd3c6;--gold:#d8b878;--err:#f2b8a0}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:radial-gradient(1200px 700px at 50% -10%,#0b3a3e 0%,var(--bg) 60%);color:var(--ink);min-height:100%;font-family:"IBM Plex Sans Arabic",Inter,system-ui,sans-serif}
+  html[lang=en] body{font-family:Inter,"IBM Plex Sans Arabic",system-ui,sans-serif}
+  main{max-width:480px;margin:0 auto;padding:40px 16px 56px}
+  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:36px}
+  .logo{font-family:Inter,sans-serif;font-weight:600;letter-spacing:.32em;font-size:15px;color:var(--ink);text-decoration:none}
+  .lang{background:none;border:1px solid var(--line);color:var(--mute);border-radius:999px;padding:8px 14px;font:inherit;font-size:13px;cursor:pointer;min-height:40px}
+  .tag{display:inline-block;font-size:12px;letter-spacing:.08em;color:var(--gold);border:1px solid rgba(216,184,120,.35);border-radius:999px;padding:5px 12px;margin-bottom:18px}
+  h1{font-size:28px;font-weight:600;line-height:1.35;margin:0 0 8px}
+  p.lead{color:var(--mute);margin:0 0 28px;line-height:1.7}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:22px;backdrop-filter:blur(8px)}
+  label{display:block;font-size:13px;color:var(--mute);margin:14px 0 6px}
+  label:first-child{margin-top:0}
+  input,select{width:100%;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:12px;color:var(--ink);font:inherit;font-size:16px;padding:13px 14px;min-height:48px;outline:none;transition:border-color .2s}
+  select option{background:#06252a}
+  input:focus,select:focus{border-color:var(--teal)}
+  input[dir=ltr]{text-align:left}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .btn{margin-top:22px;width:100%;min-height:52px;border:0;border-radius:14px;font:inherit;font-size:16px;font-weight:600;color:#03201f;background:linear-gradient(135deg,var(--teal),#9be8de);cursor:pointer;transition:transform .15s,opacity .2s}
+  .btn:active{transform:scale(.99)}
+  .btn[disabled]{opacity:.55;cursor:wait}
+  .ghost{background:none;border:1px solid var(--line);color:var(--ink);font-weight:500;margin-top:10px}
+  .wa{background:#25d366;color:#04201a}
+  .msg{min-height:22px;margin-top:14px;font-size:14px;color:var(--err);text-align:center}
+  .out{margin-top:18px}
+  .out .sum{display:flex;justify-content:space-between;gap:12px;align-items:baseline;margin-bottom:12px}
+  .out .sum b{font-family:Inter,sans-serif;font-size:22px;white-space:nowrap}
+  .out .sum small{display:block;color:var(--mute);font-size:13px;margin-top:4px}
+  .link{direction:ltr;text-align:left;font-family:ui-monospace,Menlo,monospace;font-size:13px;word-break:break-all;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:12px;padding:12px;color:var(--teal)}
+  .hint{font-size:12px;color:var(--mute);margin-top:6px}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <a class="logo" href="/">KON</a>
+    <button class="lang" id="lang" type="button">English</button>
+  </div>
+  <span class="tag" data-i18n="tag">خاص بخالد</span>
+  <h1 data-i18n="title">رابط دفع جديد</h1>
+  <p class="lead" data-i18n="lead">اكتب المبلغ والوصف، ثم أرسل الرابط للعميل على واتساب. المبلغ موقّع ولا يمكن للعميل تغييره</p>
+
+  <form class="card" id="f" novalidate autocomplete="off">
+    <label for="amount" data-i18n="amount">المبلغ (ريال)</label>
+    <input id="amount" type="number" inputmode="decimal" min="1" max="500000" step="0.01" dir="ltr" required />
+    <label for="label" data-i18n="label">مقابل ماذا</label>
+    <input id="label" maxlength="80" required />
+    <div class="hint" data-i18n="label_h">يظهر للعميل كما تكتبه، مثلاً: دفعة أولى، مشروع تطوير التشغيل</div>
+    <div class="two">
+      <div>
+        <label for="client" data-i18n="client">اسم العميل (اختياري)</label>
+        <input id="client" maxlength="80" />
+      </div>
+      <div>
+        <label for="days" data-i18n="days">صلاحية الرابط</label>
+        <select id="days">
+          <option value="3" data-i18n="d3">3 أيام</option>
+          <option value="7" selected data-i18n="d7">أسبوع</option>
+          <option value="14" data-i18n="d14">أسبوعان</option>
+          <option value="30" data-i18n="d30">30 يوماً</option>
+        </select>
+      </div>
+    </div>
+    <label for="pass" data-i18n="pass">رمز الدخول</label>
+    <input id="pass" type="password" autocomplete="current-password" dir="ltr" required />
+    <button class="btn" id="go" type="submit" data-i18n="make">أنشئ الرابط</button>
+    <div class="msg" id="msg" role="status" aria-live="polite"></div>
+
+    <div class="out" id="out" hidden>
+      <div class="sum"><div><span id="oLabel"></span><small id="oMeta"></small></div><b dir="ltr" id="oAmt"></b></div>
+      <div class="link" id="oUrl"></div>
+      <button class="btn wa" id="wa" type="button" data-i18n="wa">أرسل على واتساب</button>
+      <button class="btn ghost" id="copy" type="button" data-i18n="copy">انسخ الرابط</button>
+      <button class="btn ghost" id="open" type="button" data-i18n="open">افتح صفحة الدفع</button>
+    </div>
+  </form>
+</main>
+<script>
+(() => {
+  const T = {
+    ar: { tag:'خاص بخالد', title:'رابط دفع جديد', lead:'اكتب المبلغ والوصف، ثم أرسل الرابط للعميل على واتساب. المبلغ موقّع ولا يمكن للعميل تغييره', amount:'المبلغ (ريال)', label:'مقابل ماذا', label_h:'يظهر للعميل كما تكتبه، مثلاً: دفعة أولى، مشروع تطوير التشغيل', client:'اسم العميل (اختياري)', days:'صلاحية الرابط', d3:'3 أيام', d7:'أسبوع', d14:'أسبوعان', d30:'30 يوماً', pass:'رمز الدخول', make:'أنشئ الرابط', wait:'لحظات…', wa:'أرسل على واتساب', copy:'انسخ الرابط', copied:'تم النسخ', open:'افتح صفحة الدفع', for:'باسم', until:'صالح حتى',
+      share:'مرحباً{c}، هذا رابط الدفع من KON Unlimited\n{l}: {a} ريال\n{u}',
+      e_amount:'اكتب مبلغاً بين 1 و 500,000 ريال', e_label:'اكتب مقابل ماذا', e_pass:'رمز الدخول غير صحيح', e_not_configured:'روابط الدفع غير مفعّلة بعد على هذا الرابط', e_net:'تحقق من الاتصال وحاول مرة أخرى', other:'English' },
+    en: { tag:'Khalid only', title:'New payment link', lead:'Enter the amount and what it is for, then send the link to the client on WhatsApp. The amount is signed, so the client cannot change it.', amount:'Amount (SAR)', label:'What it is for', label_h:'Shown to the client exactly as you write it, e.g. First payment', client:'Client name (optional)', days:'Link valid for', d3:'3 days', d7:'1 week', d14:'2 weeks', d30:'30 days', pass:'Passcode', make:'Create link', wait:'One moment…', wa:'Send on WhatsApp', copy:'Copy link', copied:'Copied', open:'Open payment page', for:'For', until:'Valid until',
+      share:'Hello{c}, here is your payment link from KON Unlimited\n{l}: {a} SAR\n{u}',
+      e_amount:'Enter an amount between 1 and 500,000 SAR', e_label:'Say what the payment is for', e_pass:'Wrong passcode', e_not_configured:'Payment links are not switched on here yet', e_net:'Check your connection and try again', other:'العربية' }
+  };
+  let lang = new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'ar';
+  let last = null;
+  const $ = (s) => document.querySelector(s);
+  const fmt = (n) => Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const date = (ms) => new Date(ms).toLocaleDateString(lang === 'ar' ? 'ar-SA-u-ca-gregory-nu-latn' : 'en-GB', { day:'numeric', month:'long', year:'numeric' });
+  try { const p = sessionStorage.getItem('kon_pay_pass'); if (p) $('#pass').value = p; } catch {}
+
+  function render(){
+    if (!last) return;
+    const d = T[lang];
+    $('#out').hidden = false;
+    $('#oLabel').textContent = last.label;
+    $('#oAmt').textContent = fmt(last.amount) + ' SAR';
+    $('#oMeta').textContent = [last.client ? d.for + ' ' + last.client : '', d.until + ' ' + date(last.expires)].filter(Boolean).join(' · ');
+    $('#oUrl').textContent = last.url;
+  }
+  function apply(){
+    const d = T[lang];
+    document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.querySelectorAll('[data-i18n]').forEach(n => n.textContent = d[n.dataset.i18n]);
+    $('#lang').textContent = d.other; $('#msg').textContent = '';
+    render();
+  }
+  $('#lang').onclick = () => { lang = lang === 'ar' ? 'en' : 'ar'; apply(); };
+  apply();
+
+  const link = () => last.url + (lang === 'en' ? '&lang=en' : '');
+  $('#f').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const d = T[lang], msg = $('#msg'), go = $('#go');
+    const amount = Number($('#amount').value), label = $('#label').value.trim(), client = $('#client').value.trim(), days = Number($('#days').value), pass = $('#pass').value;
+    if (!(amount >= 1 && amount <= 500000)) { msg.textContent = d.e_amount; return $('#amount').focus(); }
+    if (!label) { msg.textContent = d.e_label; return $('#label').focus(); }
+    if (!pass) { msg.textContent = d.e_pass; return $('#pass').focus(); }
+    msg.textContent = ''; go.disabled = true; go.textContent = d.wait;
+    try {
+      const r = await fetch('/api/pay/link', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ pass, amount, label, client, days }) });
+      const j = await r.json().catch(() => ({}));
+      if (j.ok) {
+        try { sessionStorage.setItem('kon_pay_pass', pass); } catch {}
+        last = j; render(); $('#out').scrollIntoView({ behavior:'smooth', block:'nearest' });
+      } else {
+        msg.textContent = d['e_' + j.error] || d.e_net; $('#out').hidden = true; last = null;
+      }
+    } catch { msg.textContent = d.e_net; }
+    go.disabled = false; go.textContent = d.make;
+  });
+  $('#copy').onclick = async () => {
+    try { await navigator.clipboard.writeText(link()); $('#copy').textContent = T[lang].copied; setTimeout(() => $('#copy').textContent = T[lang].copy, 1600); } catch {}
+  };
+  $('#open').onclick = () => window.open(link(), '_blank', 'noopener');
+  $('#wa').onclick = () => {
+    const d = T[lang];
+    const text = d.share.replace('{c}', last.client ? ' ' + last.client : '').replace('{l}', last.label).replace('{a}', fmt(last.amount)).replace('{u}', link());
+    window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank', 'noopener');
+  };
+})();
+</script>
+</body>
+</html>
