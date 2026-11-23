@@ -4,9 +4,11 @@ import { dp, PRODUCTS, normalizePhone, clip, origin } from '../_lib/digetpay.js'
 
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
-  if (req.method !== 'POST') { res.setHeader('Allow', 'POST'); return res.status(405).json({ ok: false, error: 'method' }); }
+  // Preview-only smoke test: GET creates a fixed 1 SAR test session so setup can be checked without a form.
+  const smoke = req.method === 'GET' && process.env.VERCEL_ENV === 'preview' && req.query.smoke === '1';
+  if (req.method !== 'POST' && !smoke) { res.setHeader('Allow', 'POST'); return res.status(405).json({ ok: false, error: 'method' }); }
 
-  let b = req.body;
+  let b = smoke ? { product: 'test', name: 'TEST CUSTOMER', phone: '0501223324', lang: req.query.lang } : req.body;
   if (typeof b === 'string') { try { b = JSON.parse(b); } catch { b = null; } }
   if (!b || typeof b !== 'object') return res.status(400).json({ ok: false, error: 'body' });
 
