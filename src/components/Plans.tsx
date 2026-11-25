@@ -15,6 +15,7 @@ export function Plans() {
   const lang = useStore((s) => s.lang)
   const [tab, setTab] = useState<'monthly' | 'results'>('monthly')
   const [ti, setTi] = useState(1)
+  const notes = [p.note3, p.note6, p.note12]
   const term = PLAN_TERMS[ti]
   const fmt = (n: number) => n.toLocaleString('en-US')
   const arrow = lang === 'ar' ? '←' : '→'
@@ -43,21 +44,26 @@ export function Plans() {
               {PLAN_TERMS.map((t, i) => (
                 <button key={t.months} type="button" role="radio" aria-checked={ti === i} className={`pl-term${ti === i ? ' is-on' : ''}`} onClick={() => setTi(i)}>
                   <b>{p.months(t.months)}</b>
-                  {t.off > 0 && <small>{p.save(Math.round(t.off * 100))}</small>}
+                  <small>{notes[i]}</small>
                 </button>
               ))}
             </div>
 
             <ol className="pl-grid">
               {p.tiers.map((t) => {
-                const monthly = round100(t.price * (1 - term.off))
+                const off = (t.minMonths ?? 0) > term.months
+                const monthly = round100(t.price * term.mult)
                 return (
-                  <li key={t.id} className={`pl-card glass${t.tag ? ' is-pick' : ''}`}>
+                  <li key={t.id} className={`pl-card glass${t.tag ? ' is-pick' : ''}${off ? ' is-off' : ''}`}>
                     {t.tag && <span className="pl-tag">{t.tag}</span>}
                     <h3 className="pl-name">{t.name}</h3>
-                    <p className="pl-price"><b dir="ltr">{fmt(monthly)}</b><span>{p.perMonth}</span></p>
+                    {off ? (
+                      <p className="pl-price pl-na"><b>{p.notOn3}</b></p>
+                    ) : (
+                      <p className="pl-price"><b dir="ltr">{fmt(monthly)}</b><span>{p.perMonth}</span></p>
+                    )}
                     {t.plus && <p className="pl-plus">{t.plus}</p>}
-                    <p className="pl-total">{p.total(fmt(monthly * term.months), term.months)}</p>
+                    {!off && <p className="pl-total">{p.total(fmt(monthly * term.months), term.months)}</p>}
                     <p className="pl-hours">{t.hours}</p>
                     <p className="pl-k">{p.forWho}</p>
                     <p className="pl-for">{t.forWho}</p>
@@ -70,6 +76,7 @@ export function Plans() {
                 )
               })}
             </ol>
+            {term.months === 12 && <p className="pl-perks glass">{p.perks12}</p>}
             <p className="pl-anchor"><Rich text={p.anchor} /></p>
             <p className="fine pl-note">{p.payNote}</p>
           </div>

@@ -61,3 +61,8 @@
 }
 .pl-card, .pl-step, .pl-offer, .pl-clear { text-align: start; }
 .pl-tag { inset-inline-start: 1.4rem; }
+.pl-term small { color: var(--muted); }
+.pl-term.is-on small { color: var(--teal-hi); }
+.pl-card.is-off { opacity: 0.55; }
+.pl-na b { font-size: 1.3rem !important; color: var(--muted) !important; }
+.pl-perks { max-width: 46rem; margin: 1.6rem auto 0; padding: 1rem 1.3rem; border-radius: 16px; text-align: center; color: var(--text); line-height: 1.8; }

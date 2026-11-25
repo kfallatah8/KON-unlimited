@@ -49,6 +49,8 @@ export interface PlanTier {
   name: string
   tag?: string
   price: number
+  /** Shortest contract this plan is offered on. */
+  minMonths?: number
   plus?: string
   hours: string
   forWho: string
@@ -56,10 +58,12 @@ export interface PlanTier {
   gets: string[]
 }
 export interface ResultOffer { title: string; body: string; share: string; period: string }
+/** Terms aligned with the Master Plan tab «الباقات وشراكة النتائج» (2026-11-25): 6 months is the base price,
+ * 3 months costs 12% more (Partner not offered), 12 months keeps the price and adds value instead of a discount. */
 export const PLAN_TERMS = [
-  { months: 3, off: 0 },
-  { months: 6, off: 0.07 },
-  { months: 12, off: 0.15 },
+  { months: 3, mult: 1.12 },
+  { months: 6, mult: 1 },
+  { months: 12, mult: 1 },
 ] as const
 
 export const SHOW_SOLUTIONS = true
@@ -248,53 +252,57 @@ const ar = {
     tabs: { monthly: 'الاشتراك الشهري', results: 'شراكة النتيجة' },
     term: 'مدة العقد',
     months: (n: number) => (n === 12 ? 'سنة' : `${n} أشهر`),
-    save: (p: number) => `وفّر \u2066${p}%\u2069`,
+    note3: 'الإعداد على مدة أقصر',
+    note6: 'السعر الأساسي',
+    note12: 'نفس السعر + مزايا',
+    perks12: 'مع عقد السنة: تثبيت السعر سنتين، «قراءة كُن» هدية، وإيقاف مؤقت 30 يوم متى احتجت',
+    notOn3: 'تبدأ من 6 أشهر',
     perMonth: 'ريال شهريًا',
     total: (n: string, m: number) => `${n} ريال على ${m === 12 ? '12 شهر' : `${m} أشهر`}، تدفعها أقساط شهرية`,
     forWho: 'لمين',
     pains: 'لو هذا وضعك',
     gets: 'ايش تاخذ',
     pick: 'أبي هذي الباقة',
-    payNote: 'كل الباقات تُدفع أقساط شهرية بدون رسوم إضافية، أو ادفع المدة كاملة مقدمًا ووفّر 5% زيادة · الأسعار قبل ضريبة القيمة المضافة',
+    payNote: 'تدفع شهريًا (وهذا هو التقسيط) أو كل 3 أشهر أو سنة مقدمًا · الأسعار قبل ضريبة القيمة المضافة',
     anchor: 'للمقارنة: توظيف مدير تطوير أعمال ومحلل ومنسّق يكلّف عادة **أكثر من 50 ألف ريال شهريًا** مع التأمينات والبدلات، وقبل ما يبدأون',
     tiers: [
       {
-        id: 'core', name: 'الأساس', price: 8800, hours: '4 ساعات مع خالد + 20 ساعة عمل من الفريق كل شهر',
+        id: 'core', name: 'نواة', price: 8800, hours: '4 ساعات مع خالد + 20 ساعة عمل من الفريق كل شهر',
         forWho: 'شركة مستقرة من 10 إلى 50 موظف، تبي ترتّب بيتها من الداخل',
         pains: ['المبيعات زينة والربح ما يتحرك', 'كل شي يرجع لك أنت', 'ما فيه إجراءات مكتوبة'],
         gets: ['تشخيص كامل في الشهر الأول وخطة 90 يوم', 'مكسب سريع واحد كل 3 أشهر تشوفه في أرقامك', 'اجتماع متابعة كل أسبوعين', 'تقرير شهري بالأرقام، صفحة وحدة'],
       },
       {
-        id: 'growth', name: 'النمو', tag: 'نرشّحها لأغلب الشركات', price: 18500, hours: '8 ساعات مع خالد + 50 ساعة عمل من الفريق كل شهر',
+        id: 'growth', name: 'نمو', tag: 'نرشّحها لأغلب الشركات', price: 18500, hours: '8 ساعات مع خالد + 50 ساعة عمل من الفريق كل شهر',
         forWho: 'شركة تنمو أو عندها فروع، من 50 إلى 200 موظف، والتشغيل ما يلحق',
         pains: ['كل فرع جديد يكسر شي كان شغّال', 'فريق كبير وأداء متفاوت', 'نمو بدون خطة بالأرقام'],
-        gets: ['كل اللي في باقة الأساس', 'تدريب الفريق في الميدان على البيع والخدمة', 'زيارات المتسوق الخفي ومعايير لكل وردية', 'خطة نمو وقنوات بيع جديدة ننفذها معك'],
+        gets: ['كل اللي في باقة نواة', 'تدريب الفريق في الميدان على البيع والخدمة', 'زيارات المتسوق الخفي ومعايير لكل وردية', 'خطة نمو وقنوات بيع جديدة ننفذها معك'],
       },
       {
-        id: 'partner', name: 'الشريك', price: 34000, plus: '+ 10% من الربح الإضافي الموثّق، بحد أعلى يساوي الاشتراك الشهري', hours: '14 ساعة مع خالد + 110 ساعات عمل من الفريق كل شهر',
+        id: 'partner', name: 'شريك', price: 34000, minMonths: 6, plus: '+ 10% من الربح الإضافي الموثّق، بحد أعلى يساوي الاشتراك الشهري', hours: '14 ساعة مع خالد + 110 ساعات عمل من الفريق كل شهر',
         forWho: 'شركة تبي قسم تطوير أعمال وتشغيل كامل بدون ما توظّفه',
         pains: ['تحتاج قسم كامل وتكلفة توظيفه عالية', 'تتوسع لمدينة أو سوق جديد', 'تبي أحد يتحمّل النتيجة معك'],
-        gets: ['كل اللي في باقة النمو', 'اجتماعات مؤهلة مع عملاء وشركاء محتملين', 'لوحة أرقام أسبوعية تشوفها متى ما تبي', 'أجرنا يرتبط جزئيًا بالربح اللي نضيفه'],
+        gets: ['كل اللي في باقة نمو', 'اجتماعات مؤهلة مع عملاء وشركاء محتملين', 'لوحة أرقام أسبوعية تشوفها متى ما تبي', 'أجرنا يرتبط جزئيًا بالربح اللي نضيفه'],
       },
     ] as PlanTier[],
     results: {
       title: 'ما نكسب إلا لما تكسب',
       lede: 'نشوف بياناتك، نتفق على رقم البداية، ونشتغل، وناخذ نسبة من **الفرق اللي يظهر في نظامك أنت** فقط',
       steps: [
-        { title: 'نشوف أرقامك', body: 'نوقّع اتفاقية سرية ونطّلع على المبيعات والتكاليف والعملاء' },
-        { title: 'نكتب رقم البداية', body: 'رقم اليوم كما هو، ومؤشرات القياس، والمدة، ونسبتنا، في صفحة وحدة يوقعها الطرفين' },
-        { title: 'نشتغل', body: 'احنا ننفذ، وأنت تتابع التقدم في لوحة أرقام مشتركة' },
+        { title: 'نقرأ أرقامك 14 يوم', body: 'بعد اتفاقية سرية نقرأ المبيعات والتكاليف والعملاء، ونطلع لك بخريطة فرص مسعّرة بالريال' },
+        { title: 'عقد صفحة وحدة لكل فرصة', body: 'رقم البداية، ومؤشرات القياس، والمدة، ونسبتنا وسقفها، يوقعها الطرفين' },
+        { title: 'نشتغل', body: 'احنا ننفذ، ويوصلك تقرير أثر كل شهر بالأرقام' },
         { title: 'نتقاسم الفرق', body: 'نحسب الفرق عن رقم البداية من نظامك، وناخذ نسبتنا منه فقط' },
       ],
       offers: [
         { title: 'صيد التسرّب', body: 'فلوس تطلع كل شهر بدون داعي: موردين، هدر، اشتراكات، عمولات تطبيقات التوصيل', share: '30% من التوفير', period: 'لمدة 12 شهر' },
-        { title: 'العملاء النايمين', body: 'عملاء اشتروا منك قبل وما رجعوا، نرجّعهم', share: '15 إلى 20% من مبيعاتهم', period: 'لمدة 90 يوم' },
-        { title: 'العروض المنسية', body: 'عروض أسعار أرسلتها وما أحد تابعها، نتابعها لين تقفل أو تنتهي', share: '8% من الصفقات اللي تقفل', period: 'لمدة 60 يوم' },
-        { title: 'مصدر دخل جديد', body: 'خط إيراد جديد من أصول أو علاقات أو بيانات عندك وما تستفيد منها', share: 'نسبة نتفق عليها', period: 'حسب الفرصة' },
+        { title: 'العملاء النايمين', body: 'عملاء اشتروا منك قبل وما رجعوا، نرجّعهم', share: '15 إلى 20% من مبيعاتهم', period: 'مدة وسقف محددين في العقد' },
+        { title: 'نمو الربح', body: 'نرفع هامش ربحك من نفس المبيعات: التسعير والقائمة والتكلفة', share: '15% من نمو الربح الإجمالي', period: 'مدة وسقف محددين في العقد' },
+        { title: 'مصدر دخل جديد', body: 'خط إيراد جديد من أصول أو علاقات أو بيانات عندك وما تستفيد منها', share: '10% من الدخل الجديد', period: 'مدة وسقف محددين في العقد' },
       ] as ResultOffer[],
       clear: 'ايش تعرف قبل ما نبدأ',
-      clearItems: ['رقم البداية', 'مؤشرات القياس', 'المدة ومواعيد المراجعة', 'نسبتنا وطريقة حسابها', 'متى وكيف ينتهي الاتفاق'],
-      floor: 'لكل اتفاقية حد أدنى 3,000 ريال، ونقول لك بصراحة إذا ما شفنا فرصة تستاهل',
+      clearItems: ['رقم البداية', 'مؤشرات القياس', 'المدة ومواعيد المراجعة', 'نسبتنا وسقفها وطريقة حسابها', 'متى وكيف ينتهي الاتفاق'],
+      floor: 'كل نسبة لها سقف ومدة محددة، وإذا ما شفنا فرصة تستاهل نقول لك بصراحة',
       cta: 'خلّنا نشوف أرقامك',
     },
     unsure: 'ما تدري أي طريقة تناسبك؟ ابدأ بالجلسة المجانية ونقولك بصراحة',
@@ -820,14 +828,18 @@ const en: Content = {
     tabs: { monthly: 'Monthly plans', results: 'Results partnership' },
     term: 'Contract length',
     months: (n: number) => (n === 12 ? '1 year' : `${n} months`),
-    save: (p: number) => `Save ${p}%`,
+    note3: 'Setup over a shorter term',
+    note6: 'Base price',
+    note12: 'Same price + extras',
+    perks12: 'With a 1-year contract: your price locked for 2 years, a gifted KON Reading, and a 30-day pause whenever you need it',
+    notOn3: 'From 6 months',
     perMonth: 'SAR / month',
     total: (n: string, m: number) => `SAR ${n} over ${m} months, paid in monthly instalments`,
     forWho: 'Who it’s for',
     pains: 'If this sounds like you',
     gets: 'What you get',
     pick: 'I want this plan',
-    payNote: 'Every plan is paid in monthly instalments at no extra cost, or pay the full term upfront and save another 5% · Prices exclude VAT',
+    payNote: 'Pay monthly (that’s the instalment plan), quarterly, or a year upfront · Prices exclude VAT',
     anchor: 'For comparison: hiring a business development manager, an analyst and a coordinator usually costs **over SAR 50,000 a month** with insurance and allowances, before they even start',
     tiers: [
       {
@@ -843,7 +855,7 @@ const en: Content = {
         gets: ['Everything in Core', 'On-the-floor training for sales and service', 'Mystery shopper visits and standards for every shift', 'A growth plan and new sales channels we run with you'],
       },
       {
-        id: 'partner', name: 'Partner', price: 34000, plus: '+ 10% of verified extra profit, capped at one month’s fee', hours: '14 hours with Khalid + 110 team hours every month',
+        id: 'partner', name: 'Partner', price: 34000, minMonths: 6, plus: '+ 10% of verified extra profit, capped at one month’s fee', hours: '14 hours with Khalid + 110 team hours every month',
         forWho: 'A company that wants a full business development and operations department without hiring one',
         pains: ['You need a whole department and hiring one is expensive', 'You’re expanding to a new city or market', 'You want someone who shares the outcome with you'],
         gets: ['Everything in Growth', 'Qualified meetings with potential clients and partners', 'A weekly numbers dashboard you can open any time', 'Part of our fee tied to the profit we add'],
@@ -853,20 +865,20 @@ const en: Content = {
       title: 'We only earn when you earn',
       lede: 'We look at your data, agree the starting number, do the work, and take a share of **the difference that shows up in your own system**. Nothing more',
       steps: [
-        { title: 'We see your numbers', body: 'We sign an NDA and look at sales, costs and customers' },
-        { title: 'We write the starting number', body: 'Today’s figure as it is, the measures, the timeline and our share, on one page both sides sign' },
-        { title: 'We do the work', body: 'We carry it out, and you follow progress on a shared dashboard' },
+        { title: 'A 14-day read of your numbers', body: 'Under an NDA we read sales, costs and customers, and give you a map of opportunities priced in riyals' },
+        { title: 'A one-page contract per opportunity', body: 'The starting number, the measures, the timeline, our share and its cap, signed by both sides' },
+        { title: 'We do the work', body: 'We carry it out, and you get an impact report in numbers every month' },
         { title: 'We split the difference', body: 'We measure the gain against the starting number in your system, and take our share of that only' },
       ],
       offers: [
         { title: 'Leak hunt', body: 'Money that leaves every month for no reason: suppliers, waste, subscriptions, delivery-app commissions', share: '30% of savings', period: 'for 12 months' },
-        { title: 'Sleeping customers', body: 'People who bought from you before and never came back. We bring them back', share: '15 to 20% of their sales', period: 'for 90 days' },
-        { title: 'Forgotten quotes', body: 'Quotes you sent that nobody followed up. We follow them until they close or expire', share: '8% of closed deals', period: 'for 60 days' },
-        { title: 'A new income stream', body: 'A new revenue line from assets, relationships or data you already have and don’t use', share: 'A share we agree', period: 'Per opportunity' },
+        { title: 'Sleeping customers', body: 'People who bought from you before and never came back. We bring them back', share: '15 to 20% of their sales', period: 'Term and cap set in the contract' },
+        { title: 'Profit growth', body: 'More margin from the same sales: pricing, menu and cost', share: '15% of gross-profit growth', period: 'Term and cap set in the contract' },
+        { title: 'A new income stream', body: 'A new revenue line from assets, relationships or data you already have and don’t use', share: '10% of the new income', period: 'Term and cap set in the contract' },
       ],
       clear: 'What you know before we start',
-      clearItems: ['The starting number', 'How we measure', 'Timeline and review dates', 'Our share and how it’s calculated', 'When and how the deal ends'],
-      floor: 'Every agreement has a SAR 3,000 minimum, and if we don’t see an opportunity worth it, we’ll tell you straight',
+      clearItems: ['The starting number', 'How we measure', 'Timeline and review dates', 'Our share, its cap and how it’s calculated', 'When and how the deal ends'],
+      floor: 'Every share has a cap and a fixed term, and if we don’t see an opportunity worth it, we’ll tell you straight',
       cta: 'Let us look at your numbers',
     },
     unsure: 'Not sure which way fits? Start with the free session and we’ll tell you honestly',
