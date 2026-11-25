@@ -42,6 +42,26 @@ export interface CaseItem {
 /** Where onboarding briefs go. Empty = not connected yet (the form says so plainly). */
 /** Embeddable ⁦360°⁩ tour (Kuula). The page loads it only when a visitor asks for it. */
 /** Solutions section (الحلول). Hidden on the live site for now (khalid, 2026-10-31); flip to true to show it again. */
+
+/** Ways to work with KON (packages + results partnership). Prices in SAR per month before VAT. */
+export interface PlanTier {
+  id: 'core' | 'growth' | 'partner'
+  name: string
+  tag?: string
+  price: number
+  plus?: string
+  hours: string
+  forWho: string
+  pains: string[]
+  gets: string[]
+}
+export interface ResultOffer { title: string; body: string; share: string; period: string }
+export const PLAN_TERMS = [
+  { months: 3, off: 0 },
+  { months: 6, off: 0.07 },
+  { months: 12, off: 0.15 },
+] as const
+
 export const SHOW_SOLUTIONS = true
 /** KON Talent section (المواهب). Flip to false to hide the section and its nav link. */
 export const SHOW_TALENT = true
@@ -60,13 +80,13 @@ export const contact = {
 const ar = {
   meta: {
     switchTo: 'EN', switchLabel: 'Switch to English', menu: 'القائمة', close: 'إغلاق', skip: 'تخطَّ إلى المحتوى',
-    title: 'KON Unlimited · نرفع كفاءة مشروعك',
+    title: 'KON Unlimited · تطوير أعمال وتشغيل',
     home: 'الرئيسية',
   },
   nav: [
     { href: '#approach', label: 'طريقتنا' },
     { href: '#work', label: 'أعمالنا' },
-    { href: '#services', label: 'خدماتنا' },
+    { href: '#plans', label: 'الباقات' },
     { href: '#tools', label: 'احسبها بنفسك' },
     { href: '#founder', label: 'المؤسس' },
     { href: '#/talent', label: 'المواهب' },
@@ -75,20 +95,20 @@ const ar = {
 
   hero: {
     eyebrow: 'تشغيل · تطوير أعمال · ابتكار',
-    rotating: ['نرفع كفاءة مشروعك', 'نبتكر حلول تسبق التحدي', 'نضبط تشغيلك اليومي', 'نحوّل فكرتك لمشروع يشتغل', 'نخلّي استثمارك أذكى'],
-    statement: ['ربحٌ أعلى', 'من مكان ما توقعته'],
+    rotating: ['ربحك الأعلى موجود داخل شركتك', 'نشتغل معك على الأرض لين يتحرك الرقم', 'كل شي مكتوب وواضح من أول يوم'],
+    statement: ['ربحك الأعلى', 'موجود داخل شركتك'],
     asks: [
-      { who: 'لصاحب المشروع', q: 'مبيعاتك تزيد، طيب ليش ربحك واقف مكانه؟' },
-      { who: 'لرائد الأعمال', q: 'فكرتك حلوة، بس هل فيه أحد مستعد يدفع فيها؟' },
-      { who: 'للمدير', q: 'فريقك مشغول طول اليوم، طيب وين يروح الوقت؟' },
-      { who: 'للمطاعم والمتاجر', q: 'من أي ساعة يبدأ ربحك اليوم، فعليًا؟' },
-      { who: 'للمستثمر', q: 'فلوسك تشتغل لك، ولا أنت اللي تشتغل لها؟' },
+      { who: 'لصاحب الشركة', q: 'مبيعاتك تزيد وربحك واقف مكانه؟' },
+      { who: 'لرائد الأعمال', q: 'فكرتك حلوة، بس مين بيدفع فيها؟' },
+      { who: 'للمدير', q: 'فريقك مشغول طول اليوم، والنتيجة وينها؟' },
+      { who: 'للمطاعم والمتاجر', q: 'من أي ساعة يبدأ ربحك اليوم فعلًا؟' },
+      { who: 'للمستثمر', q: 'كل ريال حطّيته، كم رجّع لك فعلًا؟' },
     ],
     promise: 'وعدنا بسيط: **أي عملية تشغيلية، نطوّرها ونحسّنها**',
-    lede: 'أرقامك تقول لك **وش صار**، واحنا نكشف لك **ليش صار**: نقرأ عميلك وفريقك وقراراتك بعين أخصائي نفسي، وبعدها ننزل معك الميدان لين يتحرك الربح',
-    micro: 'جلسة 30 دقيقة · مجانًا · بدون أي التزام',
+    lede: 'نقرأ أرقامك ونقرأ الناس اللي وراها: **عميلك وفريقك وقراراتك**، وبعدها ننزل معك الميدان ونبقى لين يتحرك الربح',
+    micro: 'جلسة 30 دقيقة مع خالد · مجانية · بدون أي التزام',
     primary: 'احجز جلستك المجانية',
-    secondary: 'شوف النتائج',
+    secondary: 'شوف أعمالنا',
     slogan: 'Any challenge…Any way…Anywhere…We’ll be there',
     scroll: 'انزل',
     proof: [
@@ -152,9 +172,9 @@ const ar = {
     eyebrow: 'طريقتنا',
     title: 'ليش الأرقام تتحرك معنا؟',
     pillars: [
-      { icon: 'mind' as IconId, title: 'نبدأ من الإنسان', body: 'ورا كل رقم قرار إنسان: عميل تردّد، أو موظف تعب، أو مدير استعجل، نقرأ هذا القرار **بعين أخصائي نفسي**، ونعالج السبب مو العَرَض', idea: 'العميل يقرر بمشاعره، وبعدها يبرّر قراره بعقله' },
-      { icon: 'field' as IconId, title: 'ننزل الميدان لين يشتغل', body: 'ما نسلّمك تقرير ونختفي، نبني معك، وندرّب فريقك، ونتابع لين يصير الجديد **عادة يومية** تكمل حتى بعد ما نطلع', idea: 'التقرير اللي ما يتحوّل لعادة، مكانه الدرج' },
-      { icon: 'aligned' as IconId, title: 'نربح لما تربح', body: 'أتعابنا **مربوطة بالنتائج** اللي نحققها لك، ونتفق على طريقة الربط كتابيًا قبل لا نبدأ', idea: 'لما تكون مصلحتنا من مصلحتك، تختفي نص الأسئلة' },
+      { icon: 'mind' as IconId, title: 'نبدأ من الإنسان', body: 'كل رقم في تقريرك وراه قرار إنسان: عميل تردّد عند الدفع، موظف تعب من الضغط، مدير استعجل في قرار، وخلفيتنا في **علم النفس وسلوك المستهلك** تخلينا نوصل للسبب نفسه مو بس للعَرَض', idea: 'العميل يقرر بقلبه، وبعدها يقنع عقله' },
+      { icon: 'field' as IconId, title: 'نشتغل معك على الأرض', body: 'ما نكتب خطة ونسلّمها لك ونمشي، نطبّقها مع فريقك أسبوع بأسبوع ونتابع لين يصير الجديد **عادة يومية** تكمل حتى بعد ما نطلع', idea: 'الخطة اللي ما تتحول لعادة، مصيرها الدرج' },
+      { icon: 'aligned' as IconId, title: 'كل شي واضح من أول يوم', body: 'قبل ما نبدأ تعرف ايش بنسوي ومتى وكم بتدفع وكيف نقيس النتيجة، وإذا تبي **أجرنا يكون نسبة من الفرق اللي نحققه لك** فقط', idea: 'لما تكون مصلحتنا من مصلحتك، يختفي نص الكلام' },
     ],
     foot: 'خبرة في 11 قطاعًا، من الاتصالات إلى الضيافة، والذكاء الاصطناعي يقوم عندنا بعمل فرق كاملة، والقرار يبقى بشريًا',
   },
@@ -201,12 +221,12 @@ const ar = {
     eyebrow: 'خدماتنا',
     title: 'ست خدمات، وهدف واحد: تشغيل يربح',
     items: [
-      { title: 'التشخيص', body: 'نقرأ شركتك من ثمانية أبعاد، وتعرف بالضبط وين يضيع ربحك' },
-      { title: 'الاستراتيجية', body: 'نحدد وجهتك، والأشياء اللي لازم توقفها عشان توصل أسرع' },
-      { title: 'العمليات', body: 'نشيل اللي يبطّئ فريقك، فينجز أكثر بتكلفة أقل' },
+      { title: 'التشخيص', body: 'نقرأ شركتك من ثمانية زوايا، وتعرف بالضبط وين يضيع ربحك' },
+      { title: 'الاستراتيجية', body: 'وين رايح، وايش لازم توقّفه عشان توصل أسرع' },
+      { title: 'العمليات', body: 'نشيل الخطوات اللي تأخّر فريقك، فيخلّص شغل أكثر بتكلفة أقل' },
       { title: 'المتسوق الخفي', body: 'نزورك كعميل عادي، ونشوف اللي يشوفه عملاؤك فعلًا' },
-      { title: 'الحلول الرقمية', body: 'أداة مفصّلة على مقاس شغلك، وملكك أنت' },
-      { title: 'الذكاء الاصطناعي', body: 'يسرّع التحليل والمتابعة، والقرار يبقى بيدك' },
+      { title: 'الحلول الرقمية', body: 'أداة أو نظام مفصّل على شغلك، ويبقى ملكك أنت' },
+      { title: 'الذكاء الاصطناعي', body: 'يختصر التحليل والمتابعة اليومية، والقرار يظل بيدك' },
     ],
   },
 
@@ -220,46 +240,107 @@ const ar = {
     ],
   },
 
+  // CONFIRM (khalid): tiers and prices from the Master Plan (2026-11-24), 3/6/12-month terms added 2026-11-25.
+  plans: {
+    eyebrow: 'طرق العمل معنا',
+    title: 'طريقتين للعمل معنا، وكل شي مكتوب من البداية',
+    lede: 'اشتراك شهري بفريق يشتغل معك **كأنه قسم داخل شركتك**، أو شراكة على النتيجة ناخذ فيها ++نسبة من اللي نوفّره أو نجيبه لك++ وبس',
+    tabs: { monthly: 'الاشتراك الشهري', results: 'شراكة النتيجة' },
+    term: 'مدة العقد',
+    months: (n: number) => (n === 12 ? 'سنة' : `${n} أشهر`),
+    save: (p: number) => `وفّر ${p}%`,
+    perMonth: 'ريال شهريًا',
+    total: (n: string, m: number) => `${n} ريال على ${m === 12 ? '12 شهر' : `${m} أشهر`}، تدفعها أقساط شهرية`,
+    forWho: 'لمين',
+    pains: 'لو هذا وضعك',
+    gets: 'ايش تاخذ',
+    pick: 'أبي هذي الباقة',
+    payNote: 'كل الباقات تُدفع أقساط شهرية بدون رسوم إضافية، أو ادفع المدة كاملة مقدمًا ووفّر 5% زيادة · الأسعار قبل ضريبة القيمة المضافة',
+    anchor: 'للمقارنة: توظيف مدير تطوير أعمال ومحلل ومنسّق يكلّف عادة **أكثر من 50 ألف ريال شهريًا** مع التأمينات والبدلات، وقبل ما يبدأون',
+    tiers: [
+      {
+        id: 'core', name: 'الأساس', price: 8800, hours: '4 ساعات مع خالد + 20 ساعة عمل من الفريق كل شهر',
+        forWho: 'شركة مستقرة من 10 إلى 50 موظف، تبي ترتّب بيتها من الداخل',
+        pains: ['المبيعات زينة والربح ما يتحرك', 'كل شي يرجع لك أنت', 'ما فيه إجراءات مكتوبة'],
+        gets: ['تشخيص كامل في الشهر الأول وخطة 90 يوم', 'مكسب سريع واحد كل 3 أشهر تشوفه في أرقامك', 'اجتماع متابعة كل أسبوعين', 'تقرير شهري بالأرقام، صفحة وحدة'],
+      },
+      {
+        id: 'growth', name: 'النمو', tag: 'نرشّحها لأغلب الشركات', price: 18500, hours: '8 ساعات مع خالد + 50 ساعة عمل من الفريق كل شهر',
+        forWho: 'شركة تنمو أو عندها فروع، من 50 إلى 200 موظف، والتشغيل ما يلحق',
+        pains: ['كل فرع جديد يكسر شي كان شغّال', 'فريق كبير وأداء متفاوت', 'نمو بدون خطة بالأرقام'],
+        gets: ['كل اللي في باقة الأساس', 'تدريب الفريق في الميدان على البيع والخدمة', 'زيارات المتسوق الخفي ومعايير لكل وردية', 'خطة نمو وقنوات بيع جديدة ننفذها معك'],
+      },
+      {
+        id: 'partner', name: 'الشريك', price: 34000, plus: '+ 10% من الربح الإضافي الموثّق، بحد أعلى يساوي الاشتراك الشهري', hours: '14 ساعة مع خالد + 110 ساعات عمل من الفريق كل شهر',
+        forWho: 'شركة تبي قسم تطوير أعمال وتشغيل كامل بدون ما توظّفه',
+        pains: ['تحتاج قسم كامل وتكلفة توظيفه عالية', 'تتوسع لمدينة أو سوق جديد', 'تبي أحد يتحمّل النتيجة معك'],
+        gets: ['كل اللي في باقة النمو', 'اجتماعات مؤهلة مع عملاء وشركاء محتملين', 'لوحة أرقام أسبوعية تشوفها متى ما تبي', 'أجرنا يرتبط جزئيًا بالربح اللي نضيفه'],
+      },
+    ] as PlanTier[],
+    results: {
+      title: 'ما نكسب إلا لما تكسب',
+      lede: 'نشوف بياناتك، نتفق على رقم البداية، ونشتغل، وناخذ نسبة من **الفرق اللي يظهر في نظامك أنت** فقط',
+      steps: [
+        { title: 'نشوف أرقامك', body: 'نوقّع اتفاقية سرية ونطّلع على المبيعات والتكاليف والعملاء' },
+        { title: 'نكتب رقم البداية', body: 'رقم اليوم كما هو، ومؤشرات القياس، والمدة، ونسبتنا، في صفحة وحدة يوقعها الطرفين' },
+        { title: 'نشتغل', body: 'احنا ننفذ، وأنت تتابع التقدم في لوحة أرقام مشتركة' },
+        { title: 'نتقاسم الفرق', body: 'نحسب الفرق عن رقم البداية من نظامك، وناخذ نسبتنا منه فقط' },
+      ],
+      offers: [
+        { title: 'صيد التسرّب', body: 'فلوس تطلع كل شهر بدون داعي: موردين، هدر، اشتراكات، عمولات تطبيقات التوصيل', share: '30% من التوفير', period: 'لمدة 12 شهر' },
+        { title: 'العملاء النايمين', body: 'عملاء اشتروا منك قبل وما رجعوا، نرجّعهم', share: '15 إلى 20% من مبيعاتهم', period: 'لمدة 90 يوم' },
+        { title: 'العروض المنسية', body: 'عروض أسعار أرسلتها وما أحد تابعها، نتابعها لين تقفل أو تنتهي', share: '8% من الصفقات اللي تقفل', period: 'لمدة 60 يوم' },
+        { title: 'مصدر دخل جديد', body: 'خط إيراد جديد من أصول أو علاقات أو بيانات عندك وما تستفيد منها', share: 'نسبة نتفق عليها', period: 'حسب الفرصة' },
+      ] as ResultOffer[],
+      clear: 'ايش تعرف قبل ما نبدأ',
+      clearItems: ['رقم البداية', 'مؤشرات القياس', 'المدة ومواعيد المراجعة', 'نسبتنا وطريقة حسابها', 'متى وكيف ينتهي الاتفاق'],
+      floor: 'لكل اتفاقية حد أدنى 3,000 ريال، ونقول لك بصراحة إذا ما شفنا فرصة تستاهل',
+      cta: 'خلّنا نشوف أرقامك',
+    },
+    unsure: 'ما تدري أي طريقة تناسبك؟ ابدأ بالجلسة المجانية ونقولك بصراحة',
+    unsureCta: 'احجز جلستك المجانية',
+  },
+
   quick: {
     eyebrow: 'أدوات مجانية',
     title: 'احسبها بنفسك، في دقيقة',
-    lede: 'ثلاثة أسئلة كثير من أصحاب الأعمال يتجاهلونها، وأرقامك **ما تطلع من جهازك**',
+    lede: 'ثلاثة أسئلة قليل من أصحاب الأعمال يسألونها لنفسهم، وأرقامك **ما تطلع من جهازك**',
     items: [
       { id: 'price', q: 'لو رفعت سعرك، كم عميل تقدر تخسر وتظل رابح؟', k: '3 أرقام بس' },
       { id: 'lever', q: 'وش أسرع طريق يرفع ربحك؟', k: 'لكل الأعمال' },
       { id: 'breakhour', q: 'من أي ساعة يبدأ ربحك اليوم؟', k: 'للمطاعم والمتاجر' },
     ],
-    cta: 'ناقش نتيجتك مع خبير، مجانًا',
+    cta: 'ناقش نتيجتك معنا مجانًا',
     all: 'كل الأدوات حسب قطاعك',
   },
 
   // khalid 2026-11-10: 30 minutes (matches his Calendly event), limited number each month.
   offer: {
     eyebrow: 'جلستك الأولى',
-    title: 'صورة أوضح لمشروعك، في جلسة وحدة',
-    lede: 'مع ++خبير أول++ من فريقنا، تطلع وأنت عارف **من وين تبدأ، وليش**، حتى لو ما اشتغلنا مع بعض بعدها',
+    title: 'جلسة وحدة، وتطلع عارف من وين تبدأ',
+    lede: 'مع ++خالد مباشرة++، تطلع وأنت عارف **ايش أول خطوة وليش**، حتى لو ما اشتغلنا مع بعض بعدها',
     includes: [
-      'جلسة تشخيص مركّزة، 30 دقيقة',
-      'قراءة لوضعك من ثمانية أبعاد',
-      'أهم 3 فرص تقدر تبدأ فيها على طول',
-      'خريطة طريق مبدئية مكتوبة',
+      '30 دقيقة مع خالد مباشرة',
+      'نراجع وضعك من ثمانية زوايا',
+      'أهم 3 فرص تقدر تبدأ فيها بكرة',
+      'ملخص مكتوب يوصلك بعد الجلسة',
     ],
-    value: 'مجانًا، وبدون أي التزام',
+    value: 'مجانية، وبدون أي التزام',
     guarantee: 'إذا ما طلعت **بفكرة وحدة على الأقل تستاهل وقتك**، فاحنا اللي خسرنا الوقت، مو أنت',
     cta: 'احجز جلستك المجانية',
-    note: 'عدد الجلسات محدود كل شهر، لأننا نحضّر لكل جلسة بعناية',
+    note: 'نحضّر لكل جلسة قبلها، عشان كذا عددها محدود كل شهر',
   },
 
   work: {
     eyebrow: 'أعمالنا',
     title: 'أرقام من الميدان، مو من العروض',
-    lede: 'كل رقم هنا حقيقي، وكل مشروع مكتوب بحالته زي ما هي',
+    lede: 'مشاريع اشتغلنا فيها بأنفسنا، وكل رقم هنا حقيقي',
     confirmMark: 'بانتظار التأكيد',
     featured: [
-      { sector: 'الاتصالات', tag: 'تطوير أعمال · GTM', title: 'دخول Telkomsel إلى السوق السعودي', body: 'تطوير الأعمال، وبناء استراتيجية دخول السوق وتنفيذها لشركة الاتصالات الإندونيسية Telkomsel في السعودية', metric: '14M', metricLabel: 'ريال إيرادات تحققت' },
-      { sector: 'الترفيه والضيافة', tag: 'تطوير أعمال · تشغيل', title: 'Games Club (GC)', body: 'إعادة بناء التشغيل كاملًا: هندسة القائمة، وتدريب الفريق، وتجربة الضيف، وإجراءات تشغيل قياسية (SOPs)، وشراكات جديدة', metric: '+161.11%', metricLabel: 'نمو الإيرادات خلال 30 يومًا', extra: '+511.11% متوسط الإيرادات الشهرية' },
-      { sector: 'الأغذية والمشروبات', tag: 'من الفكرة إلى السوق', title: 'روسـيـلا: علامة عصائر من الصفر', body: 'بناء العلامة وتشغيلها من مجرد فكرة: المنتج، والتشغيل، والبيع', metric: '4K', metricLabel: 'ريال إيراد يومي' },
-      { sector: 'العقار والاستثمار', tag: 'استراتيجية · تنفيذ', title: 'صفقة عقارية مع مستثمر خاص', body: 'بناء الاستراتيجية الكاملة وتنفيذ الصفقة مع مستثمر من القطاع الخاص', metric: '1.4M', metricLabel: 'ريال قيمة الصفقة' },
+      { sector: 'الاتصالات', tag: 'تطوير أعمال · GTM', title: 'دخول Telkomsel إلى السوق السعودي', body: 'تطوير الأعمال لشركة الاتصالات الإندونيسية، وبناء خطة دخولها للسوق السعودي وتنفيذها على الأرض', metric: '14M', metricLabel: 'ريال إيرادات تحققت' },
+      { sector: 'الترفيه والضيافة', tag: 'تطوير أعمال · تشغيل', title: 'Games Club (GC)', body: 'أعدنا بناء التشغيل كامل: القائمة والأسعار، تدريب الفريق، تجربة الضيف، إجراءات مكتوبة لكل وردية، وشراكات جديدة', metric: '+161.11%', metricLabel: 'نمو الإيرادات خلال 30 يومًا', extra: '+511.11% متوسط الإيرادات الشهرية' },
+      { sector: 'الأغذية والمشروبات', tag: 'من الفكرة إلى السوق', title: 'روسـيـلا: علامة عصائر من الصفر', body: 'من فكرة على ورق إلى علامة تبيع كل يوم: المنتج والتشغيل والبيع', metric: '4K', metricLabel: 'ريال إيراد يومي' },
+      { sector: 'العقار والاستثمار', tag: 'استراتيجية · تنفيذ', title: 'صفقة عقارية مع مستثمر خاص', body: 'بنينا الاستراتيجية كاملة ونفّذنا الصفقة مع مستثمر من القطاع الخاص', metric: '1.4M', metricLabel: 'ريال قيمة الصفقة' },
     ] as CaseItem[],
     more: [
       { sector: 'التسويق العقاري', tag: 'تطوير أعمال', title: 'وثاق للتسويق العقاري', body: 'تطوير الأعمال لشركة وثاق للتسويق العقاري، بدور مطوّر أعمال' },
@@ -361,8 +442,8 @@ const ar = {
   // CONFIRM: how requests are selected.
   support: {
     eyebrow: 'مبادرة KON',
-    title: 'مشروعك متعثّر، والميزانية ما تسمح؟ هذا لك',
-    body: 'نقدّم الاستشارة المتقدّمة والدعم التشغيلي الكامل ++مجانًا++ للمشاريع المتعثّرة اللي ما تقدر على تكلفته، بدون مقابل وبدون شروط مخفية',
+    title: 'مشروعك متعثّر والميزانية ما تسمح؟ هذا لك',
+    body: 'نقدّم الاستشارة والدعم التشغيلي ++مجانًا++ للمشاريع المتعثّرة اللي ما تقدر على التكلفة، بدون مقابل وبدون شروط مخفية',
     dedication: 'صدقةً عن والدي رحمه الله وعن جميع المسلمين',
     note: 'نستقبل الطلبات حسب طاقتنا، ونرد على كل طلب',
     cta: 'قدّم طلب الدعم',
@@ -493,7 +574,7 @@ const ar = {
   onboarding: {
     eyebrow: 'ابدأ هنا',
     title: 'دقيقتين، ونجي الجلسة واحنا فاهمين وضعك',
-    lede: 'أسئلة قليلة **مصمّمة عشان تفهمك أنت**، وكل ما كانت إجاباتك أصدق، كانت جلستك أنفع',
+    lede: 'أسئلة قليلة **عشان نفهمك أنت**، وكل ما كانت إجاباتك أصدق كانت جلستك أنفع',
     start: 'يلا نبدأ',
     next: 'التالي',
     back: 'رجوع',
@@ -550,7 +631,7 @@ const ar = {
     intro: 'أربع خطوات قصيرة، وآخرها تختار موعد جلستك',
     book: {
       title: 'آخر خطوة: اختر موعد جلستك',
-      lede: 'جلسة 30 دقيقة، نجيها واحنا قارين كل إجاباتك',
+      lede: 'جلسة 30 دقيقة مع خالد، يجيها وهو قاري كل إجاباتك',
       loading: 'نجهّز التقويم…',
       open: 'افتح التقويم في صفحة مستقلة',
       alt: 'تحب نتواصل أول؟',
@@ -576,34 +657,34 @@ export type Content = typeof ar
 const en: Content = {
   meta: {
     switchTo: 'ع', switchLabel: 'التبديل إلى العربية', menu: 'Menu', close: 'Close', skip: 'Skip to content',
-    title: 'KON Unlimited · We make your business run better',
+    title: 'KON Unlimited · Business development and operations',
     home: 'Home',
   },
   nav: [
     { href: '#work', label: 'Work' },
-    { href: '#services', label: 'Services' },
+    { href: '#plans', label: 'Plans' },
     { href: '#tools', label: 'Free tools' },
     { href: '#/talent', label: 'Talent' },
     { href: '#founder', label: 'Founder' },
   ],
-  headerCta: 'Book your diagnosis',
+  headerCta: 'Book a session',
 
   hero: {
     eyebrow: 'Operations · Business development · Innovation',
-    rotating: ['We make your business run better', 'We innovate ahead of every challenge', 'We sharpen how you operate', 'We turn ideas into working businesses', 'We make your capital work smarter'],
-    statement: ['Higher profit', 'from where you’re not looking'],
+    rotating: ['Your next profit is already inside your business', 'We work on the ground with you until the number moves', 'Everything is written down and clear from day one'],
+    statement: ['Your next profit', 'is already inside your business'],
     asks: [
-      { who: 'For business owners', q: 'Sales keep growing. So why doesn’t profit?' },
-      { who: 'For founders', q: 'It’s a beautiful idea. But will anyone pay for it?' },
-      { who: 'For managers', q: 'Your team is busy all day. So where does the time go?' },
+      { who: 'For business owners', q: 'Sales are up. Why isn’t profit?' },
+      { who: 'For founders', q: 'Great idea. Who’s going to pay for it?' },
+      { who: 'For managers', q: 'Your team is busy all day. Where are the results?' },
       { who: 'For restaurants and retail', q: 'What time does your profit actually start today?' },
-      { who: 'For investors', q: 'Is this the best return on your capital, or the best use of it?' },
+      { who: 'For investors', q: 'Every riyal you put in. What did it really bring back?' },
     ],
     promise: 'Our promise is simple: **we optimise and develop any operation**',
-    lede: 'Your numbers tell you **what** happened. We find out **why**: we read your customers, your team and your decisions with a psychologist’s eye, then work on the ground with you until profit moves',
-    micro: '30 minutes · Free · No commitment',
-    primary: 'Book your free diagnosis',
-    secondary: 'See the results',
+    lede: 'We read your numbers and the people behind them: **your customers, your team, your decisions**. Then we get on the ground with you and stay until profit moves',
+    micro: '30 minutes with Khalid · Free · No commitment',
+    primary: 'Book your free session',
+    secondary: 'See our work',
     slogan: 'Any challenge…Any way…Anywhere…We’ll be there',
     scroll: 'Scroll',
     proof: [
@@ -665,9 +746,9 @@ const en: Content = {
     eyebrow: 'How we work',
     title: 'Why the numbers move with us',
     pillars: [
-      { icon: 'mind' as IconId, title: 'We start with people', body: 'Behind every number is a human decision: a customer who hesitated, an employee who got tired, a manager who rushed. We read that decision **through a psychologist’s eyes**, and fix the cause, not the symptom', idea: 'People decide with feeling, then justify with logic' },
-      { icon: 'field' as IconId, title: 'We stay on the ground until it works', body: 'No report-and-leave. We build with you, train your team, and stay until the new way becomes **a daily habit** that outlives us', idea: 'A report that never becomes a habit ends up in a drawer' },
-      { icon: 'aligned' as IconId, title: 'We win when you win', body: 'Our fees are **tied to the results** we create for you. We agree how, in writing, before we start', idea: 'When our interest is yours, half the questions disappear' },
+      { icon: 'mind' as IconId, title: 'We start with people', body: 'Every number in your report started as a human decision: a customer who hesitated at checkout, an employee worn out by pressure, a manager who rushed a call. Our background in **psychology and consumer behaviour** gets us to the cause, not just the symptom', idea: 'People buy with their heart, then explain it to their head' },
+      { icon: 'field' as IconId, title: 'We work on the ground with you', body: 'We don’t write a plan, hand it over and leave. We put it to work with your team week by week, until the new way is **a daily habit** that keeps going after we’re gone', idea: 'A plan that never becomes a habit ends up in a drawer' },
+      { icon: 'aligned' as IconId, title: 'Clear from day one', body: 'Before we start you know what we’ll do, when, what you’ll pay and how we’ll measure it. If you prefer, **our fee can be a share of the gain we create** and nothing else', idea: 'When our interest is yours, half the talking stops' },
     ],
     foot: 'Experience across 11 sectors, from telecom to hospitality. AI does the work of whole teams for us, and the decisions stay human',
   },
@@ -715,10 +796,10 @@ const en: Content = {
     items: [
       { title: 'Diagnosis', body: 'We read your company from eight angles, so you know exactly where profit leaks' },
       { title: 'Strategy', body: 'Where you’re going, and what to stop doing to get there faster' },
-      { title: 'Operations', body: 'We remove what slows your team down, so you do more for less' },
+      { title: 'Operations', body: 'We cut the steps that slow your team down, so more gets done for less' },
       { title: 'Mystery Shopper', body: 'We visit as an ordinary customer and see what your customers really see' },
-      { title: 'Digital', body: 'A tool cut to your work, and yours to own' },
-      { title: 'AI', body: 'Faster analysis and follow-up, human decisions' },
+      { title: 'Digital', body: 'A tool or system built around your work, and yours to keep' },
+      { title: 'AI', body: 'Takes over the daily analysis and follow-up. The decisions stay yours' },
     ],
   },
 
@@ -732,6 +813,66 @@ const en: Content = {
     ],
   },
 
+  plans: {
+    eyebrow: 'Ways to work with us',
+    title: 'Two ways to work with us. Everything in writing from the start',
+    lede: 'A monthly plan with a team that works with you **like a department inside your company**, or a results partnership where we take ++a share of what we save or earn you++ and nothing else',
+    tabs: { monthly: 'Monthly plans', results: 'Results partnership' },
+    term: 'Contract length',
+    months: (n: number) => (n === 12 ? '1 year' : `${n} months`),
+    save: (p: number) => `Save ${p}%`,
+    perMonth: 'SAR / month',
+    total: (n: string, m: number) => `SAR ${n} over ${m} months, paid in monthly instalments`,
+    forWho: 'Who it’s for',
+    pains: 'If this sounds like you',
+    gets: 'What you get',
+    pick: 'I want this plan',
+    payNote: 'Every plan is paid in monthly instalments at no extra cost, or pay the full term upfront and save another 5% · Prices exclude VAT',
+    anchor: 'For comparison: hiring a business development manager, an analyst and a coordinator usually costs **over SAR 50,000 a month** with insurance and allowances, before they even start',
+    tiers: [
+      {
+        id: 'core', name: 'Core', price: 8800, hours: '4 hours with Khalid + 20 team hours every month',
+        forWho: 'A stable company of 10 to 50 people that wants to put its house in order',
+        pains: ['Sales are fine but profit won’t move', 'Everything comes back to you', 'Nothing is written down'],
+        gets: ['A full diagnosis in month one and a 90-day plan', 'One quick win every 3 months that shows in your numbers', 'A follow-up meeting every two weeks', 'A one-page monthly report in numbers'],
+      },
+      {
+        id: 'growth', name: 'Growth', tag: 'Our pick for most companies', price: 18500, hours: '8 hours with Khalid + 50 team hours every month',
+        forWho: 'A growing or multi-branch company of 50 to 200 people where operations can’t keep up',
+        pains: ['Every new branch breaks something that worked', 'A big team with uneven performance', 'Growth without a plan in numbers'],
+        gets: ['Everything in Core', 'On-the-floor training for sales and service', 'Mystery shopper visits and standards for every shift', 'A growth plan and new sales channels we run with you'],
+      },
+      {
+        id: 'partner', name: 'Partner', price: 34000, plus: '+ 10% of verified extra profit, capped at one month’s fee', hours: '14 hours with Khalid + 110 team hours every month',
+        forWho: 'A company that wants a full business development and operations department without hiring one',
+        pains: ['You need a whole department and hiring one is expensive', 'You’re expanding to a new city or market', 'You want someone who shares the outcome with you'],
+        gets: ['Everything in Growth', 'Qualified meetings with potential clients and partners', 'A weekly numbers dashboard you can open any time', 'Part of our fee tied to the profit we add'],
+      },
+    ],
+    results: {
+      title: 'We only earn when you earn',
+      lede: 'We look at your data, agree the starting number, do the work, and take a share of **the difference that shows up in your own system**. Nothing more',
+      steps: [
+        { title: 'We see your numbers', body: 'We sign an NDA and look at sales, costs and customers' },
+        { title: 'We write the starting number', body: 'Today’s figure as it is, the measures, the timeline and our share, on one page both sides sign' },
+        { title: 'We do the work', body: 'We carry it out, and you follow progress on a shared dashboard' },
+        { title: 'We split the difference', body: 'We measure the gain against the starting number in your system, and take our share of that only' },
+      ],
+      offers: [
+        { title: 'Leak hunt', body: 'Money that leaves every month for no reason: suppliers, waste, subscriptions, delivery-app commissions', share: '30% of savings', period: 'for 12 months' },
+        { title: 'Sleeping customers', body: 'People who bought from you before and never came back. We bring them back', share: '15 to 20% of their sales', period: 'for 90 days' },
+        { title: 'Forgotten quotes', body: 'Quotes you sent that nobody followed up. We follow them until they close or expire', share: '8% of closed deals', period: 'for 60 days' },
+        { title: 'A new income stream', body: 'A new revenue line from assets, relationships or data you already have and don’t use', share: 'A share we agree', period: 'Per opportunity' },
+      ],
+      clear: 'What you know before we start',
+      clearItems: ['The starting number', 'How we measure', 'Timeline and review dates', 'Our share and how it’s calculated', 'When and how the deal ends'],
+      floor: 'Every agreement has a SAR 3,000 minimum, and if we don’t see an opportunity worth it, we’ll tell you straight',
+      cta: 'Let us look at your numbers',
+    },
+    unsure: 'Not sure which way fits? Start with the free session and we’ll tell you honestly',
+    unsureCta: 'Book your free session',
+  },
+
   quick: {
     eyebrow: 'Free tools',
     title: 'Work it out yourself, in a minute',
@@ -741,36 +882,36 @@ const en: Content = {
       { id: 'lever', q: 'What is the fastest way to lift your profit?', k: 'Any business' },
       { id: 'breakhour', q: 'What time does your profit start today?', k: 'Restaurants and shops' },
     ],
-    cta: 'Talk your result through with an expert, free',
+    cta: 'Talk your result through with us, free',
     all: 'All tools by sector',
   },
 
   offer: {
     eyebrow: 'The offer',
-    title: 'A clearer picture of your business, in one session',
-    lede: 'With a ++senior advisor++ from our team. You leave knowing **where to start, and why**, even if we never work together after',
+    title: 'One session, and you’ll know where to start',
+    lede: 'With ++Khalid himself++. You leave knowing **your first move and why**, even if we never work together after',
     includes: [
-      'A focused 30-minute diagnosis session',
-      'A read of your situation across eight dimensions',
-      'Your top 3 quick wins, ready to start on',
-      'A written first-draft roadmap',
+      '30 minutes with Khalid himself',
+      'We look at your business from eight angles',
+      'Your top 3 opportunities to start on tomorrow',
+      'A written summary sent after the session',
     ],
-    value: 'No cost. No commitment',
+    value: 'Free, no commitment',
     guarantee: 'If you don’t leave with **at least one idea worth your time**, we’re the ones who lost the hour, not you',
-    cta: 'Book your free diagnosis',
-    note: 'Sessions are limited each month, because each one is prepared with care',
+    cta: 'Book your free session',
+    note: 'We prepare for every session beforehand, so there are only a few each month',
   },
 
   work: {
     eyebrow: 'Work',
     title: 'Numbers from the field',
-    lede: 'Every number here is real, and every project is labeled as it stands',
+    lede: 'Projects we worked on ourselves. Every number here is real',
     confirmMark: 'Pending confirmation',
     featured: [
-      { sector: 'Telecoms', tag: 'Business development · GTM', title: 'Telkomsel’s entry into Saudi Arabia', body: 'Business development, plus building and executing the go-to-market strategy that brought Indonesian telecom operator Telkomsel into the Saudi market', metric: '14M', metricLabel: 'SAR revenue generated' },
-      { sector: 'Entertainment & hospitality', tag: 'Business development · Operations', title: 'Games Club (GC)', body: 'A full operational rebuild: menu engineering, staff training, guest experience, standard operating procedures and new partnerships', metric: '+161.11%', metricLabel: 'revenue growth in 30 days', extra: '+511.11% average monthly revenue' },
-      { sector: 'Food & beverage', tag: 'Idea to market', title: 'Rosella: a juice brand, from zero', body: 'Building and running the brand from a bare idea: product, operations and sales', metric: '4K', metricLabel: 'SAR revenue per day' },
-      { sector: 'Real estate & investment', tag: 'Strategy · Execution', title: 'A private-investor property deal', body: 'Building the full strategy and executing a real estate deal with a private investor', metric: '1.4M', metricLabel: 'SAR deal value' },
+      { sector: 'Telecoms', tag: 'Business development · GTM', title: 'Telkomsel’s entry into Saudi Arabia', body: 'Business development for the Indonesian telecom operator, plus building its plan to enter the Saudi market and carrying it out on the ground', metric: '14M', metricLabel: 'SAR revenue generated' },
+      { sector: 'Entertainment & hospitality', tag: 'Business development · Operations', title: 'Games Club (GC)', body: 'We rebuilt the whole operation: menu and pricing, staff training, guest experience, written procedures for every shift, and new partnerships', metric: '+161.11%', metricLabel: 'revenue growth in 30 days', extra: '+511.11% average monthly revenue' },
+      { sector: 'Food & beverage', tag: 'Idea to market', title: 'Rosella: a juice brand, from zero', body: 'From an idea on paper to a brand that sells every day: product, operations and sales', metric: '4K', metricLabel: 'SAR revenue per day' },
+      { sector: 'Real estate & investment', tag: 'Strategy · Execution', title: 'A private-investor property deal', body: 'We built the full strategy and closed the deal with a private investor', metric: '1.4M', metricLabel: 'SAR deal value' },
     ],
     more: [
       { sector: 'Real estate marketing', tag: 'Business development', title: 'Wethaq Real Estate Marketing', body: 'Business development for Wethaq Real Estate Marketing, in the role of Business Developer' },
@@ -869,7 +1010,7 @@ const en: Content = {
   support: {
     eyebrow: 'The KON initiative',
     title: 'Your business is struggling and there’s no budget? This is for you',
-    body: 'We offer advanced advisory and full operational support ++free of charge++ to struggling businesses that can’t afford it. No fee, no hidden conditions',
+    body: 'We give advice and hands-on operational support ++free of charge++ to struggling businesses that can’t afford it. No fee, no hidden conditions',
     dedication: 'Given as sadaqah for my late father, may God have mercy on him, and for all Muslims',
     note: 'We take requests as our capacity allows, and we reply to every one',
     cta: 'Apply for support',
@@ -991,7 +1132,7 @@ const en: Content = {
       '++Innovation++ drives me, and I believe I can add real value to any business and any founder',
     ],
     punch: 'We all have problems. But a problem is where the solution begins',
-    cta: 'Book your free diagnosis',
+    cta: 'Book your free session',
   },
 
   onboarding: {
@@ -1054,7 +1195,7 @@ const en: Content = {
     intro: 'Four short steps. The last one is picking your session time',
     book: {
       title: 'Last step: pick your session time',
-      lede: 'A 30-minute session. We arrive having read every answer',
+      lede: 'A 30-minute session with Khalid, who will have read every answer',
       loading: 'Preparing the calendar…',
       open: 'Open the calendar in its own page',
       alt: 'Prefer to talk first?',
@@ -1065,7 +1206,7 @@ const en: Content = {
   finale: {
     line: 'Every piece was here from the start',
     line2: 'It just needed someone to put it in order',
-    cta: 'Book your free diagnosis',
+    cta: 'Book your free session',
   },
 
   footer: {

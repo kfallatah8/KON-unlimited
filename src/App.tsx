@@ -13,6 +13,7 @@ import { Cursor } from './components/Cursor'
 import { Icon, GemMark } from './components/Icons'
 import { MagneticButton } from './components/MagneticButton'
 import { chipPain, Onboarding } from './components/Onboarding'
+import { Plans } from './components/Plans'
 import { lenis, SmoothScroll } from './components/SmoothScroll'
 import { SplitReveal, Hl } from './components/SplitReveal'
 import { Tool } from './components/Tools'
@@ -1107,6 +1108,7 @@ export default function App() {
             <Interlude />
             <Work />
             <Services />
+            <Plans />
             <QuickTools />
             <Founder />
             <More />
