@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#03191c">
+<title>KON · العملاء</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#03191c;--card:#072a2e;--line:#12464b;--ink:#eaf4f1;--dim:#93b5b0;--teal:#5fe3d2;--gold:#d9b46a;--hot:#ffcf7a}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "IBM Plex Sans Arabic",system-ui,sans-serif}
+main{max-width:860px;margin:0 auto;padding:20px 16px 60px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+h1{font-size:22px;margin:0;font-weight:600}
+h1 b{color:var(--teal);font-weight:600}
+.btn{appearance:none;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:10px;padding:10px 14px;font:inherit;font-size:14px;cursor:pointer;min-height:44px}
+.btn.primary{background:var(--teal);color:#032024;border-color:var(--teal);font-weight:600}
+input,select{width:100%;background:#021316;border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:10px 12px;font:inherit;min-height:44px}
+.gate{max-width:380px;margin:18vh auto 0;display:grid;gap:12px;text-align:center}
+.err{color:var(--hot);font-size:14px;min-height:1.4em}
+.bar{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.chip{border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;background:transparent;color:var(--dim);cursor:pointer;min-height:36px}
+.chip.on{color:#032024;background:var(--teal);border-color:var(--teal)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.stat b{display:block;font-size:22px;font-weight:600}
+.stat span{color:var(--dim);font-size:13px}
+.lead{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px}
+.lead.new{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+.top{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.name{font-size:18px;font-weight:600}
+.kind{font-size:12px;border-radius:999px;padding:2px 10px;background:#0d3b40;color:var(--teal);white-space:nowrap}
+.kind.booked{background:#3b3010;color:var(--gold)}
+.meta{color:var(--dim);font-size:14px;margin:4px 0 10px}
+.acts{display:flex;flex-wrap:wrap;gap:6px}
+.acts a{color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:14px;min-height:40px;display:inline-flex;align-items:center}
+.acts a.wa{border-color:#1f7a5a}
+details{margin-top:10px}
+summary{cursor:pointer;color:var(--teal);font-size:14px}
+pre{white-space:pre-wrap;font:inherit;font-size:14px;background:#021316;border-radius:10px;padding:12px;margin:8px 0 0;direction:rtl}
+.empty{color:var(--dim);text-align:center;padding:40px 0}
+.src{color:var(--dim);font-size:12px;margin-top:8px;direction:ltr;text-align:left;word-break:break-all}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <section class="gate" id="gate">
+    <h1>KON · <b>العملاء</b></h1>
+    <p style="color:var(--dim);margin:0">أدخل رمز الدخول</p>
+    <form id="gateForm" style="display:grid;gap:10px">
+      <input id="pass" type="password" autocomplete="current-password" inputmode="text" dir="ltr" placeholder="••••••••">
+      <button class="btn primary" type="submit">دخول</button>
+    </form>
+    <p class="err" id="gateErr" role="alert"></p>
+  </section>
+
+  <section id="app" hidden>
+    <header>
+      <h1>KON · <b>العملاء</b></h1>
+      <div style="display:flex;gap:6px">
+        <button class="btn" id="csv" type="button">CSV</button>
+        <button class="btn" id="refresh" type="button">تحديث</button>
+      </div>
+    </header>
+    <div class="stats">
+      <div class="stat"><b id="sToday">0</b><span>اليوم</span></div>
+      <div class="stat"><b id="sWeek">0</b><span>آخر 7 أيام</span></div>
+      <div class="stat"><b id="sAll">0</b><span>الكل</span></div>
+    </div>
+    <div class="bar"><input id="q" type="search" placeholder="بحث بالاسم أو الجوال أو الشركة"></div>
+    <div class="chips" id="chips"></div>
+    <p class="err" id="appErr" role="alert"></p>
+    <div id="list"></div>
+  </section>
+</main>
+<script>
+(() => {
+  const KINDS = { diagnosis: 'تشخيص مجاني', booked: 'حجز موعد', talent: 'موهبة', company: 'شركة تبحث عن موهبة', solution: 'طلب حل', contact: 'تواصل' }
+  const $ = (id) => document.getElementById(id)
+  const store = { get: (k) => { try { return localStorage.getItem(k) } catch { return null } }, set: (k, v) => { try { localStorage.setItem(k, v) } catch {} } }
+  let pass = store.get('kon-leads-pass') || ''
+  let leads = [], filter = 'all', seen = store.get('kon-leads-seen') || ''
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
+  const when = (iso) => new Date(iso).toLocaleString('ar-SA-u-nu-latn', { timeZone: 'Asia/Riyadh', weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })
+  const digits = (p) => {
+    let d = String(p || '').replace(/[٠-٩]/g, (c) => '٠١٢٣٤٥٦٧٨٩'.indexOf(c)).replace(/\D/g, '')
+    if (d.startsWith('00')) d = d.slice(2)
+    if (d.startsWith('05') && d.length === 10) d = '966' + d.slice(1)
+    if (d.startsWith('5') && d.length === 9) d = '966' + d
+    return d
+  }
+
+  async function load() {
+    $('appErr').textContent = ''
+    try {
+      const r = await fetch('/api/leads', { headers: { 'x-kon-key': pass }, cache: 'no-store' })
+      if (r.status === 401) { showGate('الرمز غير صحيح'); return }
+      const j = await r.json()
+      if (!j.ok) throw new Error(j.error || r.status)
+      leads = j.leads
+      $('gate').hidden = true; $('app').hidden = false
+      render()
+    } catch (e) {
+      if ($('app').hidden) showGate('تعذر الاتصال، حاول مرة ثانية')
+      else $('appErr').textContent = 'تعذر التحديث، حاول مرة ثانية'
+    }
+  }
+  function showGate(msg) { $('app').hidden = true; $('gate').hidden = false; $('gateErr').textContent = msg || '' }
+
+  function render() {
+    const now = Date.now(), day = 864e5
+    const ksaDay = (t) => new Date(t).toLocaleDateString('en-CA', { timeZone: 'Asia/Riyadh' })
+    const today = ksaDay(now)
+    $('sToday').textContent = leads.filter((l) => ksaDay(l.at) === today).length
+    $('sWeek').textContent = leads.filter((l) => now - Date.parse(l.at) < 7 * day).length
+    $('sAll').textContent = leads.length
+    const counts = leads.reduce((a, l) => ((a[l.kind] = (a[l.kind] || 0) + 1), a), {})
+    $('chips').innerHTML = [['all', `الكل ${leads.length}`], ...Object.keys(KINDS).filter((k) => counts[k]).map((k) => [k, `${KINDS[k]} ${counts[k]}`])]
+      .map(([k, t]) => `<button type="button" class="chip${filter === k ? ' on' : ''}" data-k="${k}">${esc(t)}</button>`).join('')
+    const q = $('q').value.trim().toLowerCase()
+    const rows = leads.filter((l) => (filter === 'all' || l.kind === filter) && (!q || [l.name, l.phone, l.email, l.company, l.city, l.title].join(' ').toLowerCase().includes(q)))
+    $('list').innerHTML = rows.length ? rows.map((l) => {
+      const ph = digits(l.phone)
+      const isNew = seen && l.at > seen
+      return `<article class="lead${isNew ? ' new' : ''}">
+        <div class="top"><span class="name">${esc(l.name)}</span><span class="kind ${l.kind === 'booked' ? 'booked' : ''}">${esc(KINDS[l.kind] || l.kind)}</span></div>
+        <div class="meta">${esc(when(l.at))}${l.title ? ' · ' + esc(l.title) : ''}${l.company ? ' · ' + esc(l.company) : ''}${l.city ? ' · ' + esc(l.city) : ''}${l.priority ? ' · أولوية ' + esc(l.priority) : ''}</div>
+        <div class="acts">
+          ${ph ? `<a class="wa" href="https://wa.me/${ph}" target="_blank" rel="noopener">واتساب</a><a href="tel:+${ph}" dir="ltr">${esc(l.phone)}</a>` : ''}
+          ${l.email ? `<a href="mailto:${esc(l.email)}" dir="ltr">${esc(l.email)}</a>` : ''}
+        </div>
+        ${l.brief ? `<details><summary>التفاصيل كاملة</summary><pre>${esc(l.brief)}</pre><div class="src">${esc(l.page)}${l.referrer ? ' ← ' + esc(l.referrer) : ''}${l.utm ? ' · ' + esc(l.utm) : ''}</div></details>` : ''}
+      </article>`
+    }).join('') : '<p class="empty">لا يوجد عملاء بعد</p>'
+  }
+
+  function csv() {
+    const cols = ['at', 'kind', 'name', 'phone', 'email', 'company', 'city', 'title', 'priority', 'lang', 'page', 'referrer', 'utm', 'brief']
+    const cell = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`
+    const body = [cols.join(','), ...leads.map((l) => cols.map((c) => cell(l[c])).join(','))].join('\r\n')
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(new Blob(['﻿' + body], { type: 'text/csv;charset=utf-8' }))
+    a.download = `kon-leads-${new Date().toISOString().slice(0, 10)}.csv`
+    a.click()
+  }
+
+  $('gateForm').addEventListener('submit', (e) => { e.preventDefault(); pass = $('pass').value.trim(); store.set('kon-leads-pass', pass); load() })
+  $('refresh').addEventListener('click', load)
+  $('csv').addEventListener('click', csv)
+  $('q').addEventListener('input', render)
+  $('chips').addEventListener('click', (e) => { const b = e.target.closest('.chip'); if (b) { filter = b.dataset.k; render() } })
+  window.addEventListener('pagehide', () => { if (leads[0]) store.set('kon-leads-seen', leads[0].at) })
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && pass && !$('app').hidden) load() })
+  setInterval(() => { if (!document.hidden && pass && !$('app').hidden) load() }, 60000)
+  if (pass) load(); else showGate()
+})()
+</script>
+</body>
+</html>

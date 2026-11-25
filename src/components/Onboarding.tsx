@@ -9,6 +9,7 @@ import { useContent } from '../content/useContent'
 import { motion, useStore } from '../state/store'
 import { lenis } from './SmoothScroll'
 import { GemMark, Icon } from './Icons'
+import { sendLead } from '../lib/lead'
 
 interface Draft {
   persona: Persona | null
@@ -265,6 +266,21 @@ export function Onboarding() {
       }
     }
   }
+  // Save the lead the moment the contact step is done, before the booking, so nobody who
+  // leaves at the calendar is lost. Calendly reports a confirmed booking as a second event.
+  const leadOf = (kind: 'diagnosis' | 'booked') => d.persona && rec ? {
+    kind, lang, name: d.who.name, phone: d.who.phone, email: d.who.email, company: d.who.company, city: d.who.city,
+    title: `${ob.personas[d.persona].label} · ${serviceNames[rec.primary][lang]}${d.support ? ` · ${ob.summary.supportBadge}` : ''}`,
+    priority: `${lead.fit} · ${lead.urgency}/5`,
+    brief: brief(),
+  } : null
+  useEffect(() => {
+    if (step !== n + 1) return
+    const l = leadOf('diagnosis')
+    if (l) sendLead(l)
+  }, [step]) // eslint-disable-line react-hooks/exhaustive-deps
+  const onBooked = () => { const l = leadOf('booked'); if (l) sendLead(l) }
+
   const pickPersona = (p: Persona) => {
     setD((prev) => ({ ...prev, persona: p, answers: prev.persona === p ? prev.answers : {} }))
     setError('')
@@ -367,7 +383,7 @@ export function Onboarding() {
             <b>{serviceNames[rec.primary][lang]}</b>
             {d.support && <em className="ob-badge">{ob.summary.supportBadge}</em>}
           </div>
-          {BOOKING_URL && <CalFrame src={calSrc()} lang={lang} copy={ob.book} />}
+          {BOOKING_URL && <CalFrame src={calSrc()} lang={lang} copy={ob.book} onBooked={onBooked} />}
           <details className="ob-more">
             <summary>{ob.book.details}</summary>
             <dl className="ob-overview">
@@ -405,7 +421,7 @@ export function Onboarding() {
   )
 }
 
-function CalFrame({ src, lang, copy }: { src: string; lang: Lang; copy: { loading: string; open: string } }) {
+function CalFrame({ src, lang, copy, onBooked }: { src: string; lang: Lang; copy: { loading: string; open: string }; onBooked?: () => void }) {
   const u = new URL(src)
   ;['embed_type', 'embed_domain', 'hide_gdpr_banner', 'background_color', 'text_color', 'primary_color'].forEach((k) => u.searchParams.delete(k))
   const full = u.toString()
@@ -414,6 +430,17 @@ function CalFrame({ src, lang, copy }: { src: string; lang: Lang; copy: { loadin
   useEffect(() => {
     const t = setTimeout(() => setSlow(true), 7000)
     return () => clearTimeout(t)
+  }, [])
+  // Calendly's embed posts calendly.event_scheduled to the page when a booking is confirmed.
+  const booked = useRef(onBooked)
+  booked.current = onBooked
+  useEffect(() => {
+    const on = (e: MessageEvent) => {
+      if (!/^https:\/\/([a-z0-9-]+\.)*calendly\.com$/.test(e.origin)) return
+      if (e.data && typeof e.data === 'object' && e.data.event === 'calendly.event_scheduled') booked.current?.()
+    }
+    window.addEventListener('message', on)
+    return () => window.removeEventListener('message', on)
   }, [])
   return (
     <div className="cal">

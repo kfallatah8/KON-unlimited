@@ -14,6 +14,7 @@ import { QuestionField } from './Onboarding'
 import { GemMark } from './Icons'
 import { SplitReveal } from './SplitReveal'
 import { Rich } from './Rich'
+import { sendLead } from '../lib/lead'
 import type { Answers } from '../content/onboarding'
 
 type Field = 'name' | 'company' | 'job' | 'phone' | 'email' | 'city'
@@ -147,6 +148,17 @@ function TalentFlow({ preset }: { preset: { side: TalentSide; n: number; quiet?:
       }
     }
   }
+  // Save the profile / request as soon as the visitor reaches the result screen.
+  useEffect(() => {
+    if (step !== n + 1 || !d.side) return
+    sendLead({
+      kind: d.side, lang, name: d.who.name, phone: d.who.phone, email: d.who.email, company: d.who.company, city: d.who.city,
+      title: d.side === 'talent'
+        ? (read && read.top.length ? archetypes[read.top[0]].name[lang] : '')
+        : [d.who.job, typeof d.answers.role === 'string' ? d.answers.role : ''].filter(Boolean).join(' · '),
+      brief: brief(),
+    })
+  }, [step]) // eslint-disable-line react-hooks/exhaustive-deps
   const subject = `KON Talent · ${d.who.name}${d.who.company ? ' · ' + d.who.company : ''}`
 
   return (

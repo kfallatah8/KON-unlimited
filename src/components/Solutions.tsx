@@ -2,6 +2,7 @@
 // systems KON sets up on request show what the number could become, and every request lands in
 // the same inbox as the diagnosis (WhatsApp / email / copy). Each request names the exact
 // solution and sector, so demand can be read before anything is installed.
+import { sendLead } from '../lib/lead'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { KeyboardEvent } from 'react'
 import { apps } from '../content/apps'
@@ -95,8 +96,13 @@ function RequestSheet({ req, onClose }: { req: Req; onClose: () => void }) {
     setErr('')
     return true
   }
+  const save = () => sendLead({
+    kind: 'solution', lang, name: who.name, phone: who.phone, company: who.business, city: who.city,
+    title: `${req.title} · ${req.sector}`, brief: brief(),
+  })
   const copy = async () => {
     if (!valid()) return
+    save()
     try {
       await navigator.clipboard.writeText(brief())
       setCopied(true)
@@ -135,10 +141,10 @@ function RequestSheet({ req, onClose }: { req: Req; onClose: () => void }) {
         {err && <p className="rq-err" role="alert">{err}</p>}
         <div className="rq-actions">
           {inbox.whatsapp && (
-            <a className="btn btn-primary" target="_blank" rel="noreferrer" href={`https://wa.me/${inbox.whatsapp}?text=${encodeURIComponent(brief())}`} onClick={(e) => { if (!valid()) e.preventDefault() }}><span>{r.sendWa}</span></a>
+            <a className="btn btn-primary" target="_blank" rel="noreferrer" href={`https://wa.me/${inbox.whatsapp}?text=${encodeURIComponent(brief())}`} onClick={(e) => { if (!valid()) e.preventDefault(); else save() }}><span>{r.sendWa}</span></a>
           )}
           {inbox.email && (
-            <a className="btn btn-ghost" href={`mailto:${inbox.email}?subject=${encodeURIComponent('KON · ' + req.title)}&body=${encodeURIComponent(brief())}`} onClick={(e) => { if (!valid()) e.preventDefault() }}><span>{r.sendMail}</span></a>
+            <a className="btn btn-ghost" href={`mailto:${inbox.email}?subject=${encodeURIComponent('KON · ' + req.title)}&body=${encodeURIComponent(brief())}`} onClick={(e) => { if (!valid()) e.preventDefault(); else save() }}><span>{r.sendMail}</span></a>
           )}
           <button type="button" className="link-btn" onClick={copy}>{copied ? r.copied : r.copy}</button>
         </div>
