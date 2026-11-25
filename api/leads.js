@@ -13,7 +13,8 @@ export default async function handler(req, res) {
   if (req.method !== 'GET') { res.setHeader('Allow', 'GET'); return res.status(405).json({ ok: false }) }
   const pass = process.env.LEADS_KEY
   if (!pass) return res.status(503).json({ ok: false, error: 'not_configured' })
-  if (!same(req.headers['x-kon-key'] || '', pass)) {
+  const given = req.headers['x-kon-key'] || (process.env.VERCEL_ENV !== 'production' ? req.query.key : '') || ''
+  if (!same(given, pass)) {
     await new Promise((r) => setTimeout(r, 700)) // slows down guessing
     return res.status(401).json({ ok: false, error: 'passcode' })
   }

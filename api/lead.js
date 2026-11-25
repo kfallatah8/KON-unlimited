@@ -6,7 +6,10 @@ const ALLOWED = /^(https:\/\/([a-z0-9-]+\.)*(kon-unlimited\.com|kon\.sa)|https:\
 
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store')
-  if (req.method !== 'POST') { res.setHeader('Allow', 'POST'); return res.status(405).json({ ok: false }) }
+  // Test links only: GET ?selftest=1 sends one sample lead end to end (store + alerts).
+  if (req.method === 'GET' && req.query.selftest === '1' && process.env.VERCEL_ENV !== 'production') {
+    req.body = { kind: 'diagnosis', lang: 'ar', name: 'اختبار النظام (تجربة)', phone: '0500000000', title: 'رائد أعمال · اختبار', priority: 'high · 5/5', brief: 'عميل تجريبي للتأكد من وصول التنبيهات، تجاهله', page: 'selftest' }
+  } else if (req.method !== 'POST') { res.setHeader('Allow', 'POST'); return res.status(405).json({ ok: false }) }
   const origin = String(req.headers.origin || '')
   if (origin && !ALLOWED.test(origin)) return res.status(403).json({ ok: false, error: 'origin' })
 
@@ -28,5 +31,5 @@ export default async function handler(req, res) {
   }
   const sent = await notify(rec)
   console.info('KON_LEAD', rec.id, rec.kind, JSON.stringify(sent)) // no personal data in this line
-  return res.status(200).json({ ok: true, id: rec.id })
+  return res.status(200).json({ ok: true, id: rec.id, ...(process.env.VERCEL_ENV !== 'production' ? { sent } : {}) })
 }
