@@ -248,7 +248,7 @@ const ar = {
     tabs: { monthly: 'الاشتراك الشهري', results: 'شراكة النتيجة' },
     term: 'مدة العقد',
     months: (n: number) => (n === 12 ? 'سنة' : `${n} أشهر`),
-    save: (p: number) => `وفّر ${p}%`,
+    save: (p: number) => `وفّر \u2066${p}%\u2069`,
     perMonth: 'ريال شهريًا',
     total: (n: string, m: number) => `${n} ريال على ${m === 12 ? '12 شهر' : `${m} أشهر`}، تدفعها أقساط شهرية`,
     forWho: 'لمين',
