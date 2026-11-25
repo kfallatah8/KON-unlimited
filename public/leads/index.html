@@ -129,7 +129,7 @@ pre{white-space:pre-wrap;font:inherit;font-size:14px;background:#021316;border-r
       const isNew = seen && l.at > seen
       return `<article class="lead${isNew ? ' new' : ''}">
         <div class="top"><span class="name">${esc(l.name)}</span><span class="kind ${l.kind === 'booked' ? 'booked' : ''}">${esc(KINDS[l.kind] || l.kind)}</span></div>
-        <div class="meta">${esc(when(l.at))}${l.title ? ' · ' + esc(l.title) : ''}${l.company ? ' · ' + esc(l.company) : ''}${l.city ? ' · ' + esc(l.city) : ''}${l.priority ? ' · أولوية ' + esc(l.priority) : ''}</div>
+        <div class="meta">${esc(when(l.at))}${l.title ? ' · ' + esc(l.title) : ''}${l.company ? ' · ' + esc(l.company) : ''}${l.city ? ' · ' + esc(l.city) : ''}${l.priority ? ' · أولوية ' + esc(String(l.priority).replace('high', 'عالية').replace('medium', 'متوسطة').replace('low', 'منخفضة').replace(/·\s*(\d)\/5/, '· إلحاح $1/5')) : ''}</div>
         <div class="acts">
           ${ph ? `<a class="wa" href="https://wa.me/${ph}" target="_blank" rel="noopener">واتساب</a><a href="tel:+${ph}" dir="ltr">${esc(l.phone)}</a>` : ''}
           ${l.email ? `<a href="mailto:${esc(l.email)}" dir="ltr">${esc(l.email)}</a>` : ''}
