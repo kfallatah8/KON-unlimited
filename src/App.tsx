@@ -8,6 +8,7 @@ const Talent = lazy(() => import('./components/Talent').then((m) => ({ default: 
 const Solutions = lazy(() => import('./components/Solutions').then((m) => ({ default: m.Solutions })))
 import { KonGlass } from './components/KonGlass'
 import { detectCapabilities } from './lib/capabilities'
+import { openPrivacySettings, privacyLabel } from './components/Consent'
 import { motion, setLang, startOnboarding, useStore } from './state/store'
 import { Cursor } from './components/Cursor'
 import { Icon, GemMark } from './components/Icons'
@@ -842,6 +843,7 @@ function Finale({ fallback }: { fallback: boolean }) {
 
 function Footer() {
   const c = useContent()
+  const lang = useStore((s) => s.lang)
   const f = c.footer
   return (
     <footer className="site-footer">
@@ -865,6 +867,7 @@ function Footer() {
       </div>
       <div className="wrap footer-base">
         <span>{f.rights}</span>
+        <button type="button" className="footer-privacy" onClick={openPrivacySettings}>{privacyLabel[lang]}</button>
         <a href="#top">{f.top} ↑</a>
       </div>
     </footer>

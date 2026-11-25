@@ -10,6 +10,7 @@ import { motion, useStore } from '../state/store'
 import { lenis } from './SmoothScroll'
 import { GemMark, Icon } from './Icons'
 import { sendLead } from '../lib/lead'
+import { track } from '../lib/analytics'
 
 interface Draft {
   persona: Persona | null
@@ -275,6 +276,7 @@ export function Onboarding() {
     brief: brief(),
   } : null
   useEffect(() => {
+    if (d.persona && step >= 0) track('diagnosis_step', { step: step + 1, of: n + 2, persona: d.persona, stage: step < n ? 'questions' : step === n ? 'contact' : 'booking' })
     if (step !== n + 1) return
     const l = leadOf('diagnosis')
     if (l) sendLead(l)

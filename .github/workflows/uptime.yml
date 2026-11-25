@@ -1,0 +1,67 @@
+# Uptime watch for kon-unlimited.com. Every ~5 minutes it checks the homepage and the lead pipeline
+# (/api/health). It sends one phone alert (ntfy) when the site goes down and one when it is back,
+# never repeated alerts while it stays down. Needs the repository secret NTFY_TOPIC.
+name: Uptime
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: uptime
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Check site and lead pipeline
+        id: probe
+        run: |
+          fail=""
+          for i in 1 2 3; do
+            fail=""
+            home=$(curl -s -o /tmp/home.html -w '%{http_code} %{time_total}' --max-time 20 https://kon-unlimited.com/ || echo "000 0")
+            code=${home%% *}; secs=${home##* }
+            if [ "$code" != "200" ] || ! grep -q 'id="root"' /tmp/home.html; then fail="Homepage answered $code"; fi
+            api=$(curl -s -o /tmp/health.json -w '%{http_code}' --max-time 20 https://kon-unlimited.com/api/health || echo 000)
+            if [ "$api" != "200" ]; then fail="${fail:+$fail, }lead pipeline answered $api $(head -c 200 /tmp/health.json)"; fi
+            [ -z "$fail" ] && break
+            sleep 20
+          done
+          echo "Homepage ${code} in ${secs}s"
+          echo "fail=$fail" >> "$GITHUB_OUTPUT"
+
+      - name: Was the previous check failing?
+        id: prev
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          prev=$(gh api "repos/${{ github.repository }}/actions/workflows/uptime.yml/runs?status=completed&per_page=1" -q '.workflow_runs[0].conclusion' 2>/dev/null || echo unknown)
+          echo "prev=$prev" >> "$GITHUB_OUTPUT"
+          echo "Previous run: $prev"
+
+      - name: Alert when it goes down
+        if: steps.probe.outputs.fail != '' && steps.prev.outputs.prev != 'failure'
+        env:
+          TOPIC: ${{ secrets.NTFY_TOPIC }}
+          MSG: ${{ steps.probe.outputs.fail }}
+        run: |
+          [ -n "$TOPIC" ] && curl -s -H 'Title: KON site is DOWN' -H 'Priority: 5' -H 'Tags: rotating_light' -H 'Click: https://kon-unlimited.com/' -d "$MSG" "https://ntfy.sh/$TOPIC" >/dev/null || true
+
+      - name: Alert when it is back
+        if: steps.probe.outputs.fail == '' && steps.prev.outputs.prev == 'failure'
+        env:
+          TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: |
+          [ -n "$TOPIC" ] && curl -s -H 'Title: KON site is back up' -H 'Tags: white_check_mark' -d 'Homepage and lead pipeline are working again' "https://ntfy.sh/$TOPIC" >/dev/null || true
+
+      - name: Mark this run
+        if: steps.probe.outputs.fail != ''
+        run: exit 1

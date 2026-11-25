@@ -3,6 +3,7 @@
 // the same inbox as the diagnosis (WhatsApp / email / copy). Each request names the exact
 // solution and sector, so demand can be read before anything is installed.
 import { sendLead } from '../lib/lead'
+import { track } from '../lib/analytics'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { KeyboardEvent } from 'react'
 import { apps } from '../content/apps'
@@ -35,6 +36,7 @@ function loadWho(): Who {
 
 /** The request sheet: feels like ordering a service that exists, because it does, on demand. */
 function RequestSheet({ req, onClose }: { req: Req; onClose: () => void }) {
+  useEffect(() => { track('solution_request_open', { sector: req.sector, kind: req.kind }) }, [req.sector, req.kind])
   const lang = useStore((s) => s.lang)
   const r = reqCopy[lang]
   const [who, setWho] = useState<Who>(loadWho)

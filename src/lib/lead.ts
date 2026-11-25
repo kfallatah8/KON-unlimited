@@ -1,6 +1,8 @@
 // Sends a finished flow to /api/lead, which saves it and alerts khalid. Fire-and-forget: the visitor
 // never waits on it, and the same lead is sent once per browser session (re-sent only if it changed).
 
+import { track } from './analytics'
+
 export type LeadKind = 'diagnosis' | 'booked' | 'talent' | 'company' | 'solution' | 'contact'
 export interface Lead {
   kind: LeadKind
@@ -49,6 +51,7 @@ export function sendLead(lead: Lead) {
   let sent: string[] = []
   try { sent = JSON.parse(sessionStorage.getItem(SENT) || '[]') } catch { /* private mode */ }
   if (sent.includes(h)) return
+  track(lead.kind === 'booked' ? 'booking_confirmed' : 'lead_submitted', { kind: lead.kind, lang: lead.lang })
   const remember = () => {
     try { sessionStorage.setItem(SENT, JSON.stringify([...sent, h].slice(-30))) } catch { /* private mode */ }
   }

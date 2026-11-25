@@ -15,6 +15,7 @@ import { GemMark } from './Icons'
 import { SplitReveal } from './SplitReveal'
 import { Rich } from './Rich'
 import { sendLead } from '../lib/lead'
+import { track } from '../lib/analytics'
 import type { Answers } from '../content/onboarding'
 
 type Field = 'name' | 'company' | 'job' | 'phone' | 'email' | 'city'
@@ -150,6 +151,7 @@ function TalentFlow({ preset }: { preset: { side: TalentSide; n: number; quiet?:
   }
   // Save the profile / request as soon as the visitor reaches the result screen.
   useEffect(() => {
+    if (d.side && step >= 0) track('talent_step', { step: step + 1, of: n + 2, side: d.side })
     if (step !== n + 1 || !d.side) return
     sendLead({
       kind: d.side, lang, name: d.who.name, phone: d.who.phone, email: d.who.email, company: d.who.company, city: d.who.city,

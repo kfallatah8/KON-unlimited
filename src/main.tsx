@@ -12,7 +12,10 @@ import './styles/director.css'
 import './styles/clean.css'
 import './styles/clear.css'
 import './styles/hl.css'
+import './styles/consent.css'
 import { initHighlights } from './lib/highlights'
+import { initAnalytics } from './lib/analytics'
+import { Consent } from './components/Consent'
 
 // Every visit and every refresh opens at the very top: no restored scroll position and no jump
 // to a #section left over in the address bar (#en / #ar and #/pages are kept).
@@ -27,9 +30,11 @@ window.addEventListener('pageshow', (e) => { if ((e as PageTransitionEvent).pers
 setLang(store.get().lang)
 
 requestAnimationFrame(() => initHighlights())
+initAnalytics()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
+    <Consent />
   </StrictMode>,
 )
