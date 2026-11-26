@@ -190,7 +190,20 @@ export function Onboarding() {
     }
     setError('')
     if (step === n && d.persona && isPostHogConfigured) {
-      posthog.capture('onboarding_completed', { persona: d.persona, support_requested: d.support })
+      posthog.capture('onboarding_completed', {
+        persona: d.persona,
+        support_requested: d.support,
+        lead_fit: lead.fit,
+        lead_urgency: lead.urgency,
+        recommended_service: rec?.primary ?? null,
+        also_services: rec?.also ?? [],
+        pains: (d.answers.pains as string[] | undefined) ?? [],
+        prefers: d.who.prefer,
+        has_company: !!d.who.company.trim(),
+        has_email: !!d.who.email.trim(),
+        has_phone: !!d.who.phone.trim(),
+      })
+      posthog.setPersonProperties({ persona: d.persona, lead_fit: lead.fit, lead_urgency: lead.urgency, recommended_service: rec?.primary ?? null, onboarding_completed: true })
     }
     setStep((s) => Math.min(s + 1, n + 1))
   }
@@ -198,6 +211,15 @@ export function Onboarding() {
 
   const rec = d.persona ? recommend(d.persona, d.answers) : null
   const lead = leadRead(d.answers)
+
+  // Funnel: which onboarding screen each visitor reaches (persona, each question, contact, summary).
+  const firstStep = useRef(true)
+  useEffect(() => {
+    if (firstStep.current) { firstStep.current = false; if (step === -1) return }
+    if (!isPostHogConfigured) return
+    const name = step === -1 ? 'persona' : step < n ? (steps[step]?.questions?.map((q) => q.id).join('+') || `q${step}`) : step === n ? 'contact' : 'summary'
+    posthog.capture('onboarding_step_viewed', { step_index: step, step_name: name, total_steps: n, persona: d.persona })
+  }, [step]) // eslint-disable-line react-hooks/exhaustive-deps
   const L = (qid: string, v: unknown) => (d.persona ? optionLabel(d.persona, qid, String(v), lang) : String(v))
   const list = (qid: string) => {
     const v = d.answers[qid]

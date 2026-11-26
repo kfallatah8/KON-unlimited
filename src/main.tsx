@@ -15,6 +15,7 @@ import './styles/hl.css'
 import './styles/easy.css'
 import { initHighlights } from './lib/highlights'
 import './lib/posthog'
+import { initBehavior } from './lib/behavior'
 
 // Every visit and every refresh opens at the very top: no restored scroll position and no jump
 // to a #section left over in the address bar (#en / #ar and #/pages are kept).
@@ -29,6 +30,7 @@ window.addEventListener('pageshow', (e) => { if ((e as PageTransitionEvent).pers
 setLang(store.get().lang)
 
 requestAnimationFrame(() => initHighlights())
+requestAnimationFrame(() => initBehavior())
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
