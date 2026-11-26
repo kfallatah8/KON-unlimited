@@ -21,6 +21,7 @@ import { Rich } from './components/Rich'
 import { KonMark } from './components/KonMark'
 import { SafeBoundary } from './components/SafeBoundary'
 import { posthogLogger } from './lib/posthog'
+import { Idea, Gaps, Mix, Measure, StoryPlans } from './components/Story'
 import { ChapterRail, CountUp, useCardLight, useHeaderAutoHide } from './components/Elevate'
 
 // The WebGL stage is its own chunk: copy and layout never wait for it.
@@ -239,7 +240,7 @@ function Hero({ ready }: { ready: boolean }) {
         <p className="hero-lede hero-fade"><Rich text={h.lede} /></p>
         <div className="hero-ctas hero-fade">
           <MagneticButton href="#start">{h.primary}</MagneticButton>
-          <MagneticButton href="#work" variant="ghost">{h.secondary}</MagneticButton>
+          <MagneticButton href="#plans" variant="ghost">{h.secondary}</MagneticButton>
         </div>
         <p className="hero-micro hero-fade">{h.micro}</p>
       </div>
@@ -248,7 +249,7 @@ function Hero({ ready }: { ready: boolean }) {
           <li key={p.l}><b dir="ltr"><CountUp value={p.n} play={ready} /></b><span>{p.l}</span><small>{p.s}</small></li>
         ))}
       </ul>
-      <a href="#problem" className="scroll-cue"><b className="breath-ring" aria-hidden="true" /><span>{h.scroll}</span><i aria-hidden="true" /></a>
+      <a href="#idea" className="scroll-cue"><b className="breath-ring" aria-hidden="true" /><span>{h.scroll}</span><i aria-hidden="true" /></a>
     </section>
   )
 }
@@ -399,7 +400,7 @@ function Commit() {
   )
 }
 
-function Approach() {
+export function Approach() {
   const c = useContent()
   const a = c.approach
   const m = c.commit
@@ -429,7 +430,7 @@ function Approach() {
 const SV_ICONS: IconId[] = ['scan', 'compass', 'flow', 'mask', 'web', 'ai']
 const FR_ICONS: IconId[] = ['calc', 'session', 'care']
 
-function Services() {
+export function Services() {
   const v = useContent().services
   return (
     <section id="services" className="band services-band" aria-labelledby="services-title">
@@ -474,6 +475,7 @@ function How() {
             </li>
           ))}
         </ol>
+        <Measure />
         <div className="how-cta" data-reveal>
           <MagneticButton href="#start">{h.cta}</MagneticButton>
           <p className="fine">{h.note}</p>
@@ -1119,17 +1121,19 @@ export default function App() {
         ) : (
           <>
             <Hero ready={ready} />
+            <Idea />
+            <Gaps />
             <Problem />
-            <Services />
+            <Mix />
+            <Interlude />
             <How />
             <Work />
-            <Approach />
-            <Interlude />
+            <StoryPlans />
             <QuickTools />
-            <Founder />
             <More />
-            <Finale fallback={!webgl} />
+            <Founder />
             <Start />
+            <Finale fallback={!webgl} />
           </>
         )}
       </main>

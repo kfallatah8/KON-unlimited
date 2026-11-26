@@ -60,16 +60,16 @@ export const contact = {
 const ar = {
   meta: {
     switchTo: 'EN', switchLabel: 'Switch to English', menu: 'القائمة', close: 'إغلاق', skip: 'تخطَّ إلى المحتوى',
-    title: 'KON Unlimited · نرفع ربح مشروعك ونرتّب تشغيله',
+    title: 'KON Unlimited · قسم تطوير الأعمال لشركتك',
     home: 'الرئيسية',
   },
   nav: [
-    { href: '#services', label: 'خدماتنا' },
-    { href: '#how', label: 'كيف نشتغل' },
+    { href: '#idea', label: 'الفكرة' },
+    { href: '#gaps', label: 'الفجوات' },
+    { href: '#how', label: 'طريقتنا' },
     { href: '#work', label: 'أعمالنا' },
-    { href: '#tools', label: 'احسبها بنفسك' },
+    { href: '#plans', label: 'الباقات' },
     { href: '#founder', label: 'المؤسس' },
-    { href: '#/talent', label: 'المواهب' },
   ],
 
   headerCta: 'احجز جلستك',
@@ -77,9 +77,9 @@ const ar = {
   hero: {
     eyebrow: 'تشغيل · تطوير أعمال · ابتكار',
     rotating: ['نرفع ربح مشروعك', 'نرتّب تشغيلك اليومي', 'نشتغل معك على الأرض'],
-    statement: ['ربح أعلى', 'وتشغيل أسهل'],
+    statement: ['ربحك الأعلى', 'موجود داخل شركتك'],
     // What KON does, for whom, and how, in one breath. Read before anything moves.
-    lede: 'نساعد **أصحاب الشركات ورواد الأعمال والمستثمرين** يعرفون وين يضيع ربحهم بالضبط، وبعدها ننزل معهم الميدان لين تتحسّن الأرقام فعلًا',
+    lede: 'نكون **قسم تطوير الأعمال** في شركتك، عن بُعد أو حضوريًا: نلقى الفجوات والفرص الضايعة **داخل شركتك وخارجها**، ونسكّرها معك على الأرض لين تتحرك الأرقام',
     asks: [
       { who: 'لصاحب الشركة', q: 'مبيعاتك تزيد وربحك واقف مكانه؟' },
       { who: 'لرائد الأعمال', q: 'فكرتك حلوة، بس مين بيدفع فيها؟' },
@@ -88,9 +88,9 @@ const ar = {
     promise: 'وعدنا بسيط: **أي عملية تشغيلية، نطوّرها ونحسّنها**',
     micro: 'جلسة 30 دقيقة · مجانية · بدون أي التزام',
     primary: 'احجز جلستك المجانية',
-    secondary: 'شوف أعمالنا',
+    secondary: 'شوف الباقات',
     slogan: 'Any challenge…Any way…Anywhere…We’ll be there',
-    scroll: 'انزل',
+    scroll: 'القصة تبدأ من هنا',
     proof: [
       { n: '+4,200', l: 'ساعة استشارية', s: 'خبرة ميدانية' },
       { n: '14M', l: 'ريال إيرادات', s: 'Telkomsel' },
@@ -100,7 +100,7 @@ const ar = {
 
   // The journey in three plain steps, so a first-time visitor knows what happens after they book.
   how: {
-    eyebrow: 'كيف نشتغل',
+    eyebrow: 'الطريقة',
     title: 'ثلاث خطوات، وكل خطوة واضحة',
     steps: [
       { k: 'مجانية', title: 'جلسة نفهم فيها وضعك', body: '30 دقيقة نسمع منك ونسألك الأسئلة الصح، وتطلع بفكرة وحدة على الأقل تقدر تبدأ فيها' },
@@ -268,7 +268,7 @@ const ar = {
 
 
   work: {
-    eyebrow: 'أعمالنا',
+    eyebrow: 'الدليل',
     title: 'أرقام من الميدان، مو من العروض',
     lede: 'مشاريع اشتغلنا فيها بأنفسنا، وكل رقم هنا حقيقي',
     confirmMark: 'بانتظار التأكيد',
@@ -593,16 +593,16 @@ export type Content = typeof ar
 const en: Content = {
   meta: {
     switchTo: 'ع', switchLabel: 'التبديل إلى العربية', menu: 'Menu', close: 'Close', skip: 'Skip to content',
-    title: 'KON Unlimited · Higher profit, easier operations',
+    title: 'KON Unlimited · Your business development department',
     home: 'Home',
   },
   nav: [
-    { href: '#services', label: 'Services' },
-    { href: '#how', label: 'How it works' },
+    { href: '#idea', label: 'The idea' },
+    { href: '#gaps', label: 'The gaps' },
+    { href: '#how', label: 'Our way' },
     { href: '#work', label: 'Work' },
-    { href: '#tools', label: 'Free tools' },
+    { href: '#plans', label: 'Packages' },
     { href: '#founder', label: 'Founder' },
-    { href: '#/talent', label: 'Talent' },
   ],
 
   headerCta: 'Book a session',
@@ -610,8 +610,8 @@ const en: Content = {
   hero: {
     eyebrow: 'Operations · Business development · Innovation',
     rotating: ['We raise your profit', 'We sort out your daily operations', 'We work on the ground with you'],
-    statement: ['Higher profit', 'easier operations'],
-    lede: 'We help **business owners, founders and investors** find exactly where their profit is leaking, then work on the ground with them until the numbers really move',
+    statement: ['Your higher profit', 'is already inside your company'],
+    lede: 'We become your **business development department**, remote or on site: we find the gaps and missed opportunities **inside and outside your company**, then close them with you on the ground until the numbers move',
     asks: [
       { who: 'For business owners', q: 'Sales are up. Why isn’t profit?' },
       { who: 'For founders', q: 'Great idea. Who’s going to pay for it?' },
@@ -620,9 +620,9 @@ const en: Content = {
     promise: 'Our promise is simple: **we optimise and develop any operation**',
     micro: '30 minutes · Free · No commitment',
     primary: 'Book your free session',
-    secondary: 'See our work',
+    secondary: 'See the packages',
     slogan: 'Any challenge…Any way…Anywhere…We’ll be there',
-    scroll: 'Scroll',
+    scroll: 'The story starts here',
     proof: [
       { n: '4,200+', l: 'advisory hours', s: 'in the field' },
       { n: '14M', l: 'SAR revenue', s: 'Telkomsel' },
@@ -631,7 +631,7 @@ const en: Content = {
   },
 
   how: {
-    eyebrow: 'How it works',
+    eyebrow: 'The way',
     title: 'Three steps. Each one clear',
     steps: [
       { k: 'Free', title: 'A session to understand where you are', body: '30 minutes where we listen, ask the right questions, and you leave with at least one idea you can act on' },
@@ -794,7 +794,7 @@ const en: Content = {
 
 
   work: {
-    eyebrow: 'Work',
+    eyebrow: 'The proof',
     title: 'Numbers from the field',
     lede: 'Projects we worked on ourselves. Every number here is real',
     confirmMark: 'Pending confirmation',
