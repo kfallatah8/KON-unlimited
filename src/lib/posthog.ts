@@ -1,7 +1,9 @@
 import posthog from 'posthog-js'
 
-const posthogKey = import.meta.env.VITE_POSTHOG_KEY
-const posthogHost = import.meta.env.VITE_POSTHOG_HOST
+// The project token is public by design (it only allows sending events), so the live site
+// works without extra Vercel settings. Env vars still override it for other projects.
+const posthogKey = import.meta.env.VITE_POSTHOG_KEY || 'phc_mLXSGo6Cr8nB29UwLJMzAxwjAzEXioSGhHivMemqtPqu'
+const posthogHost = import.meta.env.VITE_POSTHOG_HOST || 'https://eu.i.posthog.com'
 
 export const isPostHogConfigured = Boolean(posthogKey && posthogHost)
 
@@ -27,6 +29,9 @@ if (!posthogKey) {
 } else {
   posthog.init(posthogKey, {
     api_host: posthogHost,
+    ui_host: 'https://eu.posthog.com',
+    defaults: '2025-05-24',
+    person_profiles: 'identified_only',
     capture_exceptions: {
       capture_unhandled_errors: true,
       capture_unhandled_rejections: true,
