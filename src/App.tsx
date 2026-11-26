@@ -20,6 +20,7 @@ import type { ToolId } from './content/solutions'
 import { Rich } from './components/Rich'
 import { KonMark } from './components/KonMark'
 import { SafeBoundary } from './components/SafeBoundary'
+import { posthogLogger } from './lib/posthog'
 import { ChapterRail, CountUp, useCardLight, useHeaderAutoHide } from './components/Elevate'
 
 // The WebGL stage is its own chunk: copy and layout never wait for it.
@@ -1041,6 +1042,13 @@ export default function App() {
   useReveal(lang, route)
   useHeaderAutoHide()
   useCardLight()
+
+  useEffect(() => {
+    posthogLogger.info('route_rendered', {
+      event: 'route_rendered',
+      route: route || 'home',
+    })
+  }, [route])
 
   useEffect(() => {
     document.title = c.meta.title

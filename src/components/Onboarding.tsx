@@ -9,6 +9,7 @@ import { useContent } from '../content/useContent'
 import { motion, useStore } from '../state/store'
 import { lenis } from './SmoothScroll'
 import { GemMark, Icon } from './Icons'
+import { isPostHogConfigured, posthog } from '../lib/posthog'
 
 interface Draft {
   persona: Persona | null
@@ -188,6 +189,9 @@ export function Onboarding() {
       if (!w.name.trim() || !(w.phone.trim() || w.email.trim())) return setError(ob.contact.needOne)
     }
     setError('')
+    if (step === n && d.persona && isPostHogConfigured) {
+      posthog.capture('onboarding_completed', { persona: d.persona, support_requested: d.support })
+    }
     setStep((s) => Math.min(s + 1, n + 1))
   }
   const back = () => { setError(''); setStep((s) => Math.max(-1, s - 1)) }
@@ -266,6 +270,7 @@ export function Onboarding() {
     }
   }
   const pickPersona = (p: Persona) => {
+    if (isPostHogConfigured) posthog.capture('onboarding_persona_selected', { persona: p })
     setD((prev) => ({ ...prev, persona: p, answers: prev.persona === p ? prev.answers : {} }))
     setError('')
     setStep(0)

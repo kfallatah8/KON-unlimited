@@ -15,6 +15,7 @@ import { SplitReveal } from './SplitReveal'
 import { Rich } from './Rich'
 import { toolHelp } from '../content/toolHelp'
 import { Tool, toolMeta } from './Tools'
+import { isPostHogConfigured, posthog } from '../lib/posthog'
 
 type Tab = 'tools' | 'picks' | 'extras'
 interface Req { title: string; sector: string; tech?: string; kind: 'setup' | 'service'; result?: string }
@@ -135,10 +136,10 @@ function RequestSheet({ req, onClose }: { req: Req; onClose: () => void }) {
         {err && <p className="rq-err" role="alert">{err}</p>}
         <div className="rq-actions">
           {inbox.whatsapp && (
-            <a className="btn btn-primary" target="_blank" rel="noreferrer" href={`https://wa.me/${inbox.whatsapp}?text=${encodeURIComponent(brief())}`} onClick={(e) => { if (!valid()) e.preventDefault() }}><span>{r.sendWa}</span></a>
+            <a className="btn btn-primary" target="_blank" rel="noreferrer" href={`https://wa.me/${inbox.whatsapp}?text=${encodeURIComponent(brief())}`} onClick={(e) => { if (!valid()) e.preventDefault(); else if (isPostHogConfigured) posthog.capture('solution_request_sent', { channel: 'whatsapp', request_kind: req.kind }) }}><span>{r.sendWa}</span></a>
           )}
           {inbox.email && (
-            <a className="btn btn-ghost" href={`mailto:${inbox.email}?subject=${encodeURIComponent('KON · ' + req.title)}&body=${encodeURIComponent(brief())}`} onClick={(e) => { if (!valid()) e.preventDefault() }}><span>{r.sendMail}</span></a>
+            <a className="btn btn-ghost" href={`mailto:${inbox.email}?subject=${encodeURIComponent('KON · ' + req.title)}&body=${encodeURIComponent(brief())}`} onClick={(e) => { if (!valid()) e.preventDefault(); else if (isPostHogConfigured) posthog.capture('solution_request_sent', { channel: 'email', request_kind: req.kind }) }}><span>{r.sendMail}</span></a>
           )}
           <button type="button" className="link-btn" onClick={copy}>{copied ? r.copied : r.copy}</button>
         </div>
@@ -288,6 +289,10 @@ export function Solutions() {
     tabs.current[n]?.focus()
   }
   const cur = solSectors[sec]
+  const startRequest = (request: Req) => {
+    if (isPostHogConfigured) posthog.capture('solution_request_started', { request_kind: request.kind })
+    setReq(request)
+  }
   const close = useCallback(() => setReq(null), [])
   return (
     <section id="solutions" className="band solutions" aria-labelledby="sol-title">
@@ -308,7 +313,7 @@ export function Solutions() {
             </button>
           ))}
         </div>
-        <SectorPanel key={cur.id} sec={cur} onRequest={setReq} />
+        <SectorPanel key={cur.id} sec={cur} onRequest={startRequest} />
         <p className="ready-tail sol-tail" data-reveal>
           <Rich text={s.tail} />{' '}
           <button type="button" className="link-btn" onClick={() => startOnboarding({ persona: 'business' })}>{s.tailCta} <span aria-hidden="true">{lang === 'ar' ? '←' : '→'}</span></button>

@@ -13,6 +13,7 @@ import './styles/clean.css'
 import './styles/clear.css'
 import './styles/hl.css'
 import { initHighlights } from './lib/highlights'
+import './lib/posthog'
 
 // Every visit and every refresh opens at the very top: no restored scroll position and no jump
 // to a #section left over in the address bar (#en / #ar and #/pages are kept).

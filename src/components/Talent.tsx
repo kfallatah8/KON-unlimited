@@ -15,6 +15,7 @@ import { GemMark } from './Icons'
 import { SplitReveal } from './SplitReveal'
 import { Rich } from './Rich'
 import type { Answers } from '../content/onboarding'
+import { isPostHogConfigured, posthog } from '../lib/posthog'
 
 type Field = 'name' | 'company' | 'job' | 'phone' | 'email' | 'city'
 interface Draft {
@@ -77,6 +78,7 @@ function TalentFlow({ preset }: { preset: { side: TalentSide; n: number; quiet?:
     scrollToHash('#talent-flow')
   }
   const pick = (side: TalentSide) => {
+    if (isPostHogConfigured) posthog.capture('talent_flow_started', { flow_side: side })
     setD((p) => ({ ...p, side, answers: p.side === side ? p.answers : {}, other: p.side === side ? p.other : {} }))
     go(0)
   }
@@ -99,6 +101,7 @@ function TalentFlow({ preset }: { preset: { side: TalentSide; n: number; quiet?:
   const next = () => {
     if (step >= 0 && step < n && !validStep(step)) return setError(t.required)
     if (step === n && (!d.who.name.trim() || !(d.who.phone.trim() || d.who.email.trim()))) return setError(t.contact.needOne)
+    if (step === n && d.side && isPostHogConfigured) posthog.capture('talent_profile_completed', { flow_side: d.side })
     go(Math.min(step + 1, n + 1))
   }
 
@@ -293,10 +296,10 @@ function Actions({ brief, subject, copy, copied }: { brief: () => string; subjec
     <>
       <div className="ob-actions">
         {inbox.whatsapp && (
-          <a className="btn btn-primary" target="_blank" rel="noreferrer" href={`https://wa.me/${inbox.whatsapp}?text=${encodeURIComponent(brief())}`}><span>{t.sendWhatsapp}</span></a>
+          <a className="btn btn-primary" target="_blank" rel="noreferrer" href={`https://wa.me/${inbox.whatsapp}?text=${encodeURIComponent(brief())}`} onClick={() => { if (isPostHogConfigured) posthog.capture('talent_profile_sent', { channel: 'whatsapp' }) }}><span>{t.sendWhatsapp}</span></a>
         )}
         {inbox.email && (
-          <a className={`btn ${inbox.whatsapp ? 'btn-ghost' : 'btn-primary'}`} href={`mailto:${inbox.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(brief())}`}><span>{t.sendEmail}</span></a>
+          <a className={`btn ${inbox.whatsapp ? 'btn-ghost' : 'btn-primary'}`} href={`mailto:${inbox.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(brief())}`} onClick={() => { if (isPostHogConfigured) posthog.capture('talent_profile_sent', { channel: 'email' }) }}><span>{t.sendEmail}</span></a>
         )}
         <button type="button" className="btn btn-ghost" onClick={copy}><span>{copied ? t.copied : t.copy}</span></button>
       </div>
