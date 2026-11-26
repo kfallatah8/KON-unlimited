@@ -226,26 +226,6 @@ function Rotator({ lines, ready }: { lines: string[]; ready: boolean }) {
   )
 }
 
-// One provocation per ICP, cycling slowly: a question the visitor already asks themselves.
-function HeroAsk({ asks }: { asks: { who: string; q: string }[] }) {
-  const [i, setI] = useState(0)
-  useEffect(() => {
-    const t = setInterval(() => { if (!document.hidden) setI((x) => (x + 1) % asks.length) }, 4200)
-    return () => clearInterval(t)
-  }, [asks.length])
-  const a = asks[i % asks.length]
-  return (
-    <div className="hero-ask hero-fade">
-      <p className="ha-stage" key={i} aria-hidden="true">
-        <span className="ha-who">{a.who}</span>
-        <span className="ha-q"><Hl text={a.q} /></span>
-      </p>
-      <ol className="ha-dots" aria-hidden="true">{asks.map((x, j) => <li key={x.who} className={j === i ? 'is-on' : ''} />)}</ol>
-      <ul className="sr-only">{asks.map((x) => <li key={x.who}>{x.who}: {x.q}</li>)}</ul>
-    </div>
-  )
-}
-
 function Hero({ ready }: { ready: boolean }) {
   const c = useContent()
   const h = c.hero
@@ -256,7 +236,6 @@ function Hero({ ready }: { ready: boolean }) {
         <h1 id="hero-title" className="hero-title hero-statement">
           {h.statement.map((l, i) => <span key={l} className="hs-line" style={{ transitionDelay: `${0.15 + i * 0.22}s` }}>{l}</span>)}
         </h1>
-        <HeroAsk asks={h.asks} />
         <p className="hero-lede hero-fade"><Rich text={h.lede} /></p>
         <div className="hero-ctas hero-fade">
           <MagneticButton href="#start">{h.primary}</MagneticButton>
@@ -458,6 +437,7 @@ function Services() {
         <div className="narrow center sec-head">
           <p className="eyebrow centered" data-reveal>{v.eyebrow}</p>
           <SplitReveal as="h2" id="services-title" className="display" text={v.title} />
+          {v.lede && <p className="body-lg" data-reveal><Rich text={v.lede} /></p>}
         </div>
         <ol className="sv-grid">
           {v.items.map((it, i) => (
@@ -469,6 +449,35 @@ function Services() {
             </li>
           ))}
         </ol>
+      </div>
+    </section>
+  )
+}
+
+/** The journey in three plain steps: what happens after a visitor books, before they have to ask. */
+function How() {
+  const h = useContent().how
+  return (
+    <section id="how" className="band how" aria-labelledby="how-title">
+      <div className="wrap">
+        <div className="narrow center sec-head">
+          <p className="eyebrow centered" data-reveal>{h.eyebrow}</p>
+          <SplitReveal as="h2" id="how-title" className="display" text={h.title} />
+        </div>
+        <ol className="how-steps">
+          {h.steps.map((st, i) => (
+            <li key={st.title} className="how-step" data-reveal style={{ transitionDelay: `${i * 110}ms` }}>
+              <span className="how-num" dir="ltr">{i + 1}</span>
+              <span className="how-k">{st.k}</span>
+              <h3>{st.title}</h3>
+              <p>{st.body}</p>
+            </li>
+          ))}
+        </ol>
+        <div className="how-cta" data-reveal>
+          <MagneticButton href="#start">{h.cta}</MagneticButton>
+          <p className="fine">{h.note}</p>
+        </div>
       </div>
     </section>
   )
@@ -1111,10 +1120,11 @@ export default function App() {
           <>
             <Hero ready={ready} />
             <Problem />
+            <Services />
+            <How />
+            <Work />
             <Approach />
             <Interlude />
-            <Work />
-            <Services />
             <QuickTools />
             <Founder />
             <More />

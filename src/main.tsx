@@ -12,6 +12,7 @@ import './styles/director.css'
 import './styles/clean.css'
 import './styles/clear.css'
 import './styles/hl.css'
+import './styles/easy.css'
 import { initHighlights } from './lib/highlights'
 import './lib/posthog'
 

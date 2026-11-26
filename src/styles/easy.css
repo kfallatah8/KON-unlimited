@@ -1,0 +1,72 @@
+/* KON Easy: clarity layer for first-time visitors (2026-11-26).
+   Loaded last. Same luxury look; clearer reading order, calmer hero, a visible journey. */
+
+/* ---------- hero: one message, readable over the gems ---------- */
+.hero-copy { position: relative; isolation: isolate; }
+.hero-copy::before {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  inset: -16% -32% -8%;
+  background: radial-gradient(ellipse 58% 56% at 50% 46%, rgba(1, 15, 17, 0.88), rgba(1, 15, 17, 0.6) 50%, rgba(1, 15, 17, 0.2) 72%, transparent 86%);
+}
+.hero-title { margin-bottom: clamp(1rem, 2vw, 1.4rem) !important; }
+.hero .hero-lede { max-width: 38rem; margin-inline: auto; color: #eef9f7; text-wrap: pretty; }
+.hero-ctas { margin-top: clamp(1.4rem, 2.6vw, 2rem); }
+.hero-micro { color: #cfeee9; }
+
+/* ---------- pacing: fewer empty screens between chapters ---------- */
+.interlude { height: 270vh !important; height: 270svh !important; }
+@media (max-width: 700px) {
+  .interlude { height: 230vh !important; height: 230svh !important; }
+  .band { padding-block: clamp(3.4rem, 12vw, 4.5rem); }
+}
+
+/* ---------- services: an easy list on phones, not a cramped grid ---------- */
+@media (max-width: 600px) {
+  .sv-grid { grid-template-columns: 1fr !important; }
+  .sv-card { display: grid; grid-template-columns: 2.4rem 1fr; column-gap: 0.9rem; align-items: start; padding: 1.15rem 1.1rem !important; }
+  .sv-card .sv-num { display: none; }
+  .sv-card .sv-icon { grid-row: span 2; width: 30px; height: 30px; margin: 0.15rem 0 0; }
+  .sv-card h3 { margin: 0 0 0.25rem; font-size: 1.12rem !important; }
+  .sv-card p { max-width: none !important; margin: 0 !important; }
+}
+.services-band .sec-head .body-lg { margin-top: -0.4rem; }
+
+/* ---------- how it works: three clear steps ---------- */
+.how-steps {
+  list-style: none; margin: 0 auto; padding: 0; max-width: 66rem; position: relative;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1rem, 2vw, 1.5rem);
+}
+.how-steps::before {
+  content: ''; position: absolute; top: 3.1rem; inset-inline: 17%; height: 1px; z-index: 0;
+  background: linear-gradient(90deg, transparent, rgba(95, 227, 210, 0.55), transparent);
+}
+.how-step {
+  position: relative; z-index: 1; text-align: center;
+  padding: 1.6rem 1.4rem 1.8rem; border-radius: 22px;
+  background: linear-gradient(180deg, rgba(5, 36, 39, 0.94), rgba(3, 24, 27, 0.96));
+  border: 1px solid rgba(168, 245, 234, 0.14);
+}
+.how-num {
+  display: grid; place-items: center; width: 3rem; height: 3rem; margin: 0 auto 0.9rem; border-radius: 50%;
+  font: 500 1.15rem/1 var(--mono, ui-monospace, monospace); color: #011214;
+  background: linear-gradient(135deg, #8ff0e2, #14ab9a); box-shadow: 0 0 24px rgba(95, 227, 210, 0.35);
+}
+.how-k {
+  display: inline-block; margin-bottom: 0.7rem; padding: 0.1rem 0.75rem; border-radius: 999px;
+  border: 1px solid rgba(95, 227, 210, 0.32); color: #9ff3e6; font-size: 0.82rem; line-height: 1.7;
+}
+.how-step h3 { margin: 0 0 0.5rem; color: #fff; font-size: var(--fs-h3, 1.3rem); line-height: 1.45; text-wrap: balance; }
+.how-step p { margin: 0; color: #d7efeb; font-size: var(--fs-md, 1.0625rem); line-height: 1.8; }
+.how-cta { margin-top: clamp(2rem, 4vw, 2.8rem); display: grid; justify-items: center; gap: 0.8rem; }
+.how-cta .fine { margin: 0; color: #bfe3dd; }
+@media (max-width: 760px) {
+  .how-steps { grid-template-columns: 1fr; gap: 0.8rem; }
+  .how-steps::before {
+    top: 2rem; bottom: 2rem; height: auto; width: 1px; inset-inline-end: auto; inset-inline-start: calc(1.1rem + 1.5rem);
+    background: linear-gradient(180deg, transparent, rgba(95, 227, 210, 0.5), transparent);
+  }
+  .how-step { text-align: start; display: grid; grid-template-columns: 3rem 1fr; column-gap: 1rem; padding: 1.2rem 1.1rem; }
+  .how-num { grid-column: 1; grid-row: 1 / span 3; margin: 0; }
+  .how-k, .how-step h3, .how-step p { grid-column: 2; }
+  .how-k { justify-self: start; margin-bottom: 0.4rem; }
+}
