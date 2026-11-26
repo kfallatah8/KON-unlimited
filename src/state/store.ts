@@ -1,5 +1,6 @@
 // Tiny external store shared by the DOM layer and the 3D layer.
 import { useSyncExternalStore } from 'react'
+import { capture } from '../posthog'
 import type { Lang, Persona } from '../content/site'
 
 export interface Preset {
@@ -58,6 +59,11 @@ export function setLang(lang: Lang) {
 let presetN = 0
 /** Opens the onboarding with a persona (and optional pains) already chosen, then scrolls to it. */
 export function startOnboarding(p: Omit<Preset, 'n'>) {
+  capture('onboarding_started', {
+    persona: p.persona,
+    support_requested: Boolean(p.support),
+    preselected_pain_count: p.pains?.length ?? 0,
+  })
   store.set({ preset: { ...p, n: ++presetN } })
 }
 

@@ -15,6 +15,7 @@ import { SplitReveal } from './SplitReveal'
 import { Rich } from './Rich'
 import { toolHelp } from '../content/toolHelp'
 import { Tool, toolMeta } from './Tools'
+import { capture } from '../posthog'
 
 type Tab = 'tools' | 'picks' | 'extras'
 interface Req { title: string; sector: string; tech?: string; kind: 'setup' | 'service'; result?: string }
@@ -95,10 +96,19 @@ function RequestSheet({ req, onClose }: { req: Req; onClose: () => void }) {
     setErr('')
     return true
   }
+  const share = (channel: 'clipboard' | 'whatsapp' | 'email') => {
+    capture('solution_request_shared', {
+      channel,
+      request_kind: req.kind,
+      sector: req.sector,
+      calculator_result_included: Boolean(req.result),
+    })
+  }
   const copy = async () => {
     if (!valid()) return
     try {
       await navigator.clipboard.writeText(brief())
+      share('clipboard')
       setCopied(true)
       setTimeout(() => setCopied(false), 1800)
     } catch {
@@ -135,10 +145,10 @@ function RequestSheet({ req, onClose }: { req: Req; onClose: () => void }) {
         {err && <p className="rq-err" role="alert">{err}</p>}
         <div className="rq-actions">
           {inbox.whatsapp && (
-            <a className="btn btn-primary" target="_blank" rel="noreferrer" href={`https://wa.me/${inbox.whatsapp}?text=${encodeURIComponent(brief())}`} onClick={(e) => { if (!valid()) e.preventDefault() }}><span>{r.sendWa}</span></a>
+            <a className="btn btn-primary" target="_blank" rel="noreferrer" href={`https://wa.me/${inbox.whatsapp}?text=${encodeURIComponent(brief())}`} onClick={(e) => { if (!valid()) e.preventDefault(); else share('whatsapp') }}><span>{r.sendWa}</span></a>
           )}
           {inbox.email && (
-            <a className="btn btn-ghost" href={`mailto:${inbox.email}?subject=${encodeURIComponent('KON · ' + req.title)}&body=${encodeURIComponent(brief())}`} onClick={(e) => { if (!valid()) e.preventDefault() }}><span>{r.sendMail}</span></a>
+            <a className="btn btn-ghost" href={`mailto:${inbox.email}?subject=${encodeURIComponent('KON · ' + req.title)}&body=${encodeURIComponent(brief())}`} onClick={(e) => { if (!valid()) e.preventDefault(); else share('email') }}><span>{r.sendMail}</span></a>
           )}
           <button type="button" className="link-btn" onClick={copy}>{copied ? r.copied : r.copy}</button>
         </div>

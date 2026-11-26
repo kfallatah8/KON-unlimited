@@ -15,6 +15,7 @@ import { GemMark } from './Icons'
 import { SplitReveal } from './SplitReveal'
 import { Rich } from './Rich'
 import type { Answers } from '../content/onboarding'
+import { capture } from '../posthog'
 
 type Field = 'name' | 'company' | 'job' | 'phone' | 'email' | 'city'
 interface Draft {
@@ -137,6 +138,7 @@ function TalentFlow({ preset }: { preset: { side: TalentSide; n: number; quiet?:
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(brief())
+      capture('talent_brief_shared', { channel: 'clipboard', audience: d.side })
       setCopied(true)
       setTimeout(() => setCopied(false), 1800)
     } catch {
@@ -243,7 +245,7 @@ function TalentFlow({ preset }: { preset: { side: TalentSide; n: number; quiet?:
           </dl>
           <NextSteps title={t.read.next} steps={t.read.steps} />
           <p className="talent-promise">{t.read.promise}</p>
-          <Actions brief={brief} subject={subject} copy={copy} copied={copied} />
+          <Actions brief={brief} subject={subject} copy={copy} copied={copied} audience={d.side} />
           <button type="button" className="ob-link" onClick={() => go(0)}>{t.edit}</button>
         </div>
       )}
@@ -266,7 +268,7 @@ function TalentFlow({ preset }: { preset: { side: TalentSide; n: number; quiet?:
             </div>
           )}
           <NextSteps title={t.brief.next} steps={t.brief.steps} />
-          <Actions brief={brief} subject={subject} copy={copy} copied={copied} />
+          <Actions brief={brief} subject={subject} copy={copy} copied={copied} audience={d.side} />
           <button type="button" className="ob-link" onClick={() => go(0)}>{t.edit}</button>
         </div>
       )}
@@ -286,17 +288,17 @@ function TalentFlow({ preset }: { preset: { side: TalentSide; n: number; quiet?:
   )
 }
 
-function Actions({ brief, subject, copy, copied }: { brief: () => string; subject: string; copy: () => void; copied: boolean }) {
+function Actions({ brief, subject, copy, copied, audience }: { brief: () => string; subject: string; copy: () => void; copied: boolean; audience: TalentSide }) {
   const t = useContent().talent
   const ob = useContent().onboarding
   return (
     <>
       <div className="ob-actions">
         {inbox.whatsapp && (
-          <a className="btn btn-primary" target="_blank" rel="noreferrer" href={`https://wa.me/${inbox.whatsapp}?text=${encodeURIComponent(brief())}`}><span>{t.sendWhatsapp}</span></a>
+          <a className="btn btn-primary" target="_blank" rel="noreferrer" href={`https://wa.me/${inbox.whatsapp}?text=${encodeURIComponent(brief())}`} onClick={() => capture('talent_brief_shared', { channel: 'whatsapp', audience })}><span>{t.sendWhatsapp}</span></a>
         )}
         {inbox.email && (
-          <a className={`btn ${inbox.whatsapp ? 'btn-ghost' : 'btn-primary'}`} href={`mailto:${inbox.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(brief())}`}><span>{t.sendEmail}</span></a>
+          <a className={`btn ${inbox.whatsapp ? 'btn-ghost' : 'btn-primary'}`} href={`mailto:${inbox.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(brief())}`} onClick={() => capture('talent_brief_shared', { channel: 'email', audience })}><span>{t.sendEmail}</span></a>
         )}
         <button type="button" className="btn btn-ghost" onClick={copy}><span>{copied ? t.copied : t.copy}</span></button>
       </div>
