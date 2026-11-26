@@ -1,7 +1,7 @@
 // KON Story (2026-11-26): the chapters that turn the homepage into one connected story, plus the
 // three company packages. Arabic first. Every chapter has a deep line (for the expert reader) and a
 // «بالمختصر» line (for anyone). Prices: SAR per month, from the Master Plan tiers (نواة / نمو / شريك).
-// CONFIRM (khalid): package contents, prices, the 50k hiring anchor, ميزان كُن name, payment by link.
+// CONFIRM (khalid): package contents, prices, the 50k in-house team estimate, ميزان كُن name, payment by link.
 import { useStore } from '../state/store'
 
 export const STORY_TERMS = [
@@ -9,6 +9,15 @@ export const STORY_TERMS = [
   { months: 6, mult: 1 },
   { months: 12, mult: 1 },
 ] as const
+
+// A starter in-house BD team, Riyadh, monthly (sources in the thread, 2026-11-26):
+// BD manager ~22,000 (Glassdoor Riyadh median), business analyst ~12,000 (Payscale/Talentup 10-14.4k),
+// sales & marketing coordinator ~8,000 (Payscale/Zerotax 5-12.5k) = 42,000 salaries,
+// + ~20% employer costs (GOSI ~12-14%, end-of-service accrual ~4%, medical insurance) ≈ 50,000.
+export const TEAM_COST = 50000
+/** Hours in an average month (365 / 12 × 24), so "per hour" and "per day" use the same clock for both sides. */
+export const MONTH_HOURS = 730
+export const MONTH_DAYS = 30.4
 
 export interface StoryTier {
   id: 'core' | 'growth' | 'partner'
@@ -123,7 +132,21 @@ const ar = {
     gets: 'وش يسوي القسم لك',
     pick: (name: string) => `اشترك في ${name}`,
     seats: 'نستقبل عدد محدود من الشركات في كل باقة، عشان الجودة ما تنزل',
-    anchor: 'للمقارنة: توظيف مدير تطوير أعمال ومحلل ومنسّق يكلّف عادة **أكثر من 50 ألف ريال شهريًا** مع التأمينات والبدلات، وقبل ما يبدأون',
+    perHour: (h: string, d: string) => `يعني ${h} ريال في الساعة · ${d} ريال في اليوم`,
+    vsTeam: (h: string) => `فريق موظّفين يكلّفك ${h} ريال في الساعة`,
+    save: (n: string, pct: number) => `توفّر ${n} ريال كل شهر (${pct}%)`,
+    team: {
+      k: 'لو وظّفت فريق تطوير مبدئي بنفسك',
+      total: 'حوالي 50,000 ريال شهريًا',
+      roles: [
+        { r: 'مدير تطوير أعمال', n: '22,000' },
+        { r: 'محلل أعمال وبيانات', n: '12,000' },
+        { r: 'منسّق مبيعات وتسويق', n: '8,000' },
+        { r: 'تأمينات ومكافأة نهاية خدمة وتأمين طبي', n: '8,000' },
+      ],
+      foot: 'وقبلها شهرين أو ثلاثة توظيف وتدريب، والراتب يمشي حتى لو ما تحرّك الرقم',
+      src: 'متوسطات رواتب الرياض من Glassdoor وPayscale (2025)، وتختلف حسب الخبرة',
+    },
     payNote: 'تدفع شهريًا أو كل 3 أشهر أو سنة مقدّمًا · الأسعار قبل ضريبة القيمة المضافة · نخرج بإشعار 60 يوم بعد الشهر الثالث',
     tiers: [
       {
@@ -292,7 +315,21 @@ const en: Story = {
     gets: 'What the department does',
     pick: (name: string) => `Subscribe to ${name}`,
     seats: 'We take a limited number of companies per package, so quality never drops',
-    anchor: 'For comparison: hiring a BD manager, an analyst and a coordinator usually costs **over SAR 50,000 a month** with benefits, before they even start',
+    perHour: (h: string, d: string) => `That is SAR ${h} an hour · SAR ${d} a day`,
+    vsTeam: (h: string) => `An in-house team costs SAR ${h} an hour`,
+    save: (n: string, pct: number) => `You save SAR ${n} every month (${pct}%)`,
+    team: {
+      k: 'If you hired a starter BD team yourself',
+      total: 'About SAR 50,000 a month',
+      roles: [
+        { r: 'Business development manager', n: '22,000' },
+        { r: 'Business & data analyst', n: '12,000' },
+        { r: 'Sales & marketing coordinator', n: '8,000' },
+        { r: 'GOSI, end-of-service and medical cover', n: '8,000' },
+      ],
+      foot: 'Plus two or three months to hire and train, and salaries run whether or not the numbers move',
+      src: 'Riyadh salary averages from Glassdoor and Payscale (2025); they vary with experience',
+    },
     payNote: 'Pay monthly, quarterly or a year upfront · prices before VAT · exit with 60 days’ notice after month 3',
     tiers: [
       {

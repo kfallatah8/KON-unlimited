@@ -2,7 +2,7 @@
 // Motion is CSS only (driven by [data-reveal] → .is-in), so it costs nothing on phones.
 import { useEffect, useRef, useState } from 'react'
 import posthog from 'posthog-js'
-import { useStory, STORY_TERMS, type StoryTier } from '../content/story'
+import { useStory, STORY_TERMS, TEAM_COST, MONTH_HOURS, MONTH_DAYS, type StoryTier } from '../content/story'
 import { BOOKING_URL, contact } from '../content/site'
 import { startOnboarding, useStore } from '../state/store'
 import { Rich } from './Rich'
@@ -213,6 +213,14 @@ export function StoryPlans() {
                       <p className="pl-price"><b dir="ltr">{fmt(monthly)}</b><span>{p.perMonth}</span></p>
                     )}
                     {t.plus && <p className="pl-plus">{t.plus}</p>}
+                    {!off && (
+                      <div className="pl-value">
+                        <p className="pl-hour">{p.perHour(String(Math.round(monthly / MONTH_HOURS)), fmt(Math.round(monthly / MONTH_DAYS / 10) * 10))}</p>
+                        <p className="pl-vs">{p.vsTeam(String(Math.round(TEAM_COST / MONTH_HOURS)))}</p>
+                        <span className="pl-bar" aria-hidden="true"><i style={{ width: `${Math.min(100, (monthly / TEAM_COST) * 100)}%` }} /></span>
+                        <p className="pl-save">{p.save(fmt(round100(TEAM_COST - monthly)), Math.round((1 - monthly / TEAM_COST) * 100))}</p>
+                      </div>
+                    )}
                     {!off && <p className="pl-total">{p.total(fmt(monthly * term.months), term.months)}</p>}
                     <p className="pl-hours">{t.hours}</p>
                     <p className="pl-k">{p.forWho}</p>
@@ -232,7 +240,12 @@ export function StoryPlans() {
             </div>
             {term.months === 12 && <p className="pl-perks glass">{p.perks12}</p>}
             <p className="pl-seats">{p.seats}</p>
-            <p className="pl-anchor"><Rich text={p.anchor} /></p>
+            <div className="pl-team glass">
+              <div className="pl-team-head"><p className="pl-k">{p.team.k}</p><b>{p.team.total}</b></div>
+              <ul>{p.team.roles.map((r) => <li key={r.r}><span>{r.r}</span><b dir="ltr">{r.n}</b></li>)}</ul>
+              <p className="pl-team-foot">{p.team.foot}</p>
+              <p className="fine">{p.team.src}</p>
+            </div>
             <p className="fine pl-note">{p.payNote}</p>
           </div>
         ) : (
