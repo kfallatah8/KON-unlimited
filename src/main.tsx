@@ -13,6 +13,7 @@ import './styles/clean.css'
 import './styles/clear.css'
 import './styles/hl.css'
 import { initHighlights } from './lib/highlights'
+import { posthogLog } from './posthog'
 
 // Every visit and every refresh opens at the very top: no restored scroll position and no jump
 // to a #section left over in the address bar (#en / #ar and #/pages are kept).
@@ -27,6 +28,11 @@ window.addEventListener('pageshow', (e) => { if ((e as PageTransitionEvent).pers
 setLang(store.get().lang)
 
 requestAnimationFrame(() => initHighlights())
+
+posthogLog.info('web application bootstrapped', {
+  lifecycle_stage: 'initial_render',
+  render_target: 'root',
+})
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

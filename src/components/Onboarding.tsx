@@ -9,6 +9,7 @@ import { useContent } from '../content/useContent'
 import { motion, useStore } from '../state/store'
 import { lenis } from './SmoothScroll'
 import { GemMark, Icon } from './Icons'
+import { capture } from '../posthog'
 
 interface Draft {
   persona: Persona | null
@@ -187,6 +188,13 @@ export function Onboarding() {
       const w = d.who
       if (!w.name.trim() || !(w.phone.trim() || w.email.trim())) return setError(ob.contact.needOne)
     }
+    if (step === n && d.persona) {
+      capture('onboarding_completed', {
+        persona: d.persona,
+        support_requested: d.support,
+        preferred_contact_method: d.who.prefer,
+      })
+    }
     setError('')
     setStep((s) => Math.min(s + 1, n + 1))
   }
@@ -254,6 +262,7 @@ export function Onboarding() {
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(brief())
+      capture('onboarding_brief_shared', { channel: 'clipboard', persona: d.persona })
       setCopied(true)
       setTimeout(() => setCopied(false), 1800)
     } catch {
@@ -381,8 +390,8 @@ export function Onboarding() {
           </details>
           <div className="ob-alt">
             <span>{ob.book.alt}</span>
-            {inbox.whatsapp && <a className="ob-link" target="_blank" rel="noreferrer" href={`https://wa.me/${inbox.whatsapp}?text=${encodeURIComponent(brief())}`}>{ob.summary.sendWhatsapp}</a>}
-            {inbox.email && <a className="ob-link" href={`mailto:${inbox.email}?subject=${encodeURIComponent('KON · ' + d.who.name)}&body=${encodeURIComponent(brief())}`}>{ob.summary.sendEmail}</a>}
+            {inbox.whatsapp && <a className="ob-link" target="_blank" rel="noreferrer" href={`https://wa.me/${inbox.whatsapp}?text=${encodeURIComponent(brief())}`} onClick={() => capture('onboarding_brief_shared', { channel: 'whatsapp', persona: d.persona })}>{ob.summary.sendWhatsapp}</a>}
+            {inbox.email && <a className="ob-link" href={`mailto:${inbox.email}?subject=${encodeURIComponent('KON · ' + d.who.name)}&body=${encodeURIComponent(brief())}`} onClick={() => capture('onboarding_brief_shared', { channel: 'email', persona: d.persona })}>{ob.summary.sendEmail}</a>}
             <button type="button" className="ob-link" onClick={copy}>{copied ? ob.summary.copied : ob.summary.copy}</button>
             <button type="button" className="ob-link" onClick={() => setStep(0)}>{ob.summary.edit}</button>
           </div>
