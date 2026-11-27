@@ -93,9 +93,9 @@
     radial-gradient(120% 90% at 50% 42%, #123634 0%, #0c2627 52%, #081a1b 84%, #040e0f 100%);
   box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.62), inset 0 0 12px rgba(0, 0, 0, 0.75), inset 0 0 0 1px rgba(214, 180, 110, 0.08);
   text-shadow: 0 0 0.6px rgba(233, 223, 196, 0.45);
-  font-family: 'Amiri', 'IBM Plex Sans Arabic', serif;
+  font-family: 'Alexandria', 'Almarai', serif;
 }
-:root[lang='en'] .cx-paper { font-family: 'Instrument Serif', Georgia, serif; }
+:root[lang='en'] .cx-paper { font-family: 'Alexandria', Georgia, serif; }
 .cx-paper p, .cx-paper li { text-wrap: pretty; }
 /* ruled frame in gold leaf, double, with small lozenges at the corners */
 .cx-paper::before { content: ''; position: absolute; inset: 4.5%; border: 1px solid rgba(214, 180, 110, 0.32); outline: 1px solid rgba(214, 180, 110, 0.16); outline-offset: 1.3cqw; pointer-events: none; }
@@ -107,8 +107,8 @@
 .cx-gold { animation: cxShine 6s ease-in-out infinite; filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.7)) drop-shadow(0 0 12px rgba(95, 227, 210, 0.16)); }
 @keyframes cxShine { 0%, 100% { background-position: 100% 0; } 50% { background-position: 0 0; } }
 
-.cx-head { font: 700 7cqw / 1.35 'Amiri', serif; margin: 0; }
-:root[lang='en'] .cx-head { font: 400 7.6cqw / 1.2 'Instrument Serif', serif; }
+.cx-head { font: 700 7cqw / 1.35 'Alexandria', serif; margin: 0; }
+:root[lang='en'] .cx-head { font: 400 7.6cqw / 1.2 'Alexandria', serif; }
 .cx-orn { width: 34cqw; height: auto; margin: 2.4cqw auto 3.6cqw; fill: none; stroke: #c9a254; stroke-width: 1; flex: none; opacity: 0.85; }
 .cx-orn circle, .cx-orn path:nth-child(2) { fill: #c9a254; }
 .cx-orn .is-in { fill: #5fe3d2; stroke: none; }
@@ -118,32 +118,32 @@
 .cx-p strong, .cx-p b { color: #e8cf8f; font-weight: 700; }
 .cx-p.has-drop::first-letter { color: #e8cf8f; font-size: 1.5em; }
 .cx-centre { text-align: center; }
-.cx-pn { position: absolute; bottom: 5.4%; left: 50%; transform: translateX(-50%); font: 700 3.8cqw 'Amiri', serif; color: #c9a254; text-decoration: overline; text-decoration-color: rgba(201, 162, 84, 0.6); text-shadow: none; }
-:root[lang='en'] .cx-pn { font: italic 400 4cqw 'Instrument Serif', serif; text-decoration: none; letter-spacing: 0.08em; }
+.cx-pn { position: absolute; bottom: 5.4%; left: 50%; transform: translateX(-50%); font: 700 3.8cqw 'Alexandria', serif; color: #c9a254; text-decoration: overline; text-decoration-color: rgba(201, 162, 84, 0.6); text-shadow: none; }
+:root[lang='en'] .cx-pn { font: italic 400 4cqw 'Alexandria', serif; text-decoration: none; letter-spacing: 0.08em; }
 .cx-pn:not(:empty)::before, .cx-pn:not(:empty)::after { content: '◆'; font-size: 0.5em; margin-inline: 0.9em; vertical-align: 0.35em; opacity: 0.55; text-decoration: none; display: inline-block; }
 
 /* the margin cipher: faint letters and dots, like notes left by someone who knew the key */
-.cx-marg { position: absolute; top: 50%; transform: translateY(-50%); display: grid; gap: 2.4cqw; pointer-events: none; font: 400 3.2cqw / 1 'Amiri', serif; color: rgba(201, 162, 84, 0.5); text-shadow: none; }
+.cx-marg { position: absolute; top: 50%; transform: translateY(-50%); display: grid; gap: 2.4cqw; pointer-events: none; font: 400 3.2cqw / 1 'Alexandria', serif; color: rgba(201, 162, 84, 0.5); text-shadow: none; }
 .cx-marg i { font-style: normal; display: grid; justify-items: center; gap: 0.5cqw; }
 .cx-marg b { font-weight: 400; font-size: 2.6cqw; letter-spacing: 0.15em; color: rgba(95, 227, 210, 0.55); line-height: 0.6; }
 .cx-stage[dir='ltr'] .is-front .cx-marg, .cx-stage[dir='rtl'] .is-backside .cx-marg { right: 6.6%; }
 .cx-stage[dir='rtl'] .is-front .cx-marg, .cx-stage[dir='ltr'] .is-backside .cx-marg { left: 6.6%; }
 
-.cx-small { font: 500 3cqw 'IBM Plex Sans Arabic', 'IBM Plex Sans', sans-serif; letter-spacing: 0.1em; color: #5fe3d2; margin-bottom: 8cqw; border: 1px solid rgba(95, 227, 210, 0.4); padding: 0.5cqw 2.6cqw; border-radius: 99px; text-shadow: none; }
-.cx-h-title { font: 700 13cqw / 1.25 'Amiri', serif; margin: 0; }
-:root[lang='en'] .cx-h-title { font: 400 12cqw / 1.05 'Instrument Serif', serif; }
+.cx-small { font: 500 3cqw 'Almarai', 'Manrope', sans-serif; letter-spacing: 0.1em; color: #5fe3d2; margin-bottom: 8cqw; border: 1px solid rgba(95, 227, 210, 0.4); padding: 0.5cqw 2.6cqw; border-radius: 99px; text-shadow: none; }
+.cx-h-title { font: 700 13cqw / 1.25 'Alexandria', serif; margin: 0; }
+:root[lang='en'] .cx-h-title { font: 400 12cqw / 1.05 'Alexandria', serif; }
 .cx-sub { font-size: 5cqw; color: #d9cba6; margin: 0; }
 .cx-by { font-size: 4cqw; color: #a99a76; margin-top: 10cqw; }
 .cx-epi-page .cx-by { margin-top: 5cqw; }
 .cx-quote { margin: 0; font-size: 7.2cqw; line-height: 1.75; color: #f3e6c6; }
 :root[lang='en'] .cx-quote { font-style: italic; line-height: 1.35; }
 .cx-num { font-size: 4cqw; letter-spacing: 0.12em; color: #5fe3d2; margin: 0 0 2cqw; text-shadow: none; }
-:root[lang='en'] .cx-num { text-transform: uppercase; letter-spacing: 0.26em; font-size: 3cqw; font-family: 'IBM Plex Sans', sans-serif; }
-.cx-ch { font: 700 11.5cqw / 1.35 'Amiri', serif; margin: 0; }
-:root[lang='en'] .cx-ch { font: 400 10.5cqw / 1.1 'Instrument Serif', serif; }
+:root[lang='en'] .cx-num { text-transform: uppercase; letter-spacing: 0.26em; font-size: 3cqw; font-family: 'Manrope', sans-serif; }
+.cx-ch { font: 700 11.5cqw / 1.35 'Alexandria', serif; margin: 0; }
+:root[lang='en'] .cx-ch { font: 400 10.5cqw / 1.1 'Alexandria', serif; }
 .cx-epi { font-size: 5.2cqw; line-height: 1.8; font-style: italic; color: #cfc09a; margin: 0 0 4cqw; }
 :root[lang='en'] .cx-epi { line-height: 1.4; }
-.cx-wip { margin-top: 5cqw; font: 500 3.1cqw 'IBM Plex Sans Arabic', 'IBM Plex Sans', sans-serif; color: #5fe3d2; border: 1px dashed rgba(95, 227, 210, 0.45); padding: 1cqw 3cqw; border-radius: 99px; text-shadow: none; }
+.cx-wip { margin-top: 5cqw; font: 500 3.1cqw 'Almarai', 'Manrope', sans-serif; color: #5fe3d2; border: 1px dashed rgba(95, 227, 210, 0.45); padding: 1cqw 3cqw; border-radius: 99px; text-shadow: none; }
 .cx-toc { list-style: none; padding: 0; margin: 0; width: 100%; display: grid; gap: 1.4cqw; }
 .cx-toc button {
   width: 100%; display: flex; align-items: baseline; gap: 2cqw; background: none; border: 0; padding: 1.3cqw 0; cursor: pointer;
@@ -156,13 +156,13 @@
 .cx-toc button:hover span, .cx-toc button:focus-visible span { color: #5fe3d2; }
 .cx-steps { margin: 0; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 3cqw; text-align: start; width: 100%; }
 .cx-steps li { counter-increment: s; position: relative; padding-inline-start: 9cqw; font-size: 5cqw; line-height: 1.75; }
-.cx-steps li::before { content: counter(s, cx-abjad); position: absolute; inset-inline-start: 0; top: 0.15em; width: 6.2cqw; height: 6.2cqw; color: #e8cf8f; display: grid; place-items: center; font: 700 3.6cqw / 1 'Amiri', serif; text-shadow: none; }
+.cx-steps li::before { content: counter(s, cx-abjad); position: absolute; inset-inline-start: 0; top: 0.15em; width: 6.2cqw; height: 6.2cqw; color: #e8cf8f; display: grid; place-items: center; font: 700 3.6cqw / 1 'Alexandria', serif; text-shadow: none; }
 .cx-steps li::after { content: ''; position: absolute; inset-inline-start: 0.9cqw; top: calc(0.15em + 0.9cqw); width: 4.4cqw; height: 4.4cqw; transform: rotate(45deg); border: 1px solid rgba(201, 162, 84, 0.75); pointer-events: none; }
-:root[lang='en'] .cx-steps li::before { content: counter(s, lower-roman); font: italic 400 3.4cqw / 1 'Instrument Serif', serif; }
+:root[lang='en'] .cx-steps li::before { content: counter(s, lower-roman); font: italic 400 3.4cqw / 1 'Alexandria', serif; }
 .cx-end { margin-top: 6cqw; font-size: 5cqw; font-weight: 700; color: #5fe3d2; line-height: 1.6; text-shadow: 0 0 14px rgba(95, 227, 210, 0.25); }
 .cx-print {
   margin-top: 5cqw; display: inline-block; padding: 2cqw 5cqw; border-radius: 99px; text-decoration: none; text-shadow: none;
-  background: linear-gradient(135deg, #d9b56a, #9b7633); color: #0a1c1d; font: 600 3.8cqw 'IBM Plex Sans Arabic', 'IBM Plex Sans', sans-serif;
+  background: linear-gradient(135deg, #d9b56a, #9b7633); color: #0a1c1d; font: 600 3.8cqw 'Almarai', 'Manrope', sans-serif;
 }
 
 /* chapter sigil: the coal stone turning to gem, small */
@@ -176,7 +176,7 @@
   background: radial-gradient(circle at 36% 30%, #3fb8a8, #0d5e56 46%, #06302c 78%, #041f1d);
   box-shadow: inset 0 0 0 1.6cqw rgba(0, 0, 0, 0.18), inset 0 0 0 2cqw rgba(140, 255, 238, 0.12), 0 1.2cqw 2.4cqw rgba(0, 0, 0, 0.55), 0 0 0 0.6cqw rgba(13, 94, 86, 0.6);
 }
-.cx-wax b { font: 700 5.6cqw / 1 'Amiri', serif; color: rgba(206, 255, 247, 0.62); text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5), 0 1px 0 rgba(160, 255, 240, 0.2); }
+.cx-wax b { font: 700 5.6cqw / 1 'Alexandria', serif; color: rgba(206, 255, 247, 0.62); text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5), 0 1px 0 rgba(160, 255, 240, 0.2); }
 
 /* ---------- leather cover: near-black teal, blind-tooled lattice, gold tooling ---------- */
 .cx-leather {
@@ -203,17 +203,17 @@
 .cx-corner.br { bottom: 2cqw; right: 2cqw; transform: scale(-1, -1); }
 .cx-corner .cap { fill: url(#cxBrass); stroke: none; }
 .cx-cover-in { position: relative; z-index: 1; display: grid; justify-items: center; gap: 2cqw; padding: 0 12cqw; text-align: center; }
-.cx-name { font: 700 14cqw / 1.25 'Amiri', serif; margin: 0; }
-:root[lang='en'] .cx-name { font: 400 13cqw / 1.05 'Instrument Serif', serif; }
+.cx-name { font: 700 14cqw / 1.25 'Alexandria', serif; margin: 0; }
+:root[lang='en'] .cx-name { font: 400 13cqw / 1.05 'Alexandria', serif; }
 .cx-leather .cx-orn { stroke: #d6b46e; margin: 1cqw auto 2cqw; }
 .cx-leather .cx-orn circle, .cx-leather .cx-orn path:nth-child(2) { fill: #d6b46e; }
-.cx-cover-sub { font: 400 5cqw 'Amiri', serif; color: #d9c08a; margin: 0; }
-:root[lang='en'] .cx-cover-sub { font: italic 400 5.2cqw 'Instrument Serif', serif; }
-.cx-cover-by { font: 500 3.1cqw 'IBM Plex Sans Arabic', 'IBM Plex Sans', sans-serif; letter-spacing: 0.14em; color: rgba(217, 192, 138, 0.7); margin-top: 6cqw; }
-.cx-back-line { margin: 0; max-width: 56cqw; font: 400 5cqw / 1.75 'Amiri', serif; color: #d9c08a; }
-:root[lang='en'] .cx-back-line { font: italic 400 5.4cqw / 1.35 'Instrument Serif', serif; }
+.cx-cover-sub { font: 400 5cqw 'Alexandria', serif; color: #d9c08a; margin: 0; }
+:root[lang='en'] .cx-cover-sub { font: italic 400 5.2cqw 'Alexandria', serif; }
+.cx-cover-by { font: 500 3.1cqw 'Almarai', 'Manrope', sans-serif; letter-spacing: 0.14em; color: rgba(217, 192, 138, 0.7); margin-top: 6cqw; }
+.cx-back-line { margin: 0; max-width: 56cqw; font: 400 5cqw / 1.75 'Alexandria', serif; color: #d9c08a; }
+:root[lang='en'] .cx-back-line { font: italic 400 5.4cqw / 1.35 'Alexandria', serif; }
 /* the abjad, tooled in two bands like a key printed on the binding */
-.cx-band { position: absolute; inset-inline: 0; margin: 0; text-align: center; font: 400 3.4cqw / 1 'Amiri', serif; letter-spacing: 0.32em; color: rgba(214, 180, 110, 0.55); z-index: 1; }
+.cx-band { position: absolute; inset-inline: 0; margin: 0; text-align: center; font: 400 3.4cqw / 1 'Alexandria', serif; letter-spacing: 0.32em; color: rgba(214, 180, 110, 0.55); z-index: 1; }
 .cx-band.is-top { top: 10.4cqw; }
 .cx-band.is-bottom { bottom: 10.4cqw; }
 /* a slow band of light passing over the leather, like a gem catching a lamp */
@@ -232,7 +232,7 @@
 .cx-emblem.is-small { width: 28cqw; height: 28cqw; margin: 0 0 3cqw; }
 .cx-em-ring { fill: none; stroke: url(#cxFoil); stroke-width: 0.6; }
 .cx-em-ring.is-dots { stroke-dasharray: 0.5 2.1; stroke-width: 0.8; }
-.cx-em-text { font: 700 6.4px 'Amiri', serif; fill: #d6b46e; opacity: 0.85; }
+.cx-em-text { font: 700 6.4px 'Alexandria', serif; fill: #d6b46e; opacity: 0.85; }
 .cx-em-turn { animation: cxTurn 90s linear infinite; transform-origin: 0 0; }
 @keyframes cxTurn { to { transform: rotate(-360deg); } }
 .cx-em-star { fill: rgba(0, 0, 0, 0.22); stroke: url(#cxFoil); stroke-width: 1.2; stroke-linejoin: round; }
@@ -254,8 +254,8 @@
     repeating-radial-gradient(ellipse at 40% 50%, #0a2c29 0 6px, #071f1e 6px 9px, #0f3d38 9px 13px, #071f1e 13px 16px);
 }
 .cx-exlibris { margin: 0; padding: 3.5cqw; background: #e9dcb8; border: 1px solid #8a6526; box-shadow: 0 0 0 3px #e9dcb8, 0 0 0 4px #8a6526, 0 8px 20px rgba(0, 0, 0, 0.5); max-width: 62cqw; }
-.cx-exlibris span { display: block; font: 400 5.4cqw / 1.6 'Amiri', serif; color: #2b1d0e; text-align: center; padding: 4cqw 3cqw; border: 1px dashed rgba(138, 101, 38, 0.6); }
-:root[lang='en'] .cx-exlibris span { font: italic 400 5.6cqw / 1.3 'Instrument Serif', serif; }
+.cx-exlibris span { display: block; font: 400 5.4cqw / 1.6 'Alexandria', serif; color: #2b1d0e; text-align: center; padding: 4cqw 3cqw; border: 1px dashed rgba(138, 101, 38, 0.6); }
+:root[lang='en'] .cx-exlibris span { font: italic 400 5.6cqw / 1.3 'Alexandria', serif; }
 
 /* ---------- the world around the book: teal glow, drifting mist, a great cipher ring turning slowly ---------- */
 .cx-aura { position: absolute; left: 50%; top: calc(2.6rem + var(--ph) / 2); width: calc(var(--pw) * 2.9); aspect-ratio: 1; transform: translate(-50%, -50%); pointer-events: none;
@@ -264,7 +264,7 @@
 .cx-aura-ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; animation: cxTurn 160s linear infinite; }
 .cx-aura-ring circle { fill: none; stroke: rgba(214, 180, 110, 0.14); stroke-width: 0.15; }
 .cx-aura-ring circle.is-dots { stroke-dasharray: 0.3 1.4; stroke: rgba(95, 227, 210, 0.2); stroke-width: 0.3; }
-.cx-aura-ring text { font: 400 2.4px 'Amiri', serif; fill: rgba(214, 180, 110, 0.2); }
+.cx-aura-ring text { font: 400 2.4px 'Alexandria', serif; fill: rgba(214, 180, 110, 0.2); }
 .cx-mist { position: absolute; width: 60%; height: 34%; border-radius: 50%; background: radial-gradient(closest-side, rgba(150, 230, 220, 0.09), transparent); }
 .cx-mist.is-a { left: 2%; top: 58%; animation: cxMist 26s ease-in-out infinite alternate; }
 .cx-mist.is-b { right: 0; top: 14%; animation: cxMist 32s ease-in-out -9s infinite alternate-reverse; }

@@ -240,7 +240,7 @@ function Gems({ count: streamCount, word, reduced }: { count: number; word: numb
 
   const tmp = useMemo(() => ({
     m: new THREE.Matrix4(), p: new THREE.Vector3(), q: new THREE.Quaternion(), q2: new THREE.Quaternion(), qa: new THREE.Quaternion(),
-    face: new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.PI / 2 - 0.42, 0, 0)), s: new THREE.Vector3(), t: 0, sy: 0, fin: 0, hero: 0, post: 0, intro: 0, wt: 0, st: 0, cl: 0, gust: 0, pr: 0, cr: 0, burst: 0, shardsAt: 0, cz: CAM_Z,
+    face: new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.PI / 2 - 0.42, 0, 0)), s: new THREE.Vector3(), t: 0, sy: 0, fin: 0, hero: 0, post: 0, op: 0, opp: 0, intro: 0, wt: 0, st: 0, cl: 0, gust: 0, pr: 0, cr: 0, burst: 0, shardsAt: 0, cz: CAM_Z,
   }), [])
 
   useFrame((state, dtRaw) => {
@@ -266,7 +266,7 @@ function Gems({ count: streamCount, word, reduced }: { count: number; word: numb
     const slow = bAge >= 0 ? 0.22 + 0.78 * smooth((bAge - 0.4) / 3.6) : 1
     const storm = reduced ? 0 : tmp.st
     const calm = tmp.cl
-    if (!reduced) tmp.wt += dt * (1 + storm * storm * 0.9) * slow
+    if (!reduced) tmp.wt += dt * (0.7 + storm * storm * 0.9) * slow
     const wt = tmp.wt
     tmp.gust = Math.sin(wt * 0.9) * Math.sin(wt * 0.37 + 1.3)
     gemUniforms.uStorm.value = storm
@@ -298,9 +298,16 @@ function Gems({ count: streamCount, word, reduced }: { count: number; word: numb
     tmp.fin += (motion.finale - tmp.fin) * (1 - Math.exp(-dt * 3.2))
     tmp.hero += (motion.heroOut - tmp.hero) * k
     tmp.post += (motion.post - tmp.post) * k
-    const post = easeInOut(tmp.post)
+    // The opening (KON Masterpiece): the stones gather into KON on the first screen, then the word
+    // sinks back into the depth and dissolves into the slow drift as the visitor scrolls on.
+    tmp.op += (motion.open - tmp.op) * k
+    tmp.opp += (motion.openPost - tmp.opp) * k
+    const openRamp = reduced ? 1 : smooth((introElapsed() / 1000 - 0.3) / 2.8)
+    const openF = tmp.op * openRamp
+    const post = easeInOut(Math.max(tmp.post, tmp.opp))
     const hero = 1 - easeInOut(tmp.hero)
-    const fin = tmp.fin
+    const fin = Math.max(tmp.fin, openF)
+    const atTop = openF > tmp.fin ? 1 : 0
     const mid = Math.min(tmp.hero, 1) * (1 - fin)
     rimUniform.value = 0.75 - mid * 0.05 + fin * 0.3 - post * 0.35 + motion.glow * 0.3
 
@@ -310,7 +317,10 @@ function Gems({ count: streamCount, word, reduced }: { count: number; word: numb
       light.current.position.set(px, py, 3.2)
       light.current.intensity = 60 + fin * 40
     }
-    const { width: konW, centerY } = konLayout(vw, vh, narrow, size.height < 520)
+    const kl = konLayout(vw, vh, narrow, size.height < 520)
+    const konW = kl.width * (atTop ? (narrow ? 0.86 : 0.58) : 1)
+    // On the first screen the word sits in the upper half, above the opening line.
+    const centerY = atTop ? vh * (narrow ? 0.25 : 0.25) : kl.centerY
     // Each stone's girdle just meets its neighbours', so the letters read as solid, crisp strokes.
     const konScale = konW * wordGap.current * 0.7
     // A light sweep that travels across the finished word.
@@ -335,7 +345,7 @@ function Gems({ count: streamCount, word, reduced }: { count: number; word: numb
       const P = g.layer === 1 ? 1 : (CAM_Z - g.depth) / CAM_Z
       const par = g.layer === 0 ? 0.42 : g.layer === 2 ? 1.7 : 1
       const span = vh * 1.5 * P
-      let y = ((g.baseY * span + tmp.sy * vh * 0.32 * g.speed * par * P + wt * 0.055 * g.speed * P) % span) - span / 2
+      let y = ((g.baseY * span + tmp.sy * vh * 0.32 * g.speed * par * P + wt * 0.034 * g.speed * P) % span) - span / 2
       if (y < -span / 2) y += span
       // Mid-page the stream hugs the edges and sinks back so the copy has a calm centre.
       const laneW = (narrow ? vw * 0.6 : vw * 0.5) * (1 + mid * 0.18)
@@ -412,7 +422,7 @@ function Gems({ count: streamCount, word, reduced }: { count: number; word: numb
       const f = easeInOut(fin * 1.9 - g.seed * 0.6)
       if (f > 0) {
         x += (g.target[0] * konW - x) * f
-        y += (g.target[1] * konW + centerY + post * vh * 0.32 - y) * f
+        y += (g.target[1] * konW + centerY + post * vh * (atTop ? 0.1 : 0.32) - y) * f
         z += (Math.sin(t * 0.8 + g.seed * 12) * 0.08 - post * 5 - z) * f
       }
       // Glide between states. A stone that wraps around the stream edge snaps instead of crossing the screen.
@@ -449,7 +459,7 @@ function Gems({ count: streamCount, word, reduced }: { count: number; word: numb
 
       // Rotation: tumbling in the stream, turning its table to the viewer in the word.
       if (bAge >= 0 && bAge < 3) g.angle += dt * 9 * Math.exp(-bAge * 1.6) * Math.sign(g.spin)
-      g.angle += dt * (g.spin * (1 + storm * 0.8) + Math.min(Math.abs(motion.vel) * 0.008, 0.8) * Math.sign(g.spin)) * (reduced ? 0 : 1) * (g.anchor ? 1 - hero * 0.6 : 1)
+      g.angle += dt * (g.spin * (0.55 + storm * 0.8) + Math.min(Math.abs(motion.vel) * 0.008, 0.8) * Math.sign(g.spin)) * (reduced ? 0 : 1) * (g.anchor ? 1 - hero * 0.6 : 1)
       tmp.qa.setFromAxisAngle(g.axis, g.angle)
       if (f > 0) {
         tmp.q.copy(tmp.face).multiply(g.tilt).multiply(tmp.q2.setFromAxisAngle(THREE.Object3D.DEFAULT_UP, t * 0.22 + g.seed * 6))
@@ -623,7 +633,7 @@ function Pace({ fps }: { fps: number }) {
 
 export default function GemField({ tier, reduced }: { tier: Tier; reduced: boolean }) {
   const narrowView = typeof window !== 'undefined' && window.innerWidth < 700
-  const count = narrowView ? (tier === 'high' ? 54 : 42) : tier === 'high' ? 82 : tier === 'mid' ? 64 : 48
+  const count = narrowView ? (tier === 'high' ? 68 : 52) : tier === 'high' ? 112 : tier === 'mid' ? 86 : 60
   const [lite, setLite] = useState(false)
   // Bloom only on desktop GPUs outside Safari; elsewhere the fresnel rim carries the glow.
   // Pixel density is capped: past 1.5 the gems look the same and cost twice the fill.

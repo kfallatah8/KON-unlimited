@@ -74,6 +74,9 @@ export const motion = {
   finale: 0,
   /** 0..1, how far past the finale we've scrolled (into the onboarding). */
   post: 0,
+  /** 0..1, the opening KON on the first screen (1 = gathered), and how far it has sunk back. */
+  open: 1,
+  openPost: 0,
   /** 0..1, how far we've left the hero. */
   heroOut: 0,
   /** Signed scroll velocity, px per frame, smoothed. */

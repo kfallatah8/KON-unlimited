@@ -16,7 +16,7 @@ const urgency: QDef = {
 }
 
 const sectors: Opt[] = [
-  o('fnb', 'مطاعم ومقاهٍ وأغذية', 'Food, cafés & restaurants'),
+  o('fnb', 'مطاعم ومقاه وأغذية', 'Food, cafés & restaurants'),
   o('retail', 'تجزئة ومتاجر', 'Retail & stores'),
   o('realestate', 'عقار', 'Real estate'),
   o('hospitality', 'ضيافة وترفيه', 'Hospitality & entertainment'),
@@ -34,8 +34,8 @@ const defs: Record<Persona, StepDef[]> = {
         { id: 'stage', kind: 'single', label: { ar: 'مرحلة مشروعك', en: 'Your stage' }, options: [
           o('idea', 'فكرة فقط', 'Just an idea'),
           o('mvp', 'أعمل على نموذج أولي', 'Building a first version'),
-          o('launched', 'أطلقت، ولديّ أوائل العملاء', 'Launched, with early customers'),
-          o('scaling', 'أنمو، وأحتاج نظامًا', 'Growing, and I need a system'),
+          o('launched', 'أطلقت، ولدي أوائل العملاء', 'Launched, with early customers'),
+          o('scaling', 'أنمو، وأحتاج نظاما', 'Growing, and I need a system'),
         ] },
         { id: 'sector', kind: 'single', label: { ar: 'المجال', en: 'Sector' }, options: sectors },
       ],
@@ -54,20 +54,20 @@ const defs: Record<Persona, StepDef[]> = {
           o('team', 'بناء الفريق وأول موظف', 'Building the team, first hire'),
           o('focus', 'الوقت والتركيز', 'Time and focus'),
         ] },
-        { id: 'tried', kind: 'text', optional: true, label: { ar: 'ماذا جرّبت حتى الآن؟', en: 'What have you tried so far?' }, placeholder: { ar: 'باختصار، بكلماتك', en: 'Briefly, in your own words' } },
+        { id: 'tried', kind: 'text', optional: true, label: { ar: 'ماذا جربت حتى الآن؟', en: 'What have you tried so far?' }, placeholder: { ar: 'باختصار، بكلماتك', en: 'Briefly, in your own words' } },
       ],
     },
     {
       title: { ar: 'إلى أين تريد أن تصل؟', en: 'Where do you want to get to?' },
       questions: [
-        { id: 'goals', kind: 'multi', label: { ar: 'أهدافك في 90 يومًا', en: 'Your 90-day goals' }, options: [
+        { id: 'goals', kind: 'multi', label: { ar: 'أهدافك في 90 يوما', en: 'Your 90-day goals' }, options: [
           o('launch', 'إطلاق المنتج', 'Launch the product'),
           o('first10', 'أول 10 عملاء', 'First 10 customers'),
           o('mrr', 'إيراد شهري ثابت', 'Steady monthly revenue'),
           o('invest', 'جاهزية للاستثمار', 'Investor-ready'),
           o('plan', 'خطة واضحة أثق بها', 'A clear plan I trust'),
         ] },
-        { id: 'dream', kind: 'text', optional: true, label: { ar: 'بعد سنة من الآن، ما الذي يجعلك تقول: نجحت؟', en: 'A year from now, what would make you say “I made it”?' }, placeholder: { ar: 'اكتب ما تتمنّاه فعلًا', en: 'Write what you really want' } },
+        { id: 'dream', kind: 'text', optional: true, label: { ar: 'بعد سنة من الآن، ما الذي يجعلك تقول: نجحت؟', en: 'A year from now, what would make you say “I made it”?' }, placeholder: { ar: 'اكتب ما تتمناه فعلا', en: 'Write what you really want' } },
       ],
     },
     {
@@ -89,14 +89,14 @@ const defs: Record<Persona, StepDef[]> = {
 
   business: [
     {
-      title: { ar: 'عرّفنا بشركتك', en: 'Tell us about your company' },
+      title: { ar: 'عرفنا بشركتك', en: 'Tell us about your company' },
       questions: [
         { id: 'sector', kind: 'single', label: { ar: 'القطاع', en: 'Sector' }, options: sectors },
         { id: 'size', kind: 'single', label: { ar: 'حجم الفريق', en: 'Team size' }, options: [
           o('s1', '1–10', '1–10'), o('s2', '11–50', '11–50'), o('s3', '51–200', '51–200'), o('s4', '+200', '200+'),
         ] },
         { id: 'revenue', kind: 'single', optional: true, label: { ar: 'الإيراد الشهري التقريبي (ر.س)', en: 'Approx. monthly revenue (SAR)' }, options: [
-          o('r1', 'أقل من 100 ألف', 'Under 100K'), o('r2', '100 ألف – 500 ألف', '100K–500K'), o('r3', '500 ألف – 2 مليون', '500K–2M'), o('r4', 'أكثر من 2 مليون', 'Over 2M'), o('r0', 'أفضّل ألا أذكر', 'Prefer not to say'),
+          o('r1', 'أقل من 100 ألف', 'Under 100K'), o('r2', '100 ألف – 500 ألف', '100K–500K'), o('r3', '500 ألف – 2 مليون', '500K–2M'), o('r4', 'أكثر من 2 مليون', 'Over 2M'), o('r0', 'أفضل ألا أذكر', 'Prefer not to say'),
         ] },
       ],
     },
@@ -104,7 +104,7 @@ const defs: Record<Persona, StepDef[]> = {
       title: { ar: 'كيف تصف وضعك بصدق؟', en: 'How would you honestly describe things?' },
       questions: [
         { id: 'stage', kind: 'single', label: { ar: 'الوضع الحالي', en: 'Current situation' }, options: [
-          o('struggling', 'نتعثّر ونحتاج تدخّلًا', 'Struggling, we need intervention'),
+          o('struggling', 'نتعثر ونحتاج تدخلا', 'Struggling, we need intervention'),
           o('stable', 'مستقرون، لكن نستطيع أكثر', 'Stable, but capable of more'),
           o('growing', 'ننمو بسرعة، والتشغيل لا يلحق', 'Growing fast, operations can’t keep up'),
         ] },
@@ -121,29 +121,29 @@ const defs: Record<Persona, StepDef[]> = {
           o('profit', 'الأرباح لا تتبع المبيعات', 'Profit doesn’t follow sales'),
           o('team', 'الموظفون والأداء', 'Staff and performance'),
           o('ops', 'الخطة التشغيلية', 'The operating plan'),
-          o('owner', 'كل شيء يعتمد عليّ', 'Everything depends on me'),
+          o('owner', 'كل شيء يعتمد علي', 'Everything depends on me'),
           o('costs', 'التكاليف', 'Costs'),
           o('sales', 'المبيعات والتسويق', 'Sales and marketing'),
           o('cx', 'تجربة العملاء', 'Customer experience'),
-          o('expand', 'التوسّع وفتح فروع', 'Expansion and new branches'),
+          o('expand', 'التوسع وفتح فروع', 'Expansion and new branches'),
           o('systems', 'غياب الأنظمة والإجراءات', 'No systems or SOPs'),
-          o('digital', 'التحوّل الرقمي', 'Going digital'),
+          o('digital', 'التحول الرقمي', 'Going digital'),
         ] },
-        { id: 'cost', kind: 'text', optional: true, label: { ar: 'ماذا يكلّفك هذا اليوم؟', en: 'What is this costing you today?' }, placeholder: { ar: 'مالًا، أو وقتًا، أو راحة بال', en: 'Money, time, or peace of mind' } },
+        { id: 'cost', kind: 'text', optional: true, label: { ar: 'ماذا يكلفك هذا اليوم؟', en: 'What is this costing you today?' }, placeholder: { ar: 'مالا، أو وقتا، أو راحة بال', en: 'Money, time, or peace of mind' } },
       ],
     },
     {
-      title: { ar: 'ماذا تريد أن يتغيّر؟', en: 'What do you want to change?' },
+      title: { ar: 'ماذا تريد أن يتغير؟', en: 'What do you want to change?' },
       questions: [
         { id: 'goals', kind: 'multi', label: { ar: 'أهدافك', en: 'Your goals' }, options: [
           o('margin', 'رفع الأرباح', 'Higher profit'),
           o('cut', 'خفض التكاليف', 'Lower costs'),
-          o('free', 'تشغيل لا يعتمد عليّ', 'A business that runs without me'),
+          o('free', 'تشغيل لا يعتمد علي', 'A business that runs without me'),
           o('strong', 'فريق أقوى', 'A stronger team'),
-          o('scale', 'التوسّع', 'Expansion'),
+          o('scale', 'التوسع', 'Expansion'),
           o('cxup', 'تجربة عملاء أفضل', 'Better customer experience'),
         ] },
-        { id: 'tried', kind: 'text', optional: true, label: { ar: 'ما الذي جرّبتموه ولم ينجح؟', en: 'What have you tried that didn’t work?' }, placeholder: { ar: 'سيساعدنا ألا نكرّره', en: 'So we don’t repeat it' } },
+        { id: 'tried', kind: 'text', optional: true, label: { ar: 'ما الذي جربتموه ولم ينجح؟', en: 'What have you tried that didn’t work?' }, placeholder: { ar: 'سيساعدنا ألا نكرره', en: 'So we don’t repeat it' } },
       ],
     },
     {
@@ -153,7 +153,7 @@ const defs: Record<Persona, StepDef[]> = {
         { id: 'budget', kind: 'single', label: { ar: 'الاستعداد للاستثمار في الحل', en: 'Readiness to invest in a fix' }, options: [
           o('none', 'لا توجد ميزانية الآن', 'No budget right now'),
           o('limited', 'ميزانية محدودة', 'Limited budget'),
-          o('ready', 'جاهزون إذا كان العائد واضحًا', 'Ready if the return is clear'),
+          o('ready', 'جاهزون إذا كان العائد واضحا', 'Ready if the return is clear'),
         ] },
       ],
     },
@@ -161,7 +161,7 @@ const defs: Record<Persona, StepDef[]> = {
 
   investor: [
     {
-      title: { ar: 'عرّفنا بك', en: 'Tell us about you' },
+      title: { ar: 'عرفنا بك', en: 'Tell us about you' },
       questions: [
         { id: 'type', kind: 'single', label: { ar: 'نوع المستثمر', en: 'Investor type' }, options: [
           o('individual', 'مستثمر فرد', 'Individual'),
@@ -169,7 +169,7 @@ const defs: Record<Persona, StepDef[]> = {
           o('fund', 'صندوق أو شركة استثمار', 'Fund or investment company'),
         ] },
         { id: 'ticket', kind: 'single', optional: true, label: { ar: 'حجم الاستثمار المعتاد (ر.س)', en: 'Typical ticket size (SAR)' }, options: [
-          o('t1', 'أقل من مليون', 'Under 1M'), o('t2', '1 – 5 ملايين', '1–5M'), o('t3', '5 – 20 مليونًا', '5–20M'), o('t4', 'أكثر من 20 مليونًا', 'Over 20M'), o('t0', 'أفضّل ألا أذكر', 'Prefer not to say'),
+          o('t1', 'أقل من مليون', 'Under 1M'), o('t2', '1 – 5 ملايين', '1–5M'), o('t3', '5 – 20 مليونا', '5–20M'), o('t4', 'أكثر من 20 مليونا', 'Over 20M'), o('t0', 'أفضل ألا أذكر', 'Prefer not to say'),
         ] },
       ],
     },
@@ -182,7 +182,7 @@ const defs: Record<Persona, StepDef[]> = {
           o('evaluate', 'تقييم فرصة محددة', 'Evaluating a specific deal'),
           o('operate', 'تشغيل أصل أملكه', 'Operating an asset I own'),
         ] },
-        { id: 'sectors', kind: 'multi', optional: true, label: { ar: 'القطاعات التي تهمّك', en: 'Sectors of interest' }, options: sectors },
+        { id: 'sectors', kind: 'multi', optional: true, label: { ar: 'القطاعات التي تهمك', en: 'Sectors of interest' }, options: sectors },
       ],
     },
     {
@@ -211,7 +211,7 @@ const defs: Record<Persona, StepDef[]> = {
           o('diversify', 'تنويع', 'Diversification'),
           o('handsoff', 'استثمار لا يحتاج وقتي', 'Hands-off investing'),
         ] },
-        { id: 'deal', kind: 'text', optional: true, label: { ar: 'هل لديك فرصة محددة تفكّر فيها الآن؟', en: 'Is there a specific deal on your mind right now?' }, placeholder: { ar: 'وصف قصير يكفي', en: 'A short description is enough' } },
+        { id: 'deal', kind: 'text', optional: true, label: { ar: 'هل لديك فرصة محددة تفكر فيها الآن؟', en: 'Is there a specific deal on your mind right now?' }, placeholder: { ar: 'وصف قصير يكفي', en: 'A short description is enough' } },
         urgency,
       ],
     },

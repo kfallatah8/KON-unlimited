@@ -107,6 +107,7 @@ const fragment = /* glsl */ `
 
     // ---------- the cut gem ---------- (skipped while the stone is still all rock)
     vec3 gem = vec3(0.0);
+    float gA = 1.0;
     if (rock < 0.7) {
     float cosT = clamp(dot(-V, N), 0.0, 1.0);
     float F = 0.07 + 0.93 * pow(1.0 - cosT, 5.0);
@@ -137,8 +138,10 @@ const fragment = /* glsl */ `
     // Daydream sheen: a slow drift of colour across facets at grazing angles.
     vec3 sheen = film(dot(N, vec3(0.3, 0.8, 0.5)) * 0.8 + uTime * 0.03 + vSeed) * mix(vec3(0.2, 0.9, 0.8), vec3(1.0, 0.9, 0.7), 0.3);
     float rimF = pow(1.0 - cosT, 2.4);
-    vec3 glow = hue * (0.06 + 0.6 * rimF) * uRim * (0.35 + lum) * (0.8 + 0.45 * breath);
+    vec3 glow = hue * (0.08 + 0.85 * rimF) * uRim * (0.35 + lum) * (0.8 + 0.45 * breath);
     gem = mix(body, surf, F) + glint + glow + sheen * rimF * 0.16;
+    // Translucent: the cut gem lets a little of the sky behind it through; edges and glints stay solid.
+    gA = clamp(0.6 + 0.4 * F + rimF * 0.25 + (g1 + g2) * 2.0 + ig * 0.6, 0.0, 1.0);
     }
 
     // ---------- the raw rock ---------- (skipped once the shell has burned away)
@@ -188,12 +191,12 @@ const fragment = /* glsl */ `
     float dist = length(vWPos - cameraPosition);
     col = mix(col, uFog, smoothstep(15.0, 25.0, dist) * 0.72);
 
-    gl_FragColor = vec4(col, 1.0);
+    gl_FragColor = vec4(col, mix(gA, 1.0, smoothstep(0.25, 0.7, rock)));
     #include <tonemapping_fragment>
     #include <colorspace_fragment>
   }
 `
 
 export function makeGemMaterial() {
-  return new THREE.ShaderMaterial({ uniforms: gemUniforms, vertexShader: vertex, fragmentShader: fragment })
+  return new THREE.ShaderMaterial({ uniforms: gemUniforms, vertexShader: vertex, fragmentShader: fragment, transparent: true })
 }

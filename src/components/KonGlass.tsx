@@ -375,7 +375,7 @@ export function KonGlass() {
       <p className="kf-sub"><span>Unlimited</span></p>
       {needAsk && (
         <button type="button" className="kl-ask" onClick={() => grant.current()}>
-          {lang === 'ar' ? 'حرّك جوالك، والسائل يتحرك معك' : 'Tilt your phone and the liquid follows'}
+          {lang === 'ar' ? 'حرك جوالك، والسائل يتحرك معك' : 'Tilt your phone and the liquid follows'}
         </button>
       )}
     </div>

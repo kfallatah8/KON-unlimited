@@ -57,7 +57,7 @@ function Decode({ text, on, className, as: Tag = 'span' }: { text: string; on: b
     const tick = () => {
       const p = Math.min(1, (performance.now() - t0) / T)
       const n = Math.floor(p * p * (chars.length + 1))
-      setOut(chars.map((c, j) => (j < n || /[\s،,.…:·ً-ْ]/.test(c) ? c : gl[(Math.random() * gl.length) | 0])).join(''))
+      setOut(chars.map((c, j) => (j < n || /[\s،,.…:·-]/.test(c) ? c : gl[(Math.random() * gl.length) | 0])).join(''))
       if (p < 1) id = window.setTimeout(tick, 60)
     }
     id = window.setTimeout(tick, 260)

@@ -14,25 +14,25 @@ const t = (ar: string, en: string): T => ({ ar, en })
 /** `kon`: a KON lens tool (people, attention, decisions): its next step is a conversation, not software. */
 export const toolMeta: Record<ToolId, { name: T; sub: T; kon?: boolean }> = {
   breakhour: { name: t('الساعة التي يبدأ فيها ربحك', 'The hour your profit starts'), sub: t('حتى أي ساعة تعمل للإيجار والرواتب؟', 'Until what time are you working for rent and payroll?') },
-  delivery: { name: t('حاسبة تطبيقات التوصيل', 'Delivery-app calculator'), sub: t('كم يبقى لك فعلًا من طلب هنقرستيشن أو كيتا؟', 'What’s really left for you from a HungerStation or Keeta order?') },
+  delivery: { name: t('حاسبة تطبيقات التوصيل', 'Delivery-app calculator'), sub: t('كم يبقى لك فعلا من طلب هنقرستيشن أو كيتا؟', 'What’s really left for you from a HungerStation or Keeta order?') },
   recipe: { name: t('تكلفة الطبق الحقيقية', 'True plate cost'), sub: t('تكلفة الحصة مع الهدر، والسعر الذي يحمي هامشك', 'Portion cost with waste, and the price that protects your margin') },
   channel: { name: t('من المصنع إلى الرف', 'From kitchen to shelf'), sub: t('سعر الرف بعد الموزع والمتجر والضريبة، وكم يصلك منه', 'Shelf price after distributor, retailer and VAT, and what reaches you') },
-  oee: { name: t('المصنع الخفي (OEE)', 'The hidden factory (OEE)'), sub: t('كم تنتج آلاتك فعلًا من طاقتها، وكم يضيع بصمت؟', 'How much of its capacity your line really delivers, and what leaks quietly') },
+  oee: { name: t('المصنع الخفي (OEE)', 'The hidden factory (OEE)'), sub: t('كم تنتج آلاتك فعلا من طاقتها، وكم يضيع بصمت؟', 'How much of its capacity your line really delivers, and what leaks quietly') },
   stock: { name: t('نقد نائم على الرفوف', 'Cash asleep on the shelves'), sub: t('كم من مالك محبوس في بضاعة لا تتحرك؟', 'How much of your money is locked in stock that doesn’t move?') },
   home: { name: t('سعر يحسب تعبك', 'A price that counts your effort'), sub: t('سعر عادل يحسب وقتك، لا المكونات فقط', 'A fair price that counts your time, not just ingredients') },
-  ceiling: { name: t('سقف النمو الخفي', 'Your hidden growth ceiling'), sub: t('الرقم الذي لن تتجاوزه مهما سوّقت، ولماذا', 'The number you won’t pass however much you market, and why'), kon: true },
-  lever: { name: t('أي رافعة تحرّك ربحك؟', 'Which lever moves your profit?'), sub: t('السعر، العملاء، التكرار، أم التكلفة؟ الأرقام تختار', 'Price, customers, frequency or cost? Let the numbers choose'), kon: true },
-  price: { name: t('اختبار السعر', 'The price test'), sub: t('كم عميلًا تستطيع أن تخسر بعد رفع السعر وتبقى رابحًا؟', 'How many customers can you lose after a price rise and still come out ahead?'), kon: true },
+  ceiling: { name: t('سقف النمو الخفي', 'Your hidden growth ceiling'), sub: t('الرقم الذي لن تتجاوزه مهما سوقت، ولماذا', 'The number you won’t pass however much you market, and why'), kon: true },
+  lever: { name: t('أي رافعة تحرك ربحك؟', 'Which lever moves your profit?'), sub: t('السعر، العملاء، التكرار، أم التكلفة؟ الأرقام تختار', 'Price, customers, frequency or cost? Let the numbers choose'), kon: true },
+  price: { name: t('اختبار السعر', 'The price test'), sub: t('كم عميلا تستطيع أن تخسر بعد رفع السعر وتبقى رابحا؟', 'How many customers can you lose after a price rise and still come out ahead?'), kon: true },
   focus: { name: t('ضريبة المقاطعة', 'The interruption tax'), sub: t('كم تدفع لتركيز فريقك الضائع؟', 'What are you paying for your team’s lost focus?'), kon: true },
-  meeting: { name: t('ثمن الاجتماع', 'What a meeting really costs'), sub: t('الاجتماع الذي لا ينتهي بقرار، كم يكلّف؟', 'What does a meeting that ends with no decision cost?'), kon: true },
+  meeting: { name: t('ثمن الاجتماع', 'What a meeting really costs'), sub: t('الاجتماع الذي لا ينتهي بقرار، كم يكلف؟', 'What does a meeting that ends with no decision cost?'), kon: true },
   turnover: { name: t('ثمن الاستقالة', 'The price of a resignation'), sub: t('ما لا يظهر في أي فاتورة حين يرحل موظف جيد', 'What no invoice shows when a good person leaves'), kon: true },
   founder: { name: t('ساعة المؤسس', 'The founder’s hour'), sub: t('كم تساوي ساعتك، وأين تذهب؟', 'What your hour is worth, and where it goes'), kon: true },
-  viewing: { name: t('ثمن المعاينة الضائعة', 'The cost of wasted viewings'), sub: t('كم ساعة يقضيها فريقك مع مشترين غير جادّين؟', 'How many hours does your team spend with buyers who were never serious?') },
-  delay: { name: t('ثمن التأجيل', 'The price of waiting'), sub: t('الانتظار يبدو مجانيًا، احسبه', 'Waiting feels free. Do the maths'), kon: true },
+  viewing: { name: t('ثمن المعاينة الضائعة', 'The cost of wasted viewings'), sub: t('كم ساعة يقضيها فريقك مع مشترين غير جادين؟', 'How many hours does your team spend with buyers who were never serious?') },
+  delay: { name: t('ثمن التأجيل', 'The price of waiting'), sub: t('الانتظار يبدو مجانيا، احسبه', 'Waiting feels free. Do the maths'), kon: true },
 }
 
 const ui = {
-  ar: { sar: 'ر.س', result: 'النتيجة', vatIncl: 'الأسعار شاملة الضريبة 15%', add: 'أضف مكوّنًا', remove: 'احذف', unit: 'وحدة', perDay: 'يوميًا', perMonth: 'شهريًا' },
+  ar: { sar: 'ر.س', result: 'النتيجة', vatIncl: 'الأسعار شاملة الضريبة 15%', add: 'أضف مكونا', remove: 'احذف', unit: 'وحدة', perDay: 'يوميا', perMonth: 'شهريا' },
   en: { sar: 'SAR', result: 'Result', vatIncl: 'Prices include 15% VAT', add: 'Add ingredient', remove: 'Remove', unit: 'unit', perDay: 'per day', perMonth: 'per month' },
 }
 
@@ -83,7 +83,7 @@ function Num({ label, unit, value, onChange, hint, sec }: { label: string; unit?
           <input id={fid} type="text" inputMode="decimal" dir="ltr" value={value} onChange={(e) => onChange(e.target.value)} onFocus={(e) => e.target.select()} />
           {unit && <i>{unit}</i>}
         </span>
-        <button type="button" className="tl-btn" aria-label={L ? `زِد ${label}` : `Increase ${label}`} onClick={() => bump(1)}>+</button>
+        <button type="button" className="tl-btn" aria-label={L ? `زد ${label}` : `Increase ${label}`} onClick={() => bump(1)}>+</button>
       </span>
       {hint && <small className="tl-hint">{hint}</small>}
     </div>
@@ -122,7 +122,7 @@ function Insight({ body }: { body: ReactNode }) {
       {why && (
         <div className="ti-row ti-why">
           <i aria-hidden="true">2</i>
-          <div><span className="ti-k">{L ? 'لماذا يهمّك' : 'Why it matters'}</span><p>{marks(why)}</p></div>
+          <div><span className="ti-k">{L ? 'لماذا يهمك' : 'Why it matters'}</span><p>{marks(why)}</p></div>
         </div>
       )}
       {move && (
@@ -189,9 +189,9 @@ const Delivery: ToolFn = ({ lang, report }) => {
         <Num label={L ? 'تكلفة المكونات' : 'Ingredient cost'} unit={u.sar} {...bind('food')} />
         <Num label={L ? 'التغليف' : 'Packaging'} unit={u.sar} {...bind('pack')} />
         <Num label={L ? 'عمولة التطبيق' : 'App commission'} unit="%" {...bind('comm')} hint={L ? 'حسب عقدك: هنقرستيشن، كيتا، جاهز، تويو، مرسول…' : 'Per your contract: HungerStation, Keeta, Jahez, ToYou, Mrsool…'} />
-        <Num label={L ? 'خصم عرض تتحمّله أنت' : 'Promo discount you fund'} unit="%" {...bind('promo')} />
+        <Num label={L ? 'خصم عرض تتحمله أنت' : 'Promo discount you fund'} unit="%" {...bind('promo')} />
         <Num label={L ? 'رسوم ثابتة لكل طلب' : 'Fixed fee per order'} unit={u.sar} {...bind('fee')} />
-        <Num label={L ? 'طلبات التطبيق يوميًا' : 'App orders per day'} {...bind('orders')} />
+        <Num label={L ? 'طلبات التطبيق يوميا' : 'App orders per day'} {...bind('orders')} />
         <Toggle label={u.vatIncl} on={vat} set={setVat} />
       </div>
       <Result
@@ -202,11 +202,11 @@ const Delivery: ToolFn = ({ lang, report }) => {
           [L ? 'يأخذ التطبيق من كل طلب' : 'The app takes per order', `${fmt(take)} ${u.sar} · ${pct(take / Math.max(v.price, 1e-9))}`],
           [L ? 'نفس الطبق في الصالة يربحك' : 'The same dish in-store earns', `${fmt(inStore)} ${u.sar}`],
           [L ? 'السعر العادل على التطبيق' : 'Fair price on the app', Number.isFinite(fair) ? `${fmt(Math.ceil(fair))} ${u.sar}` : '—'],
-          [L ? 'تدفعه للتطبيقات شهريًا تقريبًا' : 'Paid to apps per month, roughly', `${fmt(monthTake, 0)} ${u.sar}`],
+          [L ? 'تدفعه للتطبيقات شهريا تقريبا' : 'Paid to apps per month, roughly', `${fmt(monthTake, 0)} ${u.sar}`],
         ]}
         insight={profit <= 0
-          ? (L ? 'كل طلب من التطبيق يخسّرك، ارفع السعر على التطبيق، أو انقل عملاءك الدائمين إلى قناتك الخاصة' : 'Every app order loses you money. Raise the app price, or move your regulars to your own channel')
-          : (L ? `لتربح من التطبيق مثل الصالة، سعّر الطبق على التطبيق ${Number.isFinite(fair) ? fmt(Math.ceil(fair)) : '—'} ر.س، وعملاؤك الدائمون؟ الأفضل أن يطلبوا منك مباشرة` : `To earn on the app what you earn in-store, list it at ${Number.isFinite(fair) ? fmt(Math.ceil(fair)) : '—'} SAR. Your regulars? Better they order from you directly`)}
+          ? (L ? 'كل طلب من التطبيق يخسرك، ارفع السعر على التطبيق، أو انقل عملاءك الدائمين إلى قناتك الخاصة' : 'Every app order loses you money. Raise the app price, or move your regulars to your own channel')
+          : (L ? `لتربح من التطبيق مثل الصالة، سعر الطبق على التطبيق ${Number.isFinite(fair) ? fmt(Math.ceil(fair)) : '—'} ر.س، وعملاؤك الدائمون؟ الأفضل أن يطلبوا منك مباشرة` : `To earn on the app what you earn in-store, list it at ${Number.isFinite(fair) ? fmt(Math.ceil(fair)) : '—'} SAR. Your regulars? Better they order from you directly`)}
       />
     </>
   )
@@ -244,7 +244,7 @@ const Recipe: ToolFn = ({ lang, report }) => {
           {rows.map((r, i) => (
             <fieldset key={i} className="tl-ing">
               <legend className="sr-only">{r.n}</legend>
-              <input className="tl-ing-name" value={r.n} onChange={(e) => set(i, 'n', e.target.value)} aria-label={L ? 'المكوّن' : 'Ingredient'} />
+              <input className="tl-ing-name" value={r.n} onChange={(e) => set(i, 'n', e.target.value)} aria-label={L ? 'المكون' : 'Ingredient'} />
               <Num label={L ? 'سعر العبوة' : 'Pack price'} unit={u.sar} value={r.price} onChange={(s) => set(i, 'price', s)} />
               <Num label={L ? 'حجم العبوة' : 'Pack size'} unit={L ? 'غ/حبة' : 'g/pc'} value={r.pack} onChange={(s) => set(i, 'pack', s)} />
               <Num label={L ? 'المستخدم' : 'Used'} unit={L ? 'غ/حبة' : 'g/pc'} value={r.use} onChange={(s) => set(i, 'use', s)} />
@@ -253,11 +253,11 @@ const Recipe: ToolFn = ({ lang, report }) => {
               <span className="tl-ing-cost">{fmt(lines[i])} {u.sar}</span>
             </fieldset>
           ))}
-          {rows.length < 12 && <button type="button" className="tl-add" onClick={() => setRows((rs) => [...rs, { n: L ? 'مكوّن' : 'Item', price: '0', pack: '1', use: '0', waste: '0' }])}>+ {u.add}</button>}
+          {rows.length < 12 && <button type="button" className="tl-add" onClick={() => setRows((rs) => [...rs, { n: L ? 'مكون' : 'Item', price: '0', pack: '1', use: '0', waste: '0' }])}>+ {u.add}</button>}
         </div>
         <Num label={L ? 'عدد الحصص من هذه الكميات' : 'Portions from these amounts'} {...bind('yield')} />
         <Num label={L ? 'إضافات لكل حصة (تغليف، تزيين)' : 'Extras per portion (packaging, garnish)'} unit={u.sar} {...bind('extra')} />
-        <Num label={L ? 'نسبة التكلفة المستهدفة' : 'Target food cost'} unit="%" {...bind('target')} hint={L ? 'المطاعم الناجحة غالبًا بين 28% و35%' : 'Healthy restaurants usually sit between 28% and 35%'} />
+        <Num label={L ? 'نسبة التكلفة المستهدفة' : 'Target food cost'} unit="%" {...bind('target')} hint={L ? 'المطاعم الناجحة غالبا بين 28% و35%' : 'Healthy restaurants usually sit between 28% and 35%'} />
         <Num label={L ? 'سعرك الحالي شامل الضريبة (اختياري)' : 'Your current price incl. VAT (optional)'} unit={u.sar} {...bind('current')} />
       </div>
       <Result
@@ -270,8 +270,8 @@ const Recipe: ToolFn = ({ lang, report }) => {
           ...(Number.isFinite(fc) ? [[L ? 'نسبة التكلفة بسعرك الحالي' : 'Food cost at your current price', pct(fc)] as [string, string]] : []),
         ]}
         insight={Number.isFinite(fc) && fc > v.target / 100 + 0.03
-          ? (L ? 'سعرك الحالي يأكل هامشك، ارفعه، أو قلّل الهدر في أغلى مكوّن' : 'Your current price is eating your margin. Raise it, or cut waste on the priciest ingredient')
-          : (L ? 'الهدر وحده قد يرفع تكلفتك 5% إلى 10% دون أن تلاحظ، احسبه دائمًا' : 'Waste alone can lift your cost 5–10% without you noticing. Always count it')}
+          ? (L ? 'سعرك الحالي يأكل هامشك، ارفعه، أو قلل الهدر في أغلى مكون' : 'Your current price is eating your margin. Raise it, or cut waste on the priciest ingredient')
+          : (L ? 'الهدر وحده قد يرفع تكلفتك 5% إلى 10% دون أن تلاحظ، احسبه دائما' : 'Waste alone can lift your cost 5–10% without you noticing. Always count it')}
       />
     </>
   )
@@ -312,32 +312,32 @@ const BreakHour: ToolFn = ({ lang, report }) => {
   const contribUp = v.ticket * 1.1 - v.ticket * (v.varc / 100)
   const atUp2 = v.open + (contribUp > 0 ? dailyFixed / contribUp / Math.max(1, v.guests) : NaN) * v.hours
   report(L
-    ? `مصاريف ثابتة ${fmt(v.fixed, 0)} ر.س: تحتاج ${fmt(Math.ceil(need), 0)} عميلًا يوميًا للتعادل، ${ok ? `ربحك يبدأ الساعة ${clock(at, true)}` : 'لا تصل لنقطة التعادل يوميًا'}`
+    ? `مصاريف ثابتة ${fmt(v.fixed, 0)} ر.س: تحتاج ${fmt(Math.ceil(need), 0)} عميلا يوميا للتعادل، ${ok ? `ربحك يبدأ الساعة ${clock(at, true)}` : 'لا تصل لنقطة التعادل يوميا'}`
     : `Fixed costs ${fmt(v.fixed, 0)} SAR: ${fmt(Math.ceil(need), 0)} guests a day to break even. ${ok ? `Profit starts at ${clock(at, false)}` : 'You never reach break-even in a day'}`)
   return (
     <>
       <div className="tl-form">
-        <Num sec={L ? 'التكاليف' : 'Costs'} label={L ? 'المصاريف الثابتة شهريًا' : 'Fixed costs per month'} unit={u.sar} {...bind('fixed')} hint={L ? 'إيجار، رواتب، كهرباء، اشتراكات، أقساط' : 'Rent, salaries, power, subscriptions, instalments'} />
+        <Num sec={L ? 'التكاليف' : 'Costs'} label={L ? 'المصاريف الثابتة شهريا' : 'Fixed costs per month'} unit={u.sar} {...bind('fixed')} hint={L ? 'إيجار، رواتب، كهرباء، اشتراكات، أقساط' : 'Rent, salaries, power, subscriptions, instalments'} />
         <Num label={L ? 'التكلفة المتغيرة من الفاتورة' : 'Variable cost share of the bill'} unit="%" {...bind('varc')} hint={L ? 'المكونات، التغليف، عمولات البطاقات والتطبيقات' : 'Ingredients, packaging, card and app fees'} />
         <Num sec={L ? 'المبيعات' : 'Sales'} label={L ? 'متوسط الفاتورة قبل الضريبة' : 'Average bill before VAT'} unit={u.sar} {...bind('ticket')} />
-        <Num label={L ? 'عدد العملاء يوميًا' : 'Guests per day'} unit={L ? 'عميل' : 'guests'} {...bind('guests')} />
+        <Num label={L ? 'عدد العملاء يوميا' : 'Guests per day'} unit={L ? 'عميل' : 'guests'} {...bind('guests')} />
         <Num sec={L ? 'ساعات التشغيل' : 'Opening hours'} label={L ? 'أيام العمل في الشهر' : 'Days open per month'} unit={L ? 'يوم' : 'days'} {...bind('days')} />
         <Num label={L ? 'ساعة الافتتاح' : 'Opening hour'} unit="0–23" hint={L ? 'بنظام 24 ساعة، 12 تعني الظهر' : '24-hour clock, 12 means noon'} {...bind('open')} />
-        <Num label={L ? 'ساعات العمل يوميًا' : 'Hours open per day'} unit={hoursOf(L)} {...bind('hours')} />
+        <Num label={L ? 'ساعات العمل يوميا' : 'Hours open per day'} unit={hoursOf(L)} {...bind('hours')} />
       </div>
       <Result
         tone={!ok ? 'bad' : frac > 0.75 ? 'warn' : 'good'}
         label={L ? 'ربحك يبدأ الساعة' : 'Your profit starts at'}
         big={ok ? clock(at, L) : (L ? 'لا يبدأ' : 'Never')}
         rows={[
-          [L ? 'عملاء التعادل يوميًا' : 'Break-even guests per day', fmt(Math.ceil(need), 0)],
+          [L ? 'عملاء التعادل يوميا' : 'Break-even guests per day', fmt(Math.ceil(need), 0)],
           [L ? 'من يومك تعمل فيه للمصاريف' : 'Share of your day spent covering costs', ok ? pct(frac, 0) : '100%'],
           [L ? 'ربح اليوم الكامل' : 'Profit for a full day', `${fmt(profitDay, 0)} ${u.sar}`],
           [L ? 'لو ارتفع متوسط الفاتورة 10%' : 'If the average bill rose 10%', Number.isFinite(atUp2) && atUp2 < v.open + v.hours ? clock(atUp2, L) : '—'],
         ]}
         insight={!ok
           ? (L ? 'بهذا العدد من العملاء لا يغطي يومك مصاريفه، ابدأ من متوسط الفاتورة قبل أن تبحث عن عملاء أكثر' : 'At this footfall the day never covers its costs. Start with the average bill before chasing more guests')
-          : (L ? `حتى ${clock(at, true)} أنت تعمل للإيجار والرواتب، الحساب يفترض أن عملاءك يتوزعون على اليوم بالتساوي، وأغلبهم في الواقع يأتون وقت الذروة، فساعة الربح عندك قد تتأخر أكثر مما يظهر، رفع الفاتورة 10% يقدّمها إلى ${Number.isFinite(atUp2) ? clock(atUp2, true) : '—'}` : `Until ${clock(at, false)} you are working for the rent and the payroll. That assumes guests arrive evenly; most come at peak, so your real hour is usually later than it looks. A 10% higher bill brings it forward to ${Number.isFinite(atUp2) ? clock(atUp2, false) : '—'}`)}
+          : (L ? `حتى ${clock(at, true)} أنت تعمل للإيجار والرواتب، الحساب يفترض أن عملاءك يتوزعون على اليوم بالتساوي، وأغلبهم في الواقع يأتون وقت الذروة، فساعة الربح عندك قد تتأخر أكثر مما يظهر، رفع الفاتورة 10% يقدمها إلى ${Number.isFinite(atUp2) ? clock(atUp2, true) : '—'}` : `Until ${clock(at, false)} you are working for the rent and the payroll. That assumes guests arrive evenly; most come at peak, so your real hour is usually later than it looks. A 10% higher bill brings it forward to ${Number.isFinite(atUp2) ? clock(atUp2, false) : '—'}`)}
       >
         {ok && (
           <div className="tl-day" aria-hidden="true" style={{ ['--f' as string]: `${Math.round(Math.min(1, frac) * 100)}%` }}>
@@ -360,28 +360,28 @@ const Stock: ToolFn = ({ lang, report }) => {
   const deadCost = dead * v.carry / 100
   const turns = v.stock > 0 ? (v.cogs * 12) / v.stock : NaN
   report(L
-    ? `مخزون ${fmt(v.stock, 0)} ر.س يكفي ${fmt(days, 0)} يومًا، منه ${fmt(dead, 0)} ر.س راكد يكلّف ${fmt(deadCost, 0)} ر.س سنويًا`
+    ? `مخزون ${fmt(v.stock, 0)} ر.س يكفي ${fmt(days, 0)} يوما، منه ${fmt(dead, 0)} ر.س راكد يكلف ${fmt(deadCost, 0)} ر.س سنويا`
     : `${fmt(v.stock, 0)} SAR of stock covers ${fmt(days, 0)} days. ${fmt(dead, 0)} SAR of it is slow and costs ${fmt(deadCost, 0)} SAR a year`)
   return (
     <>
       <div className="tl-form">
         <Num label={L ? 'قيمة المخزون الحالي (بالتكلفة)' : 'Current stock value (at cost)'} unit={u.sar} {...bind('stock')} />
-        <Num label={L ? 'تكلفة البضاعة المباعة شهريًا' : 'Cost of goods sold per month'} unit={u.sar} {...bind('cogs')} />
-        <Num label={L ? 'نسبة الراكد (لم يُبع منذ 90 يومًا)' : 'Slow stock (unsold for 90 days)'} unit="%" {...bind('slow')} />
-        <Num label={L ? 'تكلفة الاحتفاظ بالمخزون سنويًا' : 'Yearly cost of holding stock'} unit="%" {...bind('carry')} hint={L ? 'المساحة، رأس المال المحبوس، التلف، التقادم، غالبًا بين 20% و30% من قيمته' : 'Space, tied-up capital, damage, obsolescence. Usually 20–30% of its value'} />
+        <Num label={L ? 'تكلفة البضاعة المباعة شهريا' : 'Cost of goods sold per month'} unit={u.sar} {...bind('cogs')} />
+        <Num label={L ? 'نسبة الراكد (لم يبع منذ 90 يوما)' : 'Slow stock (unsold for 90 days)'} unit="%" {...bind('slow')} />
+        <Num label={L ? 'تكلفة الاحتفاظ بالمخزون سنويا' : 'Yearly cost of holding stock'} unit="%" {...bind('carry')} hint={L ? 'المساحة، رأس المال المحبوس، التلف، التقادم، غالبا بين 20% و30% من قيمته' : 'Space, tied-up capital, damage, obsolescence. Usually 20–30% of its value'} />
       </div>
       <Result
         tone={days > 120 ? 'bad' : days > 75 ? 'warn' : 'good'}
         label={L ? 'نقد نائم على الرفوف' : 'Cash asleep on the shelves'}
         big={fmt(dead, 0)} unit={u.sar}
         rows={[
-          [L ? 'مخزونك يكفي' : 'Your stock lasts', `${fmt(days, 0)} ${L ? 'يومًا' : 'days'}`],
+          [L ? 'مخزونك يكفي' : 'Your stock lasts', `${fmt(days, 0)} ${L ? 'يوما' : 'days'}`],
           [L ? 'يدور المخزون في السنة' : 'Stock turns per year', `${fmt(turns, 1)}×`],
-          [L ? 'كلفة بقائه سنويًا (كل المخزون)' : 'Yearly cost of keeping it (all stock)', `${fmt(yearCost, 0)} ${u.sar}`],
+          [L ? 'كلفة بقائه سنويا (كل المخزون)' : 'Yearly cost of keeping it (all stock)', `${fmt(yearCost, 0)} ${u.sar}`],
           [L ? 'منها على الراكد وحده' : 'Of which the slow stock alone', `${fmt(deadCost, 0)} ${u.sar}`],
         ]}
         insight={L
-          ? `البضاعة الراكدة لا تقف مجانًا: كل ريال فيها يكلّفك قرابة ${fmt(v.carry, 0)} هللة كل سنة وهو ينتظر، تسييل نصفها فقط يحرّر ${fmt(dead / 2, 0)} ر.س تشتري بها ما يبيع فعلًا`
+          ? `البضاعة الراكدة لا تقف مجانا: كل ريال فيها يكلفك قرابة ${fmt(v.carry, 0)} هللة كل سنة وهو ينتظر، تسييل نصفها فقط يحرر ${fmt(dead / 2, 0)} ر.س تشتري بها ما يبيع فعلا`
           : `Slow stock doesn't sit for free: every riyal in it costs you about ${fmt(v.carry / 100, 2)} SAR a year while it waits. Clearing just half frees ${fmt(dead / 2, 0)} SAR to buy what actually sells`}
       />
     </>
@@ -399,29 +399,29 @@ const Viewing: ToolFn = ({ lang, report }) => {
   const perDeal = v.deals > 0 ? v.views / v.deals : NaN
   const more = Number.isFinite(perDeal) && perDeal > 0 ? (wasted / 2) / perDeal : 0
   report(L
-    ? `${fmt(v.views, 0)} معاينة شهريًا، ${fmt(v.waste, 0)}% منها مع غير جادّين: ${fmt(wHours, 0)} ساعة ضائعة تكلّف ${fmt(wCost, 0)} ر.س شهريًا`
+    ? `${fmt(v.views, 0)} معاينة شهريا، ${fmt(v.waste, 0)}% منها مع غير جادين: ${fmt(wHours, 0)} ساعة ضائعة تكلف ${fmt(wCost, 0)} ر.س شهريا`
     : `${fmt(v.views, 0)} viewings a month, ${fmt(v.waste, 0)}% with non-serious buyers: ${fmt(wHours, 0)} lost hours costing ${fmt(wCost, 0)} SAR a month`)
   return (
     <>
       <div className="tl-form">
-        <Num label={L ? 'عدد المعاينات شهريًا' : 'Viewings per month'} {...bind('views')} />
-        <Num label={L ? 'نسبة المعاينات التي لم تكن جادّة' : 'Share of viewings that were never serious'} unit="%" {...bind('waste')} hint={L ? 'من قرّر من الدقيقة الأولى أن الوحدة ليست له' : 'Buyers who knew in the first minute the unit wasn’t for them'} />
+        <Num label={L ? 'عدد المعاينات شهريا' : 'Viewings per month'} {...bind('views')} />
+        <Num label={L ? 'نسبة المعاينات التي لم تكن جادة' : 'Share of viewings that were never serious'} unit="%" {...bind('waste')} hint={L ? 'من قرر من الدقيقة الأولى أن الوحدة ليست له' : 'Buyers who knew in the first minute the unit wasn’t for them'} />
         <Num label={L ? 'ساعات المعاينة الواحدة مع الطريق' : 'Hours per viewing, including the drive'} {...bind('hours')} />
-        <Num label={L ? 'تكلفة ساعة المسوّق' : 'Cost of an agent’s hour'} unit={u.sar} {...bind('rate')} hint={L ? 'الراتب والعمولة والسيارة مقسومة على ساعات العمل' : 'Salary, commission and car, divided by working hours'} />
-        <Num label={L ? 'الصفقات المغلقة شهريًا' : 'Deals closed per month'} {...bind('deals')} />
+        <Num label={L ? 'تكلفة ساعة المسوق' : 'Cost of an agent’s hour'} unit={u.sar} {...bind('rate')} hint={L ? 'الراتب والعمولة والسيارة مقسومة على ساعات العمل' : 'Salary, commission and car, divided by working hours'} />
+        <Num label={L ? 'الصفقات المغلقة شهريا' : 'Deals closed per month'} {...bind('deals')} />
       </div>
       <Result
         tone={v.waste >= 50 ? 'bad' : v.waste >= 30 ? 'warn' : 'good'}
-        label={L ? 'ساعات تذهب مع غير الجادّين كل شهر' : 'Hours spent on non-serious buyers each month'}
+        label={L ? 'ساعات تذهب مع غير الجادين كل شهر' : 'Hours spent on non-serious buyers each month'}
         big={fmt(wHours, 0)} unit={L ? 'ساعة' : 'hours'}
         rows={[
-          [L ? 'كلفتها شهريًا' : 'What they cost a month', `${fmt(wCost, 0)} ${u.sar}`],
+          [L ? 'كلفتها شهريا' : 'What they cost a month', `${fmt(wCost, 0)} ${u.sar}`],
           [L ? 'وفي السنة' : 'And a year', `${fmt(wCost * 12, 0)} ${u.sar}`],
           [L ? 'معاينات لكل صفقة' : 'Viewings per deal', fmt(perDeal, 1)],
-          [L ? 'صفقات إضافية محتملة شهريًا' : 'Possible extra deals a month', fmt(more, 1)],
+          [L ? 'صفقات إضافية محتملة شهريا' : 'Possible extra deals a month', fmt(more, 1)],
         ]}
         insight={L
-          ? `لو ذهب نصف هذا الوقت فقط إلى مشترين جادّين، فبمعدّلك الحالي يعني ذلك قرابة ${fmt(more, 1)} صفقة إضافية كل شهر، الفرز يبدأ قبل أن يركب أحد السيارة`
+          ? `لو ذهب نصف هذا الوقت فقط إلى مشترين جادين، فبمعدلك الحالي يعني ذلك قرابة ${fmt(more, 1)} صفقة إضافية كل شهر، الفرز يبدأ قبل أن يركب أحد السيارة`
           : `If just half of that time went to serious buyers, at your current rate that is about ${fmt(more, 1)} extra deals a month. The filtering starts before anyone gets in the car`}
       />
     </>
@@ -447,15 +447,15 @@ const Ceiling: ToolFn = ({ lang, report }) => {
   const lost = v.now * c
   const grow = Number.isFinite(cap) && cap > v.now
   report(L
-    ? `بخسارة ${fmt(v.churn)}% شهريًا و${fmt(v.add, 0)} عميل جديد: السقف ${fmt(cap, 0)} عميل مهما زاد التسويق، خفض الفقد ${fmt(pts, 1)} نقطة يرفعه إلى ${fmt(capLess, 0)}`
+    ? `بخسارة ${fmt(v.churn)}% شهريا و${fmt(v.add, 0)} عميل جديد: السقف ${fmt(cap, 0)} عميل مهما زاد التسويق، خفض الفقد ${fmt(pts, 1)} نقطة يرفعه إلى ${fmt(capLess, 0)}`
     : `Losing ${fmt(v.churn)}% a month with ${fmt(v.add, 0)} new customers: the ceiling is ${fmt(cap, 0)} customers, however much you market. ${fmt(pts, 1)} points less churn lifts it to ${fmt(capLess, 0)}`)
   return (
     <>
       <div className="tl-form">
         <Num label={L ? 'عملاؤك النشطون اليوم' : 'Active customers today'} {...bind('now')} />
         <Num label={L ? 'عملاء جدد كل شهر' : 'New customers per month'} {...bind('add')} />
-        <Num label={L ? 'من يتوقف عن الشراء شهريًا' : 'Customers who stop buying each month'} unit="%" {...bind('churn')} hint={L ? 'من كل 100 عميل، كم واحدًا لا يعود الشهر القادم؟' : 'Out of every 100 customers, how many don’t come back next month?'} />
-        <Num label={L ? 'إيراد العميل الواحد شهريًا' : 'Revenue per customer per month'} unit={u.sar} {...bind('rev')} />
+        <Num label={L ? 'من يتوقف عن الشراء شهريا' : 'Customers who stop buying each month'} unit="%" {...bind('churn')} hint={L ? 'من كل 100 عميل، كم واحدا لا يعود الشهر القادم؟' : 'Out of every 100 customers, how many don’t come back next month?'} />
+        <Num label={L ? 'إيراد العميل الواحد شهريا' : 'Revenue per customer per month'} unit={u.sar} {...bind('rev')} />
         <Num label={L ? 'هامش الربح الإجمالي' : 'Gross margin'} unit="%" {...bind('margin')} />
       </div>
       <Result
@@ -465,13 +465,13 @@ const Ceiling: ToolFn = ({ lang, report }) => {
         rows={[
           [L ? 'إيراد شهري عند السقف' : 'Monthly revenue at the ceiling', Number.isFinite(capRev) ? `${fmt(capRev, 0)} ${u.sar}` : '—'],
           [L ? 'تخسرهم الآن كل شهر' : 'You lose now, every month', `${fmt(lost, 0)} ${L ? 'عميل' : 'customers'}`],
-          [L ? `لو خفّضت الفقد ${fmt(pts, 1)} نقطة` : `With ${fmt(pts, 1)} points less churn`, `${fmt(capLess, 0)} · +${fmt((capLess / cap - 1) * 100, 0)}%`],
+          [L ? `لو خفضت الفقد ${fmt(pts, 1)} نقطة` : `With ${fmt(pts, 1)} points less churn`, `${fmt(capLess, 0)} · +${fmt((capLess / cap - 1) * 100, 0)}%`],
           [L ? 'لو زدت العملاء الجدد 20%' : 'With 20% more new customers', `${fmt(capMore, 0)} · +20%`],
           [L ? 'ربح العميل طوال علاقته بك' : 'Profit from one customer over their life', Number.isFinite(ltv) ? `${fmt(ltv, 0)} ${u.sar}` : '—'],
         ]}
         insight={L
           ? (grow
-            ? `مهما صرفت على الإعلان، ستتوقف عند ${fmt(cap, 0)} عميل تقريبًا، لأن الدلو يتسرّب من الأسفل، سدّ ${fmt(pts, 1)} نقطة من التسرّب يرفع سقفك ${fmt((capLess / cap - 1) * 100, 0)}%${churnWins ? '، أكثر مما تفعله زيادة العملاء الجدد 20%' : ''}`
+            ? `مهما صرفت على الإعلان، ستتوقف عند ${fmt(cap, 0)} عميل تقريبا، لأن الدلو يتسرب من الأسفل، سد ${fmt(pts, 1)} نقطة من التسرب يرفع سقفك ${fmt((capLess / cap - 1) * 100, 0)}%${churnWins ? '، أكثر مما تفعله زيادة العملاء الجدد 20%' : ''}`
             : `أنت فوق سقفك: كل شهر تخسر أكثر مما تكسب، وستنزل نحو ${fmt(cap, 0)} عميل، المشكلة ليست في التسويق، بل في سبب رحيلهم`)
           : (grow
             ? `However much you spend on ads, you'll level off around ${fmt(cap, 0)} customers, because the bucket leaks from the bottom. Plugging ${fmt(pts, 1)} points of the leak lifts your ceiling ${fmt((capLess / cap - 1) * 100, 0)}%${churnWins ? ', more than 20% more new customers would' : ''}`
@@ -500,18 +500,18 @@ const Lever: ToolFn = ({ lang, report }) => {
   const equiv = m > 0 ? i / m : NaN
   const top = ranked[0]
   report(L
-    ? `ربح شهري ${fmt(base, 0)} ر.س، أقوى رافعة: ${top[0]} (+${fmt(top[1] - base, 0)} ر.س شهريًا)`
+    ? `ربح شهري ${fmt(base, 0)} ر.س، أقوى رافعة: ${top[0]} (+${fmt(top[1] - base, 0)} ر.س شهريا)`
     : `Monthly profit ${fmt(base, 0)} SAR. Strongest lever: ${top[0]} (+${fmt(top[1] - base, 0)} SAR a month)`)
   const max = Math.max(...ranked.map((r) => r[1] - base), 1)
   return (
     <>
       <div className="tl-form">
-        <Num label={L ? 'عدد العملاء شهريًا' : 'Customers per month'} {...bind('cust')} />
+        <Num label={L ? 'عدد العملاء شهريا' : 'Customers per month'} {...bind('cust')} />
         <Num label={L ? 'مرات شراء العميل في الشهر' : 'Purchases per customer per month'} {...bind('freq')} />
         <Num label={L ? 'متوسط الفاتورة' : 'Average ticket'} unit={u.sar} {...bind('ticket')} />
         <Num label={L ? 'هامش الربح الإجمالي' : 'Gross margin'} unit="%" {...bind('margin')} />
-        <Num label={L ? 'المصاريف الثابتة شهريًا' : 'Fixed costs per month'} unit={u.sar} {...bind('fixed')} />
-        <Num label={L ? 'حجم التحسين المقارَن' : 'Size of the improvement'} unit="%" {...bind('step')} />
+        <Num label={L ? 'المصاريف الثابتة شهريا' : 'Fixed costs per month'} unit={u.sar} {...bind('fixed')} />
+        <Num label={L ? 'حجم التحسين المقارن' : 'Size of the improvement'} unit="%" {...bind('step')} />
       </div>
       <Result
         tone={base <= 0 ? 'bad' : undefined}
@@ -523,7 +523,7 @@ const Lever: ToolFn = ({ lang, report }) => {
           ...ranked.map(([k, p]) => [k, `+${fmt(p - base, 0)} ${u.sar}`] as [string, string]),
         ]}
         insight={L
-          ? `رفع السعر ${fmt(v.step)}% يعادل أن تكسب ${pct(equiv, 0)} عملاء إضافيين، دون إعلان واحد ودون ضغط إضافي على فريقك، أغلب الشركات تطارد العملاء أولًا، وأرقامها تقول العكس`
+          ? `رفع السعر ${fmt(v.step)}% يعادل أن تكسب ${pct(equiv, 0)} عملاء إضافيين، دون إعلان واحد ودون ضغط إضافي على فريقك، أغلب الشركات تطارد العملاء أولا، وأرقامها تقول العكس`
           : `A ${fmt(v.step)}% price rise is worth the same as ${pct(equiv, 0)} more customers, with no ads and no extra load on your team. Most businesses chase customers first; their numbers usually say the opposite`}
       >
         <div className="tl-levers" aria-hidden="true">
@@ -552,8 +552,8 @@ const Price: ToolFn = ({ lang, report }) => {
       <div className="tl-form">
         <Num label={L ? 'هامش الربح الإجمالي الحالي' : 'Current gross margin'} unit="%" {...bind('margin')} />
         <Num label={cut ? (L ? 'نسبة الخصم' : 'Discount') : (L ? 'نسبة رفع السعر' : 'Price rise')} unit="%" {...bind('change')} />
-        <Num label={L ? 'عملاؤك شهريًا' : 'Customers per month'} {...bind('cust')} />
-        <Toggle label={L ? 'أفكّر في خصم، لا في رفع' : 'I’m thinking of a discount, not a rise'} on={cut} set={setCut} />
+        <Num label={L ? 'عملاؤك شهريا' : 'Customers per month'} {...bind('cust')} />
+        <Toggle label={L ? 'أفكر في خصم، لا في رفع' : 'I’m thinking of a discount, not a rise'} on={cut} set={setCut} />
       </div>
       {!cut ? (
         <Result
@@ -561,11 +561,11 @@ const Price: ToolFn = ({ lang, report }) => {
           label={L ? 'تستطيع أن تخسر حتى' : 'You can afford to lose up to'}
           big={pct(canLose, 0)} unit={L ? 'من العملاء' : 'of customers'}
           rows={[
-            [L ? 'أي حتى' : 'That is up to', `${fmt(Math.floor(v.cust * canLose), 0)} ${L ? 'عميل شهريًا' : 'customers a month'}`],
+            [L ? 'أي حتى' : 'That is up to', `${fmt(Math.floor(v.cust * canLose), 0)} ${L ? 'عميل شهريا' : 'customers a month'}`],
             [L ? 'وتبقى بنفس الربح' : 'And still earn the same', '✓'],
           ]}
           insight={L
-            ? `كثيرون يؤجلون رفع السعر خوفًا من خسارة بعض العملاء، والحساب يقول إنك تتحمّل خسارة ${pct(canLose, 0)} منهم وتبقى بنفس الربح، ومن يرحل بسبب زيادة صغيرة غالبًا هو الأقل ربحًا لك أصلًا`
+            ? `كثيرون يؤجلون رفع السعر خوفا من خسارة بعض العملاء، والحساب يقول إنك تتحمل خسارة ${pct(canLose, 0)} منهم وتبقى بنفس الربح، ومن يرحل بسبب زيادة صغيرة غالبا هو الأقل ربحا لك أصلا`
             : `Many owners put off a price rise for fear of losing some customers; the maths says you can lose ${pct(canLose, 0)} and earn the same. Those who leave over a small rise are usually your least profitable anyway`}
         />
       ) : (
@@ -574,12 +574,12 @@ const Price: ToolFn = ({ lang, report }) => {
           label={L ? 'تحتاج مبيعات أكثر بـ' : 'You need more sales of'}
           big={ok ? `+${fmt(need * 100, 0)}%` : '∞'}
           rows={[
-            [L ? 'لتبقى بنفس الربح، بِع لـ' : 'To earn the same, serve', ok ? `${fmt(Math.ceil(v.cust * (1 + need)), 0)} ${L ? 'بدل' : 'instead of'} ${fmt(v.cust, 0)}` : '—'],
+            [L ? 'لتبقى بنفس الربح، بع لـ' : 'To earn the same, serve', ok ? `${fmt(Math.ceil(v.cust * (1 + need)), 0)} ${L ? 'بدل' : 'instead of'} ${fmt(v.cust, 0)}` : '—'],
             [L ? 'هامشك بعد الخصم' : 'Margin after the discount', ok ? pct((m - p) / (1 - p)) : '—'],
           ]}
           insight={!ok
             ? (L ? 'الخصم أكبر من هامشك: كل بيعة خسارة، مهما زادت الزحمة' : 'The discount is bigger than your margin: every sale is a loss, however busy it gets')
-            : (L ? 'الخصم يعلّم عميلك أن ينتظره، قبل أن تخفّض السعر، جرّب أن ترفع القيمة: باقة، أو هدية، أو تجربة لا يجدها عند غيرك' : 'A discount teaches customers to wait for it. Before cutting price, try raising value: a bundle, a gift, an experience they can’t find elsewhere')}
+            : (L ? 'الخصم يعلم عميلك أن ينتظره، قبل أن تخفض السعر، جرب أن ترفع القيمة: باقة، أو هدية، أو تجربة لا يجدها عند غيرك' : 'A discount teaches customers to wait for it. Before cutting price, try raising value: a bundle, a gift, an experience they can’t find elsewhere')}
         />
       )}
     </>
@@ -597,28 +597,28 @@ const Focus: ToolFn = ({ lang, report }) => {
   const year = v.team * v.salary * 12 * share
   const weekH = (lostMin * 5 * v.team) / 60
   report(L
-    ? `${fmt(v.team, 0)} موظفين، ${fmt(v.inter, 0)} مقاطعة يوميًا: يضيع ${pct(share, 0)} من يوم العمل، أي ما يعادل ${fmt(fte, 1)} موظف، و${fmt(year, 0)} ر.س سنويًا`
+    ? `${fmt(v.team, 0)} موظفين، ${fmt(v.inter, 0)} مقاطعة يوميا: يضيع ${pct(share, 0)} من يوم العمل، أي ما يعادل ${fmt(fte, 1)} موظف، و${fmt(year, 0)} ر.س سنويا`
     : `${fmt(v.team, 0)} people, ${fmt(v.inter, 0)} interruptions a day: ${pct(share, 0)} of the workday lost, worth ${fmt(fte, 1)} employees and ${fmt(year, 0)} SAR a year`)
   return (
     <>
       <div className="tl-form">
         <Num label={L ? 'عدد أفراد الفريق' : 'Team size'} {...bind('team')} />
-        <Num label={L ? 'مقاطعات للفرد يوميًا' : 'Interruptions per person per day'} {...bind('inter')} hint={L ? 'مكالمة، رسالة، «سؤال سريع»، اجتماع مفاجئ' : 'A call, a message, a “quick question”, a surprise meeting'} />
+        <Num label={L ? 'مقاطعات للفرد يوميا' : 'Interruptions per person per day'} {...bind('inter')} hint={L ? 'مكالمة، رسالة، «سؤال سريع»، اجتماع مفاجئ' : 'A call, a message, a “quick question”, a surprise meeting'} />
         <Num label={L ? 'دقائق ضائعة مع كل مقاطعة' : 'Minutes lost per interruption'} unit={L ? 'دقيقة' : 'min'} {...bind('mins')} hint={L ? 'المقاطعة نفسها، ثم وقت العودة لنفس التركيز، أبحاث الانتباه تشير إلى أن العودة الكاملة قد تأخذ نحو 20 دقيقة؛ بدأنا بتقدير متحفظ' : 'The interruption, then getting back to the same focus. Attention research suggests full recovery can take around 20 minutes; we start conservative'} />
         <Num label={L ? 'متوسط الراتب الشهري' : 'Average monthly salary'} unit={u.sar} {...bind('salary')} />
-        <Num label={L ? 'ساعات العمل يوميًا' : 'Working hours per day'} unit={hoursOf(L)} {...bind('hours')} />
+        <Num label={L ? 'ساعات العمل يوميا' : 'Working hours per day'} unit={hoursOf(L)} {...bind('hours')} />
       </div>
       <Result
         tone={share > 0.25 ? 'bad' : share > 0.12 ? 'warn' : 'good'}
-        label={L ? 'تدفع سنويًا لوقت لا يُستخدم' : 'You pay yearly for time nobody gets to use'}
+        label={L ? 'تدفع سنويا لوقت لا يستخدم' : 'You pay yearly for time nobody gets to use'}
         big={fmt(year, 0)} unit={u.sar}
         rows={[
           [L ? 'من يوم كل موظف' : 'Of each person’s day', pct(share, 0)],
-          [L ? 'ساعات الفريق الضائعة أسبوعيًا' : 'Team hours lost per week', fmt(weekH, 0)],
+          [L ? 'ساعات الفريق الضائعة أسبوعيا' : 'Team hours lost per week', fmt(weekH, 0)],
           [L ? 'يعادل موظفين بدوام كامل' : 'Equivalent to full-time staff', fmt(fte, 1)],
         ]}
         insight={L
-          ? `المقاطعة لا تأخذ دقيقتها فقط، بل تأخذ تركيزك معها، عندك ما يعادل ${fmt(fte, 1)} موظف يأخذون راتبًا ولا يُنتجون، دون أن يقصّر أحد، الحل نادرًا ما يكون توظيفًا جديدًا؛ غالبًا ساعات هادئة، وقناة تواصل واحدة، وأسئلة تُجمع بدل أن تُرسل واحدة واحدة`
+          ? `المقاطعة لا تأخذ دقيقتها فقط، بل تأخذ تركيزك معها، عندك ما يعادل ${fmt(fte, 1)} موظف يأخذون راتبا ولا ينتجون، دون أن يقصر أحد، الحل نادرا ما يكون توظيفا جديدا؛ غالبا ساعات هادئة، وقناة تواصل واحدة، وأسئلة تجمع بدل أن ترسل واحدة واحدة`
           : `An interruption takes more than its minute; it takes the focus with it. You have the equivalent of ${fmt(fte, 1)} people drawing a salary and producing nothing, without anyone slacking. The fix is rarely a new hire. It's usually quiet hours, one channel, and questions batched instead of sent one by one`}
       />
     </>
@@ -636,7 +636,7 @@ const Meeting: ToolFn = ({ lang, report }) => {
   const waste = year * (1 - Math.min(100, v.decided) / 100)
   const hrs = v.people * v.mins / 60 * v.week * 48
   report(L
-    ? `اجتماع واحد يكلّف ${fmt(one, 0)} ر.س؛ سنويًا ${fmt(year, 0)} ر.س، منها ${fmt(waste, 0)} ر.س على اجتماعات بلا قرار`
+    ? `اجتماع واحد يكلف ${fmt(one, 0)} ر.س؛ سنويا ${fmt(year, 0)} ر.س، منها ${fmt(waste, 0)} ر.س على اجتماعات بلا قرار`
     : `One meeting costs ${fmt(one, 0)} SAR; ${fmt(year, 0)} SAR a year, ${fmt(waste, 0)} SAR of it on meetings with no decision`)
   return (
     <>
@@ -649,15 +649,15 @@ const Meeting: ToolFn = ({ lang, report }) => {
       </div>
       <Result
         tone={waste > year * 0.5 ? 'bad' : waste > year * 0.3 ? 'warn' : 'good'}
-        label={L ? 'تدفع سنويًا لاجتماعات بلا قرار' : 'You pay yearly for meetings with no decision'}
+        label={L ? 'تدفع سنويا لاجتماعات بلا قرار' : 'You pay yearly for meetings with no decision'}
         big={fmt(waste, 0)} unit={u.sar}
         rows={[
           [L ? 'الاجتماع الواحد' : 'One meeting', `${fmt(one, 0)} ${u.sar}`],
-          [L ? 'كل الاجتماعات سنويًا' : 'All of them, per year', `${fmt(year, 0)} ${u.sar}`],
-          [L ? 'ساعات بشرية سنويًا' : 'People-hours per year', fmt(hrs, 0)],
+          [L ? 'كل الاجتماعات سنويا' : 'All of them, per year', `${fmt(year, 0)} ${u.sar}`],
+          [L ? 'ساعات بشرية سنويا' : 'People-hours per year', fmt(hrs, 0)],
         ]}
         insight={L
-          ? 'الاجتماع بلا قرار ليس مجانيًا؛ هو شراء بلا فاتورة، جرّب قاعدة بسيطة: لا اجتماع بلا هدف مكتوب، ولا نهاية بلا قرار واسم مسؤول وموعد'
+          ? 'الاجتماع بلا قرار ليس مجانيا؛ هو شراء بلا فاتورة، جرب قاعدة بسيطة: لا اجتماع بلا هدف مكتوب، ولا نهاية بلا قرار واسم مسؤول وموعد'
           : 'A meeting with no decision isn’t free; it’s a purchase with no receipt. Try one simple rule: no meeting without a written goal, and no ending without a decision, a name and a date'}
       />
     </>
@@ -675,14 +675,14 @@ const Turnover: ToolFn = ({ lang, report }) => {
   const months = v.salary > 0 ? one / v.salary : NaN
   const year = one * v.leavers
   report(L
-    ? `الاستقالة الواحدة تكلّف ${fmt(one, 0)} ر.س (${fmt(months, 1)} شهر من الراتب)، و${fmt(year, 0)} ر.س سنويًا بـ ${fmt(v.leavers, 0)} استقالات`
+    ? `الاستقالة الواحدة تكلف ${fmt(one, 0)} ر.س (${fmt(months, 1)} شهر من الراتب)، و${fmt(year, 0)} ر.س سنويا بـ ${fmt(v.leavers, 0)} استقالات`
     : `One resignation costs ${fmt(one, 0)} SAR (${fmt(months, 1)} months of salary), ${fmt(year, 0)} SAR a year at ${fmt(v.leavers, 0)} leavers`)
   return (
     <>
       <div className="tl-form">
-        <Num label={L ? 'راتب الدور شهريًا' : 'Monthly salary of the role'} unit={u.sar} {...bind('salary')} />
-        <Num label={L ? 'ما ينتجه الدور شهريًا' : 'What the role produces per month'} unit={u.sar} {...bind('value')} hint={L ? 'إيراد يجلبه، أو قيمة عمل يغطيها، تقدير صادق يكفي' : 'Revenue it brings, or the value of work it covers. An honest estimate is enough'} />
-        <Num label={L ? 'أشهر يبقى فيها المقعد فارغًا' : 'Months the seat stays empty'} {...bind('vacant')} />
+        <Num label={L ? 'راتب الدور شهريا' : 'Monthly salary of the role'} unit={u.sar} {...bind('salary')} />
+        <Num label={L ? 'ما ينتجه الدور شهريا' : 'What the role produces per month'} unit={u.sar} {...bind('value')} hint={L ? 'إيراد يجلبه، أو قيمة عمل يغطيها، تقدير صادق يكفي' : 'Revenue it brings, or the value of work it covers. An honest estimate is enough'} />
+        <Num label={L ? 'أشهر يبقى فيها المقعد فارغا' : 'Months the seat stays empty'} {...bind('vacant')} />
         <Num label={L ? 'أشهر حتى يصل البديل لكامل أدائه' : 'Months until the new hire is fully up to speed'} {...bind('ramp')} />
         <Num label={L ? 'تكلفة التوظيف والتهيئة' : 'Hiring and onboarding cost'} unit={u.sar} {...bind('hire')} hint={L ? 'إعلانات، مكاتب توظيف، تدريب، أجهزة، وقت المقابلات' : 'Ads, agencies, training, equipment, interview time'} />
         <Num label={L ? 'استقالات في السنة' : 'Resignations per year'} {...bind('leavers')} />
@@ -695,10 +695,10 @@ const Turnover: ToolFn = ({ lang, report }) => {
           [L ? 'بأشهر من راتبه' : 'In months of their salary', fmt(months, 1)],
           [L ? 'إنتاج ضائع والمقعد فارغ' : 'Lost output while the seat is empty', `${fmt(vacancy, 0)} ${u.sar}`],
           [L ? 'فجوة الأداء حتى يتقن البديل' : 'Gap until the new hire is up to speed', `${fmt(ramp, 0)} ${u.sar}`],
-          [L ? 'سنويًا بعدد استقالاتك' : 'Per year, at your resignations', `${fmt(year, 0)} ${u.sar}`],
+          [L ? 'سنويا بعدد استقالاتك' : 'Per year, at your resignations', `${fmt(year, 0)} ${u.sar}`],
         ]}
         insight={L
-          ? `الاستقالة الواحدة تكلّفك قرابة ${fmt(months, 1)} شهر من راتب صاحبها، وهذه تكلفة لا تظهر في أي فاتورة، وكثير من الاستقالات تبدأ قبل الورقة بأشهر: شخص جيد في مسار لا يناسب طريقة تفكيره، هنا تحديدًا يبدأ عملنا مع الفرق`
+          ? `الاستقالة الواحدة تكلفك قرابة ${fmt(months, 1)} شهر من راتب صاحبها، وهذه تكلفة لا تظهر في أي فاتورة، وكثير من الاستقالات تبدأ قبل الورقة بأشهر: شخص جيد في مسار لا يناسب طريقة تفكيره، هنا تحديدا يبدأ عملنا مع الفرق`
           : `One resignation costs you about ${fmt(months, 1)} months of that person's salary, and no invoice ever shows it. Many resignations start months before the letter: a good person in a lane that doesn't fit how they think. That is exactly where our work with teams begins`}
       />
     </>
@@ -715,26 +715,26 @@ const Founder: ToolFn = ({ lang, report }) => {
   const days = (v.low * 48) / 8
   const worth = hour > v.rate
   report(L
-    ? `ساعتك تساوي ${fmt(hour, 0)} ر.س، ${fmt(v.low, 0)} ساعة أسبوعيًا في مهام قيمتها ${fmt(v.rate, 0)} ر.س تهدر ${fmt(leak, 0)} ر.س سنويًا`
+    ? `ساعتك تساوي ${fmt(hour, 0)} ر.س، ${fmt(v.low, 0)} ساعة أسبوعيا في مهام قيمتها ${fmt(v.rate, 0)} ر.س تهدر ${fmt(leak, 0)} ر.س سنويا`
     : `Your hour is worth ${fmt(hour, 0)} SAR. ${fmt(v.low, 0)} hours a week on ${fmt(v.rate, 0)}-SAR tasks leak ${fmt(leak, 0)} SAR a year`)
   return (
     <>
       <div className="tl-form">
-        <Num label={L ? 'ما تريد أن يحققه لك عملك سنويًا' : 'What you want your business to earn you a year'} unit={u.sar} {...bind('income')} />
-        <Num label={L ? 'ساعات عملك أسبوعيًا' : 'Your working hours per week'} unit={hoursOf(L)} {...bind('week')} />
+        <Num label={L ? 'ما تريد أن يحققه لك عملك سنويا' : 'What you want your business to earn you a year'} unit={u.sar} {...bind('income')} />
+        <Num label={L ? 'ساعات عملك أسبوعيا' : 'Your working hours per week'} unit={hoursOf(L)} {...bind('week')} />
         <Num label={L ? 'منها في مهام يقدر غيرك يقوم بها' : 'Of which on tasks someone else could do'} unit={hoursOf(L)} {...bind('low')} hint={L ? 'متابعة رسائل، مشتريات، إدخال بيانات، مشاوير، تصميم منشورات' : 'Chasing messages, purchasing, data entry, errands, designing posts'} />
-        <Num label={L ? 'كم يكلّف تفويضها بالساعة؟' : 'What would delegating cost per hour?'} unit={u.sar} {...bind('rate')} />
+        <Num label={L ? 'كم يكلف تفويضها بالساعة؟' : 'What would delegating cost per hour?'} unit={u.sar} {...bind('rate')} />
       </div>
       <Result
         tone={!worth ? 'warn' : leak > v.income * 0.2 ? 'bad' : 'warn'}
         label={L ? 'قيمة ساعتك المستهدفة' : 'What your hour should be worth'}
         big={fmt(hour, 0)} unit={u.sar}
         rows={[
-          [L ? 'تهدر سنويًا في مهام غيرك' : 'Leaked yearly on others’ tasks', `${fmt(leak, 0)} ${u.sar}`],
+          [L ? 'تهدر سنويا في مهام غيرك' : 'Leaked yearly on others’ tasks', `${fmt(leak, 0)} ${u.sar}`],
           [L ? 'أيام عمل كاملة تستعيدها' : 'Full workdays you’d win back', fmt(days, 0)],
         ]}
         insight={worth
-          ? (L ? `كل ساعة تقضيها في مهمة قيمتها ${fmt(v.rate, 0)} ر.س، تدفع لنفسك ${fmt(hour, 0)} ر.س لتؤديها، المؤسس لا يتعثر غالبًا لأنه لا يعمل، بل لأنه يعمل في المكان الخطأ` : `Every hour you spend on a ${fmt(v.rate, 0)}-SAR task, you pay yourself ${fmt(hour, 0)} SAR to do it. Founders rarely stall from not working; they stall from working in the wrong place`)
+          ? (L ? `كل ساعة تقضيها في مهمة قيمتها ${fmt(v.rate, 0)} ر.س، تدفع لنفسك ${fmt(hour, 0)} ر.س لتؤديها، المؤسس لا يتعثر غالبا لأنه لا يعمل، بل لأنه يعمل في المكان الخطأ` : `Every hour you spend on a ${fmt(v.rate, 0)}-SAR task, you pay yourself ${fmt(hour, 0)} SAR to do it. Founders rarely stall from not working; they stall from working in the wrong place`)
           : (L ? 'التفويض ليس أرخص بعد، رافعتك الأكبر الآن أن ترفع قيمة ساعتك نفسها: سعر، أو منتج، أو عميل أكبر' : 'Delegating isn’t cheaper yet. Your bigger lever is raising the value of your hour itself: price, product, or bigger clients')}
       />
     </>
@@ -751,13 +751,13 @@ const Delay: ToolFn = ({ lang, report }) => {
   const week = (v.gain * odds) / 4.33
   const day = (v.gain * odds) / 30
   report(L
-    ? `تأجيل ${fmt(v.wait, 0)} أشهر لقرار يضيف ${fmt(v.gain, 0)} ر.س شهريًا يكلّف قرابة ${fmt(lost, 0)} ر.س (${fmt(week, 0)} ر.س كل أسبوع)`
+    ? `تأجيل ${fmt(v.wait, 0)} أشهر لقرار يضيف ${fmt(v.gain, 0)} ر.س شهريا يكلف قرابة ${fmt(lost, 0)} ر.س (${fmt(week, 0)} ر.س كل أسبوع)`
     : `Waiting ${fmt(v.wait, 0)} months on a decision worth ${fmt(v.gain, 0)} SAR a month costs about ${fmt(lost, 0)} SAR (${fmt(week, 0)} SAR every week)`)
   return (
     <>
       <div className="tl-form">
-        <Num label={L ? 'ما سيضيفه القرار شهريًا حين يعمل' : 'What the decision adds per month once working'} unit={u.sar} {...bind('gain')} hint={L ? 'نظام، موظف، قناة بيع، تسعير جديد…' : 'A system, a hire, a sales channel, new pricing…'} />
-        <Num label={L ? 'كم شهرًا تفكر أن تؤجّل؟' : 'How many months are you thinking of waiting?'} {...bind('wait')} />
+        <Num label={L ? 'ما سيضيفه القرار شهريا حين يعمل' : 'What the decision adds per month once working'} unit={u.sar} {...bind('gain')} hint={L ? 'نظام، موظف، قناة بيع، تسعير جديد…' : 'A system, a hire, a sales channel, new pricing…'} />
+        <Num label={L ? 'كم شهرا تفكر أن تؤجل؟' : 'How many months are you thinking of waiting?'} {...bind('wait')} />
         <Num label={L ? 'احتمال أن ينجح كما تتوقع' : 'Chance it works as you expect'} unit="%" {...bind('odds')} />
       </div>
       <Result
@@ -769,7 +769,7 @@ const Delay: ToolFn = ({ lang, report }) => {
           [L ? 'كل يوم' : 'Every day', `${fmt(day, 0)} ${u.sar}`],
         ]}
         insight={L
-          ? 'الانتظار يبدو مجانيًا لأن ثمنه لا يصلك في فاتورة، عقولنا تبالغ في تقدير مخاطر الفعل، وتتجاهل خسارة التأخير، والأرباح المؤجلة لا تعود؛ الشهر الذي يمر لا يُستردّ'
+          ? 'الانتظار يبدو مجانيا لأن ثمنه لا يصلك في فاتورة، عقولنا تبالغ في تقدير مخاطر الفعل، وتتجاهل خسارة التأخير، والأرباح المؤجلة لا تعود؛ الشهر الذي يمر لا يسترد'
           : 'Waiting feels free because its price never arrives as a bill. Our minds overweight the risk of acting and ignore the loss of delay. And deferred profit doesn’t come back; a month that passes is gone'}
       />
     </>
@@ -798,7 +798,7 @@ const Oee: ToolFn = ({ lang, report }) => {
         <Num label={L ? 'وقت الوردية المخطط' : 'Planned shift time'} unit={L ? 'دقيقة' : 'min'} {...bind('planned')} />
         <Num label={L ? 'وقت التوقف' : 'Downtime'} unit={L ? 'دقيقة' : 'min'} {...bind('down')} />
         <Num label={L ? 'زمن الدورة المثالي للقطعة' : 'Ideal cycle time per unit'} unit={L ? 'ثانية' : 'sec'} {...bind('cycle')} />
-        <Num label={L ? 'إجمالي ما أُنتج' : 'Total produced'} {...bind('total')} />
+        <Num label={L ? 'إجمالي ما أنتج' : 'Total produced'} {...bind('total')} />
         <Num label={L ? 'القطع السليمة' : 'Good units'} {...bind('good')} />
         <Num label={L ? 'ربح القطعة الواحدة' : 'Profit per unit'} unit={u.sar} {...bind('cm')} />
       </div>
@@ -811,7 +811,7 @@ const Oee: ToolFn = ({ lang, report }) => {
           [L ? 'الأداء' : 'Performance', pct(P)],
           [L ? 'الجودة' : 'Quality', pct(Q)],
           [L ? 'فاقد هذه الوردية' : 'Lost this shift', `${fmt(lost, 0)} ${L ? 'وحدة' : 'units'} · ${fmt(lost * v.cm, 0)} ${u.sar}`],
-          [L ? 'شهريًا بوردية واحدة يوميًا' : 'Per month, one shift a day', `${fmt(lost * v.cm * 26, 0)} ${u.sar}`],
+          [L ? 'شهريا بوردية واحدة يوميا' : 'Per month, one shift a day', `${fmt(lost * v.cm * 26, 0)} ${u.sar}`],
         ]}
         insight={L ? 'المرجع العالمي للمصانع المتميزة نحو 85%، الفرق بينك وبينه ربح موجود عندك، لكنه لا يصل' : 'World-class plants sit around 85%. The gap is profit you already have, but never collect'}
       >
@@ -859,7 +859,7 @@ const Home: ToolFn = ({ lang, report }) => {
           [L ? 'السعر لو نسيت وقتك' : 'Price if you forget your time', `${fmt(Math.ceil(noTime), 0)} ${u.sar}`],
           ...(Number.isFinite(hourly) ? [[L ? 'بسعرك الحالي تكسب في الساعة' : 'At your current price, per hour', `${fmt(hourly, 0)} ${u.sar}`] as [string, string]] : []),
         ]}
-        insight={L ? 'وقتك تكلفة حقيقية، من لا يحسبه، يعمل مجانًا وهو يظن أنه يربح' : 'Your time is a real cost. Leave it out and you work for free while thinking you profit'}
+        insight={L ? 'وقتك تكلفة حقيقية، من لا يحسبه، يعمل مجانا وهو يظن أنه يربح' : 'Your time is a real cost. Leave it out and you work for free while thinking you profit'}
       />
     </>
   )
@@ -902,7 +902,7 @@ const Channel: ToolFn = ({ lang, report }) => {
           [L ? 'يصلك من كل وحدة' : 'You receive per unit', `${fmt(mineP)} ${u.sar} · ${pct(share, 0)}`],
           [L ? 'ربحك من كل وحدة' : 'Your profit per unit', `${fmt(mineP - v.cost)} ${u.sar}`],
         ]}
-        insight={L ? 'إن بدا سعر الرف مرتفعًا للمستهلك، فالحل غالبًا في التكلفة أو القناة، لا في هامشك وحدك' : 'If the shelf price looks high to shoppers, the fix is usually cost or channel, not your margin alone'}
+        insight={L ? 'إن بدا سعر الرف مرتفعا للمستهلك، فالحل غالبا في التكلفة أو القناة، لا في هامشك وحدك' : 'If the shelf price looks high to shoppers, the fix is usually cost or channel, not your margin alone'}
       >
         <ol className="tl-chain" aria-hidden="true">
           {steps.map(([k, n]) => <li key={k} style={{ ['--w' as string]: `${Math.max(8, Math.round((n / shelf) * 100))}%` }}><span>{k}</span><b dir="ltr">{fmt(n)}</b></li>)}

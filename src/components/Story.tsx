@@ -1,8 +1,8 @@
-// KON Story chapters: the idea, the gaps, the blend, the measure, and the company packages.
-// Motion is CSS only (driven by [data-reveal] → .is-in), so it costs nothing on phones.
+// KON Masterpiece (2026-11-27): the story chapters. One idea per screen, calm motion, plain white dialect.
+// Motion is CSS (driven by [data-reveal] → .is-in) except the gap ring, which turns with scroll and drag.
 import { useEffect, useRef, useState } from 'react'
 import posthog from 'posthog-js'
-import { useStory, STORY_TERMS, TEAM_COST, MONTH_HOURS, MONTH_DAYS, type StoryTier } from '../content/story'
+import { useStory, STORY_TERMS, TEAM_COST, MONTH_DAYS, type StoryTier } from '../content/story'
 import { BOOKING_URL, contact } from '../content/site'
 import { startOnboarding, useStore } from '../state/store'
 import { Rich } from './Rich'
@@ -10,33 +10,27 @@ import { SplitReveal } from './SplitReveal'
 import { lenis } from './SmoothScroll'
 import { Icon } from './Icons'
 
-/** The plain-words line every chapter ends on, so any reader leaves with the point. */
-export function Plain({ text }: { text: string }) {
-  const k = useStory().plainK
+function Head({ id, eyebrow, title, lede }: { id: string; eyebrow: string; title: string; lede?: string }) {
   return (
-    <p className="plain" data-reveal>
-      <span className="plain-k">{k}</span>
-      <span className="plain-t">{text}</span>
-    </p>
+    <div className="ch-head">
+      <p className="eyebrow centered" data-reveal>{eyebrow}</p>
+      <SplitReveal as="h2" id={id} className="display ch-title" text={title} />
+      {lede && <p className="ch-lede" data-reveal><Rich text={lede} /></p>}
+    </div>
   )
 }
 
 export function Idea() {
   const s = useStory().idea
   return (
-    <section id="idea" className="band st-idea" aria-labelledby="idea-title">
+    <section id="idea" className="band ch st-idea" aria-labelledby="idea-title">
       <div className="wrap">
-        <div className="narrow center sec-head">
-          <p className="eyebrow centered" data-reveal>{s.eyebrow}</p>
-          <SplitReveal as="h2" id="idea-title" className="display" text={s.title} />
-          <p className="body-lg" data-reveal>{s.lede}</p>
-        </div>
+        <Head id="idea-title" eyebrow={s.eyebrow} title={s.title} lede={s.lede} />
         <ol className="myths">
           {s.myths.map((m, i) => (
-            <li key={m.myth} className="myth glass" data-reveal style={{ ['--i' as string]: i }}>
+            <li key={m.myth} className="myth" data-reveal style={{ ['--i' as string]: i }}>
               <span className="myth-k">{s.mythK}</span>
-              <p className="myth-old"><s>{m.myth}</s></p>
-              <span className="myth-turn" aria-hidden="true" />
+              <p className="myth-old"><span>{m.myth}</span></p>
               <span className="myth-k is-truth">{s.truthK}</span>
               <p className="myth-new">{m.truth}</p>
             </li>
@@ -46,41 +40,125 @@ export function Idea() {
           <span className="def-k">{s.defK}</span>
           <p className="def-t"><Rich text={s.def} /></p>
         </div>
-        <Plain text={s.plain} />
+        <p className="ch-close" data-reveal>{s.close}</p>
       </div>
     </section>
   )
 }
 
+const STEP = 45
+
+/** The wall of the company as a ring: eight gaps, four inside and four outside, turning with the scroll. */
 export function Gaps() {
   const s = useStory().gaps
-  const side = (g: typeof s.inside, cls: string) => (
-    <div className={`gap-side ${cls}`}>
-      <p className="gap-k" data-reveal>{g.k}</p>
-      <ul>
-        {g.items.map((it, i) => (
-          <li key={it.t} className="gap-item" data-reveal style={{ ['--i' as string]: i }}>
-            <span className="gap-dot" aria-hidden="true" />
-            <div><h3>{it.t}</h3><p>{it.b}</p></div>
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
+  const items = s.inside.items.flatMap((x, i) => [{ ...x, side: s.inside.k, out: false }, { ...s.outside.items[i], side: s.outside.k, out: true }])
+  const sec = useRef<HTMLElement>(null)
+  const ring = useRef<HTMLDivElement>(null)
+  const st = useRef({ base: 0, drag: 0, shown: 0, raf: 0, down: false, x0: 0, d0: 0 })
+  const [active, setActive] = useState(0)
+
+  useEffect(() => {
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
+    const o = st.current
+    const paint = () => {
+      o.raf = 0
+      const target = o.base + o.drag
+      o.shown += (target - o.shown) * 0.12
+      if (Math.abs(target - o.shown) > 0.05) o.raf = requestAnimationFrame(paint)
+      const el = ring.current
+      if (!el) return
+      el.style.setProperty('--a', `${o.shown}deg`)
+      el.querySelectorAll<HTMLElement>('.rf').forEach((f, i) => {
+        const rel = ((i * STEP + o.shown) % 360 + 360) % 360
+        const c = Math.cos((rel * Math.PI) / 180)
+        f.style.opacity = String(0.18 + 0.82 * Math.max(0, c) ** 1.6)
+      })
+      const idx = ((Math.round(-o.shown / STEP) % 8) + 8) % 8
+      setActive((a) => (a === idx ? a : idx))
+    }
+    const kick = () => { if (!o.raf) o.raf = requestAnimationFrame(paint) }
+    const onScroll = () => {
+      if (reduced || o.down) return
+      const r = sec.current?.getBoundingClientRect()
+      if (!r) return
+      const vh = window.innerHeight
+      const p = Math.min(1, Math.max(0, (vh * 0.85 - r.top) / (r.height + vh * 0.2)))
+      o.base = -p * STEP * 7
+      kick()
+    }
+    onScroll()
+    kick()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(o.raf) }
+  }, [])
+
+  const turn = (d: number) => {
+    const o = st.current
+    o.drag += d * STEP
+    if (!o.raf) o.raf = requestAnimationFrame(function f() {
+      o.raf = 0
+      const target = o.base + o.drag
+      o.shown += (target - o.shown) * 0.14
+      ring.current?.style.setProperty('--a', `${o.shown}deg`)
+      ring.current?.querySelectorAll<HTMLElement>('.rf').forEach((el, i) => {
+        const rel = ((i * STEP + o.shown) % 360 + 360) % 360
+        el.style.opacity = String(0.18 + 0.82 * Math.max(0, Math.cos((rel * Math.PI) / 180)) ** 1.6)
+      })
+      const idx = ((Math.round(-o.shown / STEP) % 8) + 8) % 8
+      setActive((a) => (a === idx ? a : idx))
+      if (Math.abs(target - o.shown) > 0.05) o.raf = requestAnimationFrame(f)
+    })
+  }
+  const down = (e: React.PointerEvent) => {
+    const o = st.current
+    o.down = true; o.x0 = e.clientX; o.d0 = o.drag
+    ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+  }
+  const move = (e: React.PointerEvent) => {
+    const o = st.current
+    if (!o.down) return
+    const dir = document.documentElement.dir === 'rtl' ? -1 : 1
+    o.drag = o.d0 + (e.clientX - o.x0) * 0.35 * dir
+    turn(0)
+  }
+  const up = () => {
+    const o = st.current
+    if (!o.down) return
+    o.down = false
+    // Settle on the nearest face so one gap is always squarely in front.
+    const total = o.base + o.drag
+    o.drag += Math.round(total / STEP) * STEP - total
+    turn(0)
+  }
+  const it = items[active]
   return (
-    <section id="gaps" className="band st-gaps" aria-labelledby="gaps-title">
+    <section id="gaps" ref={sec} className="band ch st-gaps" aria-labelledby="gaps-title">
       <div className="wrap">
-        <div className="narrow center sec-head">
-          <p className="eyebrow centered" data-reveal>{s.eyebrow}</p>
-          <SplitReveal as="h2" id="gaps-title" className="display" text={s.title} />
-          <p className="body-lg" data-reveal><Rich text={s.lede} /></p>
+        <Head id="gaps-title" eyebrow={s.eyebrow} title={s.title} lede={s.lede} />
+        <div className="ring-wrap" data-reveal>
+          <p className="ring-k">{s.ring}</p>
+          <div className="ring-stage" onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} aria-hidden="true">
+            <div className="ring" ref={ring}>
+              {items.map((x, i) => (
+                <div key={x.t} className={`rf${x.out ? ' is-out' : ''}`} style={{ ['--i' as string]: i }}>
+                  <small>{x.side}</small>
+                  <b>{x.t}</b>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="ring-ctrl">
+            <button type="button" className="ring-btn" aria-label={s.prev} onClick={() => turn(1)}><span aria-hidden="true">‹</span></button>
+            <span className="ring-hint">{s.hint}</span>
+            <button type="button" className="ring-btn" aria-label={s.next} onClick={() => turn(-1)}><span aria-hidden="true">›</span></button>
+          </div>
+          <div className="ring-say" aria-live="polite" key={active}>
+            <span className={`ring-side${it.out ? ' is-out' : ''}`}>{it.side}</span>
+            <p className="ring-t">{it.t}</p>
+            <p className="ring-b">{it.b}</p>
+          </div>
         </div>
-        <div className="gap-map">
-          {side(s.inside, 'is-in-side')}
-          <div className="gap-wall" data-reveal aria-hidden="true"><span>{s.wall}</span></div>
-          {side(s.outside, 'is-out-side')}
-        </div>
-        <Plain text={s.plain} />
+        <p className="ch-close" data-reveal>{s.close}</p>
       </div>
     </section>
   )
@@ -89,55 +167,36 @@ export function Gaps() {
 export function Mix() {
   const s = useStory().mix
   return (
-    <section id="mix" className="band st-mix" aria-labelledby="mix-title">
+    <section id="mix" className="band ch st-mix" aria-labelledby="mix-title">
       <div className="wrap">
-        <div className="narrow center sec-head">
-          <p className="eyebrow centered" data-reveal>{s.eyebrow}</p>
-          <SplitReveal as="h2" id="mix-title" className="display" text={s.title} />
-          <p className="body-lg" data-reveal><Rich text={s.lede} /></p>
-        </div>
-        <div className="mix-stage">
-          <div className="venn" data-reveal aria-hidden="true">
-            <svg viewBox="0 0 300 280">
-              <defs>
-                <radialGradient id="vg" cx="50%" cy="50%" r="50%">
-                  <stop offset="0" stopColor="#5fe3d2" stopOpacity="0.22" />
-                  <stop offset="1" stopColor="#12a596" stopOpacity="0.03" />
-                </radialGradient>
-              </defs>
-              <circle className="vc vc-1" cx="150" cy="98" r="82" />
-              <circle className="vc vc-2" cx="102" cy="180" r="82" />
-              <circle className="vc vc-3" cx="198" cy="180" r="82" />
-            </svg>
-            <b className="venn-core">{s.center}</b>
-            {s.lenses.map((l, i) => <span key={l.k} className={`venn-l venn-l${i + 1}`}>{l.k}</span>)}
-          </div>
-          <ol className="lenses">
-            {s.lenses.map((l, i) => (
-              <li key={l.k} className="lens" data-reveal style={{ ['--i' as string]: i }}>
-                <span className="lens-n" dir="ltr">{String(i + 1).padStart(2, '0')}</span>
-                <h3>{l.k}</h3>
-                <p>{l.b}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-        <p className="out-k" data-reveal>{s.outK}</p>
-        <ul className="outcomes">
-          {s.outcomes.map((o, i) => (
-            <li key={o.t} className="outcome glass" data-reveal style={{ ['--i' as string]: i }}>
-              <h3>{o.t}</h3>
-              <p>{o.b}</p>
+        <Head id="mix-title" eyebrow={s.eyebrow} title={s.title} lede={s.lede} />
+        <ol className="lenses">
+          {s.lenses.map((l, i) => (
+            <li key={l.k} className="lens" data-reveal style={{ ['--i' as string]: i }}>
+              <span className="lens-n" dir="ltr">{String(i + 1).padStart(2, '0')}</span>
+              <b className="lens-k">{l.k}</b>
+              <p className="lens-q">{l.q}</p>
+              <p className="lens-b">{l.b}</p>
             </li>
           ))}
+        </ol>
+        <div className="merge" data-reveal aria-hidden="true">
+          <svg viewBox="0 0 600 120" preserveAspectRatio="none">
+            <path d="M100 0 C100 70 300 60 300 120" />
+            <path d="M300 0 L300 120" />
+            <path d="M500 0 C500 70 300 60 300 120" />
+          </svg>
+        </div>
+        <p className="merge-t" data-reveal>{s.close}</p>
+        <p className="out-k" data-reveal>{s.outK}</p>
+        <ul className="outs" data-reveal>
+          {s.outcomes.map((o) => <li key={o}>{o}</li>)}
         </ul>
-        <Plain text={s.plain} />
       </div>
     </section>
   )
 }
 
-/** Sits under the three steps: how the impact is counted. */
 export function Measure() {
   const s = useStory().how
   return (
@@ -152,7 +211,6 @@ export function Measure() {
         ))}
       </ol>
       <p className="measure-foot" data-reveal>{s.measureFoot}</p>
-      <Plain text={s.plain} />
     </div>
   )
 }
@@ -163,125 +221,82 @@ const fmt = (n: number) => n.toLocaleString('en-US')
 export function StoryPlans() {
   const p = useStory().plans
   const lang = useStore((s) => s.lang)
-  const [tab, setTab] = useState<'monthly' | 'results'>('monthly')
   const [ti, setTi] = useState(1)
   const [buy, setBuy] = useState<StoryTier | null>(null)
   const term = STORY_TERMS[ti]
   const arrow = lang === 'ar' ? '←' : '→'
   return (
-    <section id="plans" className="band plans st-plans" aria-labelledby="plans-title">
+    <section id="plans" className="band ch st-plans" aria-labelledby="plans-title">
       <div className="wrap">
-        <div className="narrow center sec-head">
-          <p className="eyebrow centered" data-reveal>{p.eyebrow}</p>
-          <SplitReveal as="h2" id="plans-title" className="display" text={p.title} />
-          <p className="body-lg" data-reveal><Rich text={p.lede} /></p>
+        <Head id="plans-title" eyebrow={p.eyebrow} title={p.title} lede={p.lede} />
+
+        <div className="term" data-reveal>
+          <p className="term-k" id="term-k">{p.term}</p>
+          <div className="term-seg" role="radiogroup" aria-labelledby="term-k">
+            {STORY_TERMS.map((t, i) => (
+              <button key={t.months} type="button" role="radio" aria-checked={ti === i} className={ti === i ? 'is-on' : ''} onClick={() => setTi(i)}>{p.months(t.months)}</button>
+            ))}
+          </div>
+          <p className="term-note">{p.termNotes[ti]}</p>
         </div>
 
-        <div className="pl-tabs" role="tablist" aria-label={p.eyebrow} data-reveal>
-          {(['monthly', 'results'] as const).map((k) => (
-            <button key={k} type="button" role="tab" id={`pt-${k}`} aria-selected={tab === k} aria-controls="pl-panel" className={`pl-tab${tab === k ? ' is-on' : ''}`} onClick={() => setTab(k)}>
-              {p.tabs[k]}
-            </button>
-          ))}
+        <ul className="pk-grid">
+          {p.tiers.map((t, i) => {
+            const locked = !!t.minMonths && term.months < t.minMonths
+            const monthly = round100(t.price * term.mult)
+            return (
+              <li key={t.id} className={`pk${t.tag ? ' is-featured' : ''}${locked ? ' is-locked' : ''}`} data-reveal style={{ ['--i' as string]: i }}>
+                {t.tag && <span className="pk-tag">{t.tag}</span>}
+                <p className="pk-name">{t.name}</p>
+                <p className="pk-line">{t.line}</p>
+                <p className="pk-price"><b dir="ltr">{fmt(monthly)}</b><span>{p.perMonth}</span></p>
+                {t.plus && <p className="pk-plus">{t.plus}</p>}
+                <p className="pk-day">{p.perDay(fmt(Math.round(monthly / MONTH_DAYS / 10) * 10))} · {t.mode}</p>
+                <p className="pk-gets-k">{p.gets}</p>
+                <ul className="pk-gets">{t.gets.map((g) => <li key={g}><Icon id="check" className="icon li-check" />{g}</li>)}</ul>
+                {locked
+                  ? <p className="pk-locked">{p.notOn3}</p>
+                  : <button type="button" className={`btn ${t.tag ? 'btn-primary' : 'btn-ghost'} pk-cta`} onClick={() => setBuy(t)}><span>{p.pick(t.name)}</span></button>}
+              </li>
+            )
+          })}
+        </ul>
+
+        <div className="cmp" data-reveal>
+          <p className="cmp-k">{p.compare.k}</p>
+          <div className="cmp-row">
+            <div className="cmp-side">
+              <span>{p.compare.you}</span>
+              <b dir="ltr">{fmt(TEAM_COST)}</b>
+              <small>{p.compare.youNote}</small>
+            </div>
+            <div className="cmp-side is-kon">
+              <span>{p.compare.kon}</span>
+              <b dir="ltr">{p.compare.konN}</b>
+              <small>{p.compare.konNote}</small>
+            </div>
+          </div>
+          <p className="fine center">{p.compare.src}</p>
         </div>
 
-        {tab === 'monthly' ? (
-          <div role="tabpanel" id="pl-panel" aria-labelledby="pt-monthly" className="pl-panel">
-            <div className="pl-terms" role="radiogroup" aria-label={p.term}>
-              <span className="pl-terms-k">{p.term}</span>
-              {STORY_TERMS.map((t, i) => (
-                <button key={t.months} type="button" role="radio" aria-checked={ti === i} className={`pl-term${ti === i ? ' is-on' : ''}`} onClick={() => setTi(i)}>
-                  <b>{p.months(t.months)}</b>
-                  <small>{p.termNotes[i]}</small>
-                </button>
-              ))}
-            </div>
+        <div className="promise" data-reveal>
+          <span>{p.promise.k}</span>
+          <p>{p.promise.t}</p>
+        </div>
+        <p className="fine center">{p.payNote}</p>
 
-            <ol className="pl-grid">
-              {p.tiers.map((t) => {
-                const off = (t.minMonths ?? 0) > term.months
-                const monthly = round100(t.price * term.mult)
-                return (
-                  <li key={t.id} className={`pl-card glass${t.tag ? ' is-pick' : ''}${off ? ' is-off' : ''}`}>
-                    {t.tag && <span className="pl-tag">{t.tag}</span>}
-                    <p className="pl-mode"><Icon id={t.id === 'core' ? 'web' : t.id === 'growth' ? 'flow' : 'company'} className="icon" />{t.mode}</p>
-                    <h3 className="pl-name">{t.name}</h3>
-                    <p className="pl-line">{t.line}</p>
-                    {off ? (
-                      <p className="pl-price pl-na"><b>{p.notOn3}</b></p>
-                    ) : (
-                      <p className="pl-price"><b dir="ltr">{fmt(monthly)}</b><span>{p.perMonth}</span></p>
-                    )}
-                    {t.plus && <p className="pl-plus">{t.plus}</p>}
-                    {!off && (
-                      <div className="pl-value">
-                        <p className="pl-hour">{p.perHour(String(Math.round(monthly / MONTH_HOURS)), fmt(Math.round(monthly / MONTH_DAYS / 10) * 10))}</p>
-                        <p className="pl-vs">{p.vsTeam(String(Math.round(TEAM_COST / MONTH_HOURS)))}</p>
-                        <span className="pl-bar" aria-hidden="true"><i style={{ width: `${Math.min(100, (monthly / TEAM_COST) * 100)}%` }} /></span>
-                        <p className="pl-save">{p.save(fmt(round100(TEAM_COST - monthly)), Math.round((1 - monthly / TEAM_COST) * 100))}</p>
-                      </div>
-                    )}
-                    {!off && <p className="pl-total">{p.total(fmt(monthly * term.months), term.months)}</p>}
-                    <p className="pl-hours">{t.hours}</p>
-                    <p className="pl-k">{p.forWho}</p>
-                    <p className="pl-for">{t.forWho}</p>
-                    <p className="pl-k">{p.pains}</p>
-                    <ul className="pl-pains">{t.pains.map((x) => <li key={x}>{x}</li>)}</ul>
-                    <p className="pl-k">{p.gets}</p>
-                    <ul className="pl-gets">{t.gets.map((x) => <li key={x}>{x}</li>)}</ul>
-                    <button type="button" disabled={off} className={`btn ${t.tag ? 'btn-primary' : 'btn-ghost'} pl-cta`} onClick={() => setBuy(t)}><span>{p.pick(t.name)}</span></button>
-                  </li>
-                )
-              })}
-            </ol>
-            <div className="pl-every glass" data-reveal>
-              <p className="pl-k">{p.every}</p>
-              <ul>{p.everyItems.map((x) => <li key={x}><Icon id="check" className="icon" />{x}</li>)}</ul>
-            </div>
-            {term.months === 12 && <p className="pl-perks glass">{p.perks12}</p>}
-            <p className="pl-seats">{p.seats}</p>
-            <div className="pl-team glass">
-              <div className="pl-team-head"><p className="pl-k">{p.team.k}</p><b>{p.team.total}</b></div>
-              <ul>{p.team.roles.map((r) => <li key={r.r}><span>{r.r}</span><b dir="ltr">{r.n}</b></li>)}</ul>
-              <p className="pl-team-foot">{p.team.foot}</p>
-              <p className="fine">{p.team.src}</p>
-            </div>
-            <p className="fine pl-note">{p.payNote}</p>
-          </div>
-        ) : (
-          <div role="tabpanel" id="pl-panel" aria-labelledby="pt-results" className="pl-panel">
-            <div className="narrow center pl-rhead">
-              <h3 className="pl-rtitle">{p.results.title}</h3>
-              <p className="body-lg"><Rich text={p.results.lede} /></p>
-            </div>
-            <ol className="pl-steps">
-              {p.results.steps.map((s, i) => (
-                <li key={s.title} className="pl-step glass">
-                  <span className="pl-num" dir="ltr">{String(i + 1).padStart(2, '0')}</span>
-                  <h4>{s.title}</h4>
-                  <p>{s.body}</p>
-                </li>
-              ))}
-            </ol>
-            <ul className="pl-offers">
-              {p.results.offers.map((o) => (
-                <li key={o.title} className="pl-offer glass">
-                  <h4>{o.title}</h4>
-                  <p>{o.body}</p>
-                  <p className="pl-share"><b>{o.share}</b><span>{o.period}</span></p>
-                </li>
-              ))}
-            </ul>
-            <div className="pl-clear glass">
-              <p className="pl-k">{p.results.clear}</p>
-              <ul>{p.results.clearItems.map((x) => <li key={x}>{x}</li>)}</ul>
-              <p className="fine">{p.results.floor}</p>
-              <button type="button" className="btn btn-primary" onClick={() => startOnboarding({ persona: 'business' })}><span>{p.results.cta}</span></button>
-            </div>
-          </div>
-        )}
-        <Plain text={p.plain} />
-        <p className="pl-unsure">{p.unsure} <a href="#start" className="link-btn">{p.unsureCta} <span aria-hidden="true">{arrow}</span></a></p>
+        <div className="res" data-reveal>
+          <p className="res-k">{p.results.k}</p>
+          <h3 className="res-t">{p.results.title}</h3>
+          <p className="res-l">{p.results.lede}</p>
+          <ul className="res-offers">
+            {p.results.offers.map((o) => <li key={o.title}><b>{o.title}</b><span>{o.share}</span></li>)}
+          </ul>
+          <p className="fine center">{p.results.floor}</p>
+          <button type="button" className="btn btn-ghost" onClick={() => startOnboarding({ persona: 'business' })}><span>{p.results.cta}</span></button>
+        </div>
+
+        <p className="pl-unsure" data-reveal>{p.unsure} <a href="#start" className="link-btn">{p.unsureCta} <span aria-hidden="true">{arrow}</span></a></p>
       </div>
       {buy && <BuySheet tier={buy} months={term.months} monthly={round100(buy.price * term.mult)} onClose={() => setBuy(null)} />}
     </section>
@@ -430,7 +445,7 @@ export function Big() {
           </div>
         </div>
 
-        <Plain text={s.plain} />
+        <p className="ch-close" data-reveal>{s.close}</p>
         <p className="fine center bg-note">{s.note}</p>
       </div>
     </section>

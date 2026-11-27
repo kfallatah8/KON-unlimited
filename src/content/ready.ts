@@ -53,7 +53,7 @@ export const demos: Demo[] = [
   {
     service: 'web',
     title: { ar: 'الشفق', en: 'Aurora' },
-    note: { ar: 'تصميم مقترح لموقع KON، بمؤثرات ضوئية حيّة', en: 'A KON site concept with live light shaders' },
+    note: { ar: 'تصميم مقترح لموقع KON، بمؤثرات ضوئية حية', en: 'A KON site concept with live light shaders' },
     url: 'demos/aurora/',
     previewUrl: 'https://claude.ai/artifact/GA1cTWVAG9b9z2KUFZEZ4D',
     thumb: thumbAurora,

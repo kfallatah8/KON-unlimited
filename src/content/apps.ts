@@ -44,12 +44,12 @@ export const apps: Record<string, App> = {
  },
  "budibase": {
   "name": "Budibase",
-  "ar": "نماذج وتطبيقات موافقات وبوابات تُبنى في أيام مع قاعدة بيانات مدمجة",
+  "ar": "نماذج وتطبيقات موافقات وبوابات تبنى في أيام مع قاعدة بيانات مدمجة",
   "en": "Forms, approval apps and portals built in days, with a built-in database"
  },
  "cal": {
   "name": "Cal.diy",
-  "ar": "صفحات حجز مواعيد مثل Calendly: يختار العميل الوقت ويصله تذكير ويتحدث التقويم تلقائياً",
+  "ar": "صفحات حجز مواعيد مثل Calendly: يختار العميل الوقت ويصله تذكير ويتحدث التقويم تلقائيا",
   "en": "Online booking pages like Calendly: clients pick a time, get reminders and the calendar updates itself"
  },
  "chatwoot": {
@@ -79,7 +79,7 @@ export const apps: Record<string, App> = {
  },
  "docassemble": {
   "name": "docassemble",
-  "ar": "مقابلات موجّهة تولّد المستندات القانونية: يجيب العميل على الأسئلة فيُصاغ العقد أو المذكرة تلقائياً",
+  "ar": "مقابلات موجهة تولد المستندات القانونية: يجيب العميل على الأسئلة فيصاغ العقد أو المذكرة تلقائيا",
   "en": "Guided interviews that write legal documents: the client answers questions, the contract or memo drafts itself"
  },
  "docling": {
@@ -94,7 +94,7 @@ export const apps: Record<string, App> = {
  },
  "documenso": {
   "name": "Documenso",
-  "ar": "بديل مفتوح لـ DocuSign لإرسال المستندات للتوقيع ومتابعة من وقّع",
+  "ar": "بديل مفتوح لـ DocuSign لإرسال المستندات للتوقيع ومتابعة من وقع",
   "en": "Open DocuSign alternative for sending documents to be signed and tracking who signed"
  },
  "docuseal": {
@@ -194,7 +194,7 @@ export const apps: Record<string, App> = {
  },
  "heyform": {
   "name": "HeyForm",
-  "ar": "نماذج حوارية لجمع العملاء والحجوزات والاختبارات، سؤالاً بعد سؤال",
+  "ar": "نماذج حوارية لجمع العملاء والحجوزات والاختبارات، سؤالا بعد سؤال",
   "en": "Conversational forms for leads, bookings and quizzes, one question at a time"
  },
  "hievents": {
@@ -354,7 +354,7 @@ export const apps: Record<string, App> = {
  },
  "onlyoffice": {
   "name": "ONLYOFFICE Docs",
-  "ar": "تحرير ملفات وورد وإكسل وباوربوينت جماعياً في المتصفح مع دعم كامل للعربية",
+  "ar": "تحرير ملفات وورد وإكسل وباوربوينت جماعيا في المتصفح مع دعم كامل للعربية",
   "en": "Edit Word, Excel and PowerPoint files together in the browser, with full right-to-left support"
  },
  "openboxes": {
@@ -379,7 +379,7 @@ export const apps: Record<string, App> = {
  },
  "opensign": {
   "name": "OpenSign",
-  "ar": "توقيع إلكتروني بقوالب وترتيب للموقّعين وسجل تدقيق",
+  "ar": "توقيع إلكتروني بقوالب وترتيب للموقعين وسجل تدقيق",
   "en": "E-signature with templates, signing order and audit trail"
  },
  "orangehrm": {
@@ -399,7 +399,7 @@ export const apps: Record<string, App> = {
  },
  "paperless": {
   "name": "Paperless-ngx",
-  "ar": "امسح الأوراق مرة واحدة ثم ابحث في كل مستند بنصه، مع قراءة النص العربي ضوئياً",
+  "ar": "امسح الأوراق مرة واحدة ثم ابحث في كل مستند بنصه، مع قراءة النص العربي ضوئيا",
   "en": "Scan paper files once, then search every document by its text. Reads Arabic with OCR"
  },
  "payload": {
@@ -449,7 +449,7 @@ export const apps: Record<string, App> = {
  },
  "qgis": {
   "name": "QGIS",
-  "ar": "نظم معلومات جغرافية احترافية: خرائط، مسح مواقع، قطع أراضٍ وطبقات بيئية",
+  "ar": "نظم معلومات جغرافية احترافية: خرائط، مسح مواقع، قطع أراض وطبقات بيئية",
   "en": "Professional GIS: maps, site surveys, land plots and environmental layers"
  },
  "qlo": {
@@ -544,7 +544,7 @@ export const apps: Record<string, App> = {
  },
  "vault": {
   "name": "Vaultwarden",
-  "ar": "مدير كلمات مرور للشركة متوافق مع تطبيقات Bitwarden، بدلاً من تداولها في المحادثات",
+  "ar": "مدير كلمات مرور للشركة متوافق مع تطبيقات Bitwarden، بدلا من تداولها في المحادثات",
   "en": "Company password manager compatible with Bitwarden apps; stops passwords living in WhatsApp chats"
  },
  "vikunja": {
@@ -559,7 +559,7 @@ export const apps: Record<string, App> = {
  },
  "windmill": {
   "name": "Windmill",
-  "ar": "يحوّل السكربتات إلى مهام مجدولة ومسارات موافقة وتطبيقات داخلية صغيرة",
+  "ar": "يحول السكربتات إلى مهام مجدولة ومسارات موافقة وتطبيقات داخلية صغيرة",
   "en": "Turns scripts into scheduled jobs, approval flows and small internal apps"
  },
  "woo": {
@@ -595,7 +595,7 @@ export const sectors: Sector[] = [
   "ar": "لكل الأعمال",
   "en": "Every business",
   "line": {
-   "ar": "أرقامك موزّعة بين إكسل وواتساب والدفاتر؟ هنا الأساس: المحاسبة، والمبيعات، والموظفون، وخدمة العملاء في مكان واحد",
+   "ar": "أرقامك موزعة بين إكسل وواتساب والدفاتر؟ هنا الأساس: المحاسبة، والمبيعات، والموظفون، وخدمة العملاء في مكان واحد",
    "en": "Numbers scattered across Excel, WhatsApp and notebooks? This is the base: accounting, sales, staff and customer service in one place"
   },
   "apps": [
@@ -640,7 +640,7 @@ export const sectors: Sector[] = [
   "ar": "الذكاء الاصطناعي والأتمتة",
   "en": "AI & automation",
   "line": {
-   "ar": "تجيب عن الأسئلة نفسها كل يوم، وتنقل البيانات بين الأنظمة يدويًا؟ ذكاء اصطناعي خاص يعمل من ملفات شركتك، وأتمتة تُنهي العمل المكرّر",
+   "ar": "تجيب عن الأسئلة نفسها كل يوم، وتنقل البيانات بين الأنظمة يدويا؟ ذكاء اصطناعي خاص يعمل من ملفات شركتك، وأتمتة تنهي العمل المكرر",
    "en": "Answering the same questions daily and copying data by hand? Private AI that works from your own files, and automation that ends repetitive work"
   },
   "apps": [
@@ -661,7 +661,7 @@ export const sectors: Sector[] = [
   "ar": "التطبيقات الداخلية والمعرفة",
   "en": "Internal apps & knowledge",
   "line": {
-   "ar": "إجراءات تعيش في رأس موظف واحد، وتضيع حين يغادر؟ دليل مكتوب للشركة، وتطبيقات داخلية صغيرة بدل ملفات إكسل الهشّة",
+   "ar": "إجراءات تعيش في رأس موظف واحد، وتضيع حين يغادر؟ دليل مكتوب للشركة، وتطبيقات داخلية صغيرة بدل ملفات إكسل الهشة",
    "en": "Procedures that live in one person's head and leave with them? A written company manual, and small internal apps instead of fragile spreadsheets"
   },
   "apps": [
@@ -705,7 +705,7 @@ export const sectors: Sector[] = [
   "ar": "وكالات التسويق",
   "en": "Marketing agencies",
   "line": {
-   "ar": "ساعات عمل لا تُفوتَر، وتقرير العميل يأخذ يومًا كاملًا؟ جدولة المحتوى، وتقارير العملاء، وتتبّع الساعات في مكان واحد",
+   "ar": "ساعات عمل لا تفوتر، وتقرير العميل يأخذ يوما كاملا؟ جدولة المحتوى، وتقارير العملاء، وتتبع الساعات في مكان واحد",
    "en": "Unbilled hours, and client reports that eat a whole day? Content scheduling, client reporting and time tracking in one place"
   },
   "apps": [
@@ -733,7 +733,7 @@ export const sectors: Sector[] = [
   "ar": "المقاولات والبناء",
   "en": "Construction",
   "line": {
-   "ar": "تأخير في الموقع لا يصلك خبره إلا متأخرًا؟ جداول المشروع، ومستندات الموقع، والمعدات، ونماذج BIM مشتركة بين المكتب والموقع",
+   "ar": "تأخير في الموقع لا يصلك خبره إلا متأخرا؟ جداول المشروع، ومستندات الموقع، والمعدات، ونماذج BIM مشتركة بين المكتب والموقع",
    "en": "Site delays you only hear about too late? Schedules, site documents, equipment and BIM models shared between office and site"
   },
   "apps": [
@@ -753,7 +753,7 @@ export const sectors: Sector[] = [
   "ar": "مكاتب المحاماة",
   "en": "Law firms",
   "line": {
-   "ar": "وقت المحامي يضيع في صياغة المستندات والبحث عن الملفات؟ عقود تُنشأ آليًا، وملفات قضايا منظّمة، وتوقيع إلكتروني، وساعات فوترة",
+   "ar": "وقت المحامي يضيع في صياغة المستندات والبحث عن الملفات؟ عقود تنشأ آليا، وملفات قضايا منظمة، وتوقيع إلكتروني، وساعات فوترة",
    "en": "Lawyers' hours lost to drafting and hunting for files? Automated contracts, organised case files, e-signatures and billable hours"
   },
   "apps": [
@@ -773,7 +773,7 @@ export const sectors: Sector[] = [
   "ar": "صالونات التجميل",
   "en": "Beauty salons",
   "line": {
-   "ar": "مواعيد تُحجز ثم لا تحضر صاحبتها؟ حجز أونلاين بتقويم لكل موظفة، وتذكيرات تلقائية، ونقطة بيع للمنتجات",
+   "ar": "مواعيد تحجز ثم لا تحضر صاحبتها؟ حجز أونلاين بتقويم لكل موظفة، وتذكيرات تلقائية، ونقطة بيع للمنتجات",
    "en": "Bookings that never show up? Online booking with a calendar per stylist, automatic reminders, and a POS for retail products"
   },
   "apps": [
@@ -790,7 +790,7 @@ export const sectors: Sector[] = [
   "ar": "التطوير والتسويق العقاري",
   "en": "Real estate",
   "line": {
-   "ar": "عميل مهتم يضيع بين الاتصالات والمعاينات؟ موقع للوحدات، وجولات ⁦360°⁩، وإدارة للمشترين، وحجوزات موقّعة إلكترونيًا",
+   "ar": "عميل مهتم يضيع بين الاتصالات والمعاينات؟ موقع للوحدات، وجولات ⁦360°⁩، وإدارة للمشترين، وحجوزات موقعة إلكترونيا",
    "en": "Interested buyers lost between calls and viewings? A listings site, ⁦360°⁩ tours, buyer management and e-signed reservations"
   },
   "apps": [
@@ -831,7 +831,7 @@ export const sectors: Sector[] = [
   "ar": "المصانع",
   "en": "Factories",
   "line": {
-   "ar": "آلة تتوقف، ولا تعرف كم كلّفك توقفها؟ قوائم المواد، والمخزون، والصيانة الوقائية، وبيانات الآلات لحظة بلحظة",
+   "ar": "آلة تتوقف، ولا تعرف كم كلفك توقفها؟ قوائم المواد، والمخزون، والصيانة الوقائية، وبيانات الآلات لحظة بلحظة",
    "en": "A machine stops and nobody knows what it cost? Bills of materials, stock, preventive maintenance and live machine data"
   },
   "apps": [
@@ -850,7 +850,7 @@ export const sectors: Sector[] = [
   "ar": "مكاتب الإشراف الهندسي",
   "en": "Engineering supervision",
   "line": {
-   "ar": "ملاحظات الإشراف ضائعة بين الرسائل والأوراق؟ مراجعة المخططات ونماذج BIM، وتوثيق زيارات الموقع، وأرشيف منظّم",
+   "ar": "ملاحظات الإشراف ضائعة بين الرسائل والأوراق؟ مراجعة المخططات ونماذج BIM، وتوثيق زيارات الموقع، وأرشيف منظم",
    "en": "Inspection notes lost between messages and paper? Drawing and BIM review, documented site visits and a clean archive"
   },
   "apps": [
@@ -891,7 +891,7 @@ export const sectors: Sector[] = [
   "ar": "الجمعيات الخيرية",
   "en": "Charities",
   "line": {
-   "ar": "المتبرّع يريد أن يرى الأثر، والفريق غارق في الجداول؟ إدارة المتبرّعين والمستفيدين، والمسوحات الميدانية، وتقارير شفافة",
+   "ar": "المتبرع يريد أن يرى الأثر، والفريق غارق في الجداول؟ إدارة المتبرعين والمستفيدين، والمسوحات الميدانية، وتقارير شفافة",
    "en": "Donors want to see impact while the team drowns in spreadsheets? Donor and beneficiary management, field surveys and transparent reports"
   },
   "apps": [
@@ -910,7 +910,7 @@ export const sectors: Sector[] = [
   "ar": "تأجير السيارات",
   "en": "Car rentals",
   "line": {
-   "ar": "خلاف على ضرر في السيارة، ولا دليل معك؟ حجز أونلاين، وتتبّع المركبات، والصيانة، وعقود تأجير موثّقة",
+   "ar": "خلاف على ضرر في السيارة، ولا دليل معك؟ حجز أونلاين، وتتبع المركبات، والصيانة، وعقود تأجير موثقة",
    "en": "A damage dispute and no proof? Online booking, vehicle tracking, maintenance and documented rental contracts"
   },
   "apps": [
@@ -928,7 +928,7 @@ export const sectors: Sector[] = [
   "ar": "وكالات السياحة",
   "en": "Travel agencies",
   "line": {
-   "ar": "العميل يسأل كثيرًا قبل أن يحجز؟ إدارة الرحلات والتذاكر والإقامات، ومعاينة الوجهة افتراضيًا قبل السفر",
+   "ar": "العميل يسأل كثيرا قبل أن يحجز؟ إدارة الرحلات والتذاكر والإقامات، ومعاينة الوجهة افتراضيا قبل السفر",
    "en": "Clients ask a lot before they book? Trips, tickets and stays managed in one place, with virtual previews of the destination"
   },
   "apps": [
@@ -947,7 +947,7 @@ export const sectors: Sector[] = [
   "ar": "مكاتب الاستقدام",
   "en": "Recruitment offices",
   "line": {
-   "ar": "«وين وصل العامل؟» عشرات المرات يوميًا؟ ملفات المرشحين، ووثائق التأشيرات والجوازات، وتحديث الحالة لصاحب العمل",
+   "ar": "«وين وصل العامل؟» عشرات المرات يوميا؟ ملفات المرشحين، ووثائق التأشيرات والجوازات، وتحديث الحالة لصاحب العمل",
    "en": "\"Where is my worker?\" dozens of times a day? Candidate files, visa and passport documents, and status updates for employers"
   },
   "apps": [
@@ -983,7 +983,7 @@ export const sectors: Sector[] = [
   "ar": "المتاجر الإلكترونية",
   "en": "E-commerce",
   "line": {
-   "ar": "زوّار كثيرون، وسلات تُترك قبل الدفع؟ متجر متكامل، ثم التحليلات، والبريد، وصندوق رسائل العملاء",
+   "ar": "زوار كثيرون، وسلات تترك قبل الدفع؟ متجر متكامل، ثم التحليلات، والبريد، وصندوق رسائل العملاء",
    "en": "Plenty of visitors, carts abandoned before checkout? A complete store, then analytics, email and a customer inbox"
   },
   "apps": [
@@ -1022,7 +1022,7 @@ export const sectors: Sector[] = [
   "ar": "مراكز التدريب والأكاديميات",
   "en": "Training & academies",
   "line": {
-   "ar": "تدرّب كل موظف جديد من الصفر؟ دورات، واختبارات، وشهادات لعملائك أو لفريقك",
+   "ar": "تدرب كل موظف جديد من الصفر؟ دورات، واختبارات، وشهادات لعملائك أو لفريقك",
    "en": "Training every new hire from scratch? Courses, quizzes and certificates for your clients or your own team"
   },
   "apps": [
@@ -1038,7 +1038,7 @@ export const sectors: Sector[] = [
   "ar": "الاستضافة والدعم",
   "en": "Hosting & support",
   "line": {
-   "ar": "من يتابع أنظمتك بعد أن تعمل؟ نستضيفها، ونراقبها، ونحفظ كلمات المرور، وندعم فريقك عن بُعد",
+   "ar": "من يتابع أنظمتك بعد أن تعمل؟ نستضيفها، ونراقبها، ونحفظ كلمات المرور، وندعم فريقك عن بعد",
    "en": "Who looks after your systems once they're live? We host them, monitor them, keep passwords safe and support your team remotely"
   },
   "apps": [

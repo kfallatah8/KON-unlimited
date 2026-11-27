@@ -6,10 +6,8 @@ import type { CaseItem } from './content/site'
 import { BOOKING_URL, contact, SHOW_SOLUTIONS, SHOW_TALENT, tourUrl, type IconId } from './content/site'
 const Talent = lazy(() => import('./components/Talent').then((m) => ({ default: m.Talent })))
 const Solutions = lazy(() => import('./components/Solutions').then((m) => ({ default: m.Solutions })))
-import { KonGlass } from './components/KonGlass'
 import { detectCapabilities } from './lib/capabilities'
 import { motion, setLang, startOnboarding, useStore } from './state/store'
-import { Cursor } from './components/Cursor'
 import { Icon, GemMark } from './components/Icons'
 import { MagneticButton } from './components/MagneticButton'
 import { chipPain, Onboarding } from './components/Onboarding'
@@ -228,28 +226,22 @@ function Rotator({ lines, ready }: { lines: string[]; ready: boolean }) {
 }
 
 function Hero({ ready }: { ready: boolean }) {
-  const c = useContent()
-  const h = c.hero
+  const h = useContent().hero
+  void ready
   return (
-    <section id="top" className="hero" aria-labelledby="hero-title">
+    <section id="top" className="hero mp-hero" aria-labelledby="hero-title">
       <div className="hero-copy">
-        <p className="eyebrow hero-fade"><span className="eyebrow-text"><Rich text={h.eyebrow} /></span></p>
+        <p className="hero-kicker hero-fade">{h.kicker}</p>
         <h1 id="hero-title" className="hero-title hero-statement">
-          {h.statement.map((l, i) => <span key={l} className="hs-line" style={{ transitionDelay: `${0.15 + i * 0.22}s` }}>{l}</span>)}
+          {h.statement.map((l, i) => <span key={l} className="hs-line" style={{ transitionDelay: `${0.9 + i * 0.35}s` }}>{l}</span>)}
         </h1>
         <p className="hero-lede hero-fade"><Rich text={h.lede} /></p>
         <div className="hero-ctas hero-fade">
-          <MagneticButton href="#start">{h.primary}</MagneticButton>
-          <MagneticButton href="#plans" variant="ghost">{h.secondary}</MagneticButton>
+          <MagneticButton href="#problem">{h.secondary}</MagneticButton>
+          <a className="link-btn hero-book" href="#start">{h.primary}</a>
         </div>
-        <p className="hero-micro hero-fade">{h.micro}</p>
       </div>
-      <ul className="proof hero-fade" aria-label="KON">
-        {h.proof.map((p) => (
-          <li key={p.l}><b dir="ltr"><CountUp value={p.n} play={ready} /></b><span>{p.l}</span><small>{p.s}</small></li>
-        ))}
-      </ul>
-      <a href="#idea" className="scroll-cue"><b className="breath-ring" aria-hidden="true" /><span>{h.scroll}</span><i aria-hidden="true" /></a>
+      <a href="#problem" className="mp-cue hero-fade"><b>{h.scroll}</b><small>{h.scrollSub}</small><i aria-hidden="true" /></a>
     </section>
   )
 }
@@ -258,28 +250,25 @@ function Problem() {
   const p = useContent().problem
   const lang = useStore((s) => s.lang)
   return (
-    <section id="problem" className="band problem" aria-labelledby="problem-title">
-      <div className="wrap narrow center">
-        <SplitReveal as="h2" id="problem-title" className="display" text={p.title} />
-        {p.lines.map((l) => <p key={l} className="problem-line" data-reveal>{l}</p>)}
-        <p className="problem-close" data-reveal>{p.closing}</p>
-      </div>
-      <div className="wrap paths">
-        {p.paths.map((path) => (
-          <div key={path.persona} className="path glass" data-reveal>
-            <button type="button" className="path-head" onClick={() => startOnboarding({ persona: path.persona })}>
-              <Icon id={path.persona === 'founder' ? 'seed' : path.persona === 'investor' ? 'compass' : 'company'} className="icon path-gem" /><span>{path.label}</span><i aria-hidden="true">{lang === 'ar' ? '←' : '→'}</i>
+    <section id="problem" className="band ch problem mp-problem" aria-labelledby="problem-title">
+      <div className="wrap">
+        <div className="ch-head">
+          <SplitReveal as="h2" id="problem-title" className="display ch-title" text={p.title} />
+          <ul className="pb-qs" data-reveal>{p.qs.map((q) => <li key={q}>{q}</li>)}</ul>
+          <p className="pb-close" data-reveal>{p.closing}</p>
+        </div>
+        <p className="pb-who" data-reveal>{p.whoK}</p>
+        <div className="pb-paths">
+          {p.paths.map((path, i) => (
+            <button key={path.persona} type="button" className="pb-path" data-reveal style={{ ['--i' as string]: i }} onClick={() => startOnboarding({ persona: path.persona })}>
+              <Icon id={path.persona === 'founder' ? 'seed' : path.persona === 'investor' ? 'compass' : 'company'} className="icon pb-gem" />
+              <b>{path.label}</b>
+              <span>{path.d}</span>
+              <i aria-hidden="true">{lang === 'ar' ? '←' : '→'}</i>
             </button>
-            <div className="path-chips">
-              {path.q.map((q) => (
-                <button key={q} type="button" className="chip" onClick={() => startOnboarding({ persona: path.persona, pains: [chipPain(q)].filter(Boolean) })}>{q}</button>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="wrap center investor-line" data-reveal>
-        <p className="hint">{p.hint}</p>
+          ))}
+        </div>
+        <p className="pb-hint" data-reveal>{p.hint}</p>
       </div>
     </section>
   )
@@ -341,10 +330,10 @@ function Who() {
  *  (Draft copy, awaiting khalid's approval.) */
 const INTERLUDE = {
   ar: {
-    press: 'الضغط ما يكسرك…',
+    press: 'الضغط ما يكسرك',
     reveal: 'يكشفك',
-    fact: { kick: 'الألماس والفحم من', key: 'عنصر واحد', q: 'وش الفرق؟', a1: 'ضغطٌ هائل', a2: 'ووقتٌ طويل' },
-    value: { kick: 'عطينا الحجر قيمة عالية…', lead: 'ونسينا نعطيها', key: 'لأنفسنا' },
+    fact: { kick: 'الألماس والفحم أصلهم', key: 'عنصر واحد', q: 'وش الفرق بينهم؟', a1: 'ضغط كبير', a2: 'ووقت طويل' },
+    value: { kick: 'عطينا الحجر قيمة عالية', lead: 'ونسينا نعطيها', key: 'لأنفسنا' },
     within: { lead: 'التغيير يبدأ', key: 'من الداخل', label: 'التغيير يبدأ من الداخل' },
   },
   en: {
@@ -514,7 +503,7 @@ function QuickTools() {
             </button>
           ))}
         </div>
-        <p className="qt-step" ref={panel}><i>2</i>{lang === 'ar' ? 'حط أرقامك، والنتيجة تتغيّر قدامك' : 'Put in your numbers, the answer updates as you type'}</p>
+        <p className="qt-step" ref={panel}><i>2</i>{lang === 'ar' ? 'حط أرقامك، والنتيجة تتغير قدامك' : 'Put in your numbers, the answer updates as you type'}</p>
         <div className="qt-panel glass" role="tabpanel">
           <Tool key={id} id={id} lang={lang} report={(x) => { summary.current = x }} />
           <div className="qt-foot">
@@ -557,7 +546,7 @@ export function Freebies() {
   )
 }
 
-function More() {
+export function More() {
   const m = useContent().more
   const lang = useStore((s) => s.lang)
   return (
@@ -846,6 +835,7 @@ function Finale({ fallback }: { fallback: boolean }) {
           <p className="finale-line">{f.line}</p>
           <p className="finale-line2">{f.line2}</p>
           <MagneticButton href="#start">{f.cta}</MagneticButton>
+          <a href="#top" className="link-btn finale-again">{f.again} <span aria-hidden="true">↺</span></a>
         </div>
       </div>
     </section>
@@ -859,7 +849,7 @@ function Footer() {
     <footer className="site-footer">
       <div className="wrap footer-grid">
         <div className="footer-brand">
-          <KonGlass />
+          <p className="footer-word" dir="ltr">KON <span>Unlimited</span></p>
           <p className="footer-slogan">
             {(() => { const i = f.slogan.lastIndexOf('…'); return i < 0 ? f.slogan : (<>
               <span className="fs-line">{f.slogan.slice(0, i)}</span>
@@ -948,6 +938,10 @@ function useMotionInputs() {
       const y = window.scrollY
       const vh = window.innerHeight
       motion.heroOut = Math.min(1, Math.max(0, y / (vh * 0.85)))
+      // Opening KON: holds for the first third of a screen, sinks back, then dissolves into the drift.
+      const ho = Math.min(1, Math.max(0, y / (vh * 1.1)))
+      motion.open = 1 - sstep(0.42, 1, ho)
+      motion.openPost = 0.5 * sstep(0.04, 0.42, ho) * (1 - sstep(0.42, 1, ho))
       // Gather begins as the finale enters and completes ~65% through its sticky run.
       const p = (y + vh * 0.55 - finTop) / Math.max(1, (finH - vh) * 0.65 + vh * 0.55)
       motion.finale = Math.min(1, Math.max(0, p))
@@ -1095,7 +1089,6 @@ export default function App() {
     <div className={`app${ready ? ' is-ready' : ''}`}>
       <a href="#main" className="skip">{c.meta.skip}</a>
       <SmoothScroll enabled={!caps.reducedMotion && !caps.touch} />
-      <Cursor />
       <div className="stage" aria-hidden="true">
         <div className="stage-glow" />
         <div className="stage-dream"><i /><i /></div>
@@ -1121,9 +1114,9 @@ export default function App() {
         ) : (
           <>
             <Hero ready={ready} />
+            <Problem />
             <Idea />
             <Gaps />
-            <Problem />
             <Mix />
             <Interlude />
             <How />
@@ -1131,7 +1124,6 @@ export default function App() {
             <StoryPlans />
             <Big />
             <QuickTools />
-            <More />
             <Founder />
             <Team />
             <Start />

@@ -242,7 +242,7 @@ export function KonFooterMark() {
       <p className="kf-sub"><span>Unlimited</span></p>
       {needAsk && (
         <button type="button" className="kl-ask" onClick={() => (svg.current as unknown as { __grant?: () => void })?.__grant?.()}>
-          {lang === 'ar' ? 'حرّك جوالك، والسائل يتحرك معك' : 'Tilt your phone and the liquid follows'}
+          {lang === 'ar' ? 'حرك جوالك، والسائل يتحرك معك' : 'Tilt your phone and the liquid follows'}
         </button>
       )}
     </div>

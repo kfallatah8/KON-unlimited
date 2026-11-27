@@ -173,7 +173,7 @@ main .eyebrow, .eyebrow {
   }
   .tl-live-in { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
   .tl-live-k { font-size: 0.9rem; color: var(--text-2); }
-  .tl-live b { font: 500 1.45rem/1.2 'Readex Pro', var(--display); color: #8ff3e6; font-variant-numeric: tabular-nums; }
+  .tl-live b { font: 500 1.45rem/1.2 'Alexandria', var(--display); color: #8ff3e6; font-variant-numeric: tabular-nums; }
   .tl-live .is-warn b { color: #e9c98a; } .tl-live .is-bad b { color: #ff9a8a; }
   .tl-live em { font-style: normal; font-size: 0.9rem; color: var(--text-2); }
 }

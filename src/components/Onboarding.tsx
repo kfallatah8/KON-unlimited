@@ -36,7 +36,7 @@ const CHIP_TO_PAIN: Record<string, string> = {
   'الفكرة؟': 'start', 'The idea?': 'start', 'نموذج العمل؟': 'model', 'The business model?': 'model',
   'أول العملاء؟': 'customers', 'First customers?': 'customers', 'أول موظف؟': 'team', 'First hire?': 'team',
   'الموظفين؟': 'team', 'The team?': 'team', 'الخطة التشغيلية؟': 'ops', 'The operating plan?': 'ops',
-  'التوسّع؟': 'expand', 'Expansion?': 'expand', 'المبيعات؟': 'sales', 'Sales?': 'sales', 'التكاليف؟': 'costs', 'Costs?': 'costs',
+  'التوسع؟': 'expand', 'Expansion?': 'expand', 'المبيعات؟': 'sales', 'Sales?': 'sales', 'التكاليف؟': 'costs', 'Costs?': 'costs',
   'فرص جديدة؟': 'sourcing', 'New deals?': 'sourcing', 'قراءة الفرصة؟': 'read', 'Reading a deal?': 'read',
   'أداء الاستثمار؟': 'under', 'Underperformance?': 'under', 'التقارير؟': 'report', 'Reporting?': 'report',
 }

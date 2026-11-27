@@ -140,14 +140,14 @@
   filter: blur(18px); animation: breath var(--breath) ease-in-out infinite;
 }
 .kon-foot svg { display: block; width: 100%; height: auto; overflow: visible; }
-.kf-glyphs { font-family: 'Readex Pro', sans-serif; font-weight: 600; font-size: 250px; letter-spacing: 0.16em; }
+.kf-glyphs { font-family: 'Alexandria', sans-serif; font-weight: 600; font-size: 250px; letter-spacing: 0.16em; }
 .kf-edge { opacity: 0.7; }
 .kf-reflection { opacity: 0.55; }
 .kf-sheen { animation: kfSheen 9s cubic-bezier(0.45, 0, 0.2, 1) infinite; }
 @keyframes kfSheen { 0%, 38.2% { transform: translateX(0); } 100% { transform: translateX(2000px); } }
 .kf-sub { margin: -1.2rem 0 0; text-align: center; }
 .kf-sub span {
-  font-family: 'Readex Pro', sans-serif; font-weight: 300; font-size: 0.82rem; letter-spacing: 0.62em; text-transform: uppercase;
+  font-family: 'Alexandria', sans-serif; font-weight: 300; font-size: 0.82rem; letter-spacing: 0.62em; text-transform: uppercase;
   color: var(--text-2); padding-inline-start: 0.62em;
 }
 .kf-sub::before, .kf-sub::after {
