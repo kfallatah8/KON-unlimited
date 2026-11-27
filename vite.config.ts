@@ -14,6 +14,7 @@ const preload3d: Plugin = {
   transformIndexHtml: {
     order: 'post',
     handler(_html, ctx) {
+      if (ctx.path.includes('card')) return []
       const chunk = Object.values(ctx.bundle ?? {}).find((c) => c.type === 'chunk' && c.name === 'GemField')
       return chunk ? [{ tag: 'link', attrs: { rel: 'modulepreload', href: './' + chunk.fileName, crossorigin: '' }, injectTo: 'head' }] : []
     },
