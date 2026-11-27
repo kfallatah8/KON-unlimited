@@ -14,5 +14,19 @@
         }
       ]
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/card/assets/:path*",
+      "destination": "/assets/:path*"
+    },
+    {
+      "source": "/card/:slug",
+      "destination": "/card.html"
+    },
+    {
+      "source": "/card",
+      "destination": "/card.html"
+    }
   ]
 }
