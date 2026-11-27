@@ -16,7 +16,7 @@ const T = {
   ar: {
     flip: 'اضغط البطاقة لتقلبها', flipBack: 'اضغط لتعود', scan: 'امسح الرمز لحفظ البطاقة',
     save: 'احفظ جهة الاتصال', whatsapp: 'واتساب', call: 'اتصال', email: 'البريد', book: 'احجز لقاء',
-    share: 'شارك البطاقة', site: 'الموقع', apple: 'أضف إلى Apple Wallet', google: 'أضف إلى Google Wallet', addTo: 'أضف إلى',
+    share: 'شارك البطاقة', site: 'الموقع', apple: 'أضف إلى Apple Wallet', google: 'أضف إلى Google Wallet', addTo: 'أضف إلى', previewSave: 'حفظ جهة الاتصال يعمل من رابط البطاقة على الموقع',
     intro: 'عرّفني بنفسك', introSub: 'اترك اسمك، ويصلني تعريفك مباشرة على واتساب',
     yourName: 'اسمك', yourCo: 'جهتك أو شركتك', yourPhone: 'رقمك (اختياري)', send: 'أرسل عبر واتساب', sendMail: 'أو عبر البريد',
     close: 'إغلاق', copied: 'تم نسخ رابط البطاقة', saved: 'افتح الملف لإضافة جهة الاتصال',
@@ -27,7 +27,7 @@ const T = {
   en: {
     flip: 'Tap the card to flip it', flipBack: 'Tap to flip back', scan: 'Scan to save this card',
     save: 'Save contact', whatsapp: 'WhatsApp', call: 'Call', email: 'Email', book: 'Book a meeting',
-    share: 'Share card', site: 'Website', apple: 'Add to Apple Wallet', google: 'Add to Google Wallet', addTo: 'Add to',
+    share: 'Share card', site: 'Website', apple: 'Add to Apple Wallet', google: 'Add to Google Wallet', addTo: 'Add to', previewSave: 'Saving the contact works from the card link on the website',
     intro: 'Introduce yourself', introSub: 'Leave your name and it reaches me straight on WhatsApp',
     yourName: 'Your name', yourCo: 'Your company', yourPhone: 'Your number (optional)', send: 'Send on WhatsApp', sendMail: 'or by email',
     close: 'Close', copied: 'Card link copied', saved: 'Open the file to add the contact',
@@ -104,7 +104,7 @@ export default function CardApp() {
   const say = (s: string) => { setToast(s); window.clearTimeout((say as unknown as { h: number }).h); (say as unknown as { h: number }).h = window.setTimeout(() => setToast(''), 3200) }
   const act = (what: string) => track('card_action', { person: person.slug, action: what })
 
-  const save = () => { act('save_contact'); downloadVcard(person, contactPhoto()); if (!ios) say(t.saved) }
+  const save = () => { act('save_contact'); if (PREVIEW) { say(t.previewSave); return } downloadVcard(person, contactPhoto()); if (!ios) say(t.saved) }
   const share = async () => {
     act('share')
     const data = { title: `${person.nameEn} · KON Unlimited`, text: `${name} · KON Unlimited`, url }
