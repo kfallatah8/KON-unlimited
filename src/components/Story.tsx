@@ -342,3 +342,122 @@ function BuySheet({ tier, months, monthly, onClose }: { tier: StoryTier; months:
     </dialog>
   )
 }
+
+/* ---------- high-ticket studies: Highest & Best Use, opportunity comparison, market entry ---------- */
+const DECISION_STEPS = [5, 10, 20, 50, 100, 200, 500] // decision value, million SAR
+const HBU_PRICE = 85000
+
+export function Big() {
+  const s = useStory().big
+  const lang = useStore((st) => st.lang)
+  const [sel, setSel] = useState(0)
+  const [vi, setVi] = useState(2)
+  const st = s.studies[sel]
+  const value = DECISION_STEPS[vi] * 1_000_000
+  const share = (HBU_PRICE / value) * 100
+  const mistake = value * 0.05
+  const times = Math.round(mistake / HBU_PRICE)
+  const ask = (name: string) => {
+    posthog.capture('study_request', { study: name })
+    const text = lang === 'ar' ? `السلام عليكم، أبغى أعرف أكثر عن ${name}` : `Hello, I would like to know more about the ${name}`
+    window.open(`https://wa.me/${contact.whatsapp}?text=${encodeURIComponent(text)}`, '_blank', 'noopener')
+  }
+  return (
+    <section id="big" className="band st-big" aria-labelledby="big-title">
+      <div className="wrap">
+        <div className="narrow center sec-head">
+          <p className="eyebrow centered" data-reveal>{s.eyebrow}</p>
+          <SplitReveal as="h2" id="big-title" className="display" text={s.title} />
+          <p className="body-lg" data-reveal><Rich text={s.lede} /></p>
+        </div>
+
+        <div className="bg-tabs" role="tablist" aria-label={s.pick} data-reveal>
+          {s.studies.map((x, i) => (
+            <button key={x.id} type="button" role="tab" aria-selected={sel === i} className={`bg-tab${sel === i ? ' is-on' : ''}`} onClick={() => setSel(i)}>
+              <span className="bg-tab-k">{x.k}</span>
+              <span className="bg-tab-n">{x.name}</span>
+            </button>
+          ))}
+        </div>
+
+        <article className="bg-card glass" key={st.id} role="tabpanel">
+          <div className="bg-main">
+            <p className="bg-k">{st.k}</p>
+            <h3 className="bg-name">{st.name}</h3>
+            <p className="bg-line">{st.line}</p>
+            <p className="bg-price">
+              {st.from && <span className="bg-from">{s.fromK}</span>}
+              <b dir="ltr">{fmt(st.price)}</b><span>{s.priceK}</span>
+            </p>
+            <button type="button" className="btn btn-primary" onClick={() => ask(st.name)}><span>{s.cta}</span></button>
+          </div>
+          <div className="bg-side">
+            <ul className="bg-gets">
+              {st.gets.map((g) => <li key={g}><Icon id="check" className="icon li-check" />{g}</li>)}
+            </ul>
+            <p className="bg-example">{st.example}</p>
+          </div>
+        </article>
+
+        <div className="bg-why">
+          <div className="bg-why-head" data-reveal>
+            <p className="out-k">{s.why.k}</p>
+            <h3 className="measure-t">{s.why.title}</h3>
+          </div>
+          <ol className="bg-points">
+            {s.why.points.map((p, i) => (
+              <li key={p.t} className="glass" data-reveal style={{ ['--i' as string]: i }}>
+                <span className="bg-pn" dir="ltr">{String(i + 1).padStart(2, '0')}</span>
+                <b>{p.t}</b>
+                <p>{p.b}</p>
+              </li>
+            ))}
+          </ol>
+
+          <div className="bg-calc glass" data-reveal>
+            <p className="pl-k">{s.calc.k}</p>
+            <label className="bg-range">
+              <span>{s.calc.value}</span>
+              <b><span dir="ltr">{fmt(DECISION_STEPS[vi])}</span> {s.calc.million}</b>
+              <input type="range" min={0} max={DECISION_STEPS.length - 1} step={1} value={vi}
+                onChange={(e) => setVi(Number(e.target.value))} aria-valuetext={`${DECISION_STEPS[vi]} ${s.calc.million}`} />
+            </label>
+            <div className="bg-out">
+              <p><span>{s.calc.share}</span><b dir="ltr">{share < 0.1 ? share.toFixed(2) : share.toFixed(1)}%</b></p>
+              <p className="is-hot"><span>{s.calc.mistake}</span><b><span dir="ltr">{fmt(mistake)}</span> {s.priceK}</b></p>
+            </div>
+            <p className="bg-times">{s.calc.times(fmt(times))}</p>
+          </div>
+        </div>
+
+        <Plain text={s.plain} />
+        <p className="fine center bg-note">{s.note}</p>
+      </div>
+    </section>
+  )
+}
+
+export function Team() {
+  const s = useStory().team
+  return (
+    <section id="team" className="band st-team" aria-labelledby="team-title">
+      <div className="wrap">
+        <div className="narrow center sec-head">
+          <p className="eyebrow centered" data-reveal>{s.eyebrow}</p>
+          <SplitReveal as="h2" id="team-title" className="display" text={s.title} />
+          <p className="body-lg" data-reveal>{s.lede}</p>
+        </div>
+        <ul className="tm-row">
+          {s.people.map((p, i) => (
+            <li key={p.name} className="tm glass" data-reveal style={{ ['--i' as string]: i }}>
+              <span className="tm-mark" aria-hidden="true">{p.name.slice(0, 1)}</span>
+              <b className="tm-name">{p.name}</b>
+              <span className="tm-role">{p.role}</span>
+              <p>{p.b}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}

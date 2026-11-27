@@ -69,6 +69,7 @@ const ar = {
     { href: '#how', label: 'طريقتنا' },
     { href: '#work', label: 'أعمالنا' },
     { href: '#plans', label: 'الباقات' },
+    { href: '#big', label: 'الدراسات' },
     { href: '#founder', label: 'المؤسس' },
   ],
 
@@ -602,6 +603,7 @@ const en: Content = {
     { href: '#how', label: 'Our way' },
     { href: '#work', label: 'Work' },
     { href: '#plans', label: 'Packages' },
+    { href: '#big', label: 'Studies' },
     { href: '#founder', label: 'Founder' },
   ],
 

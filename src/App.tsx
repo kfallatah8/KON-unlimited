@@ -21,7 +21,7 @@ import { Rich } from './components/Rich'
 import { KonMark } from './components/KonMark'
 import { SafeBoundary } from './components/SafeBoundary'
 import { posthogLogger } from './lib/posthog'
-import { Idea, Gaps, Mix, Measure, StoryPlans } from './components/Story'
+import { Idea, Gaps, Mix, Measure, StoryPlans, Big, Team } from './components/Story'
 import { ChapterRail, CountUp, useCardLight, useHeaderAutoHide } from './components/Elevate'
 
 // The WebGL stage is its own chunk: copy and layout never wait for it.
@@ -1129,9 +1129,11 @@ export default function App() {
             <How />
             <Work />
             <StoryPlans />
+            <Big />
             <QuickTools />
             <More />
             <Founder />
+            <Team />
             <Start />
             <Finale fallback={!webgl} />
           </>

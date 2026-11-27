@@ -200,6 +200,67 @@ const ar = {
     unsureCta: 'احجز جلستك المجانية',
   },
 
+  big: {
+    eyebrow: 'القرارات الكبيرة',
+    title: 'بعض القرارات ما تتصلّح بعد ما تنبني',
+    lede: 'أرض، مبنى، أو دخول سوق جديد: قرار واحد يحدّد السنين اللي بعده، عشان كذا نقدّم ++دراسات متخصصة++ لأصحاب القرار الكبير',
+    pick: 'اختر الدراسة',
+    studies: [
+      {
+        id: 'hbu', k: 'للمطوّرين وملّاك الأراضي', name: 'دراسة أفضل استخدام', price: 85000, from: false,
+        line: 'عندك أرض أو مبنى؟ نقولك وش أفضل شي ينبني فيه أو يتشغّل، وكم يرجّع',
+        gets: ['قراءة الموقع ومحيطه: الطرق، المستشفيات، الجامعات، السكان، والمنافسين', 'الاستخدامات المسموحة نظامًا واشتراطات البناء', 'ثلاث سيناريوهات بأرقامها: التكلفة، الدخل، العائد، ومدة الاسترداد', 'نموذج التشغيل: تبيع، تأجّر، أو تشغّل', 'خريطة المخاطر وطريقة تقليلها', 'ملف جاهز تعرضه على شريك أو ممول'],
+        example: 'مثال: أرض قريبة من مستشفى ممكن تكون أعلى قيمة كاستوديوهات مفروشة لمرافقي المرضى، بدل عمارة سكنية عادية',
+      },
+      {
+        id: 'compare', k: 'للمستثمرين', name: 'مقارنة الفرص', price: 120000, from: false,
+        line: 'قدامك أكثر من فرصة ومحتار؟ نحطها جنب بعض بنفس المسطرة، وتختار وأنت مطمّن',
+        gets: ['حتى ثلاث فرص (أراضي أو مباني أو مشاريع) تنقرأ بنفس المعايير', 'أفضل استخدام لكل فرصة', 'مقارنة العائد والمخاطر والسيولة والمدة', 'توصية واضحة مع الأسباب', 'خطة أول 90 يوم للفرصة المختارة'],
+        example: 'أرخص أرض أو أكبر أرض مو دايم أفضل أرض، الأفضل هي اللي ترجّع أكثر بمخاطرة أقل',
+      },
+      {
+        id: 'gtm', k: 'للشركات الداخلة للسوق', name: 'استراتيجية دخول السوق', price: 60000, from: true,
+        line: 'داخل السعودية أو مدينة جديدة أو منتج جديد؟ نرسم لك الطريق من أول عميل لين يثبت اسمك',
+        gets: ['قراءة السوق والمنافسين والأنظمة', 'العميل المثالي وأين تلقاه', 'التسعير وقنوات البيع والشراكات', 'خطة إطلاق 90 يوم بالأرقام', 'ننزل معك التنفيذ إذا تبي'],
+        example: 'من خبرتنا: خطة دخول Telkomsel للسوق السعودي ونتيجتها 14 مليون ريال إيرادات',
+      },
+    ],
+    priceK: 'ريال',
+    fromK: 'يبدأ من',
+    why: {
+      k: 'ليش السعر كذا؟',
+      title: 'لأنك ما تدفع على ورق، تدفع على قرار',
+      points: [
+        { t: 'نسبة صغيرة من القرار', b: 'في مشروع قيمته 20 مليون، دراسة بـ 85 ألف تساوي أقل من نص بالمية من القرار' },
+        { t: 'الخطأ أغلى من الدراسة', b: 'غلطة 5% بس في قرار بـ 20 مليون تكلّف مليون ريال، يعني 12 ضعف سعر الدراسة' },
+        { t: 'تعرف وش تستلم', b: 'كل بند مكتوب قبل ما نبدأ، والسعر ثابت ما يزيد في النص' },
+        { t: 'نقولك بصراحة إذا ما تحتاجها', b: 'قبل أي دراسة جلسة نقرأ فيها الفرصة، وإذا كانت واضحة وما تحتاج دراسة نقولك' },
+      ],
+    },
+    calc: {
+      k: 'جرّبها على مشروعك',
+      value: 'قيمة القرار',
+      share: 'الدراسة من قيمة القرار',
+      mistake: 'تكلفة غلطة 5% في القرار',
+      times: (x: string) => `يعني ${x} ضعف سعر الدراسة`,
+      million: 'مليون ريال',
+    },
+    plain: 'كل ما كبر القرار، صارت الدراسة أرخص من الغلط',
+    cta: 'اطلب دراسة',
+    note: 'الدراسات نقدّمها مع شركائنا المتخصصين في العقار والسوق، والأسعار قبل الضريبة',
+  },
+
+  team: {
+    eyebrow: 'فريق كُن',
+    title: 'كُن مو شخص واحد',
+    lede: 'خبرات تكمّل بعض، وكل مشروع ينبني له الفريق اللي يناسبه',
+    people: [
+      { name: 'خالد', role: 'المؤسس', b: 'علم النفس، والتشغيل، وتطوير الأعمال، والابتكار' },
+      { name: 'فهد الشريف', role: 'المبيعات والتسويق والعقار', b: 'دراسات السوق والجدوى، ودراسات أفضل استخدام للأراضي والمخططات' },
+      { name: 'شبكة خبراء', role: 'حسب كل مشروع', b: 'متخصصين نستعين فيهم في القانون والمالية والتقنية والتصميم' },
+    ],
+  },
+
   buy: {
     title: 'خطوة أخيرة وتبدأ',
     sum: (name: string, term: string) => `باقة ${name} · ${term}`,
@@ -382,6 +443,67 @@ const en: Story = {
     unsure: 'Not sure which fits? The first session is free and we will tell you honestly',
     unsureCta: 'Book your free session',
   },
+  big: {
+    eyebrow: 'The big decisions',
+    title: 'Some decisions can’t be fixed once they’re built',
+    lede: 'A plot, a building, or a new market: one decision shapes the years after it, so we offer ++specialist studies++ for people making big calls',
+    pick: 'Choose the study',
+    studies: [
+      {
+        id: 'hbu', k: 'For developers and landowners', name: 'Highest & Best Use study', price: 85000, from: false,
+        line: 'Own land or a building? We tell you the best thing to build or run on it, and what it returns',
+        gets: ['Site and surroundings: roads, hospitals, universities, population and competitors', 'Permitted uses and building regulations', 'Three scenarios with numbers: cost, income, return and payback', 'Operating model: sell, lease or operate', 'A risk map and how to reduce it', 'A file ready to show a partner or lender'],
+        example: 'Example: a plot near a hospital may be worth more as furnished studios for patient companions than as an ordinary residential block',
+      },
+      {
+        id: 'compare', k: 'For investors', name: 'Opportunity comparison', price: 120000, from: false,
+        line: 'Several opportunities and can’t choose? We measure them side by side with one ruler, so you decide with confidence',
+        gets: ['Up to three opportunities (land, buildings or projects) read on the same criteria', 'Best use for each one', 'Return, risk, liquidity and timeline compared', 'A clear recommendation with the reasons', 'A 90-day plan for the chosen opportunity'],
+        example: 'The cheapest or biggest plot is not always the best one. The best one returns more at lower risk',
+      },
+      {
+        id: 'gtm', k: 'For companies entering a market', name: 'Market entry strategy', price: 60000, from: true,
+        line: 'Entering Saudi Arabia, a new city or a new product? We map the road from the first customer until your name holds',
+        gets: ['Market, competitors and regulation', 'Your ideal customer and where to find them', 'Pricing, sales channels and partnerships', 'A 90-day launch plan in numbers', 'We can execute it with you'],
+        example: 'From our work: Telkomsel’s entry plan for Saudi Arabia, with SAR 14M in revenue',
+      },
+    ],
+    priceK: 'SAR',
+    fromK: 'From',
+    why: {
+      k: 'Why this price?',
+      title: 'You are not paying for paper, you are paying for a decision',
+      points: [
+        { t: 'A small share of the decision', b: 'On a SAR 20M project, an 85k study is less than half a percent of the decision' },
+        { t: 'A mistake costs more than the study', b: 'Just a 5% mistake on a SAR 20M decision costs SAR 1M, twelve times the study' },
+        { t: 'You know what you get', b: 'Every item is written before we start, and the price is fixed' },
+        { t: 'We tell you if you don’t need it', b: 'Every study starts with a session on the opportunity, and if the answer is already clear we say so' },
+      ],
+    },
+    calc: {
+      k: 'Try it on your project',
+      value: 'Value of the decision',
+      share: 'Study as a share of the decision',
+      mistake: 'Cost of a 5% mistake',
+      times: (x: string) => `${x} times the price of the study`,
+      million: 'SAR M',
+    },
+    plain: 'The bigger the decision, the cheaper the study is than the mistake',
+    cta: 'Request a study',
+    note: 'Studies are delivered with our specialist partners in real estate and markets · prices before VAT',
+  },
+
+  team: {
+    eyebrow: 'The KON team',
+    title: 'KON is not one person',
+    lede: 'Expertise that completes itself, and every project gets the team it needs',
+    people: [
+      { name: 'Khalid', role: 'Founder', b: 'Psychology, operations, business development and innovation' },
+      { name: 'Fahad Al-Sharif', role: 'Sales, marketing and real estate', b: 'Market and feasibility studies, and best-use studies for land and master plans' },
+      { name: 'Expert network', role: 'Per project', b: 'Specialists we bring in for legal, finance, technology and design' },
+    ],
+  },
+
   buy: {
     title: 'One last step and you begin',
     sum: (name: string, term: string) => `${name} package · ${term}`,
