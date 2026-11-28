@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import posthog from 'posthog-js'
 import { useStory, STORY_TERMS, TEAM_COST, MONTH_DAYS, type StoryTier } from '../content/story'
 import { BOOKING_URL, contact } from '../content/site'
-import { startOnboarding, useStore } from '../state/store'
+import { useStore } from '../state/store'
 import { Rich } from './Rich'
 import { SplitReveal } from './SplitReveal'
 import { lenis } from './SmoothScroll'
@@ -54,7 +54,8 @@ export function Gaps() {
   const items = s.inside.items.flatMap((x, i) => [{ ...x, side: s.inside.k, out: false }, { ...s.outside.items[i], side: s.outside.k, out: true }])
   const sec = useRef<HTMLElement>(null)
   const ring = useRef<HTMLDivElement>(null)
-  const st = useRef({ base: 0, drag: 0, shown: 0, raf: 0, down: false, x0: 0, d0: 0 })
+  const st = useRef({ base: 0, drag: 0, shown: 0, raf: 0, down: false, x0: 0, d0: 0, own: false, acc: 0, wt: 0 })
+  const stage = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(0)
 
   useEffect(() => {
@@ -77,23 +78,45 @@ export function Gaps() {
       setActive((a) => (a === idx ? a : idx))
     }
     const kick = () => { if (!o.raf) o.raf = requestAnimationFrame(paint) }
+    // The scroll only nudges the ring (three faces across the whole section). Once the visitor
+    // swipes, drags or taps an arrow, the ring is theirs and the scroll lets it be.
     const onScroll = () => {
-      if (reduced || o.down) return
+      if (reduced || o.down || o.own) return
       const r = sec.current?.getBoundingClientRect()
       if (!r) return
       const vh = window.innerHeight
       const p = Math.min(1, Math.max(0, (vh * 0.85 - r.top) / (r.height + vh * 0.2)))
-      o.base = -p * STEP * 7
+      o.base = -p * STEP * 3
       kick()
     }
     onScroll()
     kick()
     window.addEventListener('scroll', onScroll, { passive: true })
-    return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(o.raf) }
+    // Trackpad and horizontal wheel: a sideways gesture turns the ring one face at a time.
+    const el = stage.current
+    const onWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) * 1.2) return
+      e.preventDefault()
+      o.own = true
+      const now = performance.now()
+      if (now - o.wt > 260) o.acc = 0
+      o.wt = now
+      o.acc += e.deltaX
+      if (Math.abs(o.acc) > 70) {
+        const rtl = document.documentElement.dir === 'rtl' ? -1 : 1
+        o.drag += (o.acc > 0 ? -1 : 1) * rtl * STEP
+        o.acc = 0
+        o.wt = now + 380 // one face per gesture, so trackpad inertia does not spin it
+        kick()
+      }
+    }
+    el?.addEventListener('wheel', onWheel, { passive: false })
+    return () => { window.removeEventListener('scroll', onScroll); el?.removeEventListener('wheel', onWheel); cancelAnimationFrame(o.raf) }
   }, [])
 
   const turn = (d: number) => {
     const o = st.current
+    if (d) o.own = true
     o.drag += d * STEP
     if (!o.raf) o.raf = requestAnimationFrame(function f() {
       o.raf = 0
@@ -111,7 +134,7 @@ export function Gaps() {
   }
   const down = (e: React.PointerEvent) => {
     const o = st.current
-    o.down = true; o.x0 = e.clientX; o.d0 = o.drag
+    o.down = true; o.own = true; o.x0 = e.clientX; o.d0 = o.drag
     ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
   }
   const move = (e: React.PointerEvent) => {
@@ -137,7 +160,7 @@ export function Gaps() {
         <Head id="gaps-title" eyebrow={s.eyebrow} title={s.title} lede={s.lede} />
         <div className="ring-wrap" data-reveal>
           <p className="ring-k">{s.ring}</p>
-          <div className="ring-stage" onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} aria-hidden="true">
+          <div className="ring-stage" ref={stage} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} aria-hidden="true">
             <div className="ring" ref={ring}>
               {items.map((x, i) => (
                 <div key={x.t} className={`rf${x.out ? ' is-out' : ''}`} style={{ ['--i' as string]: i }}>
@@ -279,22 +302,21 @@ export function StoryPlans() {
           <p className="fine center">{p.compare.src}</p>
         </div>
 
+        <div className="pl-why" data-reveal>
+          <p className="cmp-k">{p.why.k}</p>
+          <ul>{p.why.points.map((w) => <li key={w.t}><b>{w.t}</b><span>{w.b}</span></li>)}</ul>
+        </div>
+
+        <div className="pl-travel" data-reveal>
+          <span>{p.travel.k}</span>
+          <p>{p.travel.t}</p>
+        </div>
+
         <div className="promise" data-reveal>
           <span>{p.promise.k}</span>
           <p>{p.promise.t}</p>
         </div>
         <p className="fine center">{p.payNote}</p>
-
-        <div className="res" data-reveal>
-          <p className="res-k">{p.results.k}</p>
-          <h3 className="res-t">{p.results.title}</h3>
-          <p className="res-l">{p.results.lede}</p>
-          <ul className="res-offers">
-            {p.results.offers.map((o) => <li key={o.title}><b>{o.title}</b><span>{o.share}</span></li>)}
-          </ul>
-          <p className="fine center">{p.results.floor}</p>
-          <button type="button" className="btn btn-ghost" onClick={() => startOnboarding({ persona: 'business' })}><span>{p.results.cta}</span></button>
-        </div>
 
         <p className="pl-unsure" data-reveal>{p.unsure} <a href="#start" className="link-btn">{p.unsureCta} <span aria-hidden="true">{arrow}</span></a></p>
       </div>

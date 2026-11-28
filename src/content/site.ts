@@ -65,23 +65,23 @@ const ar = {
   },
   nav: [
     { href: '#idea', label: 'الفكرة' },
-    { href: '#gaps', label: 'الفجوات' },
     { href: '#how', label: 'طريقتنا' },
     { href: '#work', label: 'أعمالنا' },
     { href: '#plans', label: 'الباقات' },
-    { href: '#big', label: 'الدراسات' },
-    { href: '#founder', label: 'المؤسس' },
+    { href: '#ready-menu', label: 'خدمات جاهزة' },
+    { href: '#ops', label: 'التشغيل' },
+    { href: '#faq', label: 'أسئلة' },
   ],
 
   headerCta: 'احجز جلستك',
 
   hero: {
     eyebrow: 'تشغيل · تطوير أعمال · ابتكار',
-    kicker: 'في كل شركة شي أكبر منها',
+    kicker: 'تطوير أعمال · تشغيل · ابتكار',
     rotating: ['نرفع ربح مشروعك', 'نرتب تشغيلك اليومي', 'نشتغل معك على الأرض'],
     statement: ['اللي تدوره', 'موجود عندك'],
     // What KON does, for whom, and how, in one breath. Read before anything moves.
-    lede: 'ناس، ووقت، وفرص ما أحد انتبه لها. نشوفها معك، ونشغلها لين تصير ربح',
+    lede: 'في كل شركة ربح ضايع بين الأرقام والناس والفرص. نقرأ شركتك، وننزل معك الميدان، لين يبان في حسابك',
     asks: [
       { who: 'لصاحب الشركة', q: 'مبيعاتك تزيد وربحك واقف مكانه؟' },
       { who: 'لرائد الأعمال', q: 'فكرتك حلوة، بس مين بيدفع فيها؟' },
@@ -93,7 +93,7 @@ const ar = {
     secondary: 'ابدأ الرحلة',
     slogan: 'Any challenge…Any way…Anywhere…We’ll be there',
     scroll: 'القصة تبدأ من هنا',
-    scrollSub: 'خذ وقتك، وانزل بهدوء',
+    scrollSub: 'انزل على راحتك',
     proof: [
       { n: '+4,200', l: 'ساعة استشارية', s: 'خبرة ميدانية' },
       { n: '14M', l: 'ريال إيرادات', s: 'Telkomsel' },
@@ -103,15 +103,15 @@ const ar = {
 
   // The journey in three plain steps, so a first-time visitor knows what happens after they book.
   how: {
-    eyebrow: 'الطريقة',
-    title: 'ثلاث خطوات، وكل خطوة واضحة',
+    eyebrow: 'طريقتنا',
+    title: 'نقرأ، نرتب، وننزل الميدان',
     steps: [
-      { k: 'مجانية', title: 'جلسة نفهم فيها وضعك', body: '30 دقيقة نسمع منك ونسألك الأسئلة الصح، وتطلع بفكرة وحدة على الأقل تقدر تبدأ فيها' },
-      { k: 'نقرأ', title: 'نقرأ شركتك من الداخل', body: 'أرقامك وفريقك وعملاءك، ونحدد لك وين يضيع الربح وايش أول شي يتصلح' },
-      { k: 'ننفذ', title: 'نشتغل معك على الأرض', body: 'نطبق الخطة مع فريقك أسبوع بأسبوع ونتابع لين تشوف الفرق في أرقامك' },
+      { k: 'مجانية', title: 'جلسة نسمع فيها منك', body: '30 دقيقة نفهم وضعك ونسأل الأسئلة الصح. وتطلع بخطوة وحدة على الأقل تقدر تبدأ فيها بكرة' },
+      { k: 'نقرأ', title: 'نقرأ شركتك من الداخل والخارج', body: 'أرقامك، وفريقك، وعملاءك، وسوقك. ونطلع لك وين الفجوات، ووين الفرص الضايعة، ومن وين نبدأ' },
+      { k: 'ننفذ', title: 'ننزل معك الميدان', body: 'نطبق مع فريقك أسبوع بأسبوع، ونتابع بالأرقام لين يبان الفرق في حسابك' },
     ],
     cta: 'ابدأ بالخطوة الأولى',
-    note: 'بعد الجلسة القرار لك، وما فيه أي التزام',
+    note: 'الجلسة مجانية، والقرار بعدها لك',
   },
 
 
@@ -123,11 +123,11 @@ const ar = {
     whoK: 'أنت مين؟',
     closing: 'بإذن الله، سنجد الحل',
     paths: [
-      { persona: 'founder' as Persona, label: 'أنا رائد أعمال', d: 'عندي فكرة أو مشروع في بدايته', q: ['الفكرة؟', 'نموذج العمل؟', 'أول العملاء؟', 'أول موظف؟'] },
-      { persona: 'business' as Persona, label: 'أنا كيان تجاري', d: 'عندي شركة شغالة وأبيها تكبر', q: ['الموظفين؟', 'الخطة التشغيلية؟', 'التوسع؟', 'المبيعات؟', 'التكاليف؟'] },
-      { persona: 'investor' as Persona, label: 'أنا مستثمر', d: 'عندي فلوس وأبيها في المكان الصح', q: ['فرص جديدة؟', 'قراءة الفرصة؟', 'أداء الاستثمار؟', 'التقارير؟'] },
+      { persona: 'founder' as Persona, label: 'أنا رائد أعمال', d: 'عندي فكرة، أو مشروع في أوله', q: ['الفكرة؟', 'نموذج العمل؟', 'أول العملاء؟', 'أول موظف؟'] },
+      { persona: 'business' as Persona, label: 'أنا كيان تجاري', d: 'شركتي شغالة، وأبيها تكبر بدون ما تستنزفني', q: ['الموظفين؟', 'الخطة التشغيلية؟', 'التوسع؟', 'المبيعات؟', 'التكاليف؟'] },
+      { persona: 'investor' as Persona, label: 'أنا مستثمر', d: 'عندي رأس مال، وأبيه في المكان الصح', q: ['فرص جديدة؟', 'قراءة الفرصة؟', 'أداء الاستثمار؟', 'التقارير؟'] },
     ],
-    hint: 'اختر اللي يشبهك، ونكمل من عندك',
+    hint: 'اختر اللي يشبهك، ونفصل لك الطريق',
   },
 
   loops: {
@@ -604,22 +604,22 @@ const en: Content = {
   },
   nav: [
     { href: '#idea', label: 'The idea' },
-    { href: '#gaps', label: 'The gaps' },
     { href: '#how', label: 'Our way' },
     { href: '#work', label: 'Work' },
     { href: '#plans', label: 'Packages' },
-    { href: '#big', label: 'Studies' },
-    { href: '#founder', label: 'Founder' },
+    { href: '#ready-menu', label: 'Ready services' },
+    { href: '#ops', label: 'Operations' },
+    { href: '#faq', label: 'Questions' },
   ],
 
   headerCta: 'Book a session',
 
   hero: {
     eyebrow: 'Operations · Business development · Innovation',
-    kicker: 'Every company holds something bigger than itself',
+    kicker: 'Business development · Operations · Innovation',
     rotating: ['We raise your profit', 'We sort out your daily operations', 'We work on the ground with you'],
     statement: ['What you are looking for', 'is already with you'],
-    lede: 'People, time and opportunities nobody noticed. We see them with you, and put them to work until they become profit',
+    lede: 'Every company has profit lost between its numbers, its people and its opportunities. We read your company and work in the field with you until it shows in your account',
     asks: [
       { who: 'For business owners', q: 'Sales are up. Why isn’t profit?' },
       { who: 'For founders', q: 'Great idea. Who’s going to pay for it?' },
@@ -631,7 +631,7 @@ const en: Content = {
     secondary: 'Begin the journey',
     slogan: 'Any challenge…Any way…Anywhere…We’ll be there',
     scroll: 'The story starts here',
-    scrollSub: 'Take your time, and scroll slowly',
+    scrollSub: 'At your own pace',
     proof: [
       { n: '4,200+', l: 'advisory hours', s: 'in the field' },
       { n: '14M', l: 'SAR revenue', s: 'Telkomsel' },
@@ -640,12 +640,12 @@ const en: Content = {
   },
 
   how: {
-    eyebrow: 'The way',
-    title: 'Three steps. Each one clear',
+    eyebrow: 'Our way',
+    title: 'We read, we organise, we go into the field',
     steps: [
       { k: 'Free', title: 'A session to understand where you are', body: '30 minutes where we listen, ask the right questions, and you leave with at least one idea you can act on' },
-      { k: 'Read', title: 'We read your business from the inside', body: 'Your numbers, your team and your customers. We show you where profit is leaking and what to fix first' },
-      { k: 'Do', title: 'We work on the ground with you', body: 'We put the plan to work with your team week by week, and stay until you see the difference in your numbers' },
+      { k: 'Read', title: 'We read your company inside and out', body: 'Your numbers, your team, your customers and your market. We show you the gaps, the missed opportunities, and where to start' },
+      { k: 'Do', title: 'We go into the field with you', body: 'We apply it with your team week by week, and track the numbers until the difference shows in your account' },
     ],
     cta: 'Start with step one',
     note: 'After the session the choice is yours. No commitment',

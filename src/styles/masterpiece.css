@@ -215,3 +215,133 @@
 :root .st-mix .lens .lens-q { margin: 0.3rem 0 0; color: var(--mp-teal); }
 :root .st-mix .lens .lens-b { margin: 0.7rem 0 0; color: var(--text-2); }
 .rf { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+
+/* ================= Round 2 (2026-11-28) ================= */
+
+/* ---------- interlude: a long, calm lane. --ip runs 0..1; the sticky hold is ~0.08..0.92.
+   Each line has a start (--s): it rises over ~4% of the section, then holds. Opacity also eases
+   in time, so a fast flick never makes a line flash past. */
+.interlude.mp-int { height: 600vh !important; height: 600svh !important; }
+.mp-int .il-press { opacity: clamp(0, (var(--ip, 0) - 0.09) / 0.04, 1); transition: opacity 0.7s ease, transform 0.9s var(--ease), filter 0.9s var(--ease); }
+.mp-int.is-burst .il-press { opacity: 0; }
+.mp-int .il-reveal { opacity: clamp(0, (0.39 - var(--ip, 0)) / 0.035, 1) !important; transition: opacity 0.8s ease; }
+.interlude.mp-int .il-fact { opacity: clamp(0, (0.665 - var(--ip, 0)) / 0.035, 1) !important; transition: opacity 0.8s ease; }
+.interlude.mp-int .il-calm { opacity: 1 !important; }
+.interlude.mp-int .il-fact > *, .interlude.mp-int .il-calm > * {
+  opacity: clamp(0, (var(--ip, 0) - var(--s, 0)) / 0.04, 1) !important;
+  transform: translateY(calc((1 - clamp(0, (var(--ip, 0) - var(--s, 0)) / 0.04, 1)) * 1.1rem)) !important;
+  filter: blur(calc((1 - clamp(0, (var(--ip, 0) - var(--s, 0)) / 0.04, 1)) * 6px));
+  transition: opacity 0.9s ease, transform 1.1s var(--ease), filter 1.1s var(--ease);
+}
+.mp-int .il-calm .il-kick { font-size: clamp(1.5rem, 3.2vw, 2.6rem); color: rgba(236, 250, 247, 0.9); }
+.mp-int .il-calm .il-key span { font-size: clamp(2.4rem, 6.4vw, 5.4rem); }
+.mp-int .il-within { margin-top: clamp(2rem, 5vh, 3.2rem) !important; font-size: clamp(1.1rem, 1.9vw, 1.5rem) !important; opacity: 1; }
+@media (max-width: 700px) { .interlude.mp-int { height: 540vh !important; height: 540svh !important; } }
+@media (prefers-reduced-motion: reduce) {
+  .interlude.mp-int .il-fact > *, .interlude.mp-int .il-calm > * { transform: none !important; filter: none; }
+}
+
+/* ---------- chapter breaks: four clear parts ---------- */
+.act { position: relative; z-index: 1; padding: clamp(7rem, 20vh, 12rem) var(--gutter) clamp(2rem, 6vh, 3.5rem); text-align: center; }
+.act-line { display: block; width: 1px; height: clamp(4rem, 12vh, 7rem); margin: 0 auto 2rem; background: linear-gradient(transparent, var(--mp-teal) 70%, transparent); opacity: 0.8; }
+.act-n { margin: 0; color: var(--mp-gold); font-size: 0.95rem; letter-spacing: 0.08em; }
+:root[lang='en'] .act-n { letter-spacing: 0.28em; text-transform: uppercase; font-size: 0.78rem; }
+.act-t { margin: 0.6rem 0 0; font-family: var(--display); font-weight: 300; font-size: clamp(2.6rem, 2rem + 3vw, 5rem); line-height: 1.25; color: #fff; text-shadow: 0 0 50px rgba(1, 12, 14, 0.9); }
+.act-s { margin: 0.9rem auto 0; max-width: 32rem; color: var(--text-2); font-size: clamp(1.05rem, 1rem + 0.3vw, 1.2rem); line-height: 1.8; }
+:root .act + .band.ch { padding-top: clamp(3rem, 8vh, 5rem); }
+
+/* shared card surface for the new chapters */
+.qw-list li, .pt-card, .rm-panel, .ops-grid li, .net-pairs li, .faq-g, .pl-why li {
+  border: 1px solid var(--line); border-radius: 22px;
+  background: linear-gradient(170deg, rgba(8, 56, 54, 0.35), rgba(2, 16, 18, 0.74));
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+}
+.pt-k { margin: 0 0 0.9rem; color: var(--mp-teal); font-size: 0.98rem; }
+[data-reveal][style*='--i'] { transition-delay: calc(var(--i, 0) * 110ms); }
+
+/* packages: why this price, and field days */
+.pl-why { max-width: 60rem; margin: clamp(2.6rem, 6vh, 4rem) auto 0; text-align: center; }
+.pl-why ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.pl-why li { padding: 1.3rem 1.3rem 1.4rem; text-align: start; display: grid; gap: 0.35rem; }
+.pl-why b { color: #fff; font-weight: 700; }
+.pl-why span { color: var(--text-2); line-height: 1.75; }
+.pl-travel { max-width: 44rem; margin: 2rem auto 0; padding: 1.2rem 1.5rem; text-align: center; border-radius: 18px; border: 1px dashed var(--line-strong); }
+.pl-travel span { color: var(--mp-teal); font-size: 0.95rem; }
+.pl-travel p { margin: 0.35rem 0 0; color: var(--text); line-height: 1.8; }
+
+/* quick wins */
+.qw-list { list-style: none; padding: 0; margin: 0 auto; max-width: 64rem; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.qw-list li { padding: 1.6rem 1.5rem; }
+.qw-list b { display: block; font-family: var(--display); font-weight: 400; font-size: 1.25rem; line-height: 1.55; color: #fff; }
+.qw-list p { margin: 0.6rem 0 0; color: var(--text-2); line-height: 1.8; }
+.qw-note { max-width: 36rem; margin: clamp(2.6rem, 6vh, 3.6rem) auto 1.6rem; text-align: center; font-family: var(--display); font-weight: 300; font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.6rem); line-height: 1.7; color: var(--mp-gold); }
+
+/* results partnership */
+.pt-grid { max-width: 62rem; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; }
+.pt-card { padding: 1.7rem 1.6rem; }
+.pt-crit { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.75rem; }
+.pt-crit li { display: flex; gap: 0.6rem; align-items: flex-start; line-height: 1.7; }
+.pt-crit .li-check { flex: none; margin-top: 0.4rem; color: var(--mp-teal); }
+.pt-steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 1rem; }
+.pt-steps li { display: flex; gap: 0.9rem; align-items: flex-start; }
+.pt-steps li > span { flex: none; width: 2rem; height: 2rem; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--mp-teal); color: var(--mp-teal); font: 500 0.9rem var(--mono); }
+.pt-steps b { display: block; color: #fff; }
+.pt-steps small { display: block; color: var(--text-2); font-size: 0.98rem; line-height: 1.7; }
+.jn-partner .ch-close, .jn-ready .ch-close, .jn-net .ch-close { margin-bottom: 1.6rem; }
+
+/* ready services */
+.rm-tabs { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin: 0 auto 1.4rem; }
+.rm-tabs button { min-height: 44px; padding: 0 1.2rem; border-radius: 999px; border: 1px solid var(--line-strong); background: rgba(2, 20, 22, 0.7); color: var(--text-2); font: inherit; font-size: 1rem; cursor: pointer; transition: background 0.35s, color 0.35s, border-color 0.35s; }
+.rm-tabs button.is-on { background: linear-gradient(135deg, var(--mp-teal), #2cc4b2); color: #022; font-weight: 700; border-color: transparent; }
+.rm-panel { max-width: 62rem; margin: 0 auto; padding: clamp(1.6rem, 3vw, 2.4rem); display: grid; grid-template-columns: 0.9fr 1.1fr; gap: clamp(1.4rem, 3vw, 2.6rem); animation: rm-in 0.7s var(--ease) both; }
+@keyframes rm-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.rm-name { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(1.6rem, 1.3rem + 1vw, 2.1rem); color: #fff; line-height: 1.4; }
+.rm-line { margin: 0.5rem 0 0; color: var(--text-2); line-height: 1.8; }
+.rm-price { display: flex; align-items: baseline; gap: 0.5rem; margin: 1.4rem 0 0; }
+.rm-price b { font-family: var(--display); font-weight: 300; font-size: clamp(2.3rem, 2rem + 1vw, 2.9rem); color: #fff; line-height: 1.1; }
+.rm-price small, .rm-monthly { color: var(--muted); }
+.rm-monthly { margin: 0.2rem 0 0; font-size: 0.95rem; }
+.rm-for { margin: 1.3rem 0 0; padding-top: 1rem; border-top: 1px solid var(--line); color: var(--text); line-height: 1.8; }
+.rm-for span { display: block; color: var(--mp-teal); font-size: 0.92rem; }
+.rm-inc ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.7rem; }
+.rm-inc li { display: flex; gap: 0.6rem; align-items: flex-start; line-height: 1.7; }
+.rm-inc .li-check { flex: none; margin-top: 0.4rem; color: var(--mp-teal); }
+.rm-add { max-width: 62rem; margin: 1.6rem auto 0; text-align: center; }
+.rm-add ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.55rem; justify-content: center; }
+.rm-add li { padding: 0.45rem 1rem; border-radius: 999px; border: 1px solid var(--line-strong); color: var(--text); font-size: 0.98rem; }
+
+/* operations */
+.ops-grid { list-style: none; padding: 0; margin: 0 auto clamp(2.4rem, 5vh, 3.2rem); max-width: 64rem; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.ops-grid li { padding: 1.5rem 1.4rem; }
+.ops-grid b { display: block; color: #fff; font-size: 1.12rem; }
+.ops-grid p { margin: 0.45rem 0 0; color: var(--text-2); line-height: 1.75; }
+
+/* network */
+.net-pairs { list-style: none; padding: 0; margin: 0 auto; max-width: 52rem; display: grid; gap: 0.9rem; }
+.net-pairs li { display: grid; grid-template-columns: 1fr 4rem 1fr; align-items: center; padding: 1.1rem 1.4rem; text-align: center; color: #fff; }
+.net-pairs i { height: 1px; background: linear-gradient(90deg, transparent, var(--mp-teal), var(--mp-gold), transparent); position: relative; }
+.net-pairs i::after { content: ''; position: absolute; left: 50%; top: 50%; width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; border-radius: 50%; background: var(--mp-gold); box-shadow: 0 0 12px var(--mp-gold); }
+
+/* questions */
+.faq-groups { max-width: 52rem; margin: 0 auto; display: grid; gap: 1.1rem; }
+.faq-g { padding: 1.4rem 1.5rem 0.6rem; }
+.faq-i { border-top: 1px solid var(--line); }
+.faq-i summary { list-style: none; cursor: pointer; padding: 1rem 0; display: flex; justify-content: space-between; gap: 1rem; color: #fff; font-weight: 700; line-height: 1.6; }
+.faq-i summary::-webkit-details-marker { display: none; }
+.faq-i summary::after { content: '+'; flex: none; color: var(--mp-teal); font-size: 1.3rem; line-height: 1; transition: transform 0.4s var(--ease); }
+.faq-i[open] summary::after { transform: rotate(45deg); }
+.faq-i p { margin: 0 0 1.1rem; color: var(--text-2); line-height: 1.85; }
+.faq-more { margin: 2rem auto 0; text-align: center; color: var(--text-2); }
+
+@media (max-width: 900px) {
+  .pl-why ul, .qw-list, .ops-grid { grid-template-columns: 1fr; }
+  .pt-grid, .rm-panel { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .rm-tabs { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; scroll-snap-type: x mandatory; margin-inline: calc(var(--gutter) * -1); padding: 0 var(--gutter) 0.4rem; scrollbar-width: none; }
+  .rm-tabs::-webkit-scrollbar { display: none; }
+  .rm-tabs button { flex: none; scroll-snap-align: start; }
+  .net-pairs li { grid-template-columns: 1fr; gap: 0.6rem; }
+  .net-pairs i { width: 3rem; margin: 0 auto; }
+}
+:root .pt-card, :root .rm-panel, :root .faq-g, :root .qw-list li, :root .ops-grid li { text-align: start; }

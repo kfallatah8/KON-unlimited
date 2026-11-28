@@ -11,6 +11,7 @@ import { motion, setLang, startOnboarding, useStore } from './state/store'
 import { Icon, GemMark } from './components/Icons'
 import { MagneticButton } from './components/MagneticButton'
 import { chipPain, Onboarding } from './components/Onboarding'
+import { Act, QuickWins, Partnership, ReadyMenu, Ops, Network, Faq } from './components/Journey'
 import { lenis, SmoothScroll } from './components/SmoothScroll'
 import { SplitReveal, Hl } from './components/SplitReveal'
 import { Tool } from './components/Tools'
@@ -332,38 +333,40 @@ const INTERLUDE = {
   ar: {
     press: 'الضغط ما يكسرك',
     reveal: 'يكشفك',
-    fact: { kick: 'الألماس والفحم أصلهم', key: 'عنصر واحد', q: 'وش الفرق بينهم؟', a1: 'ضغط كبير', a2: 'ووقت طويل' },
-    value: { kick: 'عطينا الحجر قيمة عالية', lead: 'ونسينا نعطيها', key: 'لأنفسنا' },
+    fact: { kick: 'الفحم والألماس أصلهم واحد', key: 'كربون', q: 'وش الفرق بينهم؟', a1: 'ضغط', a2: 'ووقت' },
+    value: { kick: 'أعطينا الحجر قيمة', key: 'ونسينا أنفسنا' },
     within: { lead: 'التغيير يبدأ', key: 'من الداخل', label: 'التغيير يبدأ من الداخل' },
   },
   en: {
-    press: "Pressure doesn't break you…",
+    press: "Pressure doesn't break you",
     reveal: 'It reveals you',
-    fact: { kick: 'Diamond and coal are', key: 'one element', q: 'The difference?', a1: 'Immense pressure', a2: 'and time' },
-    value: { kick: 'We gave a stone priceless value…', lead: 'and forgot to give it to', key: 'ourselves' },
+    fact: { kick: 'Coal and diamond are the same thing', key: 'carbon', q: 'So what is the difference?', a1: 'Pressure', a2: 'and time' },
+    value: { kick: 'We gave a stone its worth', key: 'and forgot our own' },
     within: { lead: 'Change begins', key: 'within', label: 'Change begins within' },
   },
 }
 
+/** The cinematic pause. The section is long and the scroll itself slows inside it (see useMotionInputs),
+ *  so every line gets a full, calm beat: it rises, holds, and only then gives way to the next. */
 function Interlude() {
   const lang = useStore((s) => s.lang)
   const t = INTERLUDE[lang]
+  const at = (s: number) => ({ ['--s' as string]: s })
   return (
-    <section id="interlude" className="interlude" aria-label={t.within.label}>
+    <section id="interlude" className="interlude mp-int" aria-label={t.within.label}>
       <div className="interlude-sticky">
         <p className="il-line il-press">{t.press}</p>
         <p className="il-reveal"><span>{t.reveal}</span></p>
         <div className="il-fact">
-          <p className="il-kick" style={{ ['--d' as string]: 0 }}>{t.fact.kick}</p>
-          <p className="il-key" style={{ ['--d' as string]: 0.01 }}><span>{t.fact.key}</span></p>
-          <p className="il-q" style={{ ['--d' as string]: 0.022 }}>{t.fact.q}</p>
-          <p className="il-pair" style={{ ['--d' as string]: 0.03 }}><strong>{t.fact.a1}</strong><i aria-hidden="true" /><strong>{t.fact.a2}</strong></p>
+          <p className="il-kick" style={at(0.4)}>{t.fact.kick}</p>
+          <p className="il-key" style={at(0.445)}><span>{t.fact.key}</span></p>
+          <p className="il-q" style={at(0.495)}>{t.fact.q}</p>
+          <p className="il-pair" style={at(0.54)}><strong>{t.fact.a1}</strong><i aria-hidden="true" /><strong>{t.fact.a2}</strong></p>
         </div>
         <div className="il-calm">
-          <p className="il-kick" style={{ ['--d' as string]: 0 }}>{t.value.kick}</p>
-          <p className="il-lead" style={{ ['--d' as string]: 0.008 }}>{t.value.lead}</p>
-          <p className="il-key" style={{ ['--d' as string]: 0.016 }}><span>{t.value.key}</span></p>
-          <p className="il-within" style={{ ['--d' as string]: 0.03 }}>{t.within.lead} <em>{t.within.key}</em></p>
+          <p className="il-kick" style={at(0.67)}>{t.value.kick}</p>
+          <p className="il-key" style={at(0.72)}><span>{t.value.key}</span></p>
+          <p className="il-within" style={at(0.79)}>{t.within.lead} <em>{t.within.key}</em></p>
         </div>
       </div>
     </section>
@@ -476,7 +479,7 @@ function How() {
 
 /** Three calculators that answer one question each, instead of a wall of sectors and tabs.
  *  The full sector library lives on its own page (#/solutions). */
-function QuickTools() {
+export function QuickTools() {
   const q = useContent().quick
   const lang = useStore((s) => s.lang)
   const [id, setId] = useState<ToolId>(q.items[0].id as ToolId)
@@ -951,18 +954,26 @@ function useMotionInputs() {
       // trembles, and at 40% it breaks. Then the words, one beat at a time.
       const c = y + vh * 0.5
       const ip = pinIp >= 0 ? pinIp : (c - intTop) / Math.max(1, intH)
-      const peak = intTop + intH * 0.36
-      // Clean cut: no storm across the page; the tension gathers only inside the interlude.
-      const build = sstep(-0.12, 0.36, ip) * (peak > 0 ? 1 : 0)
-      const calm = pinCalm >= 0 ? pinCalm : sstep(0.4, 0.6, ip)
+      // The interlude is long (≈600vh) so each line holds; the storm gathers in its first quarter and
+      // breaks at 26%. Then the words, one beat at a time.
+      const build = sstep(-0.06, 0.22, ip)
+      const calm = pinCalm >= 0 ? pinCalm : sstep(0.26, 0.38, ip)
       motion.calm = calm
       motion.storm = pinStorm >= 0 ? pinStorm : build * (1 - calm)
-      motion.press = sstep(0.0, 0.34, ip) * (ip < 1.2 ? 1 : 0)
-      if (ip >= 0.4 && !motion.burstAt) {
+      motion.press = sstep(0.0, 0.22, ip) * (ip < 1.2 ? 1 : 0)
+      // Slow lane: inside the interlude the wheel eases down to ~45% speed and back up again,
+      // gradually on both sides, so fast scrolling still lets every line land.
+      if (lenis) {
+        const slow = sstep(-0.04, 0.1, ip) * (1 - sstep(0.88, 1.02, ip))
+        const vs = (lenis as unknown as { virtualScroll?: { options: { wheelMultiplier: number } } }).virtualScroll
+        if (vs) vs.options.wheelMultiplier = 1 - 0.55 * slow
+        lenis.options.lerp = 0.1 - 0.045 * slow
+      }
+      if (ip >= 0.26 && !motion.burstAt) {
         // Only play the break if the visitor is actually here; arriving further down, it has already happened.
-        motion.burstAt = performance.now() - (ip < 0.75 ? 0 : 20000)
+        motion.burstAt = performance.now() - (ip < 0.5 ? 0 : 20000)
         intEl?.classList.add('is-burst')
-      } else if (ip < 0.36 && motion.burstAt) {
+      } else if (ip < 0.22 && motion.burstAt) {
         motion.burstAt = 0
         intEl?.classList.remove('is-burst')
       }
@@ -1115,15 +1126,24 @@ export default function App() {
           <>
             <Hero ready={ready} />
             <Problem />
+            <Act id="one" />
             <Idea />
             <Gaps />
             <Mix />
             <Interlude />
+            <Act id="two" />
             <How />
+            <QuickWins />
             <Work />
+            <Act id="three" />
             <StoryPlans />
+            <Partnership />
+            <ReadyMenu />
+            <Ops />
             <Big />
-            <QuickTools />
+            <Network />
+            <Act id="four" />
+            <Faq />
             <Founder />
             <Team />
             <Start />
