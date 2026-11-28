@@ -32,10 +32,45 @@ function Head({ id, eyebrow, title, lede }: { id: string; eyebrow: string; title
   )
 }
 
+/** «حلول أعمال»: the three pillars, then five doors. Ready solutions exist, but most work is custom. */
+export function Solutions() {
+  const s = useJourney().solutions
+  const lang = useStore((x) => x.lang)
+  return (
+    <section id="solutions" className="band ch jn-sol" aria-labelledby="sol-title">
+      <div className="wrap">
+        <Head id="sol-title" eyebrow={s.eyebrow} title={s.title} lede={s.lede} />
+        <ol className="sol-pillars">
+          {s.pillars.map((p, i) => (
+            <li key={p.k} data-reveal style={{ ['--i' as string]: i }}>
+              <span className="sol-gem" aria-hidden="true" />
+              <b>{p.k}</b>
+              <p>{p.b}</p>
+            </li>
+          ))}
+        </ol>
+        <p className="sol-doors-k" data-reveal>{s.doorsK}</p>
+        <ul className="sol-doors">
+          {s.doors.map((d, i) => (
+            <li key={d.t} data-reveal style={{ ['--i' as string]: i }}>
+              <a href={d.href} className={`sol-door${d.tag ? ' is-main' : ''}`}>
+                {d.tag && <span className="sol-tag">{d.tag}</span>}
+                <b>{d.t}</b>
+                <span className="sol-b">{d.b}</span>
+                <span className="sol-go">{d.cta} <i aria-hidden="true">{lang === 'ar' ? '←' : '→'}</i></span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
 export function QuickWins() {
   const q = useJourney().quick
   return (
-    <section id="quick-wins" className="band ch jn-quick" aria-labelledby="qw-title">
+    <section id="quick-wins" className="band ch jn-quick split" aria-labelledby="qw-title">
       <div className="wrap">
         <Head id="qw-title" eyebrow={q.eyebrow} title={q.title} lede={q.lede} />
         <ol className="qw-list">
@@ -58,7 +93,7 @@ export function QuickWins() {
 export function Partnership() {
   const p = useJourney().partner
   return (
-    <section id="partnership" className="band ch jn-partner" aria-labelledby="pt-title">
+    <section id="partnership" className="band ch jn-partner split" aria-labelledby="pt-title">
       <div className="wrap">
         <Head id="pt-title" eyebrow={p.eyebrow} title={p.title} lede={p.lede} />
         <div className="pt-grid">
@@ -126,7 +161,7 @@ export function ReadyMenu() {
 export function Ops() {
   const o = useJourney().ops
   return (
-    <section id="ops" className="band ch jn-ops" aria-labelledby="ops-title">
+    <section id="ops" className="band ch jn-ops split" aria-labelledby="ops-title">
       <div className="wrap">
         <Head id="ops-title" eyebrow={o.eyebrow} title={o.title} lede={o.lede} />
         <ul className="ops-grid">
@@ -148,7 +183,7 @@ export function Ops() {
 export function Network() {
   const n = useJourney().network
   return (
-    <section id="network" className="band ch jn-net" aria-labelledby="net-title">
+    <section id="network" className="band ch jn-net split" aria-labelledby="net-title">
       <div className="wrap">
         <Head id="net-title" eyebrow={n.eyebrow} title={n.title} lede={n.lede} />
         <ul className="net-pairs">
@@ -174,7 +209,7 @@ export function Faq() {
   const lang = useStore((s) => s.lang)
   const wa = `https://wa.me/${contact.whatsapp}`
   return (
-    <section id="faq" className="band ch jn-faq" aria-labelledby="faq-title">
+    <section id="faq" className="band ch jn-faq split" aria-labelledby="faq-title">
       <div className="wrap">
         <Head id="faq-title" eyebrow={f.eyebrow} title={f.title} />
         <div className="faq-groups">

@@ -60,16 +60,16 @@ export const contact = {
 const ar = {
   meta: {
     switchTo: 'EN', switchLabel: 'Switch to English', menu: 'القائمة', close: 'إغلاق', skip: 'تخط إلى المحتوى',
-    title: 'KON Unlimited · قسم تطوير الأعمال لشركتك',
+    title: 'KON Unlimited · تشغيل وتطوير وحلول أعمال',
     home: 'الرئيسية',
   },
   nav: [
     { href: '#idea', label: 'الفكرة' },
     { href: '#how', label: 'طريقتنا' },
     { href: '#work', label: 'أعمالنا' },
+    { href: '#solutions', label: 'الحلول' },
     { href: '#plans', label: 'الباقات' },
     { href: '#ready-menu', label: 'خدمات جاهزة' },
-    { href: '#ops', label: 'التشغيل' },
     { href: '#faq', label: 'أسئلة' },
   ],
 
@@ -77,11 +77,11 @@ const ar = {
 
   hero: {
     eyebrow: 'تشغيل · تطوير أعمال · ابتكار',
-    kicker: 'تطوير أعمال · تشغيل · ابتكار',
+    kicker: 'تشغيل · تطوير · حلول أعمال',
     rotating: ['نرفع ربح مشروعك', 'نرتب تشغيلك اليومي', 'نشتغل معك على الأرض'],
     statement: ['اللي تدوره', 'موجود عندك'],
     // What KON does, for whom, and how, in one breath. Read before anything moves.
-    lede: 'في كل شركة ربح ضايع بين الأرقام والناس والفرص. نقرأ شركتك، وننزل معك الميدان، لين يبان في حسابك',
+    lede: 'في كل شركة ربح ضايع بين الأرقام والناس والفرص. نقرأ شركتك، ونبني لها الحل اللي يناسبها، وننزل معك الميدان لين يبان في حسابك',
     asks: [
       { who: 'لصاحب الشركة', q: 'مبيعاتك تزيد وربحك واقف مكانه؟' },
       { who: 'لرائد الأعمال', q: 'فكرتك حلوة، بس مين بيدفع فيها؟' },
@@ -606,9 +606,9 @@ const en: Content = {
     { href: '#idea', label: 'The idea' },
     { href: '#how', label: 'Our way' },
     { href: '#work', label: 'Work' },
+    { href: '#solutions', label: 'Solutions' },
     { href: '#plans', label: 'Packages' },
     { href: '#ready-menu', label: 'Ready services' },
-    { href: '#ops', label: 'Operations' },
     { href: '#faq', label: 'Questions' },
   ],
 
@@ -616,10 +616,10 @@ const en: Content = {
 
   hero: {
     eyebrow: 'Operations · Business development · Innovation',
-    kicker: 'Business development · Operations · Innovation',
+    kicker: 'Operations · Development · Business solutions',
     rotating: ['We raise your profit', 'We sort out your daily operations', 'We work on the ground with you'],
     statement: ['What you are looking for', 'is already with you'],
-    lede: 'Every company has profit lost between its numbers, its people and its opportunities. We read your company and work in the field with you until it shows in your account',
+    lede: 'Every company has profit lost between its numbers, its people and its opportunities. We read your company, build the solution that fits it, and work in the field with you until it shows in your account',
     asks: [
       { who: 'For business owners', q: 'Sales are up. Why isn’t profit?' },
       { who: 'For founders', q: 'Great idea. Who’s going to pay for it?' },

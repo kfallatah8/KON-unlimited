@@ -11,7 +11,7 @@ import { motion, setLang, startOnboarding, useStore } from './state/store'
 import { Icon, GemMark } from './components/Icons'
 import { MagneticButton } from './components/MagneticButton'
 import { chipPain, Onboarding } from './components/Onboarding'
-import { Act, QuickWins, Partnership, ReadyMenu, Ops, Network, Faq } from './components/Journey'
+import { Act, Solutions as BizSolutions, QuickWins, Partnership, ReadyMenu, Ops, Network, Faq } from './components/Journey'
 import { lenis, SmoothScroll } from './components/SmoothScroll'
 import { SplitReveal, Hl } from './components/SplitReveal'
 import { Tool } from './components/Tools'
@@ -1136,6 +1136,7 @@ export default function App() {
             <QuickWins />
             <Work />
             <Act id="three" />
+            <BizSolutions />
             <StoryPlans />
             <Partnership />
             <ReadyMenu />

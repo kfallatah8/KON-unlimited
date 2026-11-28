@@ -345,3 +345,73 @@
   .net-pairs i { width: 3rem; margin: 0 auto; }
 }
 :root .pt-card, :root .rm-panel, :root .faq-g, :root .qw-list li, :root .ops-grid li { text-align: start; }
+
+/* ================= Round 3 (2026-11-28): elevation pass =================
+   One proportion everywhere: φ = 1.618. Type steps and spacing steps are powers of φ, so every
+   heading, lede and gap relates to the next one by the same ratio. */
+:root {
+  --phi: 1.618;
+  --t0: clamp(1.02rem, 0.97rem + 0.2vw, 1.1rem);           /* body */
+  --t1: calc(var(--t0) * 1.272);                           /* lede (√φ) */
+  --t2: calc(var(--t0) * 1.618);                           /* card title */
+  --t3: clamp(2.05rem, 1.4rem + 2.2vw, calc(var(--t0) * 2.618)); /* section title (φ²) */
+  --t4: clamp(2.8rem, 1.8rem + 3.6vw, calc(var(--t0) * 4.236));  /* chapter title (φ³) */
+  --s1: 1rem; --s2: 1.618rem; --s3: 2.618rem; --s4: 4.236rem; --s5: 6.854rem;
+}
+:root body { font-size: var(--t0); }
+:root .display, :root h2.display { font-size: var(--t3) !important; line-height: 1.42 !important; }
+:root .ch-lede { font-size: var(--t1); max-width: 36rem; }
+:root .ch-head { margin-bottom: clamp(var(--s3), 6vh, var(--s4)); }
+:root .ch { padding-block: clamp(var(--s4), 14vh, calc(var(--s5) * 1.4)); }
+.act-t { font-size: var(--t4) !important; }
+.act { padding-top: clamp(var(--s5), 22vh, 13rem) !important; }
+
+/* Editorial split: the heading holds its column (38.2%) while the content reads in the wider one (61.8%). */
+@media (min-width: 980px) {
+  :root .ch.split > .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.618fr); column-gap: clamp(var(--s3), 5vw, var(--s5)); align-items: start; max-width: 76rem; }
+  :root .ch.split > .wrap > .ch-head { position: sticky; top: 18vh; margin: 0; text-align: start; max-width: none; }
+  :root .ch.split > .wrap > .ch-head .eyebrow { justify-content: flex-start; }
+  :root .ch.split > .wrap > .ch-head .ch-lede { margin-inline: 0; }
+  :root .ch.split > .wrap > :not(.ch-head) { grid-column: 2; }
+  :root .ch.split .qw-list, :root .ch.split .ops-grid { grid-template-columns: 1fr 1fr; max-width: none; }
+  :root .ch.split .qw-list li:first-child { grid-column: 1 / -1; }
+  :root .ch.split .pt-grid, :root .ch.split .net-pairs, :root .ch.split .faq-groups { max-width: none; }
+  :root .ch.split .ch-close, :root .ch.split .qw-note, :root .ch.split .faq-more { text-align: start; margin-inline: 0; }
+  :root .ch.split .ch-close::before { margin-inline: 0; }
+  :root .ch.split .center { text-align: start; }
+}
+
+/* ---------- business solutions ---------- */
+.sol-pillars { list-style: none; padding: 0; margin: 0 auto; max-width: 66rem; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s1); counter-reset: none; }
+.sol-pillars li { position: relative; padding: var(--s2) var(--s2) calc(var(--s2) * 1.1); text-align: center; border-radius: 26px; border: 1px solid var(--line); background: radial-gradient(120% 90% at 50% 0%, rgba(111, 233, 216, 0.1), transparent 60%), linear-gradient(170deg, rgba(8, 56, 54, 0.32), rgba(2, 16, 18, 0.74)); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.sol-gem { display: block; width: 18px; height: 18px; margin: 0 auto var(--s1); transform: rotate(45deg); border: 1px solid var(--mp-teal); background: linear-gradient(135deg, rgba(111, 233, 216, 0.55), rgba(233, 214, 168, 0.25)); box-shadow: 0 0 22px rgba(111, 233, 216, 0.45); }
+.sol-pillars b { display: block; font-family: var(--display); font-weight: 400; font-size: var(--t2); color: #fff; line-height: 1.3; }
+.sol-pillars p { margin: 0.6rem auto 0; max-width: 20rem; color: var(--text-2); line-height: 1.8; }
+.sol-doors-k { margin: var(--s4) 0 var(--s2); text-align: center; font-family: var(--display); font-weight: 300; font-size: var(--t2); color: #fff; }
+.sol-doors { list-style: none; padding: 0; margin: 0 auto; max-width: 66rem; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--s1); }
+.sol-doors li { grid-column: span 2; }
+.sol-doors li:nth-child(1) { grid-column: span 4; grid-row: span 2; }
+.sol-doors li:nth-child(4), .sol-doors li:nth-child(5) { grid-column: span 3; }
+.sol-door { height: 100%; display: flex; flex-direction: column; gap: 0.5rem; padding: var(--s2); border-radius: 22px; text-decoration: none; color: var(--text); border: 1px solid var(--line); background: linear-gradient(170deg, rgba(8, 56, 54, 0.3), rgba(2, 16, 18, 0.76)); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); transition: border-color 0.5s var(--ease), transform 0.6s var(--ease), box-shadow 0.6s var(--ease); }
+.sol-door:hover, .sol-door:focus-visible { border-color: rgba(111, 233, 216, 0.6); transform: translateY(-3px); box-shadow: 0 24px 60px rgba(18, 165, 150, 0.16); }
+.sol-door.is-main { justify-content: flex-end; min-height: 18rem; border-color: rgba(111, 233, 216, 0.5); background: radial-gradient(90% 80% at 80% 10%, rgba(111, 233, 216, 0.16), transparent 60%), radial-gradient(70% 60% at 10% 100%, rgba(233, 214, 168, 0.1), transparent 60%), linear-gradient(170deg, rgba(8, 56, 54, 0.4), rgba(2, 16, 18, 0.8)); }
+.sol-tag { align-self: flex-start; padding: 0.2rem 0.8rem; border-radius: 999px; background: var(--mp-teal); color: #022; font-size: 0.85rem; font-weight: 700; }
+.sol-door b { font-family: var(--display); font-weight: 400; font-size: 1.3rem; color: #fff; line-height: 1.45; }
+.sol-door.is-main b { font-size: var(--t3); font-weight: 300; }
+.sol-b { color: var(--text-2); line-height: 1.75; }
+.sol-door.is-main .sol-b { font-size: var(--t1); max-width: 30rem; }
+.sol-go { margin-top: auto; padding-top: 0.6rem; color: var(--mp-teal); font-size: 0.98rem; }
+.sol-go i { font-style: normal; display: inline-block; transition: transform 0.5s var(--ease); }
+.sol-door:hover .sol-go i { transform: translateX(-4px); }
+:root[lang='en'] .sol-door:hover .sol-go i { transform: translateX(4px); }
+@media (max-width: 900px) {
+  .sol-pillars { grid-template-columns: 1fr; }
+  .sol-doors { grid-template-columns: 1fr; }
+  .sol-doors li, .sol-doors li:nth-child(n) { grid-column: auto; grid-row: auto; }
+  .sol-door.is-main { min-height: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .sol-door, .sol-door:hover { transform: none; } }
+@media (min-width: 980px) {
+  :root .ch.split > .wrap { padding-inline: clamp(1.5rem, 2.5vw, 2.5rem); }
+  :root .ch.split .faq-groups, :root .ch.split .pt-grid, :root .ch.split .net-pairs { width: 100%; margin-inline: 0; }
+}

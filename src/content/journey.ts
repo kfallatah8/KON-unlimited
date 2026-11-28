@@ -6,10 +6,29 @@ import { useStore } from '../state/store'
 
 const ar = {
   acts: {
-    one: { n: 'الفصل الأول', t: 'الصورة', s: 'وش يصير داخل شركتك، ومن وين يضيع الربح' },
-    two: { n: 'الفصل الثاني', t: 'الطريقة', s: 'كيف نشتغل، وكيف نقيس، ووش سوينا قبل' },
-    three: { n: 'الفصل الثالث', t: 'كيف نشتغل معك', s: 'قسم كامل، أو شراكة، أو خدمة جاهزة. أنت تختار المدخل' },
-    four: { n: 'الفصل الأخير', t: 'قبل ما تقرر', s: 'كل سؤال في بالك، وجوابه' },
+    one: { n: 'الفصل الأول', t: 'الصورة', s: 'قبل أي حل، لازم نشوف الصورة كاملة' },
+    two: { n: 'الفصل الثاني', t: 'الطريقة', s: 'الصورة وضحت. الحين كيف نحولها لأرقام؟' },
+    three: { n: 'الفصل الثالث', t: 'الحل', s: 'لكل شركة حلها. اختر الباب اللي يناسبك' },
+    four: { n: 'الفصل الأخير', t: 'قبل ما تقرر', s: 'كل سؤال في بالك، جوابه هنا' },
+  },
+
+  solutions: {
+    eyebrow: 'حلول أعمال',
+    title: 'كل شركة لها حلها',
+    lede: 'عندنا حلول جاهزة تختصر عليك الوقت. بس أغلب شغلنا حل نبنيه على مقاس شركتك: نبدأ بالسؤال الصح، وبعدين نختار الطريق',
+    pillars: [
+      { k: 'تشغيل', b: 'نمسك التشغيل اليومي أو الموسمي: فريق، وإجراءات، ومتابعة' },
+      { k: 'تطوير', b: 'نرفع المبيعات والربحية، ونفتح أسواق وقنوات وشراكات' },
+      { k: 'حلول أعمال', b: 'نصمم الحل اللي تحتاجه شركتك بالضبط، من نظام لين مصدر دخل جديد' },
+    ],
+    doorsK: 'من وين تبدأ؟',
+    doors: [
+      { t: 'حل مفصل لشركتك', tag: 'أغلب عملائنا', b: 'قسم تطوير أعمال يشتغل معك كل شهر، ويبني الحل خطوة بخطوة', href: '#plans', cta: 'الباقات' },
+      { t: 'شراكة النتائج', tag: '', b: 'لشركة عندها فرصة نمو كبيرة، ندخل معها بنسبة من الربح الإضافي', href: '#partnership', cta: 'الشروط' },
+      { t: 'حل جاهز', tag: '', b: 'مواقع وأنظمة حجوزات وأدوات جاهزة، تنسلم بسرعة وبسعر واضح', href: '#ready-menu', cta: 'الخدمات' },
+      { t: 'تشغيل مشروع أو فعالية', tag: '', b: 'فريق وتشغيل كامل لموسم أو مشروع أو فعالية', href: '#ops', cta: 'التشغيل' },
+      { t: 'قرار كبير', tag: '', b: 'دراسة متخصصة قبل أرض أو مبنى أو دخول سوق', href: '#big', cta: 'الدراسات' },
+    ],
   },
 
   quick: {
@@ -154,10 +173,28 @@ export type Journey = typeof ar
 
 const en: Journey = {
   acts: {
-    one: { n: 'Chapter one', t: 'The picture', s: 'What happens inside your company, and where profit leaks' },
-    two: { n: 'Chapter two', t: 'The method', s: 'How we work, how we measure, and what we have done' },
-    three: { n: 'Chapter three', t: 'How we work with you', s: 'A full department, a partnership, or a ready service. You choose the door' },
+    one: { n: 'Chapter one', t: 'The picture', s: 'Before any solution, we need the whole picture' },
+    two: { n: 'Chapter two', t: 'The method', s: 'The picture is clear. Now, how do we turn it into numbers?' },
+    three: { n: 'Chapter three', t: 'The solution', s: 'Every company has its own. Choose the door that fits you' },
     four: { n: 'The last chapter', t: 'Before you decide', s: 'Every question on your mind, answered' },
+  },
+  solutions: {
+    eyebrow: 'Business solutions',
+    title: 'Every company has its own solution',
+    lede: 'We have ready solutions that save you time. But most of our work is a solution built to your company’s measure: we start with the right question, then choose the road',
+    pillars: [
+      { k: 'Operations', b: 'We run daily or seasonal operations: team, procedures and follow-up' },
+      { k: 'Development', b: 'We raise sales and profitability, and open markets, channels and partnerships' },
+      { k: 'Business solutions', b: 'We design exactly the solution your company needs, from a system to a new income stream' },
+    ],
+    doorsK: 'Where do you start?',
+    doors: [
+      { t: 'A solution built for you', tag: 'Most of our clients', b: 'A business development department working with you every month, building the solution step by step', href: '#plans', cta: 'Packages' },
+      { t: 'Results partnership', tag: '', b: 'For a company with real growth potential, we join for a share of the extra profit', href: '#partnership', cta: 'Criteria' },
+      { t: 'A ready solution', tag: '', b: 'Websites, booking systems and ready tools, delivered fast at a clear price', href: '#ready-menu', cta: 'Services' },
+      { t: 'Run a project or event', tag: '', b: 'A team and full operations for a season, a project or an event', href: '#ops', cta: 'Operations' },
+      { t: 'A big decision', tag: '', b: 'A specialist study before land, a building or a new market', href: '#big', cta: 'Studies' },
+    ],
   },
   quick: {
     eyebrow: 'Quick wins',
